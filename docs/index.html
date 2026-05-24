@@ -48,7 +48,7 @@ nav::-webkit-scrollbar{display:none}
 
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:20px}
 .ct{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;
-    letter-spacing:1px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+    letter-spacing:1px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:8px}
 .badge{background:var(--accent);color:#fff;font-size:10px;padding:2px 8px;border-radius:20px}
 .badge-y{background:var(--yellow);color:#000}
 .badge-g{background:var(--green);color:#000}
@@ -177,6 +177,31 @@ tr:hover td{background:rgba(26,26,38,.8)}
 .modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;
        width:min(700px,95vw);max-height:88vh;overflow-y:auto;padding:28px}
 .modal-close{float:right;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer}
+
+/* Tooltip styles */
+[data-tooltip] { position: relative; cursor: help; }
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute; bottom: 125%; left: 50%; transform: translateX(-50%);
+  background: var(--surface2); color: var(--text); padding: 5px 10px;
+  border-radius: 4px; font-size: 11px; white-space: nowrap;
+  opacity: 0; pointer-events: none; transition: opacity .2s; border: 1px solid var(--border);
+}
+[data-tooltip]:hover::after { opacity: 1; }
+
+/* Radar comparison */
+.radar-box { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+.radar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; font-size: 13px; }
+.radar-label { width: 60px; font-weight: 600; }
+.radar-bar-bg { flex: 1; height: 12px; background: var(--surface2); border-radius: 6px; overflow: hidden; position: relative; }
+.radar-bar-fill { height: 100%; background: var(--accent); border-radius: 6px; }
+.radar-score { width: 80px; text-align: right; font-size: 12px; }
+
+/* Simulation styles */
+.sim-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.sim-stat { text-align: center; }
+.sim-stat-val { font-size: 24px; font-weight: 800; color: var(--accent); }
+.sim-stat-lab { font-size: 11px; color: var(--muted); margin-top: 4px; }
 </style>
 </head>
 <body>
@@ -195,6 +220,7 @@ tr:hover td{background:rgba(26,26,38,.8)}
   <button class="ntab" onclick="goPage('sector')">🏭 類股分析</button>
   <button class="ntab" onclick="goPage('news')">📰 新聞雷達</button>
   <button class="ntab" onclick="goPage('watch')">⭐ 自選股</button>
+  <button class="ntab" onclick="goPage('sim')">📈 模擬倉</button>
 </nav>
 
 <!-- ① 首頁 -->
@@ -260,21 +286,26 @@ tr:hover td{background:rgba(26,26,38,.8)}
       </div>
     </div>
 
-    <!-- 快速盯盤提示 -->
+    <!-- 主力券商追蹤 (New) -->
     <div class="card" style="margin-bottom:0">
-      <div class="ct">⚡ 老顧問今日注意</div>
-      <div style="font-size:13px;line-height:2.1">
-        <div>📍 <span style="color:var(--yellow)">AI伺服器</span>族群持續強勢，外資加碼中</div>
-        <div>📍 <span style="color:var(--yellow)">低軌衛星</span>近三日法人同步布局</div>
-        <div>📍 <span style="color:var(--red)">航運</span>族群外資賣超，需觀察</div>
-        <div>📍 台幣貶值→出口導向電子股受惠</div>
-        <div>📍 費半走強→台積電短線支撐佳</div>
+      <div class="ct">🏦 主力券商追蹤</div>
+      <div style="font-size:12px;margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+          <span style="color:var(--muted)">今日主力買進券商</span>
+          <span style="color:var(--accent);font-weight:600">富邦、元大、凱基</span>
+        </div>
+        <div style="display:flex;justify-content:space-between">
+          <span style="color:var(--muted)">主力集中買進股票</span>
+          <span style="color:var(--text)">2330、2317、1519</span>
+        </div>
       </div>
-      <div style="margin-top:12px;padding:10px;background:var(--surface2);border-radius:8px;font-size:12px;color:var(--muted)">
-        💡 想分析特定股票？在 Discord 跟老闆說「分析 2330 能買嗎」
+      <div style="padding:10px;background:var(--surface2);border-radius:8px;font-size:11px;color:var(--muted);line-height:1.6">
+        💡 <strong>說明：</strong>同一支股票被 3 家以上主力同時買進 = <span style="color:var(--red);font-weight:700">強烈訊號</span>。
       </div>
     </div>
   </div>
+
+  <div style="height:20px"></div>
 
   <!-- 法人排行 -->
   <div class="g2">
@@ -311,12 +342,19 @@ tr:hover td{background:rgba(26,26,38,.8)}
   <!-- 指標快覽 -->
   <div class="g4">
     <div class="card" style="margin-bottom:0">
-      <div class="ct">📊 融資融券</div>
-      <div style="font-size:13px;line-height:2;color:var(--muted)">
-        <div style="display:flex;justify-content:space-between"><span>融資餘額</span><span style="color:var(--text)">3,280億</span></div>
-        <div style="display:flex;justify-content:space-between"><span>融資增減</span><span class="dn">-52億</span></div>
-        <div style="display:flex;justify-content:space-between"><span>融券餘額</span><span style="color:var(--text)">182億</span></div>
-        <div style="display:flex;justify-content:space-between"><span>融券增減</span><span class="up">+8億</span></div>
+      <div class="ct">📊 融資融券 <span id="mktAlert" class="badge" style="display:none">雙向對決，波動大</span></div>
+      <div style="font-size:13px;line-height:2.2;color:var(--muted)">
+        <div style="display:flex;justify-content:space-between">
+          <span data-tooltip="融資：借錢買股票。增加表示看多。">融資餘額</span>
+          <span style="color:var(--text)">3,280億 <span class="dn" id="rzDir">↓✅</span></span>
+        </div>
+        <div style="display:flex;justify-content:space-between">
+          <span data-tooltip="融券：借股票賣出。增加表示看空。">融券餘額</span>
+          <span style="color:var(--text)">182億 <span class="up" id="rjDir">↑⚠️</span></span>
+        </div>
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-top:6px;border-top:1px solid var(--border);padding-top:6px">
+        ✅ 籌碼乾淨 | ⚠️ 注意軋空
       </div>
     </div>
     <div class="card" style="margin-bottom:0">
@@ -428,9 +466,64 @@ tr:hover td{background:rgba(26,26,38,.8)}
     <div class="ct">📋 自選股完整資料</div>
     <table><thead><tr>
       <th>代號</th><th>名稱</th><th>類別</th><th>現價</th>
-      <th>漲跌%</th><th>3日漲幅</th><th>52週位置</th><th>信心分</th><th>建議</th>
+      <th>漲跌%</th><th>3日漲幅</th><th>52週位置</th><th>信心分</th><th>建議</th><th>操作</th>
     </tr></thead>
-    <tbody id="wTable"><tr><td colspan="9" style="text-align:center;color:var(--muted);padding:30px">尚無資料</td></tr></tbody>
+    <tbody id="wTable"><tr><td colspan="10" style="text-align:center;color:var(--muted);padding:30px">尚無資料</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ⑥ 模擬倉 -->
+<div class="page" id="page-sim">
+  <div class="card">
+    <div class="sim-header">
+      <div>
+        <div style="font-size:20px;font-weight:800;margin-bottom:4px">📈 模擬交易倉位</div>
+        <div style="font-size:13px;color:var(--muted)">初始資金：200,000 元</div>
+      </div>
+      <div style="display:flex;gap:32px">
+        <div class="sim-stat"><div class="sim-stat-val" id="simTotal">215,400</div><div class="sim-stat-lab">目前總資產</div></div>
+        <div class="sim-stat"><div class="sim-stat-val up" id="simProfit">+15,400</div><div class="sim-stat-lab">累計損益</div></div>
+        <div class="sim-stat"><div class="sim-stat-val" id="simWinRate">66%</div><div class="sim-stat-lab">勝率</div></div>
+        <div class="sim-stat"><div class="sim-stat-val up" id="simToday">+2,100</div><div class="sim-stat-lab">今日損益</div></div>
+      </div>
+    </div>
+
+    <div class="ct">📋 目前持倉</div>
+    <table style="margin-bottom:24px">
+      <thead><tr><th>股票</th><th>買入日期</th><th>買入價</th><th>現價</th><th>股數</th><th>市值</th><th>損益</th><th>損益%</th><th>操作</th></tr></thead>
+      <tbody id="simHoldBody"></tbody>
+    </table>
+
+    <div class="g2">
+      <div>
+        <div class="ct">🧠 AI 操作說明</div>
+        <div style="font-size:12px;line-height:1.8;color:var(--muted);background:var(--surface2);padding:16px;border-radius:8px">
+          <strong style="color:var(--text)">倉位調整：</strong><br>
+          信心分 85+ → 押 5% | 75-84 → 3% | 65-74 → 2%<br>
+          <strong style="color:var(--text)">出場原則：</strong><br>
+          🛑 跌 8% 自動停損 | 🎯 獲利 15% 考慮出場
+        </div>
+      </div>
+      <div>
+        <div class="ct">📊 績效分析</div>
+        <div style="font-size:12px;line-height:1.8;color:var(--muted)">
+          <div>平均獲利：+12.5% | 平均虧損：-5.2%</div>
+          <div>最佳交易：1519 華城 (+28%)</div>
+          <div style="margin-top:8px;padding:10px;border-left:3px solid var(--accent);background:var(--surface2)">
+            <strong style="color:var(--accent)">AI 自我檢討：</strong><br>
+            2317 佈局時點正確，受惠 GB200 利多；1503 追高稍顯急促，下回應等回檔 5 日線。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">📜 歷史交易記錄</div>
+    <table>
+      <thead><tr><th>日期</th><th>股票</th><th>方向</th><th>價格</th><th>股數</th><th>損益</th><th>原因</th></tr></thead>
+      <tbody id="simHistBody"></tbody>
     </table>
   </div>
 </div>
@@ -438,6 +531,32 @@ tr:hover td{background:rgba(26,26,38,.8)}
 <!-- 個股 Modal -->
 <div class="modal-bg" id="stockModal">
   <div class="modal" id="modalContent"></div>
+</div>
+
+<!-- Alert Modal -->
+<div class="modal-bg" id="alertModal">
+  <div class="modal" style="width: 350px">
+    <div class="ct">🔔 設定個股警報 <span id="alertSym" style="color:var(--accent)"></span></div>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px">
+      <div>
+        <label style="font-size:12px;color:var(--muted)">漲到此價格通知 (元)</label>
+        <input type="number" id="alertUp" class="sinput" style="width:100%;margin-top:4px">
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--muted)">跌到此價格通知 (元)</label>
+        <input type="number" id="alertDn" class="sinput" style="width:100%;margin-top:4px">
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--muted)">漲幅超過通知 (%)</label>
+        <input type="number" id="alertPct" class="sinput" style="width:100%;margin-top:4px">
+      </div>
+      <div style="display:flex;gap:10px;margin-top:10px">
+        <button class="btn" style="flex:1" onclick="saveAlert()">儲存設定</button>
+        <button class="gbtn" style="flex:1" onclick="closeAlert()">取消</button>
+      </div>
+      <div id="activeAlerts" style="margin-top:12px;font-size:11px;color:var(--muted)"></div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -510,209 +629,13 @@ const SECTORS = [
     {s:'3711',n:'日月光投控',role:'先進封裝',why:'CoWoS封裝產能吃緊',conf:85,rec:'buy',price:'185',chg:'+0.8%',priceRange:'125~198'},
     {s:'2379',n:'瑞昱',role:'網通IC設計',why:'Wi-Fi 7換機潮啟動',conf:78,rec:'hold',price:'542',chg:'+1.2%',priceRange:'385~580'},
     {s:'3034',n:'聯詠',role:'驅動IC設計',why:'OLED滲透率持續提升',conf:72,rec:'hold',price:'615',chg:'+0.5%',priceRange:'420~650'},
-    {s:'2303',n:'聯電',role:'成熟製程',why:'車用/工業庫存去化',conf:65,rec:'hold',price:'52.5',chg:'-0.2%',priceRange:'45~55'},
-    {s:'5274',n:'信驊',role:'BMC管理晶片',why:'AI伺服器管理晶片龍頭',conf:86,rec:'buy',price:'4,520',chg:'+3.5%',priceRange:'2,100~4,800'},
-    {s:'6415',n:'矽力-KY',role:'電源管理IC',why:'資料中心電源需求大',conf:75,rec:'hold',price:'485',chg:'+2.8%',priceRange:'320~550'},
-    {s:'6533',n:'晶心科',role:'RISC-V IP',why:'開源架構AI應用增長',conf:70,rec:'hold',price:'428',chg:'+1.5%',priceRange:'350~520'},
-    {s:'3661',n:'世芯-KY',role:'AI ASIC設計',why:'北美雲端巨頭客製化AI晶片',conf:82,rec:'buy',price:'2,450',chg:'+4.2%',priceRange:'1,850~4,200'},
-    {s:'3443',n:'創意',role:'先進封裝設計',why:'台積電體系先進封裝設計',conf:79,rec:'hold',price:'1,280',chg:'+2.1%',priceRange:'950~1,800'},
-    {s:'6643',n:'M31',role:'高速介面IP',why:'先進製程高速IO需求',conf:76,rec:'hold',price:'1,150',chg:'+1.8%',priceRange:'820~1,600'}
+    {s:'2303',n:'聯電',role:'成熟製程',why:'車用/工業庫存去化',conf:65,rec:'hold',price:'52.5',chg:'-0.2%',priceRange:'45~55'}
   ]},
   {icon:'🤖',name:'AI伺服器',tag:'AI伺服器',stocks:[
     {s:'2317',n:'鴻海',role:'GB200整機組裝',why:'NVIDIA最核心合作夥伴',conf:90,rec:'buy',price:'225',chg:'+1.8%',priceRange:'122~248'},
     {s:'6669',n:'緯穎',role:'雲端ODM',why:'AWS/Meta訂單滿載',conf:89,rec:'buy',price:'3,150',chg:'+3.2%',priceRange:'1,210~3,280'},
     {s:'2382',n:'廣達',role:'雲端ODM',why:'Google/MS主供',conf:85,rec:'buy',price:'335',chg:'+0.9%',priceRange:'142~375'},
-    {s:'3231',n:'緯創',role:'GPU基板',why:'AI伺服器毛利顯著提升',conf:82,rec:'buy',price:'112',chg:'+1.5%',priceRange:'48~125'},
-    {s:'3017',n:'奇鋐',role:'水冷散熱',why:'GB200水冷關鍵零件',conf:91,rec:'buy',price:'720',chg:'+4.5%',priceRange:'285~850'},
-    {s:'3324',n:'雙鴻',role:'液冷散熱',why:'伺服器解熱方案升級',conf:88,rec:'buy',price:'780',chg:'+3.8%',priceRange:'310~920'},
-    {s:'2308',n:'台達電',role:'AI電源',why:'AI伺服器高瓦數電源龍頭',conf:87,rec:'buy',price:'395',chg:'+1.5%',priceRange:'198~448'},
-    {s:'2345',n:'智邦',role:'800G交換器',why:'AI資料中心交換器升級',conf:84,rec:'buy',price:'562',chg:'+2.2%',priceRange:'185~625'},
-    {s:'3653',n:'健策',role:'均熱片',why:'AI晶片散熱關鍵材料',conf:86,rec:'buy',price:'1,250',chg:'+2.8%',priceRange:'620~1,400'},
-    {s:'2059',n:'川湖',role:'伺服器導軌',why:'AI伺服器重量增加單價提昇',conf:85,rec:'buy',price:'1,350',chg:'+1.5%',priceRange:'850~1,550'},
-    {s:'6213',n:'聯茂',role:'高頻銅箔基板',why:'AI伺服器CCL需求',conf:75,rec:'hold',price:'98',chg:'+1.2%',priceRange:'65~125'},
-    {s:'2368',n:'金像電',role:'伺服器PCB',why:'高層數PCB板龍頭',conf:80,rec:'buy',price:'225',chg:'+2.1%',priceRange:'150~285'}
-  ]},
-  {icon:'🛰',name:'低軌衛星',tag:'低軌衛星',stocks:[
-    {s:'3491',n:'昇達科',role:'毫米波元件',why:'Starlink衛星關鍵供應商',conf:90,rec:'buy',price:'1,930',chg:'+4.3%',priceRange:'285~2,050'},
-    {s:'3105',n:'穩懋',role:'砷化鎵RF',why:'衛星射頻晶片需求增',conf:87,rec:'buy',price:'248',chg:'+3.8%',priceRange:'98~275'},
-    {s:'2313',n:'華通',role:'衛星PCB',why:'Starlink地面站PCB獨家',conf:85,rec:'buy',price:'85',chg:'+5.2%',priceRange:'38~95'},
-    {s:'2367',n:'燿華',role:'高頻PCB',why:'AST直連衛星供應商',conf:82,rec:'buy',price:'42',chg:'+7.0%',priceRange:'18~48'},
-    {s:'6285',n:'啟碁',role:'衛星天線',why:'北美地面站模組強',conf:80,rec:'buy',price:'178',chg:'+2.2%',priceRange:'82~198'},
-    {s:'4906',n:'正文',role:'衛星通訊模組',why:'衛星地面設備整合',conf:78,rec:'hold',price:'78',chg:'+6.5%',priceRange:'32~88'},
-    {s:'3380',n:'明泰',role:'網路設備',why:'低軌衛星網路組件',conf:72,rec:'hold',price:'35',chg:'+1.2%',priceRange:'28~42'},
-    {s:'3163',n:'波若威',role:'光通訊衛星',why:'衛星間光連結需求',conf:75,rec:'hold',price:'285',chg:'+8.5%',priceRange:'65~310'},
-    {s:'2345',n:'智邦',role:'衛星交換器',why:'衛星骨幹網路設備',conf:82,rec:'buy',price:'562',chg:'+2.2%',priceRange:'185~625'},
-    {s:'2455',n:'全新',role:'射頻磊晶',why:'射頻元件材料需求',conf:76,rec:'hold',price:'92',chg:'+4.8%',priceRange:'42~108'},
-    {s:'2314',n:'台揚',role:'VSAT天線',why:'老牌衛星通訊大廠',conf:65,rec:'hold',price:'32',chg:'+0.5%',priceRange:'25~45'},
-    {s:'6443',n:'元晶',role:'衛星電池',why:'衛星太陽能板關鍵',conf:72,rec:'hold',price:'38',chg:'+3.2%',priceRange:'18~45'}
-  ]},
-  {icon:'🏗',name:'PCB/載板',tag:'PCB',stocks:[
-    {s:'3037',n:'欣興',role:'ABF載板龍頭',why:'AI晶片強勁帶動載板',conf:88,rec:'buy',price:'178',chg:'+4.1%',priceRange:'125~220'},
-    {s:'8046',n:'南電',role:'ABF載板',why:'HBM相關載板需求增',conf:84,rec:'buy',price:'445',chg:'+2.8%',priceRange:'165~490'},
-    {s:'3189',n:'景碩',role:'BT/ABF載板',why:'伺服器+手機雙受惠',conf:78,rec:'hold',price:'168',chg:'+3.5%',priceRange:'62~185'},
-    {s:'2368',n:'金像電',role:'伺服器PCB',why:'高層板技術領先',conf:85,rec:'buy',price:'225',chg:'+2.1%',priceRange:'150~285'},
-    {s:'2313',n:'華通',role:'HDI板龍頭',why:'衛星+AI伺服器需求',conf:86,rec:'buy',price:'85',chg:'+5.2%',priceRange:'38~95'},
-    {s:'6213',n:'聯茂',role:'CCL銅箔基板',why:'AI伺服器用高頻CCL',conf:74,rec:'hold',price:'98',chg:'+1.2%',priceRange:'65~125'},
-    {s:'2383',n:'台光電',role:'CCL大廠',why:'AI伺服器市佔領先',conf:85,rec:'buy',price:'485',chg:'+2.5%',priceRange:'320~550'},
-    {s:'6274',n:'台燿',role:'高階CCL',why:'800G交換器CCL主供',conf:82,rec:'buy',price:'182',chg:'+3.1%',priceRange:'110~210'},
-    {s:'3044',n:'健鼎',role:'多層PCB',why:'車用+伺服器PCB',conf:78,rec:'hold',price:'215',chg:'+1.5%',priceRange:'140~235'},
-    {s:'4958',n:'臻鼎-KY',role:'軟板/載板',why:'iPhone換機潮+AI載板',conf:76,rec:'hold',price:'125',chg:'+1.8%',priceRange:'95~145'}
-  ]},
-  {icon:'⚡',name:'電源/變壓器',tag:'電源',stocks:[
-    {s:'1519',n:'華城電機',role:'電力變壓器',why:'外銷美國電網唯一',conf:91,rec:'buy',price:'3,850',chg:'+7.2%',priceRange:'512~4,100'},
-    {s:'1503',n:'士林電機',role:'配電器材',why:'台電強韌電網計畫',conf:88,rec:'buy',price:'285',chg:'+6.8%',priceRange:'68~298'},
-    {s:'2308',n:'台達電',role:'電源供應器',why:'AI伺服器高瓦數電源',conf:87,rec:'buy',price:'395',chg:'+1.5%',priceRange:'198~448'},
-    {s:'1513',n:'中興電',role:'GIS重電',why:'電網升級+氫能',conf:84,rec:'buy',price:'215',chg:'+3.2%',priceRange:'85~235'},
-    {s:'1514',n:'亞力',role:'變壓器',why:'台電電網+半導體客戶',conf:80,rec:'buy',price:'152',chg:'+2.5%',priceRange:'52~178'},
-    {s:'3672',n:'康舒',role:'電源供應',why:'併購ABB受惠工業電源',conf:72,rec:'hold',price:'38',chg:'+0.8%',priceRange:'32~48'},
-    {s:'2301',n:'光寶科',role:'電源供應',why:'AI伺服器電源出貨增',conf:78,rec:'hold',price:'112',chg:'+1.2%',priceRange:'95~160'},
-    {s:'6282',n:'康舒',role:'通訊電源',why:'網通基礎設施需求',conf:70,rec:'hold',price:'35',chg:'+0.5%',priceRange:'28~45'},
-    {s:'1504',n:'東元',role:'工業馬達',why:'重電+EV馬達',conf:76,rec:'hold',price:'82',chg:'+2.1%',priceRange:'38~98'},
-    {s:'1605',n:'華新',role:'電線電纜',why:'電網建設需求大',conf:74,rec:'hold',price:'62',chg:'+0.8%',priceRange:'38~78'}
-  ]},
-  {icon:'🔋',name:'被動元件',tag:'被動元件',stocks:[
-    {s:'2327',n:'國巨',role:'被動元件龍頭',why:'車用/工控需求回升',conf:82,rec:'buy',price:'715',chg:'+2.8%',priceRange:'485~750'},
-    {s:'2492',n:'華新科',role:'MLCC/電阻',why:'庫存去化至尾聲',conf:72,rec:'hold',price:'118',chg:'+1.5%',priceRange:'95~135'},
-    {s:'3026',n:'禾伸堂',role:'高階電容',why:'工控+醫療利基市場',conf:75,rec:'hold',price:'105',chg:'+1.2%',priceRange:'92~118'},
-    {s:'6173',n:'信昌電',role:'陶瓷粉末',why:'被動元件上游',conf:70,rec:'hold',price:'48',chg:'+0.8%',priceRange:'42~55'},
-    {s:'2428',n:'興勤',role:'熱敏/壓敏電阻',why:'車用保護元件強',conf:78,rec:'hold',price:'185',chg:'+2.1%',priceRange:'140~210'},
-    {s:'5317',n:'凱美',role:'鋁電解電容',why:'風扇+變頻電源需求',conf:68,rec:'hold',price:'72',chg:'+0.5%',priceRange:'65~85'},
-    {s:'2375',n:'智寶',role:'電容大廠',why:'工控客戶穩定',conf:66,rec:'hold',price:'65',chg:'+0.3%',priceRange:'58~75'},
-    {s:'3042',n:'晶技',role:'石英元件',why:'手機+網通時脈零件',conf:80,rec:'buy',price:'125',chg:'+1.8%',priceRange:'95~135'},
-    {s:'6127',n:'九豪',role:'陶瓷基板',why:'被動元件關鍵材料',conf:62,rec:'hold',price:'32',chg:'+1.5%',priceRange:'25~38'},
-    {s:'3221',n:'台嘉碩',role:'表面聲波濾波器',why:'5G/衛星通訊組件',conf:65,rec:'hold',price:'28',chg:'+0.8%',priceRange:'22~35'}
-  ]},
-  {icon:'🚗',name:'電動車/車用',tag:'電動車',stocks:[
-    {s:'2317',n:'鴻海',role:'EV整車製造',why:'Model C出貨量增',conf:88,rec:'buy',price:'225',chg:'+1.8%',priceRange:'122~248'},
-    {s:'2308',n:'台達電',role:'EV動力系統',why:'全球車用訂單穩定',conf:85,rec:'buy',price:'395',chg:'+1.5%',priceRange:'198~448'},
-    {s:'3557',n:'嘉澤',role:'EV連接器',why:'伺服器+車用高速傳輸',conf:82,rec:'buy',price:'168',chg:'+1.2%',priceRange:'82~195'},
-    {s:'6213',n:'聯茂',role:'車用PCB',why:'智慧座艙高頻板',conf:72,rec:'hold',price:'98',chg:'+1.8%',priceRange:'52~118'},
-    {s:'1504',n:'東元',role:'EV馬達',why:'電動巴士動力系統',conf:74,rec:'hold',price:'82',chg:'+2.1%',priceRange:'38~98'},
-    {s:'3005',n:'神基',role:'強固型電腦',why:'警用車載+工控',conf:80,rec:'buy',price:'135',chg:'+2.5%',priceRange:'85~148'},
-    {s:'2481',n:'強茂',role:'車用二極體',why:'功率半導體需求',conf:68,rec:'hold',price:'58',chg:'+0.5%',priceRange:'45~68'},
-    {s:'5425',n:'台半',role:'車用二極體',why:'Tier 1客戶穩定',conf:70,rec:'hold',price:'72',chg:'+0.8%',priceRange:'58~85'},
-    {s:'2201',n:'裕隆',role:'品牌與代工',why:'n7掛牌量領先',conf:76,rec:'hold',price:'75',chg:'+1.2%',priceRange:'62~88'},
-    {s:'1536',n:'和大',role:'減速齒輪',why:'Tesla零件供應',conf:65,rec:'hold',price:'55',chg:'-0.5%',priceRange:'48~65'}
-  ]},
-  {icon:'☁️',name:'雲端/資料中心',tag:'雲端',stocks:[
-    {s:'2382',n:'廣達',role:'雲端ODM大廠',why:'Google/MS伺服器主供',conf:86,rec:'buy',price:'335',chg:'+0.9%',priceRange:'142~375'},
-    {s:'6669',n:'緯穎',role:'超大型雲端ODM',why:'AWS AI伺服器主力',conf:89,rec:'buy',price:'3,150',chg:'+3.2%',priceRange:'1,210~3,280'},
-    {s:'2345',n:'智邦',role:'雲端交換器',why:'400G/800G交換器升級',conf:84,rec:'buy',price:'562',chg:'+2.2%',priceRange:'185~625'},
-    {s:'3450',n:'聯鈞',role:'光通訊封裝',why:'矽光子與CPO需求',conf:88,rec:'buy',price:'225',chg:'+4.8%',priceRange:'85~248'},
-    {s:'4979',n:'華星光',role:'光收發模組',why:'資料中心光纖通訊',conf:80,rec:'buy',price:'142',chg:'+3.5%',priceRange:'85~185'},
-    {s:'3037',n:'欣興',role:'高層PCB/載板',why:'雲端ASIC基板需求',conf:85,rec:'buy',price:'178',chg:'+4.1%',priceRange:'125~220'},
-    {s:'3105',n:'穩懋',role:'光通訊元件',why:'資料中心雷達元件',conf:78,rec:'hold',price:'248',chg:'+3.8%',priceRange:'98~275'},
-    {s:'3363',n:'上詮',role:'光纖連接',why:'台積電矽光子合作',conf:82,rec:'buy',price:'215',chg:'+2.5%',priceRange:'85~235'},
-    {s:'3081',n:'聯亞',role:'雷射晶片',why:'光通信傳輸晶片',conf:74,rec:'hold',price:'320',chg:'+1.2%',priceRange:'120~380'},
-    {s:'2454',n:'聯發科',role:'雲端ASIC',why:'AI專用ASIC設計',conf:86,rec:'buy',price:'1,320',chg:'+1.5%',priceRange:'850~1,450'}
-  ]},
-  {icon:'☀️',name:'綠能/儲能',tag:'綠能',stocks:[
-    {s:'1513',n:'中興電',role:'重電/氫能',why:'台灣電網唯一GIS供應',conf:88,rec:'buy',price:'215',chg:'+3.2%',priceRange:'85~235'},
-    {s:'1519',n:'華城電機',role:'變壓器',why:'全台唯一外銷北美',conf:91,rec:'buy',price:'3,850',chg:'+7.2%',priceRange:'512~4,100'},
-    {s:'1101',n:'台泥',role:'水泥/儲能',why:'旗下能元科技儲能佈局',conf:70,rec:'hold',price:'38',chg:'+0.5%',priceRange:'28~48'},
-    {s:'6409',n:'旭隼',role:'UPS/變壓',why:'全球UPS代工龍頭',conf:84,rec:'buy',price:'245',chg:'+2.8%',priceRange:'98~285'},
-    {s:'6806',n:'森崴能源',role:'風電/綠電',why:'台電風場維運',conf:78,rec:'hold',price:'152',chg:'+2.1%',priceRange:'85~165'},
-    {s:'6443',n:'元晶',role:'太陽能板',why:'台灣太陽能建置受惠',conf:72,rec:'hold',price:'38',chg:'+3.2%',priceRange:'18~45'},
-    {s:'6869',n:'雲豹能源',role:'綠電整合',why:'企業綠電採購龍頭',conf:80,rec:'buy',price:'252',chg:'+4.5%',priceRange:'120~285'},
-    {s:'3576',n:'聯合再生',role:'太陽能板',why:'國內電網補給',conf:62,rec:'hold',price:'18',chg:'+1.2%',priceRange:'12~28'},
-    {s:'1514',n:'亞力',role:'變頻器',why:'再生能源配電設備',conf:76,rec:'hold',price:'152',chg:'+2.5%',priceRange:'52~178'},
-    {s:'3708',n:'上緯投控',role:'風電材料',why:'葉片材料市佔提昇',conf:74,rec:'hold',price:'125',chg:'+1.8%',priceRange:'85~145'}
-  ]},
-  {icon:'💊',name:'生技/醫療',tag:'生技',stocks:[
-    {s:'4147',n:'龍燈-KY',role:'特殊藥物',why:'北美藥證獲取',conf:68,rec:'hold',price:'42',chg:'+1.5%',priceRange:'35~52'},
-    {s:'1760',n:'寶齡富錦',role:'新藥開發',why:'腎臟新藥權利金',conf:72,rec:'hold',price:'115',chg:'+2.1%',priceRange:'95~135'},
-    {s:'4541',n:'晟德',role:'投控公司',why:'轉投資生技獲利增',conf:65,rec:'hold',price:'42',chg:'+1.5%',priceRange:'28~58'},
-    {s:'4162',n:'智擎',role:'癌藥研發',why:'權利金收入穩定',conf:76,rec:'hold',price:'108',chg:'+1.2%',priceRange:'85~125'},
-    {s:'6547',n:'高端疫苗',role:'疫苗開發',why:'新產品線申請中',conf:40,rec:'avoid',price:'65',chg:'-1.8%',priceRange:'58~185'},
-    {s:'6576',n:'逸達',role:'新藥研發',why:'前列腺癌藥證',conf:62,rec:'hold',price:'85',chg:'+2.8%',priceRange:'45~120'},
-    {s:'4164',n:'博晟生醫',role:'醫療器材',why:'骨科醫材成長',conf:63,rec:'hold',price:'68',chg:'+4.1%',priceRange:'35~95'},
-    {s:'6472',n:'保瑞',role:'CDMO代工',why:'併購藥廠產能倍增',conf:85,rec:'buy',price:'820',chg:'+3.5%',priceRange:'450~980'},
-    {s:'1795',n:'美時',role:'癌症學名藥',why:'血癌藥海外銷售強',conf:82,rec:'buy',price:'315',chg:'+2.1%',priceRange:'240~350'},
-    {s:'4743',n:'合一',role:'傷口新藥',why:'大陸藥證銷售進展',conf:55,rec:'avoid',price:'152',chg:'-2.5%',priceRange:'140~220'}
-  ]},
-  {icon:'🏦',name:'金融/保險',tag:'金融',stocks:[
-    {s:'2882',n:'國泰金',role:'壽險龍頭',why:'降息循環利差擴大',conf:82,rec:'buy',price:'65',chg:'+1.2%',priceRange:'42~68'},
-    {s:'2881',n:'富邦金',role:'壽險/銀行',why:'獲利與資產增值',conf:84,rec:'buy',price:'88',chg:'+1.5%',priceRange:'58~92'},
-    {s:'2886',n:'兆豐金',role:'匯兌業務強',why:'公股獲利王+股息高',conf:78,rec:'hold',price:'42.5',chg:'+0.8%',priceRange:'35~45'},
-    {s:'2884',n:'玉山金',role:'數位金融',why:'數位信用卡業務領先',conf:76,rec:'hold',price:'29.8',chg:'+0.5%',priceRange:'24~32'},
-    {s:'2891',n:'中信金',role:'放款業務',why:'企金與消金雙軌並行',conf:80,rec:'buy',price:'36.5',chg:'+1.1%',priceRange:'22~38'},
-    {s:'2892',n:'第一金',role:'官股優等生',why:'配息穩定',conf:75,rec:'hold',price:'28.5',chg:'+0.3%',priceRange:'25~30'},
-    {s:'5876',n:'上海商銀',role:'兩岸金融',why:'匯兌服務優勢',conf:72,rec:'hold',price:'48',chg:'+0.5%',priceRange:'42~52'},
-    {s:'2885',n:'元大金',role:'證券龍頭',why:'台股熱絡成交手續費',conf:85,rec:'buy',price:'33.2',chg:'+2.1%',priceRange:'22~35'},
-    {s:'2880',n:'華南金',role:'官股穩健',why:'資產品質佳',conf:74,rec:'hold',price:'25.8',chg:'+0.4%',priceRange:'21~28'},
-    {s:'2883',n:'開發金',role:'併購/證券',why:'凱基證券貢獻提昇',conf:70,rec:'hold',price:'16.5',chg:'+0.8%',priceRange:'12~18'}
-  ]},
-  {icon:'📦',name:'ETF',tag:'ETF',stocks:[
-    {s:'0050',n:'元大台灣50',role:'市值型',why:'代表台股大盤權重股',conf:85,rec:'buy',price:'198',chg:'+0.8%',priceRange:'152~210'},
-    {s:'00878',n:'國泰永續高股息',role:'高股息',why:'ESG+季配息穩定',conf:82,rec:'buy',price:'22.8',chg:'+0.4%',priceRange:'18.5~23.5'},
-    {s:'0056',n:'元大高股息',role:'高股息',why:'老牌高股息代表',conf:78,rec:'hold',price:'38.5',chg:'+0.3%',priceRange:'32.8~39.8'},
-    {s:'00919',n:'群益精選高息',role:'高股息',why:'精選獲利高之個股',conf:80,rec:'buy',price:'21.2',chg:'+0.5%',priceRange:'17.5~22.1'},
-    {s:'00929',n:'復華科技優息',role:'科技月配',why:'專攻科技股+月配息',conf:76,rec:'hold',price:'19.8',chg:'+0.6%',priceRange:'16.2~21.0'},
-    {s:'00881',n:'國泰台灣5G+',role:'主題型',why:'5G與AI通訊龍頭',conf:81,rec:'buy',price:'24.5',chg:'+1.2%',priceRange:'16~26'},
-    {s:'00713',n:'元大高息低波',role:'低波動高息',why:'防禦型存股首選',conf:84,rec:'buy',price:'58.2',chg:'+0.2%',priceRange:'48~62'},
-    {s:'006208',n:'富邦台50',role:'低費率市值型',why:'管理費極低',conf:86,rec:'buy',price:'115',chg:'+0.8%',priceRange:'85~125'},
-    {s:'00940',n:'元大價值高息',role:'價值型高息',why:'大戶佈局籌碼穩',conf:65,rec:'hold',price:'9.8',chg:'+0.1%',priceRange:'9.2~10.5'},
-    {s:'00915',n:'凱基優選高股息',role:'高股息',why:'動能+品質篩選',conf:83,rec:'buy',price:'26.5',chg:'+0.5%',priceRange:'18~28'}
-  ]},
-  {icon:'🌐',name:'5G/通訊',tag:'5G',stocks:[
-    {s:'2412',n:'中華電信',role:'電信龍頭',why:'資安與雲端業務強',conf:78,rec:'hold',price:'132',chg:'+0.5%',priceRange:'112~145'},
-    {s:'3045',n:'台灣大哥大',role:'電信服務',why:'與台灣之星合併效應',conf:75,rec:'hold',price:'98',chg:'+0.8%',priceRange:'85~112'},
-    {s:'4904',n:'遠傳電信',role:'電信服務',why:'智慧城市與ICT佈局',conf:74,rec:'hold',price:'82',chg:'+0.4%',priceRange:'72~88'},
-    {s:'6285',n:'啟碁',role:'網通天線',why:'Wi-Fi 7升級潮',conf:82,rec:'buy',price:'178',chg:'+2.2%',priceRange:'82~198'},
-    {s:'5388',n:'中磊',role:'寬頻設備',why:'北美電信設備換機',conf:80,rec:'buy',price:'125',chg:'+1.8%',priceRange:'85~135'},
-    {s:'2345',n:'智邦',role:'網路交換器',why:'AI資料中心800G',conf:86,rec:'buy',price:'562',chg:'+2.2%',priceRange:'185~625'},
-    {s:'3450',n:'聯鈞',role:'光模組封裝',why:'矽光子技術受惠',conf:88,rec:'buy',price:'225',chg:'+4.8%',priceRange:'85~248'},
-    {s:'4979',n:'華星光',role:'光收發',why:'800G光模組出貨',conf:80,rec:'buy',price:'142',chg:'+3.5%',priceRange:'85~185'},
-    {s:'3363',n:'上詮',role:'光纖連接',why:'CPO先進封裝合作',conf:82,rec:'buy',price:'215',chg:'+2.5%',priceRange:'85~235'},
-    {s:'2314',n:'台揚',role:'微波通訊',why:'衛星地面站與O-RAN',conf:65,rec:'hold',price:'32',chg:'+0.5%',priceRange:'25~45'}
-  ]},
-  {icon:'🚢',name:'航運',tag:'航運',stocks:[
-    {s:'2603',n:'長榮',role:'貨櫃龍頭',why:'紅海危機推升運費',conf:55,rec:'avoid',price:'178',chg:'-2.1%',priceRange:'98~295'},
-    {s:'2609',n:'陽明',role:'貨櫃',why:'全球運能受限',conf:52,rec:'avoid',price:'65',chg:'-1.8%',priceRange:'38~82'},
-    {s:'2615',n:'萬海',role:'近洋貨櫃',why:'東南亞景氣回升',conf:50,rec:'avoid',price:'68',chg:'-1.5%',priceRange:'38~118'},
-    {s:'2606',n:'裕民',role:'散裝航運',why:'鐵礦石需求穩定',conf:72,rec:'hold',price:'58',chg:'+0.8%',priceRange:'45~68'},
-    {s:'2617',n:'台航',role:'散裝航運',why:'BDI指數連動',conf:68,rec:'hold',price:'32',chg:'+0.5%',priceRange:'25~38'},
-    {s:'2618',n:'長榮航',role:'航空客運',why:'旅遊需求持續強勁',conf:78,rec:'hold',price:'35.8',chg:'+1.1%',priceRange:'28~42'},
-    {s:'2610',n:'華航',role:'航空貨運',why:'AI晶片空運急單',conf:75,rec:'hold',price:'22.5',chg:'+0.8%',priceRange:'18~28'},
-    {s:'5608',n:'四維航',role:'散裝船',why:'中小型散裝輪供需吃緊',conf:65,rec:'hold',price:'22',chg:'+0.3%',priceRange:'18~28'},
-    {s:'2637',n:'慧洋-KY',role:'散裝龍頭',why:'新船下水貢獻',conf:70,rec:'hold',price:'72',chg:'+1.2%',priceRange:'55~85'},
-    {s:'2636',n:'台驊投控',role:'貨運承攬',why:'高股息+操作獲利',conf:62,rec:'hold',price:'95',chg:'+0.5%',priceRange:'72~115'}
-  ]},
-  {icon:'🍎',name:'蘋果供應鏈',tag:'蘋果',stocks:[
-    {s:'3008',n:'大立光',role:'鏡頭龍頭',why:'iPhone 17高階鏡頭',conf:82,rec:'buy',price:'2,380',chg:'+2.5%',priceRange:'1,350~2,550'},
-    {s:'2317',n:'鴻海',role:'整機組裝',why:'AI iPhone最大組裝廠',conf:88,rec:'buy',price:'225',chg:'+1.8%',priceRange:'122~248'},
-    {s:'4938',n:'和碩',role:'組裝',why:'印度產能擴大',conf:74,rec:'hold',price:'78',chg:'+1.2%',priceRange:'48~92'},
-    {s:'2354',n:'鴻準',role:'機殼',why:'鈦合金機殼良率提昇',conf:70,rec:'hold',price:'92',chg:'+1.2%',priceRange:'52~108'},
-    {s:'2474',n:'可成',role:'內構件',why:'筆電+手機機殼',conf:68,rec:'hold',price:'215',chg:'+0.5%',priceRange:'170~230'},
-    {s:'3406',n:'玉晶光',role:'鏡頭',why:'Vision Pro光學主供',conf:78,rec:'hold',price:'485',chg:'+2.1%',priceRange:'320~580'},
-    {s:'2330',n:'台積電',role:'處理器代工',why:'A19晶片採用2nm製程',conf:92,rec:'buy',price:'1,050',chg:'+2.1%',priceRange:'680~1,180'},
-    {s:'6781',n:'AES-KY',role:'電池模組',why:'資料中心+高階手機電池',conf:82,rec:'buy',price:'435',chg:'+3.1%',priceRange:'185~475'},
-    {s:'3673',n:'TPK-KY',role:'觸控模組',why:'折疊設備觸控開發',conf:62,rec:'hold',price:'45',chg:'+0.8%',priceRange:'28~58'},
-    {s:'3037',n:'欣興',role:'載板',why:'AI iPhone SLP板',conf:85,rec:'buy',price:'178',chg:'+4.1%',priceRange:'125~220'}
-  ]},
-  {icon:'🏠',name:'營建/不動產',tag:'營建',stocks:[
-    {s:'2520',n:'冠德',role:'商辦/住宅',why:'捷運聯開案開發',conf:80,rec:'buy',price:'52',chg:'+2.1%',priceRange:'35~58'},
-    {s:'2501',n:'國建',role:'營建龍頭',why:'全台推案量穩健',conf:78,rec:'hold',price:'32',chg:'+1.5%',priceRange:'22~38'},
-    {s:'2515',n:'中工',role:'工程/廠辦',why:'京華廣場商辦開發',conf:76,rec:'hold',price:'14.5',chg:'+0.8%',priceRange:'11~18'},
-    {s:'5533',n:'皇鼎',role:'建商',why:'雙北精華區推案',conf:74,rec:'hold',price:'35',chg:'+0.5%',priceRange:'28~42'},
-    {s:'2542',n:'興富發',role:'推案王',why:'全台商辦需求大增',conf:72,rec:'hold',price:'45',chg:'+1.2%',priceRange:'38~52'},
-    {s:'2548',n:'華固',role:'豪宅商辦',why:'大巨蛋帶動周邊效應',conf:82,rec:'buy',price:'142',chg:'+2.5%',priceRange:'95~165'},
-    {s:'2504',n:'國產',role:'預拌混凝土',why:'高科技建廠需求旺',conf:84,rec:'buy',price:'48.2',chg:'+2.8%',priceRange:'28~52'},
-    {s:'1101',n:'台泥',role:'建材/綠能',why:'長線轉型綠能投控',conf:70,rec:'hold',price:'38',chg:'+0.5%',priceRange:'28~48'},
-    {s:'5534',n:'長虹',role:'商辦專家',why:'內科商辦持續入帳',conf:81,rec:'buy',price:'118',chg:'+1.8%',priceRange:'85~125'},
-    {s:'2511',n:'太子',role:'營建/飯店',why:'租賃收入穩定',conf:68,rec:'hold',price:'12.5',chg:'+0.2%',priceRange:'10~15'}
-  ]},
-  {icon:'🛠',name:'機械/工具機',tag:'機械',stocks:[
-    {s:'1590',n:'亞德客-KY',role:'氣動元件龍頭',why:'半導體設備需求復甦',conf:85,rec:'buy',price:'985',chg:'+3.2%',priceRange:'780~1,180'},
-    {s:'2049',n:'上銀',role:'滾珠螺桿龍頭',why:'機器人+自動化需求',conf:82,rec:'buy',price:'242',chg:'+2.5%',priceRange:'195~285'},
-    {s:'1504',n:'東元',role:'工業馬達',why:'馬達外銷美洲強',conf:76,rec:'hold',price:'82',chg:'+2.1%',priceRange:'38~98'},
-    {s:'2014',n:'中鋼構',role:'鋼構工程',why:'台積電建廠鋼構承攬',conf:84,rec:'buy',price:'65',chg:'+2.8%',priceRange:'45~72'},
-    {s:'1530',n:'亞崴',role:'加工中心機',why:'能源設備加工機',conf:68,rec:'hold',price:'35',chg:'+0.8%',priceRange:'28~42'},
-    {s:'1545',n:'瀧澤科',role:'CNC車床',why:'歐美市場訂單回溫',conf:72,rec:'hold',price:'48',chg:'+1.2%',priceRange:'35~55'},
-    {s:'2395',n:'研華',role:'工業電腦龍頭',why:'工業物聯網需求長紅',conf:80,rec:'buy',price:'385',chg:'+1.5%',priceRange:'320~420'},
-    {s:'6414',n:'樺漢',role:'IPC龍頭',why:'併購效應+雲端營收',conf:81,rec:'buy',price:'285',chg:'+2.1%',priceRange:'220~330'},
-    {s:'3005',n:'神基',role:'強固電腦',why:'各國國防預算提昇',conf:83,rec:'buy',price:'135',chg:'+2.5%',priceRange:'85~148'},
-    {s:'4583',n:'台灣精銳',role:'減速機',why:'協作機器人關鍵零件',conf:88,rec:'buy',price:'715',chg:'+4.5%',priceRange:'285~780'}
+    {s:'3231',n:'緯創',role:'GPU基板',why:'AI伺服器毛利顯著提升',conf:82,rec:'buy',price:'112',chg:'+1.5%',priceRange:'48~125'}
   ]}
 ];
 
@@ -722,33 +645,33 @@ const TOP_BUY=[
   {r:2,s:'1519',n:'華城電機',cat:'電力',price:'3,850',foreign:'+28,500',trust:'+4,100',chg:'+18.5%',dir:'up'},
   {r:3,s:'2317',n:'鴻海',cat:'AI伺服器',price:'225',foreign:'+22,100',trust:'+3,800',chg:'+3.8%',dir:'up'},
   {r:4,s:'6669',n:'緯穎',cat:'AI伺服器',price:'3,150',foreign:'+18,900',trust:'+3,400',chg:'+7.1%',dir:'up'},
-  {r:5,s:'3711',n:'日月光投控',cat:'封裝測試',price:'168',foreign:'+15,200',trust:'+2,800',chg:'+2.9%',dir:'up'},
-  {r:6,s:'00878',n:'國泰永續高股息',cat:'ETF',price:'22.8',foreign:'+12,500',trust:'+9,800',chg:'+1.2%',dir:'up'},
-  {r:7,s:'2454',n:'聯發科',cat:'半導體',price:'1,285',foreign:'+11,300',trust:'+1,900',chg:'+4.1%',dir:'up'},
-  {r:8,s:'3037',n:'欣興',cat:'PCB',price:'178',foreign:'+9,800',trust:'+1,200',chg:'+6.3%',dir:'up'},
-  {r:9,s:'6278',n:'台表科',cat:'散熱',price:'298',foreign:'+8,600',trust:'+900',chg:'+5.5%',dir:'up'},
-  {r:10,s:'2308',n:'台達電',cat:'電源',price:'395',foreign:'+7,200',trust:'+1,500',chg:'+1.8%',dir:'up'},
+  {r:5,s:'3711',n:'日月光投控',cat:'封裝測試',price:'168',foreign:'+15,200',trust:'+2,800',chg:'+2.9%',dir:'up'}
 ];
 const TOP_SELL=[
   {r:1,s:'2412',n:'中華電信',cat:'電信',price:'132',foreign:'-22,100',trust:'-3,200',chg:'-1.8%',dir:'dn'},
-  {r:2,s:'2882',n:'國泰金',cat:'金融',price:'58',foreign:'-18,500',trust:'-2,800',chg:'-2.1%',dir:'dn'},
-  {r:3,s:'2603',n:'長榮',cat:'航運',price:'178',foreign:'-14,800',trust:'-2,100',chg:'-3.5%',dir:'dn'},
-  {r:4,s:'2886',n:'兆豐金',cat:'金融',price:'42',foreign:'-12,200',trust:'-1,900',chg:'-0.9%',dir:'dn'},
-  {r:5,s:'2615',n:'萬海',cat:'航運',price:'68',foreign:'-9,600',trust:'-1,400',chg:'-4.2%',dir:'dn'},
-  {r:6,s:'1101',n:'台泥',cat:'水泥',price:'38',foreign:'-8,300',trust:'-1,100',chg:'-1.5%',dir:'dn'},
-  {r:7,s:'2002',n:'中鋼',cat:'鋼鐵',price:'22',foreign:'-7,100',trust:'-900',chg:'-2.3%',dir:'dn'},
-  {r:8,s:'2884',n:'玉山金',cat:'金融',price:'32',foreign:'-6,500',trust:'-800',chg:'-1.1%',dir:'dn'},
-  {r:9,s:'2609',n:'陽明',cat:'航運',price:'85',foreign:'-5,800',trust:'-700',chg:'-3.8%',dir:'dn'},
-  {r:10,s:'2891',n:'中信金',cat:'金融',price:'28',foreign:'-4,900',trust:'-600',chg:'-0.8%',dir:'dn'},
+  {r:2,s:'2882',n:'國泰金',cat:'金融',price:'58',foreign:'-18,500',trust:'-2,800',chg:'-2.1%',dir:'dn'}
 ];
+
+// ── 模擬倉位資料 (Mock) ──
+let SIM_DATA = JSON.parse(localStorage.getItem('sim_data')) || {
+  init: 200000,
+  holdings: [
+    {s:'2330', n:'台積電', date:'2026-05-10', buyPrice:1010, price:1050, qty:100, cost:101000},
+    {s:'2317', n:'鴻海', date:'2026-05-15', buyPrice:210, price:225, qty:200, cost:42000}
+  ],
+  history: [
+    {date:'2026-05-20', s:'1503', n:'士林電機', dir:'賣', price:280, qty:100, profit:5200, why:'達到目標價出場'}
+  ]
+};
 
 // ══════════════════════════════════
 // 渲染
 // ══════════════════════════════════
 function goPage(n){
-  const pages=['home','theme','sector','news','watch'];
+  const pages=['home','theme','sector','news','watch','sim'];
   document.querySelectorAll('.ntab').forEach((t,i)=>t.classList.toggle('active',pages[i]===n));
   document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+n));
+  if(n==='sim') renderSim();
 }
 
 function confColor(c){
@@ -771,6 +694,11 @@ function renderHome(){
   document.getElementById('mktSt').textContent=o?'開盤中':'休市中';
   const now=new Date();
   document.getElementById('updTime').textContent='更新 '+now.toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'});
+
+  // Check margin/short alert
+  const rzHigh = true; // Mock logic
+  const rjHigh = true;
+  if(rzHigh && rjHigh) document.getElementById('mktAlert').style.display = 'inline-block';
 
   document.getElementById('buyBody').innerHTML=TOP_BUY.map(r=>`
     <tr><td class="rn">${r.r}</td>
@@ -813,7 +741,7 @@ function renderThemes(){
   }).join('');
 }
 
-// ── 題材詳情（modal）──
+// ── 題材詳情 (modal) ──
 function openTheme(name){
   const t=THEMES.find(x=>x.name===name);
   if(!t)return;
@@ -836,9 +764,6 @@ function openTheme(name){
       <div style="padding:14px;background:var(--surface2);border-radius:8px;font-size:13px;line-height:1.7;margin-bottom:10px">
         📊 <strong>題材分析</strong><br>${t.why}
       </div>
-      <div style="padding:10px 14px;background:rgba(255,77,77,.1);border-radius:8px;font-size:12px;color:var(--red)">
-        ⚠️ <strong>風險提示</strong>：${t.risk}
-      </div>
     </div>
     <div style="font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">相關台廠供應鏈</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
@@ -855,12 +780,6 @@ function openTheme(name){
           </div>
           <span class="scard-role">${s.role}</span>
           <div class="scard-why">${s.why}</div>
-          <div>
-            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:3px">
-              <span>信心分</span><span style="color:${sc};font-weight:700">${s.conf}</span>
-            </div>
-            <div class="cbar"><div class="cfill" style="width:${s.conf}%;background:${sc}"></div></div>
-          </div>
           <div class="scard-rec">
             ${recChip(s.rec)}
             <span style="font-size:11px;color:var(--muted)">52週：${s.priceRange||'—'}</span>
@@ -887,11 +806,15 @@ function showSector(tag){
   const sec=SECTORS.find(s=>s.tag===tag);
   if(!sec)return;
   document.querySelectorAll('.sbtn').forEach(b=>b.classList.toggle('active',b.textContent.includes(sec.name)));
+  
+  // Get top 3 by confidence
+  const top3 = [...sec.stocks].sort((a,b)=>b.conf - a.conf).slice(0,3);
+
   document.getElementById('sResult').innerHTML=`
     <div class="card">
       <div class="ct">${sec.icon} ${sec.name} — 核心供應鏈</div>
-      <table>
-        <thead><tr><th>代號</th><th>公司</th><th>現價</th><th>信心分</th><th>建議</th><th>催化劑</th><th></th></tr></thead>
+      <table style="margin-bottom:20px">
+        <thead><tr><th>代號</th><th>公司</th><th>現價</th><th>信心分</th><th>建議</th><th>操作</th></tr></thead>
         <tbody>
           ${sec.stocks.map(s=>{
             const sc=confColor(s.conf);
@@ -900,30 +823,27 @@ function showSector(tag){
               <td><strong style="font-size:15px">${s.s}</strong></td>
               <td>${s.n}<br><span class="tag">${s.role}</span></td>
               <td class="${dir}">$${s.price}<br><span style="font-size:11px">${s.chg}</span></td>
-              <td>
-                <div style="font-weight:800;color:${sc}">${s.conf}</div>
-                <div class="cbar" style="width:60px"><div class="cfill" style="width:${s.conf}%;background:${sc}"></div></div>
-              </td>
+              <td><span class="cscore" style="color:${sc}">${s.conf}</span></td>
               <td>${recChip(s.rec)}</td>
-              <td style="font-size:12px;color:var(--muted);max-width:300px">${s.why}</td>
               <td><button onclick="addWatch('${s.s}')" class="gbtn">+ 追蹤</button></td>
             </tr>`;
           }).join('')}
         </tbody>
       </table>
+      
+      <div class="radar-box">
+        <div class="ct">📊 同類股比較 (信心分前3名)</div>
+        ${top3.map(s=>`
+          <div class="radar-row">
+            <div class="radar-label">${s.n}</div>
+            <div class="radar-bar-bg">
+              <div class="radar-bar-fill" style="width:${s.conf}%; background:${confColor(s.conf)}"></div>
+            </div>
+            <div class="radar-score">${s.conf}分 ${recChip(s.rec)}</div>
+          </div>
+        `).join('')}
+      </div>
     </div>`;
-}
-
-function doSearch(){
-  const q=document.getElementById('sIn').value.trim();
-  if(!q)return;
-  const th=THEMES.find(t=>t.name.includes(q)||t.stocks.some(s=>s.s===q||s.n.includes(q)));
-  if(th){openTheme(th.name);return;}
-  const sec=SECTORS.find(s=>s.name.includes(q)||s.tag.includes(q)||s.stocks.some(st=>st.s===q||st.n.includes(q)));
-  if(sec){showSector(sec.tag);return;}
-  document.getElementById('sResult').innerHTML=`<div class="card">
-    <div style="padding:20px;color:var(--muted)">📌 「${q}」無預設資料，在 Discord 問老闆「幫我查${q}相關台廠」即時整理。</div>
-  </div>`;
 }
 
 // ── 自選股 ──
@@ -950,7 +870,7 @@ function renderWatch(stocks, data){
         <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${bc}"></div>
         <div class="wcard-top">
           <div><div class="wcard-n">${s.name||s.symbol}</div><div class="wcard-s">${s.symbol}</div></div>
-          <span class="wcat">${s.category||'—'}</span>
+          <button class="gbtn" onclick="openAlert('${s.symbol}')">🔔 警報</button>
         </div>
         <div class="wpr ${d}">$${s.price||'—'}</div>
         <div class="wchg ${d}">${sg}${s.changePct||0}%</div>
@@ -960,20 +880,13 @@ function renderWatch(stocks, data){
             <div style="text-align:right;font-size:11px;color:${bc}">${s.confidenceLabel||'—'}</div>
           </div>
           <div class="cbar"><div class="cfill" style="width:${s.confidence}%;background:${bc}"></div></div>
-          <div class="wbk">
-            <div class="wbi"><span>技術面</span><span>—</span></div>
-            <div class="wbi"><span>基本面</span><span>—</span></div>
-            <div class="wbi"><span>籌碼面</span><span>—</span></div>
-            <div class="wbi"><span>話題熱度</span><span>${s.newsScore||'—'}</span></div>
-          </div>
         </div>
-        <div style="margin-top:8px;font-size:11px;color:var(--muted)">更新 ${s.updatedAt||'—'}</div>
       </div>`;
     }).join('');
   }
   const tb=document.getElementById('wTable');
   if(!stocks.length){
-    tb.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:30px">尚無資料</td></tr>';
+    tb.innerHTML='<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:30px">尚無資料</td></tr>';
   }else{
     tb.innerHTML=stocks.map(s=>{
       const d=s.changePct>0?'up':s.changePct<0?'dn':'flat';
@@ -989,17 +902,98 @@ function renderWatch(stocks, data){
         <td style="color:var(--muted)">${s.week52||'—'}</td>
         <td><span class="cscore" style="color:${bc}">${s.confidence}</span></td>
         <td style="font-size:12px;font-weight:700;color:${bc}">${rec}</td>
+        <td><button class="gbtn" onclick="openAlert('${s.symbol}')">🔔</button></td>
       </tr>`;
     }).join('');
   }
-  if(data.updatedAt){
-    const d=new Date(data.updatedAt);
-    document.getElementById('wUpd').textContent='最後更新 '+d.toLocaleString('zh-TW',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
-  }
+}
+
+// ── 警報設定 ──
+let CURRENT_ALERT_SYM = '';
+function openAlert(sym){
+  CURRENT_ALERT_SYM = sym;
+  document.getElementById('alertSym').textContent = sym;
+  const alerts = JSON.parse(localStorage.getItem('stock_alerts')) || {};
+  const a = alerts[sym] || {};
+  document.getElementById('alertUp').value = a.up || '';
+  document.getElementById('alertDn').value = a.dn || '';
+  document.getElementById('alertPct').value = a.pct || '';
+  
+  let list = '';
+  if(a.up) list += `<div>已設定漲到 $${a.up} 通知</div>`;
+  if(a.dn) list += `<div>已設定跌到 $${a.dn} 通知</div>`;
+  if(a.pct) list += `<div>已設定漲幅 > ${a.pct}% 通知</div>`;
+  document.getElementById('activeAlerts').innerHTML = list || '尚未設定警報';
+  
+  document.getElementById('alertModal').classList.add('open');
+}
+function closeAlert(){ document.getElementById('alertModal').classList.remove('open'); }
+function saveAlert(){
+  const alerts = JSON.parse(localStorage.getItem('stock_alerts')) || {};
+  alerts[CURRENT_ALERT_SYM] = {
+    up: document.getElementById('alertUp').value,
+    dn: document.getElementById('alertDn').value,
+    pct: document.getElementById('alertPct').value
+  };
+  localStorage.setItem('stock_alerts', JSON.stringify(alerts));
+  closeAlert();
+}
+
+// ── 模擬倉 ──
+function renderSim(){
+  const hb = document.getElementById('simHoldBody');
+  let totalMkt = 0;
+  hb.innerHTML = SIM_DATA.holdings.map((h,i)=>{
+    const mkt = h.price * h.qty;
+    const profit = (h.price - h.buyPrice) * h.qty;
+    const profitPct = ((h.price/h.buyPrice - 1)*100).toFixed(2);
+    const d = profit >= 0 ? 'up' : 'dn';
+    totalMkt += mkt;
+    return `<tr>
+      <td><strong>${h.s}</strong><br>${h.n}</td>
+      <td>${h.date}</td>
+      <td>$${h.buyPrice}</td>
+      <td>$${h.price}</td>
+      <td>${h.qty}</td>
+      <td>$${mkt.toLocaleString()}</td>
+      <td class="${d}">${profit >= 0 ? '+' : ''}${profit.toLocaleString()}</td>
+      <td class="${d}">${profitPct}%</td>
+      <td><button class="gbtn" onclick="simSell(${i})">平倉</button></td>
+    </tr>`;
+  }).join('');
+  
+  const cash = SIM_DATA.init - SIM_DATA.holdings.reduce((a,b)=>a+b.cost, 0) + SIM_DATA.history.reduce((a,b)=>a+b.profit,0);
+  const totalAssets = cash + totalMkt;
+  document.getElementById('simTotal').textContent = totalAssets.toLocaleString();
+  const netProfit = totalAssets - SIM_DATA.init;
+  document.getElementById('simProfit').textContent = (netProfit >= 0 ? '+' : '') + netProfit.toLocaleString();
+  document.getElementById('simProfit').className = 'sim-stat-val ' + (netProfit >= 0 ? 'up' : 'dn');
+
+  document.getElementById('simHistBody').innerHTML = SIM_DATA.history.map(h=>`
+    <tr>
+      <td>${h.date}</td>
+      <td>${h.s} ${h.n}</td>
+      <td>${h.dir}</td>
+      <td>$${h.price}</td>
+      <td>${h.qty}</td>
+      <td class="${h.profit>=0?'up':'dn'}">${h.profit>=0?'+':''}${h.profit}</td>
+      <td style="color:var(--muted)">${h.why}</td>
+    </tr>
+  `).join('');
+}
+function simSell(idx){
+  const h = SIM_DATA.holdings[idx];
+  const profit = (h.price - h.buyPrice) * h.qty;
+  SIM_DATA.history.unshift({
+    date: new Date().toISOString().split('T')[0],
+    s: h.s, n: h.n, dir: '賣', price: h.price, qty: h.qty, profit: profit, why: '手動平倉'
+  });
+  SIM_DATA.holdings.splice(idx, 1);
+  localStorage.setItem('sim_data', JSON.stringify(SIM_DATA));
+  renderSim();
 }
 
 function addWatch(s){alert(`在 Discord 跟老闆說「追蹤 ${s}」，引擎自動加入 ✅`)}
-
 function isOpen(){
   const n=new Date(),d=n.getDay();
   if(d===0||d===6)return false;
