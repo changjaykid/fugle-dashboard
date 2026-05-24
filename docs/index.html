@@ -280,12 +280,12 @@ tr:hover td{background:rgba(26,26,38,.8)}
   <div class="g2">
     <div class="card" style="margin-bottom:0">
       <div class="ct">🏆 近3日法人買超 Top 10 <span class="badge">每日更新</span></div>
-      <table><thead><tr><th></th><th>股票</th><th>外資(張)</th><th>投信(張)</th><th>3日漲幅</th></tr></thead>
+      <table><thead><tr><th></th><th>股票</th><th>現價</th><th>外資(張)</th><th>投信(張)</th><th>3日漲幅</th></tr></thead>
       <tbody id="buyBody"></tbody></table>
     </div>
     <div class="card" style="margin-bottom:0">
       <div class="ct">📉 近3日法人賣超 Top 10</div>
-      <table><thead><tr><th></th><th>股票</th><th>外資(張)</th><th>投信(張)</th><th>3日漲幅</th></tr></thead>
+      <table><thead><tr><th></th><th>股票</th><th>現價</th><th>外資(張)</th><th>投信(張)</th><th>3日漲幅</th></tr></thead>
       <tbody id="sellBody"></tbody></table>
     </div>
   </div>
@@ -718,28 +718,28 @@ const SECTORS = [
 
 // ── 法人排行 ──
 const TOP_BUY=[
-  {r:1,s:'2330',n:'台積電',cat:'半導體',foreign:'+45,280',trust:'+8,200',chg:'+5.2%',dir:'up'},
-  {r:2,s:'1519',n:'華城電機',cat:'電力',foreign:'+28,500',trust:'+4,100',chg:'+18.5%',dir:'up'},
-  {r:3,s:'2317',n:'鴻海',cat:'AI伺服器',foreign:'+22,100',trust:'+3,800',chg:'+3.8%',dir:'up'},
-  {r:4,s:'6669',n:'緯穎',cat:'AI伺服器',foreign:'+18,900',trust:'+3,400',chg:'+7.1%',dir:'up'},
-  {r:5,s:'3711',n:'日月光投控',cat:'封裝測試',foreign:'+15,200',trust:'+2,800',chg:'+2.9%',dir:'up'},
-  {r:6,s:'00878',n:'國泰永續高股息',cat:'ETF',foreign:'+12,500',trust:'+9,800',chg:'+1.2%',dir:'up'},
-  {r:7,s:'2454',n:'聯發科',cat:'半導體',foreign:'+11,300',trust:'+1,900',chg:'+4.1%',dir:'up'},
-  {r:8,s:'3037',n:'欣興',cat:'PCB',foreign:'+9,800',trust:'+1,200',chg:'+6.3%',dir:'up'},
-  {r:9,s:'6278',n:'台表科',cat:'散熱',foreign:'+8,600',trust:'+900',chg:'+5.5%',dir:'up'},
-  {r:10,s:'2308',n:'台達電',cat:'電源',foreign:'+7,200',trust:'+1,500',chg:'+1.8%',dir:'up'},
+  {r:1,s:'2330',n:'台積電',cat:'半導體',price:'1,050',foreign:'+45,280',trust:'+8,200',chg:'+5.2%',dir:'up'},
+  {r:2,s:'1519',n:'華城電機',cat:'電力',price:'3,850',foreign:'+28,500',trust:'+4,100',chg:'+18.5%',dir:'up'},
+  {r:3,s:'2317',n:'鴻海',cat:'AI伺服器',price:'225',foreign:'+22,100',trust:'+3,800',chg:'+3.8%',dir:'up'},
+  {r:4,s:'6669',n:'緯穎',cat:'AI伺服器',price:'3,150',foreign:'+18,900',trust:'+3,400',chg:'+7.1%',dir:'up'},
+  {r:5,s:'3711',n:'日月光投控',cat:'封裝測試',price:'168',foreign:'+15,200',trust:'+2,800',chg:'+2.9%',dir:'up'},
+  {r:6,s:'00878',n:'國泰永續高股息',cat:'ETF',price:'22.8',foreign:'+12,500',trust:'+9,800',chg:'+1.2%',dir:'up'},
+  {r:7,s:'2454',n:'聯發科',cat:'半導體',price:'1,285',foreign:'+11,300',trust:'+1,900',chg:'+4.1%',dir:'up'},
+  {r:8,s:'3037',n:'欣興',cat:'PCB',price:'178',foreign:'+9,800',trust:'+1,200',chg:'+6.3%',dir:'up'},
+  {r:9,s:'6278',n:'台表科',cat:'散熱',price:'298',foreign:'+8,600',trust:'+900',chg:'+5.5%',dir:'up'},
+  {r:10,s:'2308',n:'台達電',cat:'電源',price:'395',foreign:'+7,200',trust:'+1,500',chg:'+1.8%',dir:'up'},
 ];
 const TOP_SELL=[
-  {r:1,s:'2412',n:'中華電信',cat:'電信',foreign:'-22,100',trust:'-3,200',chg:'-1.8%',dir:'dn'},
-  {r:2,s:'2882',n:'國泰金',cat:'金融',foreign:'-18,500',trust:'-2,800',chg:'-2.1%',dir:'dn'},
-  {r:3,s:'2603',n:'長榮',cat:'航運',foreign:'-14,800',trust:'-2,100',chg:'-3.5%',dir:'dn'},
-  {r:4,s:'2886',n:'兆豐金',cat:'金融',foreign:'-12,200',trust:'-1,900',chg:'-0.9%',dir:'dn'},
-  {r:5,s:'2615',n:'萬海',cat:'航運',foreign:'-9,600',trust:'-1,400',chg:'-4.2%',dir:'dn'},
-  {r:6,s:'1101',n:'台泥',cat:'水泥',foreign:'-8,300',trust:'-1,100',chg:'-1.5%',dir:'dn'},
-  {r:7,s:'2002',n:'中鋼',cat:'鋼鐵',foreign:'-7,100',trust:'-900',chg:'-2.3%',dir:'dn'},
-  {r:8,s:'2884',n:'玉山金',cat:'金融',foreign:'-6,500',trust:'-800',chg:'-1.1%',dir:'dn'},
-  {r:9,s:'2609',n:'陽明',cat:'航運',foreign:'-5,800',trust:'-700',chg:'-3.8%',dir:'dn'},
-  {r:10,s:'2891',n:'中信金',cat:'金融',foreign:'-4,900',trust:'-600',chg:'-0.8%',dir:'dn'},
+  {r:1,s:'2412',n:'中華電信',cat:'電信',price:'132',foreign:'-22,100',trust:'-3,200',chg:'-1.8%',dir:'dn'},
+  {r:2,s:'2882',n:'國泰金',cat:'金融',price:'58',foreign:'-18,500',trust:'-2,800',chg:'-2.1%',dir:'dn'},
+  {r:3,s:'2603',n:'長榮',cat:'航運',price:'178',foreign:'-14,800',trust:'-2,100',chg:'-3.5%',dir:'dn'},
+  {r:4,s:'2886',n:'兆豐金',cat:'金融',price:'42',foreign:'-12,200',trust:'-1,900',chg:'-0.9%',dir:'dn'},
+  {r:5,s:'2615',n:'萬海',cat:'航運',price:'68',foreign:'-9,600',trust:'-1,400',chg:'-4.2%',dir:'dn'},
+  {r:6,s:'1101',n:'台泥',cat:'水泥',price:'38',foreign:'-8,300',trust:'-1,100',chg:'-1.5%',dir:'dn'},
+  {r:7,s:'2002',n:'中鋼',cat:'鋼鐵',price:'22',foreign:'-7,100',trust:'-900',chg:'-2.3%',dir:'dn'},
+  {r:8,s:'2884',n:'玉山金',cat:'金融',price:'32',foreign:'-6,500',trust:'-800',chg:'-1.1%',dir:'dn'},
+  {r:9,s:'2609',n:'陽明',cat:'航運',price:'85',foreign:'-5,800',trust:'-700',chg:'-3.8%',dir:'dn'},
+  {r:10,s:'2891',n:'中信金',cat:'金融',price:'28',foreign:'-4,900',trust:'-600',chg:'-0.8%',dir:'dn'},
 ];
 
 // ══════════════════════════════════
@@ -775,6 +775,7 @@ function renderHome(){
   document.getElementById('buyBody').innerHTML=TOP_BUY.map(r=>`
     <tr><td class="rn">${r.r}</td>
     <td><strong>${r.s}</strong> ${r.n}<br><span class="tag">${r.cat}</span></td>
+    <td class="${r.dir}" style="font-weight:700">${r.price||'—'}</td>
     <td class="up">${r.foreign}</td><td class="up">${r.trust}</td>
     <td class="${r.dir}">${r.chg}</td></tr>`).join('');
   document.getElementById('sellBody').innerHTML=TOP_SELL.map(r=>`
