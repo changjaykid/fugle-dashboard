@@ -5,503 +5,940 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>老闆主控版｜台股智能盯盤</title>
 <style>
-  :root {
-    --bg: #0a0a0f;
-    --surface: #12121a;
-    --surface2: #1a1a26;
-    --border: #2a2a3a;
-    --text: #e8e8f0;
-    --text-muted: #6a6a8a;
-    --accent: #7c6fff;
-    --green: #00c853;
-    --red: #ff4444;
-    --yellow: #ffd740;
-    --radius: 12px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: -apple-system, 'PingFang TC', sans-serif;
-    min-height: 100vh;
-  }
+:root {
+  --bg: #0a0a0f;
+  --surface: #12121a;
+  --surface2: #1a1a26;
+  --border: #252535;
+  --text: #e8e8f0;
+  --muted: #6a6a8a;
+  --accent: #7c6fff;
+  --green: #00c853;
+  --red: #ff4d4d;
+  --yellow: #ffd740;
+  --orange: #ff9100;
+  --r: 10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,'PingFang TC',sans-serif;min-height:100vh}
 
-  /* ── Header ── */
-  header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 16px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  .logo { font-size: 18px; font-weight: 700; letter-spacing: 1px; }
-  .logo span { color: var(--accent); }
-  .market-badge {
-    display: flex; align-items: center; gap: 8px;
-    font-size: 13px; color: var(--text-muted);
-  }
-  .dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--red);
-    animation: none;
-  }
-  .dot.open { background: var(--green); animation: pulse 1.5s infinite; }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
-  }
-  .update-time { font-size: 12px; color: var(--text-muted); }
+/* ── Header ── */
+header{
+  background:rgba(18,18,26,.95);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:0 24px;height:56px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:200;
+}
+.logo{font-size:17px;font-weight:800;letter-spacing:.5px}
+.logo em{color:var(--accent);font-style:normal}
+.header-right{display:flex;align-items:center;gap:20px}
+.mkt-badge{display:flex;align-items:center;gap:6px;font-size:13px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--red)}
+.dot.open{background:var(--green);animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.last-update{font-size:11px;color:var(--muted)}
 
-  /* ── Layout ── */
-  .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+/* ── Nav tabs ── */
+nav{
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  display:flex;padding:0 24px;gap:4px;
+  overflow-x:auto;
+}
+nav::-webkit-scrollbar{display:none}
+.nav-tab{
+  padding:14px 18px;font-size:14px;font-weight:500;
+  color:var(--muted);border:none;background:none;cursor:pointer;
+  border-bottom:2px solid transparent;white-space:nowrap;
+  transition:all .2s;
+}
+.nav-tab.active{color:var(--text);border-bottom-color:var(--accent)}
+.nav-tab:hover{color:var(--text)}
 
-  /* ── Tabs ── */
-  .tabs {
-    display: flex; gap: 4px;
-    background: var(--surface);
-    border-radius: var(--radius);
-    padding: 4px;
-    margin-bottom: 24px;
-    width: fit-content;
-  }
-  .tab {
-    padding: 8px 20px; border-radius: 8px;
-    border: none; background: none;
-    color: var(--text-muted); cursor: pointer;
-    font-size: 14px; font-weight: 500;
-    transition: all .2s;
-  }
-  .tab.active { background: var(--accent); color: #fff; }
-  .tab-content { display: none; }
-  .tab-content.active { display: block; }
+/* ── Layout ── */
+.page{display:none;padding:24px;max-width:1440px;margin:0 auto}
+.page.active{display:block}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.grid-1{display:grid;grid-template-columns:1fr;gap:16px}
+@media(max-width:1100px){.grid-4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:800px){.grid-4,.grid-3,.grid-2{grid-template-columns:1fr}}
+.gap-b{margin-bottom:20px}
 
-  /* ── Cards grid ── */
-  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
-  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-  @media (max-width: 900px) { .grid-3 { grid-template-columns: 1fr 1fr; } }
-  @media (max-width: 600px) { .grid-3, .grid-2 { grid-template-columns: 1fr; } }
+/* ── Card ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px}
+.card-sm{padding:16px}
+.card-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.card-title .badge{background:var(--accent);color:#fff;font-size:10px;padding:2px 7px;border-radius:20px}
 
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-  }
-  .card-title {
-    font-size: 12px; font-weight: 600;
-    color: var(--text-muted);
-    text-transform: uppercase; letter-spacing: 1px;
-    margin-bottom: 12px;
-  }
+/* ── 大盤指數卡 ── */
+.index-card{
+  background:linear-gradient(135deg,var(--surface) 0%,var(--surface2) 100%);
+  border:1px solid var(--border);border-radius:var(--r);padding:20px;
+  position:relative;overflow:hidden;
+}
+.index-card::before{
+  content:'';position:absolute;top:-40px;right:-40px;
+  width:120px;height:120px;border-radius:50%;
+  background:rgba(124,111,255,.07);
+}
+.index-name{font-size:12px;color:var(--muted);margin-bottom:6px}
+.index-val{font-size:32px;font-weight:800;margin-bottom:4px}
+.index-chg{font-size:14px}
+.index-sub{font-size:11px;color:var(--muted);margin-top:8px}
 
-  /* ── Stock card ── */
-  .stock-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    transition: border-color .2s;
-    position: relative;
-    overflow: hidden;
-  }
-  .stock-card:hover { border-color: var(--accent); }
-  .stock-card::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 3px;
-  }
-  .stock-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-  .stock-name { font-weight: 700; font-size: 16px; }
-  .stock-symbol { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-  .stock-category {
-    font-size: 11px; padding: 3px 8px;
-    border-radius: 20px; background: var(--surface2);
-    color: var(--text-muted);
-  }
-  .stock-price { font-size: 28px; font-weight: 800; margin: 8px 0; }
-  .stock-change { font-size: 14px; }
-  .up { color: var(--red); }    /* 台股漲是紅色 */
-  .down { color: var(--green); } /* 跌是綠色 */
-  .flat { color: var(--text-muted); }
+/* ── 漲跌色 ── */
+.up{color:var(--red)}
+.dn{color:var(--green)}
+.flat{color:var(--muted)}
 
-  /* ── Confidence meter ── */
-  .confidence-section { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
-  .confidence-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-  .confidence-score { font-size: 24px; font-weight: 800; }
-  .confidence-label { font-size: 12px; }
-  .confidence-bar {
-    height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden;
-  }
-  .confidence-fill {
-    height: 100%; border-radius: 3px;
-    transition: width 1s ease;
-  }
-  .confidence-breakdown {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 6px; margin-top: 10px;
-  }
-  .breakdown-item {
-    display: flex; justify-content: space-between;
-    font-size: 11px; color: var(--text-muted);
-  }
+/* ── 表格 ── */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11px;font-weight:600;color:var(--muted);
+   padding:8px 12px;border-bottom:1px solid var(--border);text-transform:uppercase}
+td{padding:11px 12px;border-bottom:1px solid rgba(37,37,53,.8)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(26,26,38,.8)}
+.rank-num{color:var(--muted);font-size:12px;width:28px}
 
-  /* ── Stock list table ── */
-  .stock-table { width: 100%; border-collapse: collapse; }
-  .stock-table th {
-    text-align: left; font-size: 11px; font-weight: 600;
-    color: var(--text-muted); padding: 8px 12px;
-    border-bottom: 1px solid var(--border);
-    text-transform: uppercase;
-  }
-  .stock-table td { padding: 12px; border-bottom: 1px solid var(--border); font-size: 14px; }
-  .stock-table tr:hover td { background: var(--surface2); }
-  .stock-table tr:last-child td { border-bottom: none; }
+/* ── 信心分數 ── */
+.conf-bar{height:5px;background:var(--surface2);border-radius:3px;overflow:hidden;margin-top:4px}
+.conf-fill{height:100%;border-radius:3px}
+.conf-chip{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:12px;font-weight:700;
+  padding:3px 10px;border-radius:20px;
+  background:rgba(124,111,255,.15);
+}
 
-  /* ── News ── */
-  .news-item {
-    padding: 14px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .news-item:last-child { border-bottom: none; }
-  .news-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-  .news-meta { font-size: 12px; color: var(--text-muted); display: flex; gap: 12px; }
-  .news-tag {
-    font-size: 11px; padding: 2px 8px; border-radius: 20px;
-    background: rgba(124,111,255,0.15); color: var(--accent);
-  }
+/* ── 熱門題材 ── */
+.theme-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);padding:16px;cursor:pointer;
+  transition:all .2s;position:relative;overflow:hidden;
+}
+.theme-card:hover{border-color:var(--accent);transform:translateY(-1px)}
+.theme-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--accent);
+}
+.theme-name{font-size:15px;font-weight:700;margin-bottom:4px}
+.theme-heat{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.heat-bar{flex:1;height:4px;background:var(--surface2);border-radius:2px;overflow:hidden}
+.heat-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--accent),var(--orange))}
+.theme-reason{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5}
+.theme-stocks{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.theme-stock{font-size:11px;padding:2px 8px;border-radius:4px;background:var(--surface2);color:var(--muted)}
 
-  /* ── Sector search ── */
-  .search-box {
-    display: flex; gap: 8px; margin-bottom: 20px;
-  }
-  .search-input {
-    flex: 1; background: var(--surface);
-    border: 1px solid var(--border); border-radius: 8px;
-    padding: 10px 16px; color: var(--text); font-size: 14px;
-  }
-  .search-input:focus { outline: none; border-color: var(--accent); }
-  .search-btn {
-    background: var(--accent); color: #fff;
-    border: none; border-radius: 8px; padding: 10px 20px;
-    cursor: pointer; font-size: 14px; font-weight: 600;
-  }
-  .search-btn:hover { opacity: 0.85; }
+/* ── 類股分析 ── */
+.sector-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:24px}
+.sector-btn{
+  background:var(--surface);border:1px solid var(--border);border-radius:8px;
+  padding:10px 14px;cursor:pointer;text-align:left;
+  font-size:13px;color:var(--text);transition:all .2s;
+}
+.sector-btn:hover,.sector-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(124,111,255,.08)}
+.sector-btn .s-icon{font-size:18px;display:block;margin-bottom:4px}
+.sector-btn .s-name{font-weight:600;font-size:12px}
+.sector-btn .s-count{font-size:10px;color:var(--muted)}
 
-  /* ── Sector tags ── */
-  .sector-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
-  .sector-tag {
-    padding: 6px 14px; border-radius: 20px;
-    border: 1px solid var(--border); background: var(--surface);
-    color: var(--text-muted); cursor: pointer; font-size: 13px;
-    transition: all .2s;
-  }
-  .sector-tag:hover, .sector-tag.active {
-    border-color: var(--accent); color: var(--accent);
-    background: rgba(124,111,255,0.1);
-  }
+/* ── 自選股 ── */
+.watchlist-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:20px;transition:border-color .2s;position:relative;overflow:hidden;
+}
+.watchlist-card:hover{border-color:var(--accent)}
+.wl-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.wl-name{font-weight:700;font-size:16px}
+.wl-sym{font-size:12px;color:var(--muted);margin-top:2px}
+.wl-cat{font-size:11px;padding:3px 9px;border-radius:20px;background:var(--surface2);color:var(--muted)}
+.wl-price{font-size:30px;font-weight:800;margin:6px 0 2px}
+.wl-chg{font-size:14px}
+.wl-conf{margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.wl-conf-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.wl-score{font-size:26px;font-weight:800}
+.wl-label{font-size:11px;margin-top:2px}
+.wl-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:10px}
+.bd-item{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
 
-  /* ── Empty state ── */
-  .empty {
-    text-align: center; padding: 60px 20px;
-    color: var(--text-muted);
-  }
-  .empty-icon { font-size: 48px; margin-bottom: 16px; }
-  .empty-text { font-size: 15px; margin-bottom: 8px; }
-  .empty-hint { font-size: 13px; opacity: 0.7; }
+/* ── 搜尋框 ── */
+.search-row{display:flex;gap:10px;margin-bottom:20px}
+.search-input{
+  flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;
+  padding:10px 16px;color:var(--text);font-size:14px;
+}
+.search-input:focus{outline:none;border-color:var(--accent)}
+.btn{
+  background:var(--accent);color:#fff;border:none;border-radius:8px;
+  padding:10px 20px;cursor:pointer;font-size:14px;font-weight:600;
+}
+.btn:hover{opacity:.85}
+.btn-ghost{
+  background:none;border:1px solid var(--border);color:var(--muted);
+  border-radius:8px;padding:8px 14px;cursor:pointer;font-size:13px;
+}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ── 新聞 ── */
+.news-item{padding:14px 0;border-bottom:1px solid var(--border)}
+.news-item:last-child{border-bottom:none}
+.news-head{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.news-tag{font-size:10px;padding:2px 7px;border-radius:20px;
+          background:rgba(124,111,255,.15);color:var(--accent);white-space:nowrap}
+.news-title{font-size:14px;font-weight:600;line-height:1.4}
+.news-meta{font-size:11px;color:var(--muted);margin-top:4px;display:flex;gap:10px}
+.impact-chip{
+  font-size:11px;padding:2px 8px;border-radius:4px;display:inline-block;
+}
+.impact-pos{background:rgba(0,200,83,.15);color:var(--green)}
+.impact-neg{background:rgba(255,77,77,.15);color:var(--red)}
+.impact-neu{background:rgba(106,106,138,.15);color:var(--muted)}
+
+/* ── 空狀態 ── */
+.empty{text-align:center;padding:50px 20px;color:var(--muted)}
+.empty-icon{font-size:40px;margin-bottom:12px}
+
+/* ── 顏色輔助 ── */
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:4px;background:var(--surface2);color:var(--muted)}
 </style>
 </head>
 <body>
 
+<!-- Header -->
 <header>
-  <div class="logo">老闆<span>主控版</span> 🖤</div>
-  <div style="display:flex;align-items:center;gap:20px">
-    <div class="market-badge">
-      <div class="dot" id="marketDot"></div>
-      <span id="marketStatus">休市中</span>
+  <div class="logo">老闆<em>主控版</em> 🖤</div>
+  <div class="header-right">
+    <div class="mkt-badge">
+      <div class="dot" id="mktDot"></div>
+      <span id="mktStatus">休市中</span>
     </div>
-    <div class="update-time" id="updateTime">—</div>
+    <div class="last-update" id="lastUpdate">—</div>
   </div>
 </header>
 
-<div class="container">
-  <!-- Tabs -->
-  <div class="tabs">
-    <button class="tab active" onclick="showTab('watchlist')">📊 自選股</button>
-    <button class="tab" onclick="showTab('sector')">🔍 類股分析</button>
-    <button class="tab" onclick="showTab('news')">📰 新聞雷達</button>
+<!-- Nav -->
+<nav>
+  <button class="nav-tab active" onclick="goPage('home')">🏠 首頁總覽</button>
+  <button class="nav-tab" onclick="goPage('theme')">🔥 熱門題材</button>
+  <button class="nav-tab" onclick="goPage('sector')">🏭 類股分析</button>
+  <button class="nav-tab" onclick="goPage('news')">📰 新聞雷達</button>
+  <button class="nav-tab" onclick="goPage('watch')">⭐ 自選股</button>
+</nav>
+
+<!-- ①  首頁總覽 -->
+<div class="page active" id="page-home">
+
+  <!-- 大盤指數 -->
+  <div class="grid-4 gap-b" id="indexCards">
+    <div class="index-card">
+      <div class="index-name">加權指數 TAIEX</div>
+      <div class="index-val" id="taiex-val">載入中…</div>
+      <div class="index-chg" id="taiex-chg">—</div>
+      <div class="index-sub" id="taiex-sub">—</div>
+    </div>
+    <div class="index-card">
+      <div class="index-name">OTC 櫃買指數</div>
+      <div class="index-val" id="otc-val">—</div>
+      <div class="index-chg" id="otc-chg">—</div>
+      <div class="index-sub" id="otc-sub">—</div>
+    </div>
+    <div class="index-card">
+      <div class="index-name">費半指數 SOX</div>
+      <div class="index-val" id="sox-val">—</div>
+      <div class="index-chg" id="sox-chg">—</div>
+      <div class="index-sub" id="sox-sub">美股參考</div>
+    </div>
+    <div class="index-card">
+      <div class="index-name">台幣匯率 USD/TWD</div>
+      <div class="index-val" id="fx-val">—</div>
+      <div class="index-chg" id="fx-chg">—</div>
+      <div class="index-sub" id="fx-sub">貶值有利出口股</div>
+    </div>
   </div>
 
-  <!-- ① 自選股 -->
-  <div class="tab-content active" id="tab-watchlist">
-    <div id="stockCards" class="grid-3">
-      <div class="empty" style="grid-column:1/-1">
-        <div class="empty-icon">📈</div>
-        <div class="empty-text">尚無追蹤股票</div>
-        <div class="empty-hint">跟老闆說「幫我追蹤 2330」就會出現</div>
+  <!-- 大盤情緒 -->
+  <div class="grid-3 gap-b">
+    <div class="card">
+      <div class="card-title">🧭 市場情緒</div>
+      <div id="mktMood">
+        <div style="font-size:36px;font-weight:800;color:var(--accent)" id="moodScore">—</div>
+        <div style="font-size:14px;margin:4px 0 12px;color:var(--muted)" id="moodLabel">—</div>
+        <div class="conf-bar" style="height:8px">
+          <div class="conf-fill" id="moodBar" style="width:50%;background:var(--accent)"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:6px">
+          <span>極度恐慌</span><span>中性</span><span>極度貪婪</span>
+        </div>
+      </div>
+      <div style="margin-top:16px;font-size:12px;color:var(--muted);line-height:1.6" id="mktSummary">
+        根據三大法人、技術面、成交量綜合評估。
       </div>
     </div>
 
-    <!-- 持倉概覽 -->
-    <div class="card" style="margin-top:8px">
-      <div class="card-title">📋 全部自選股列表</div>
-      <table class="stock-table" id="stockTable">
-        <thead>
-          <tr>
-            <th>代號</th>
-            <th>名稱</th>
-            <th>類別</th>
-            <th>現價</th>
-            <th>漲跌%</th>
-            <th>信心分</th>
-            <th>更新</th>
-          </tr>
-        </thead>
-        <tbody id="stockTableBody">
-          <tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:30px">尚無資料</td></tr>
+    <div class="card">
+      <div class="card-title">📊 今日成交量</div>
+      <div id="mktVol">
+        <div style="font-size:28px;font-weight:800" id="volMain">—</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px" id="volSub">—</div>
+        <div style="margin-top:16px">
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px">
+            <span style="color:var(--muted)">外資今日</span>
+            <span id="foreignToday" class="up">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px">
+            <span style="color:var(--muted)">投信今日</span>
+            <span id="trustToday" class="up">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:12px">
+            <span style="color:var(--muted)">自營商今日</span>
+            <span id="dealerToday" class="up">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">⚡ 盤勢提示</div>
+      <div id="mktTips" style="font-size:13px;color:var(--muted);line-height:1.8">
+        <div>📌 外資連3日買超 → 偏多</div>
+        <div>📌 成交量放大 → 行情轉熱</div>
+        <div>📌 台幣升值 → 注意內需股</div>
+        <div>📌 費半強勢 → 台股半導體跟漲機率高</div>
+        <div style="margin-top:12px;padding:10px;background:var(--surface2);border-radius:8px;font-size:12px">
+          💡 看股票操作策略，可直接在 Discord 問老闆說「分析 2330 可以進嗎？」
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 近三日法人買超前10名 -->
+  <div class="grid-2 gap-b">
+    <div class="card">
+      <div class="card-title">🏆 近3日法人買超 Top 10 <span class="badge">每日更新</span></div>
+      <table id="topBuyTable">
+        <thead><tr>
+          <th></th><th>代號/名稱</th><th>外資</th><th>投信</th><th>3日漲幅</th>
+        </tr></thead>
+        <tbody id="topBuyBody">
+          <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:30px">資料更新中…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📉 近3日法人賣超 Top 10</div>
+      <table id="topSellTable">
+        <thead><tr>
+          <th></th><th>代號/名稱</th><th>外資</th><th>投信</th><th>3日漲幅</th>
+        </tr></thead>
+        <tbody id="topSellBody">
+          <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:30px">資料更新中…</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 
-  <!-- ② 類股分析 -->
-  <div class="tab-content" id="tab-sector">
-    <div class="card" style="margin-bottom:20px">
-      <div class="card-title">🔍 類股 / 主題搜尋</div>
-      <div class="search-box">
-        <input class="search-input" id="sectorInput" placeholder="輸入主題，例如：低軌衛星、AI伺服器、半導體..." />
-        <button class="search-btn" onclick="searchSector()">分析</button>
-      </div>
-      <div class="sector-tags">
-        <div class="sector-tag" onclick="quickSector('低軌衛星')">🛰 低軌衛星</div>
-        <div class="sector-tag" onclick="quickSector('AI伺服器')">🤖 AI伺服器</div>
-        <div class="sector-tag" onclick="quickSector('半導體')">⚡ 半導體</div>
-        <div class="sector-tag" onclick="quickSector('電動車')">🚗 電動車</div>
-        <div class="sector-tag" onclick="quickSector('ETF')">📦 ETF</div>
-      </div>
+  <!-- 漲跌幅排行 -->
+  <div class="grid-2 gap-b">
+    <div class="card">
+      <div class="card-title">🚀 今日漲幅前10名</div>
+      <table>
+        <thead><tr><th></th><th>代號/名稱</th><th>現價</th><th>漲幅</th><th>類股</th></tr></thead>
+        <tbody id="topGainBody">
+          <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:30px">資料更新中…</td></tr>
+        </tbody>
+      </table>
     </div>
-    <div id="sectorResult">
-      <div class="empty">
-        <div class="empty-icon">🔍</div>
-        <div class="empty-text">輸入主題開始分析</div>
-        <div class="empty-hint">或直接跟老闆說「低軌衛星供應鏈有哪些台廠？」</div>
-      </div>
+    <div class="card">
+      <div class="card-title">💣 今日跌幅前10名</div>
+      <table>
+        <thead><tr><th></th><th>代號/名稱</th><th>現價</th><th>跌幅</th><th>類股</th></tr></thead>
+        <tbody id="topLoseBody">
+          <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:30px">資料更新中…</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
-  <!-- ③ 新聞 -->
-  <div class="tab-content" id="tab-news">
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-title">🔥 今日熱門新聞</div>
-        <div id="newsList">
-          <div class="empty" style="padding:30px 0">
-            <div class="empty-text">每日 8:30 自動更新</div>
+</div>
+
+<!-- ② 熱門題材 -->
+<div class="page" id="page-theme">
+  <div style="margin-bottom:20px">
+    <div style="font-size:20px;font-weight:800;margin-bottom:6px">🔥 近期熱門投資題材</div>
+    <div style="font-size:13px;color:var(--muted)">每日更新｜點擊題材查看相關股票</div>
+  </div>
+  <div class="grid-3" id="themeGrid"><!-- JS render --></div>
+</div>
+
+<!-- ③ 類股分析 -->
+<div class="page" id="page-sector">
+  <div style="margin-bottom:20px">
+    <div class="search-row">
+      <input class="search-input" id="sectorInput" placeholder="搜尋產業、主題、概念股，例如：低軌衛星、AI、半導體、電動車…"/>
+      <button class="btn" onclick="searchSector()">🔍 分析</button>
+    </div>
+  </div>
+  <!-- 大分類按鈕群 -->
+  <div class="card gap-b" id="sectorNav">
+    <div class="card-title">📂 全部產業 / 主題</div>
+    <div class="sector-grid" id="sectorBtnGrid"><!-- JS render --></div>
+  </div>
+  <!-- 結果區 -->
+  <div id="sectorResult">
+    <div class="empty">
+      <div class="empty-icon">🏭</div>
+      <div>選擇產業或輸入主題開始分析</div>
+    </div>
+  </div>
+</div>
+
+<!-- ④ 新聞雷達 -->
+<div class="page" id="page-news">
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">📰 今日重大新聞 <span class="badge">每日 8:30 更新</span></div>
+      <div id="newsList">
+        <div class="empty"><div class="empty-icon">📰</div><div>新聞資料更新中</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="card gap-b">
+        <div class="card-title">⚠️ 對持股的影響</div>
+        <div id="newsImpact">
+          <div style="font-size:13px;color:var(--muted);line-height:1.8">
+            <div>• 追蹤股票後，我會分析每則新聞對你持股的影響</div>
+            <div>• 正面消息 🟢 / 負面消息 🔴 / 中性 ⚪</div>
+            <div style="margin-top:12px;padding:12px;background:var(--surface2);border-radius:8px;font-size:12px">
+              💡 跟老闆說「這則新聞對 2330 影響如何？」我即時幫你分析
+            </div>
           </div>
         </div>
       </div>
       <div class="card">
-        <div class="card-title">⚠️ 對持股的影響</div>
-        <div id="newsImpact">
-          <div class="empty" style="padding:30px 0">
-            <div class="empty-text">有追蹤股票後自動分析</div>
-          </div>
+        <div class="card-title">🌍 國際市場動態</div>
+        <div style="font-size:13px;color:var(--muted);line-height:2">
+          <div>🇺🇸 美股 S&P 500：<span id="sp500">—</span></div>
+          <div>🇺🇸 Nasdaq：<span id="nasdaq">—</span></div>
+          <div>🇯🇵 日經 Nikkei：<span id="nikkei">—</span></div>
+          <div>🇰🇷 韓國 KOSPI：<span id="kospi">—</span></div>
+          <div>🇨🇳 上海綜合：<span id="sse">—</span></div>
+          <div style="margin-top:8px;font-size:11px">* 國際指數為延遲報價</div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- ⑤ 自選股 -->
+<div class="page" id="page-watch">
+  <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between">
+    <div>
+      <div style="font-size:20px;font-weight:800;margin-bottom:4px">⭐ 自選股追蹤</div>
+      <div style="font-size:13px;color:var(--muted)">告訴老闆「追蹤 2330」即可加入</div>
+    </div>
+    <div style="font-size:12px;color:var(--muted)" id="watchUpdateTime">—</div>
+  </div>
+  <div class="grid-3" id="watchGrid">
+    <div class="empty" style="grid-column:1/-1">
+      <div class="empty-icon">⭐</div>
+      <div style="margin-bottom:8px">尚無追蹤股票</div>
+      <div style="font-size:13px">在 Discord 跟老闆說「幫我追蹤 2330、2317」</div>
+    </div>
+  </div>
+  <!-- 全部列表 -->
+  <div class="card" style="margin-top:20px">
+    <div class="card-title">📋 自選股列表</div>
+    <table>
+      <thead><tr>
+        <th>代號</th><th>名稱</th><th>類別</th><th>現價</th>
+        <th>漲跌%</th><th>3日漲幅</th><th>信心分</th><th>更新</th>
+      </tr></thead>
+      <tbody id="watchTableBody">
+        <tr><td colspan="8" style="text-align:center;color:var(--muted);padding:30px">尚無資料</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
 <script>
-const DASHBOARD_URL = './dashboard.json';
+// ══════════════════════════════════════════
+// 資料定義
+// ══════════════════════════════════════════
 
-// ── Tab 切換 ──
-function showTab(name) {
-  document.querySelectorAll('.tab').forEach((t,i) => {
-    const tabs = ['watchlist','sector','news'];
-    t.classList.toggle('active', tabs[i] === name);
+// ── 完整產業/主題分類 ──
+const SECTORS = [
+  // 傳統產業
+  {icon:'⚡',name:'半導體',tag:'半導體',stocks:[
+    {s:'2330',n:'台積電',role:'晶圓代工龍頭',why:'3nm/2nm AI晶片需求爆炸'},
+    {s:'2303',n:'聯電',role:'成熟製程',why:'車用/工業晶片景氣回升'},
+    {s:'3711',n:'日月光投控',role:'封裝測試',why:'CoWoS先進封裝產能吃緊'},
+    {s:'2379',n:'瑞昱',role:'網路/音效IC',why:'以太網路晶片強勁'},
+    {s:'2454',n:'聯發科',role:'SoC設計',why:'AI手機+AIoT推動'},
+    {s:'3034',n:'聯詠',role:'顯示驅動IC',why:'面板需求回升'},
+    {s:'6533',n:'晶心科',role:'RISC-V IP',why:'開源架構崛起'},
+    {s:'2408',n:'南亞科',role:'DRAM',why:'記憶體漲價週期'},
+  ]},
+  {icon:'🤖',name:'AI伺服器',tag:'AI伺服器',stocks:[
+    {s:'2317',n:'鴻海',role:'ODM組裝',why:'NVIDIA GPU伺服器最大組裝商'},
+    {s:'6669',n:'緯穎',role:'ODM',why:'AWS/Meta AI伺服器主要供應商'},
+    {s:'3231',n:'緯創',role:'ODM',why:'AI伺服器出貨放量'},
+    {s:'4938',n:'和碩',role:'ODM',why:'AI PC + 伺服器布局'},
+    {s:'3481',n:'群創',role:'AI顯示器',why:'工業+車用面板需求'},
+    {s:'2356',n:'英業達',role:'伺服器ODM',why:'液冷伺服器出貨'},
+    {s:'6278',n:'台表科',role:'散熱模組',why:'AI伺服器散熱瓶頸'},
+    {s:'8044',n:'網家',role:'AI電商',why:'AI應用布局'},
+  ]},
+  {icon:'🛰',name:'低軌衛星',tag:'低軌衛星',stocks:[
+    {s:'3163',n:'波若威',role:'衛星天線',why:'Starlink地面設備供應'},
+    {s:'4961',n:'天鈺',role:'電源IC',why:'地面設備電源管理晶片'},
+    {s:'6706',n:'惠特',role:'RF元件',why:'衛星通訊射頻需求'},
+    {s:'3014',n:'聯陽',role:'連接IC',why:'衛星通訊晶片需求'},
+    {s:'6239',n:'力成',role:'封裝測試',why:'衛星通訊晶片封裝'},
+    {s:'5443',n:'均豪',role:'光電模組',why:'衛星光通訊需求'},
+    {s:'3030',n:'晶豪科',role:'DRAM',why:'衛星設備記憶體'},
+    {s:'2392',n:'正崴',role:'連接器',why:'衛星通訊連接元件'},
+  ]},
+  {icon:'🚗',name:'電動車/車用',tag:'電動車',stocks:[
+    {s:'1605',n:'華新',role:'電纜線材',why:'充電樁/電動車線材需求'},
+    {s:'6213',n:'聯茂',role:'車用PCB',why:'車用高頻PCB供應商'},
+    {s:'3557',n:'嘉澤',role:'高速連接器',why:'電動車高速連接器需求'},
+    {s:'2308',n:'台達電',role:'車用電源',why:'EV充電模組龍頭'},
+    {s:'3005',n:'神基',role:'車用電腦',why:'工業/車用強固型電腦'},
+    {s:'6285',n:'啟碁',role:'車用天線',why:'ADAS天線需求'},
+    {s:'5283',n:'禾伸堂',role:'MLCC',why:'車用被動元件需求增'},
+    {s:'3672',n:'康舒',role:'車用電源',why:'電動車充電模組'},
+  ]},
+  {icon:'☁️',name:'雲端/資安',tag:'雲端資安',stocks:[
+    {s:'3037',n:'欣興',role:'高層PCB',why:'雲端伺服器基板需求'},
+    {s:'2382',n:'廣達',role:'雲端伺服器',why:'Google/MS雲端供應商'},
+    {s:'6488',n:'環球晶',role:'矽晶圓',why:'雲端晶片矽晶圓需求'},
+    {s:'3450',n:'聯鈞',role:'光通訊',why:'資料中心光模組'},
+    {s:'5315',n:'科嘉-KY',role:'資安',why:'企業資安意識提升'},
+    {s:'6488',n:'環球晶',role:'矽晶圓',why:'先進製程矽晶圓'},
+  ]},
+  {icon:'🏗',name:'PCB/電路板',tag:'PCB',stocks:[
+    {s:'2347',n:'聯強',role:'通路',why:'電子通路龍頭'},
+    {s:'3037',n:'欣興',role:'高層PCB',why:'AI伺服器基板需求爆'},
+    {s:'6213',n:'聯茂',role:'高頻PCB',why:'5G/車用需求'},
+    {s:'8046',n:'南電',role:'IC載板',why:'AI晶片ABF載板缺貨'},
+    {s:'3189',n:'景碩',role:'IC載板',why:'HBM相關載板需求'},
+    {s:'4976',n:'佳邦',role:'被動元件PCB',why:'5G基站需求'},
+  ]},
+  {icon:'🔋',name:'儲能/綠能',tag:'儲能綠能',stocks:[
+    {s:'1590',n:'亞德客',role:'氣動元件',why:'半導體設備+綠能裝置'},
+    {s:'3576',n:'聯合再生',role:'太陽能電池',why:'國內再生能源政策'},
+    {s:'6409',n:'旭隼',role:'充電設備',why:'充電樁建設加速'},
+    {s:'1101',n:'台泥',role:'儲能',why:'台泥布局儲能+綠能'},
+    {s:'2511',n:'太子',role:'太陽能EPC',why:'太陽能工程'},
+    {s:'3519',n:'綠能',role:'太陽能電池',why:'綠電需求持續'},
+  ]},
+  {icon:'💊',name:'生技/醫療',tag:'生技醫療',stocks:[
+    {s:'4541',n:'晟德',role:'製藥',why:'學名藥+生技投資'},
+    {s:'4168',n:'醣聯',role:'醣類藥物',why:'罕見疾病藥品'},
+    {s:'6547',n:'高端疫苗',role:'疫苗',why:'mRNA平台布局'},
+    {s:'1788',n:'杏輝',role:'藥品通路',why:'藥品流通'},
+    {s:'6576',n:'逸達',role:'新藥',why:'前列腺癌新藥進展'},
+    {s:'4164',n:'博晟生醫',role:'骨科',why:'關節炎新藥'},
+  ]},
+  {icon:'🎮',name:'遊戲/娛樂',tag:'遊戲娛樂',stocks:[
+    {s:'3673',n:'TPK-KY',role:'觸控面板',why:'AR/VR觸控需求'},
+    {s:'5274',n:'信驊',role:'BMC晶片',why:'伺服器管理晶片'},
+    {s:'6415',n:'矽力-KY',role:'電源管理IC',why:'消費電子+遊戲主機'},
+    {s:'3034',n:'聯詠',role:'DDI',why:'遊戲顯示器需求'},
+  ]},
+  {icon:'🏦',name:'金融/REITs',tag:'金融',stocks:[
+    {s:'2882',n:'國泰金',role:'壽險/銀行',why:'升息環境利差擴大'},
+    {s:'2884',n:'玉山金',role:'銀行',why:'數位金融佈局'},
+    {s:'2891',n:'中信金',role:'金控',why:'獲利穩定+股利'},
+    {s:'2886',n:'兆豐金',role:'公股銀行',why:'高股息防禦性'},
+    {s:'00878',n:'國泰永續高股息',role:'ETF',why:'高股息ETF主流'},
+  ]},
+  {icon:'📦',name:'ETF',tag:'ETF',stocks:[
+    {s:'0050',n:'元大台灣50',role:'市值加權',why:'追蹤台灣前50大'},
+    {s:'0056',n:'元大高股息',role:'高股息',why:'存股族最愛'},
+    {s:'00878',n:'國泰永續高股息',role:'ESG高股息',why:'ESG + 高股息雙訴求'},
+    {s:'00919',n:'群益台灣精選高息',role:'高股息',why:'季配息'},
+    {s:'00929',n:'復華台灣科技優息',role:'科技高股息',why:'科技股+股息'},
+    {s:'00881',n:'國泰台灣5G+',role:'5G主題',why:'5G相關股組合'},
+    {s:'00692',n:'富邦公司治理',role:'公治',why:'ESG概念'},
+  ]},
+  {icon:'🌐',name:'5G/通訊',tag:'5G通訊',stocks:[
+    {s:'2412',n:'中華電信',role:'電信龍頭',why:'5G基礎建設受惠'},
+    {s:'4904',n:'遠傳',role:'電信',why:'5G+雲端布局'},
+    {s:'3045',n:'台灣大哥大',role:'電信',why:'AI+5G雙引擎'},
+    {s:'6285',n:'啟碁',role:'天線模組',why:'5G基站天線'},
+    {s:'3019',n:'亞光',role:'光通訊',why:'5G光纖模組'},
+    {s:'3484',n:'崧騰',role:'IoT模組',why:'AIoT連接器'},
+  ]},
+  {icon:'🚢',name:'航運',tag:'航運',stocks:[
+    {s:'2603',n:'長榮',role:'貨櫃輪',why:'紅海繞行+供需緊張'},
+    {s:'2615',n:'萬海',role:'貨櫃輪',why:'近洋航線佈局'},
+    {s:'2609',n:'陽明',role:'貨櫃輪',why:'景氣循環龍頭'},
+    {s:'2642',n:'宅配通',role:'物流',why:'電商物流需求'},
+    {s:'5608',n:'四維航',role:'散裝',why:'散裝船景氣'},
+  ]},
+  {icon:'🏠',name:'營建/房地產',tag:'營建',stocks:[
+    {s:'2511',n:'太子',role:'建商',why:'都更+住宅需求'},
+    {s:'2515',n:'中工',role:'營建',why:'公共工程'},
+    {s:'5533',n:'皇鼎',role:'建商',why:'新北開發案'},
+    {s:'2520',n:'冠德',role:'建商',why:'商辦+住宅'},
+  ]},
+  {icon:'🛠',name:'機械/工具機',tag:'機械',stocks:[
+    {s:'1590',n:'亞德客',role:'氣動元件',why:'半導體設備大廠'},
+    {s:'2049',n:'上銀',role:'線性傳動',why:'工業機器人需求'},
+    {s:'1504',n:'東元',role:'馬達',why:'工業馬達+EV'},
+    {s:'1503',n:'士林電機',role:'電力設備',why:'AI資料中心電力需求'},
+  ]},
+  {icon:'🍎',name:'蘋果供應鏈',tag:'蘋果供應鏈',stocks:[
+    {s:'2354',n:'鴻準',role:'機殼',why:'iPhone機殼主供'},
+    {s:'3008',n:'大立光',role:'鏡頭',why:'iPhone高階鏡頭'},
+    {s:'4938',n:'和碩',role:'組裝',why:'iPhone組裝廠'},
+    {s:'6781',n:'AES-KY',role:'指紋模組',why:'iPhone生物辨識'},
+    {s:'3005',n:'神基',role:'強固型裝置',why:'蘋果生態系'},
+    {s:'2357',n:'華碩',role:'電腦品牌',why:'AI PC新品周期'},
+  ]},
+  {icon:'🔌',name:'電源/被動元件',tag:'電源被動元件',stocks:[
+    {s:'2308',n:'台達電',role:'電源龍頭',why:'AI伺服器電源模組'},
+    {s:'2327',n:'國巨',role:'MLCC',why:'被動元件漲價'},
+    {s:'5283',n:'禾伸堂',role:'MLCC代理',why:'車用+AI被動元件'},
+    {s:'2344',n:'華邦電',role:'NOR Flash',why:'AIoT嵌入式記憶體'},
+    {s:'3672',n:'康舒',role:'電源供應器',why:'AI伺服器電源'},
+  ]},
+];
+
+// ── 熱門題材 ──
+const THEMES = [
+  {icon:'🛰',name:'低軌衛星',heat:92,
+   reason:'SpaceX Starlink擴張+台灣自製衛星計劃，台廠供應鏈受惠，需求能見度高至2026年底',
+   stocks:['3163','4961','6706','3014'],update:'每日'},
+  {icon:'🤖',name:'AI伺服器/CoWoS',heat:95,
+   reason:'NVIDIA GB200/Blackwell架構需求爆炸，台積電CoWoS先進封裝產能吃緊，ODM廠訂單滿載',
+   stocks:['2330','2317','6669','3711'],update:'每日'},
+  {icon:'⚡',name:'電力/變壓器',heat:88,
+   reason:'AI資料中心用電需求暴增，台電擴大採購，北美電網升級帶動台廠出口',
+   stocks:['1503','1504','2308','2317'],update:'每日'},
+  {icon:'💊',name:'減肥藥/GLP-1',heat:75,
+   reason:'Novo Nordisk/Eli Lilly減肥藥熱潮，台廠CDMO代工受惠',
+   stocks:['4541','6547','1788'],update:'每日'},
+  {icon:'🚗',name:'特斯拉供應鏈',heat:70,
+   reason:'特斯拉新車型+FSD自動駕駛推進，台灣供應商零組件比重提升',
+   stocks:['3557','6213','1605','2308'],update:'每日'},
+  {icon:'🌊',name:'散裝航運',heat:65,
+   reason:'原物料需求回升+淡水河效應，巴拿馬運河水位影響運費',
+   stocks:['2603','2615','5608'],update:'每日'},
+  {icon:'💰',name:'高股息ETF',heat:80,
+   reason:'存股族資金持續流入，00878/00919成交量大，市場偏好防禦性收益',
+   stocks:['0056','00878','00919','00929'],update:'每日'},
+  {icon:'🔐',name:'資安/AI資安',heat:72,
+   reason:'企業資安威脅升溫，AI驅動的資安解決方案需求大增',
+   stocks:['5315','6415'],update:'每日'},
+  {icon:'☀️',name:'太陽能/儲能',heat:68,
+   reason:'台灣再生能源政策2030目標，企業RE100採購推動，儲能建置加速',
+   stocks:['3576','1101','6409'],update:'每日'},
+  {icon:'🏗',name:'AI PCB/載板',heat:85,
+   reason:'ABF載板持續缺貨，AI伺服器高層PCB需求超過產能，漲價週期延長',
+   stocks:['3037','8046','3189','6213'],update:'每日'},
+  {icon:'🌐',name:'量子運算',heat:60,
+   reason:'Google/IBM量子電腦進展，台廠低溫設備及精密元件開始受詢問',
+   stocks:['2330','3711'],update:'每週'},
+  {icon:'🤳',name:'AR/VR/空間運算',heat:65,
+   reason:'Apple Vision Pro帶動供應鏈，Meta Ray-Ban眼鏡熱賣',
+   stocks:['3673','3008','6781'],update:'每日'},
+];
+
+// ── 法人買超 Top 10（示範資料，引擎會更新） ──
+const TOP_BUY = [
+  {r:1,s:'2330',n:'台積電',cat:'半導體',foreign:'+45,280',trust:'+8,200',chg3:'+5.2%',dir:'up'},
+  {r:2,s:'2317',n:'鴻海',cat:'AI伺服器',foreign:'+32,100',trust:'+5,600',chg3:'+3.8%',dir:'up'},
+  {r:3,s:'6669',n:'緯穎',cat:'AI伺服器',foreign:'+18,900',trust:'+3,400',chg3:'+7.1%',dir:'up'},
+  {r:4,s:'3711',n:'日月光投控',cat:'封裝測試',foreign:'+15,200',trust:'+2,800',chg3:'+2.9%',dir:'up'},
+  {r:5,s:'00878',n:'國泰永續高股息',cat:'ETF',foreign:'+12,500',trust:'+9,800',chg3:'+1.2%',dir:'up'},
+  {r:6,s:'2454',n:'聯發科',cat:'半導體',foreign:'+11,300',trust:'+1,900',chg3:'+4.1%',dir:'up'},
+  {r:7,s:'3037',n:'欣興',cat:'PCB',foreign:'+9,800',trust:'+1,200',chg3:'+6.3%',dir:'up'},
+  {r:8,s:'2382',n:'廣達',cat:'伺服器',foreign:'+8,600',trust:'+900',chg3:'+2.5%',dir:'up'},
+  {r:9,s:'2308',n:'台達電',cat:'電源',foreign:'+7,200',trust:'+1,500',chg3:'+1.8%',dir:'up'},
+  {r:10,s:'4938',n:'和碩',cat:'ODM',foreign:'+6,800',trust:'+800',chg3:'+3.2%',dir:'up'},
+];
+const TOP_SELL = [
+  {r:1,s:'2412',n:'中華電信',cat:'電信',foreign:'-22,100',trust:'-3,200',chg3:'-1.8%',dir:'dn'},
+  {r:2,s:'2882',n:'國泰金',cat:'金融',foreign:'-18,500',trust:'-2,800',chg3:'-2.1%',dir:'dn'},
+  {r:3,s:'2886',n:'兆豐金',cat:'金融',foreign:'-14,200',trust:'-1,900',chg3:'-0.9%',dir:'dn'},
+  {r:4,s:'2603',n:'長榮',cat:'航運',foreign:'-12,800',trust:'-2,100',chg3:'-3.5%',dir:'dn'},
+  {r:5,s:'2615',n:'萬海',cat:'航運',foreign:'-9,600',trust:'-1,400',chg3:'-4.2%',dir:'dn'},
+  {r:6,s:'1101',n:'台泥',cat:'水泥',foreign:'-8,300',trust:'-1,100',chg3:'-1.5%',dir:'dn'},
+  {r:7,s:'2002',n:'中鋼',cat:'鋼鐵',foreign:'-7,100',trust:'-900',chg3:'-2.3%',dir:'dn'},
+  {r:8,s:'2884',n:'玉山金',cat:'金融',foreign:'-6,500',trust:'-800',chg3:'-1.1%',dir:'dn'},
+  {r:9,s:'2609',n:'陽明',cat:'航運',foreign:'-5,800',trust:'-700',chg3:'-3.8%',dir:'dn'},
+  {r:10,s:'2891',n:'中信金',cat:'金融',foreign:'-4,900',trust:'-600',chg3:'-0.8%',dir:'dn'},
+];
+
+// ══════════════════════════════════════════
+// 頁面渲染
+// ══════════════════════════════════════════
+
+function goPage(name) {
+  document.querySelectorAll('.nav-tab').forEach((t,i)=>{
+    const pages=['home','theme','sector','news','watch'];
+    t.classList.toggle('active', pages[i]===name);
   });
-  document.querySelectorAll('.tab-content').forEach(c => {
-    c.classList.toggle('active', c.id === 'tab-' + name);
+  document.querySelectorAll('.page').forEach(p=>{
+    p.classList.toggle('active', p.id==='page-'+name);
   });
 }
 
-// ── 載入 dashboard.json ──
-async function loadDashboard() {
-  try {
-    const r = await fetch(DASHBOARD_URL + '?t=' + Date.now());
-    const data = await r.json();
-    renderStocks(data.stocks || []);
-    updateHeader(data);
-  } catch(e) {
-    console.error('載入失敗:', e);
-  }
+// ── 首頁：大盤 ──
+function renderIndex() {
+  const isOpen = isMarketOpen();
+  document.getElementById('mktDot').className='dot'+(isOpen?' open':'');
+  document.getElementById('mktStatus').textContent=isOpen?'開盤中':'休市中';
+
+  // 模擬指數（正式環境由引擎寫入 dashboard.json）
+  const now=new Date();
+  document.getElementById('lastUpdate').textContent=
+    '更新 '+now.toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'});
 }
 
-function updateHeader(data) {
-  const open = data.marketOpen;
-  document.getElementById('marketDot').className = 'dot' + (open ? ' open' : '');
-  document.getElementById('marketStatus').textContent = open ? '開盤中' : '休市中';
-  if (data.updatedAt) {
-    const d = new Date(data.updatedAt);
-    document.getElementById('updateTime').textContent =
-      '更新 ' + d.toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'});
-  }
+// ── 首頁：法人排行 ──
+function renderLists() {
+  // 買超
+  document.getElementById('topBuyBody').innerHTML=TOP_BUY.map(r=>`
+    <tr>
+      <td class="rank-num">${r.r}</td>
+      <td><strong>${r.s}</strong> ${r.n}<br><span class="tag" style="margin-top:2px">${r.cat}</span></td>
+      <td class="up">${r.foreign}</td>
+      <td class="up">${r.trust}</td>
+      <td class="${r.dir}">${r.chg3}</td>
+    </tr>`).join('');
+  // 賣超
+  document.getElementById('topSellBody').innerHTML=TOP_SELL.map(r=>`
+    <tr>
+      <td class="rank-num">${r.r}</td>
+      <td><strong>${r.s}</strong> ${r.n}<br><span class="tag" style="margin-top:2px">${r.cat}</span></td>
+      <td class="dn">${r.foreign}</td>
+      <td class="dn">${r.trust}</td>
+      <td class="${r.dir}">${r.chg3}</td>
+    </tr>`).join('');
 }
 
-function renderStocks(stocks) {
-  // Cards
-  const cardsEl = document.getElementById('stockCards');
-  if (!stocks.length) {
-    cardsEl.innerHTML = `<div class="empty" style="grid-column:1/-1">
-      <div class="empty-icon">📈</div>
-      <div class="empty-text">尚無追蹤股票</div>
-      <div class="empty-hint">跟老闆說「幫我追蹤 2330」就會出現</div>
+// ── 熱門題材 ──
+function renderThemes() {
+  document.getElementById('themeGrid').innerHTML=THEMES.map(t=>`
+    <div class="theme-card" onclick="goThemeSector('${t.name}')">
+      <div class="theme-name">${t.icon} ${t.name}</div>
+      <div class="theme-heat">
+        <span style="color:var(--muted);font-size:11px">熱度 ${t.heat}</span>
+        <div class="heat-bar"><div class="heat-fill" style="width:${t.heat}%"></div></div>
+      </div>
+      <div class="theme-reason">${t.reason}</div>
+      <div class="theme-stocks">${t.stocks.map(s=>`<span class="theme-stock">${s}</span>`).join('')}</div>
+      <div style="margin-top:8px;font-size:11px;color:var(--accent)">點擊查看詳細供應鏈 →</div>
+    </div>`).join('');
+}
+
+// ── 類股按鈕群 ──
+function renderSectorBtns() {
+  document.getElementById('sectorBtnGrid').innerHTML=SECTORS.map(s=>`
+    <button class="sector-btn" onclick="showSector('${s.tag}')">
+      <span class="s-icon">${s.icon}</span>
+      <span class="s-name">${s.name}</span>
+      <span class="s-count">${s.stocks.length} 支股票</span>
+    </button>`).join('');
+}
+
+// ── 類股詳情 ──
+function showSector(tag) {
+  const sec=SECTORS.find(s=>s.tag===tag);
+  if(!sec) return;
+  document.querySelectorAll('.sector-btn').forEach(b=>{
+    b.classList.toggle('active',b.textContent.includes(sec.name));
+  });
+  document.getElementById('sectorResult').innerHTML=`
+    <div class="card">
+      <div class="card-title">${sec.icon} ${sec.name} 供應鏈</div>
+      <table>
+        <thead><tr>
+          <th>代號</th><th>公司</th><th>角色定位</th>
+          <th>現價</th><th>3日漲幅</th><th>為什麼漲</th><th>操作</th>
+        </tr></thead>
+        <tbody>
+          ${sec.stocks.map(s=>`
+            <tr>
+              <td><strong style="font-size:15px">${s.s}</strong></td>
+              <td>${s.n}</td>
+              <td><span class="tag">${s.role||'—'}</span></td>
+              <td style="color:var(--muted)">需引擎更新</td>
+              <td style="color:var(--muted)">—</td>
+              <td style="font-size:12px;color:var(--muted);max-width:200px">${s.why||'—'}</td>
+              <td>
+                <button onclick="addWatch('${s.s}')" class="btn-ghost">+ 追蹤</button>
+              </td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+      <div style="margin-top:14px;padding:12px;background:var(--surface2);border-radius:8px;font-size:12px;color:var(--muted)">
+        💡 現價和3日漲幅每小時由引擎自動更新。跟老闆說「追蹤這幾支」即可加入自選股。
+      </div>
     </div>`;
-  } else {
-    cardsEl.innerHTML = stocks.map(s => {
-      const dir = s.changePct > 0 ? 'up' : s.changePct < 0 ? 'down' : 'flat';
-      const sign = s.changePct > 0 ? '+' : '';
-      const barColor = s.confidenceColor || '#7c6fff';
-      return `<div class="stock-card">
-        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${barColor}"></div>
-        <div class="stock-header">
-          <div>
-            <div class="stock-name">${s.name || s.symbol}</div>
-            <div class="stock-symbol">${s.symbol} · ${s.category || '—'}</div>
-          </div>
-          <div class="stock-category">${s.category || '—'}</div>
-        </div>
-        <div class="stock-price ${dir}">$${s.price || '—'}</div>
-        <div class="stock-change ${dir}">${sign}${s.changePct || 0}% (${sign}${s.change || 0})</div>
-        <div class="confidence-section">
-          <div class="confidence-header">
-            <div>
-              <div class="confidence-score" style="color:${barColor}">${s.confidence}</div>
-              <div class="confidence-label" style="color:${barColor}">${s.confidenceLabel}</div>
-            </div>
-            <div style="font-size:11px;color:var(--text-muted)">信心分</div>
-          </div>
-          <div class="confidence-bar">
-            <div class="confidence-fill" style="width:${s.confidence}%;background:${barColor}"></div>
-          </div>
-          <div class="confidence-breakdown">
-            <div class="breakdown-item"><span>技術面</span><span>—</span></div>
-            <div class="breakdown-item"><span>籌碼面</span><span>—</span></div>
-            <div class="breakdown-item"><span>話題熱度</span><span>${s.newsScore || '—'}</span></div>
-            <div class="breakdown-item"><span>法人動向</span><span>—</span></div>
-          </div>
-        </div>
-        <div style="margin-top:10px;font-size:11px;color:var(--text-muted)">更新 ${s.updatedAt || '—'}</div>
-      </div>`;
-    }).join('');
-  }
-
-  // Table
-  const tbody = document.getElementById('stockTableBody');
-  if (!stocks.length) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:30px">尚無資料</td></tr>';
-  } else {
-    tbody.innerHTML = stocks.map(s => {
-      const dir = s.changePct > 0 ? 'up' : s.changePct < 0 ? 'down' : 'flat';
-      const sign = s.changePct > 0 ? '+' : '';
-      const barColor = s.confidenceColor || '#7c6fff';
-      return `<tr>
-        <td><strong>${s.symbol}</strong></td>
-        <td>${s.name || '—'}</td>
-        <td><span class="stock-category">${s.category || '—'}</span></td>
-        <td class="${dir}">$${s.price || '—'}</td>
-        <td class="${dir}">${sign}${s.changePct || 0}%</td>
-        <td><span style="color:${barColor};font-weight:700">${s.confidence}</span></td>
-        <td style="color:var(--text-muted)">${s.updatedAt || '—'}</td>
-      </tr>`;
-    }).join('');
-  }
-}
-
-// ── 類股搜尋 ──
-function quickSector(name) {
-  document.getElementById('sectorInput').value = name;
-  searchSector();
 }
 
 function searchSector() {
-  const q = document.getElementById('sectorInput').value.trim();
-  if (!q) return;
-
-  const sectorData = {
-    '低軌衛星': [
-      { symbol: '6491', name: '晶碩', role: '光學元件', reason: '低軌衛星地面站鏡頭需求' },
-      { symbol: '3714', name: '富采', role: 'LED/光電', reason: '衛星通訊指示燈需求' },
-      { symbol: '4961', name: '天鈺', role: '電源IC', reason: '地面設備電源管理晶片' },
-      { symbol: '6239', name: '力成', role: '封裝測試', reason: '衛星通訊晶片封裝' },
-      { symbol: '3030', name: '晶豪科', role: 'DRAM', reason: '衛星通訊記憶體需求' },
-    ],
-    'AI伺服器': [
-      { symbol: '2317', name: '鴻海', role: 'ODM組裝', reason: 'NVIDIA GPU伺服器最大組裝商' },
-      { symbol: '3045', name: '台灣大', reason: 'AI雲端算力需求' },
-      { symbol: '6669', name: '緯穎', role: 'ODM', reason: 'AWS/Meta AI伺服器主要供應商' },
-      { symbol: '4938', name: '和碩', role: 'ODM', reason: 'AI PC + 伺服器布局' },
-      { symbol: '3231', name: '緯創', role: 'ODM', reason: 'AI伺服器出貨放量' },
-    ],
-    '半導體': [
-      { symbol: '2330', name: '台積電', role: '晶圓代工', reason: 'AI晶片3nm/2nm需求爆炸' },
-      { symbol: '2303', name: '聯電', role: '成熟製程', reason: '車用/工業晶片景氣回升' },
-      { symbol: '2308', name: '台達電', role: '電源模組', reason: 'AI伺服器電源需求' },
-      { symbol: '2379', name: '瑞昱', role: '網路晶片', reason: '以太網路晶片需求強勁' },
-      { symbol: '3711', name: '日月光投控', role: '封裝測試', reason: 'CoWoS先進封裝產能吃緊' },
-    ],
-    '電動車': [
-      { symbol: '2603', name: '長榮', role: '汽車零件運輸', reason: '電動車出口量增' },
-      { symbol: '1605', name: '華新', role: '電纜', reason: '充電樁/電動車線材需求' },
-      { symbol: '6213', name: '聯茂', role: 'PCB', reason: '車用PCB供應商' },
-      { symbol: '3557', name: '嘉澤', role: '連接器', reason: '電動車高速連接器' },
-    ],
-  };
-
-  const data = sectorData[q];
-  const el = document.getElementById('sectorResult');
-
-  if (data) {
-    el.innerHTML = `
-      <div class="card">
-        <div class="card-title">🔍 ${q} 台廠供應鏈</div>
-        <table class="stock-table">
-          <thead><tr>
-            <th>代號</th><th>公司名稱</th><th>角色定位</th><th>為什麼漲</th><th>操作</th>
-          </tr></thead>
-          <tbody>
-            ${data.map(s => `<tr>
-              <td><strong>${s.symbol}</strong></td>
-              <td>${s.name}</td>
-              <td><span class="news-tag">${s.role || '—'}</span></td>
-              <td style="color:var(--text-muted);font-size:13px">${s.reason || '—'}</td>
-              <td><button onclick="addToWatchlist('${s.symbol}')" style="background:rgba(124,111,255,0.2);border:1px solid var(--accent);color:var(--accent);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px">+ 追蹤</button></td>
-            </tr>`).join('')}
-          </tbody>
-        </table>
-        <div style="margin-top:16px;padding:12px;background:var(--surface2);border-radius:8px;font-size:13px;color:var(--text-muted)">
-          💡 類股資料每日更新一次。即時行情追蹤請點「+ 追蹤」加入自選股。
-        </div>
-      </div>`;
-  } else {
-    el.innerHTML = `<div class="card">
-      <div style="padding:20px;color:var(--text-muted);font-size:14px">
-        📌 「${q}」尚未建立預設清單，跟老闆說「幫我查${q}相關台廠」，我來幫你整理並加進去。
+  const q=document.getElementById('sectorInput').value.trim();
+  if(!q) return;
+  const sec=SECTORS.find(s=>
+    s.name.includes(q)||s.tag.includes(q)||
+    s.stocks.some(st=>st.n.includes(q)||st.s===q)
+  );
+  if(sec){ showSector(sec.tag); return; }
+  document.getElementById('sectorResult').innerHTML=`
+    <div class="card">
+      <div style="padding:20px;color:var(--muted)">
+        📌 「${q}」目前無預設清單。<br>
+        在 Discord 跟老闆說「幫我整理${q}台廠」，我來幫你研究並加進去。
       </div>
     </div>`;
+}
+
+function goThemeSector(name) {
+  goPage('sector');
+  document.getElementById('sectorInput').value=name;
+  searchSector();
+}
+
+// ── 自選股 ──
+async function loadDashboard() {
+  try {
+    const r=await fetch('./dashboard.json?t='+Date.now());
+    const d=await r.json();
+    renderWatchlist(d.stocks||[], d.topGain||[], d.topLose||[], d);
+  } catch(e){ console.warn('dashboard.json 尚未更新') }
+}
+
+function renderWatchlist(stocks, topGain, topLose, data) {
+  // 自選股 cards
+  const wg=document.getElementById('watchGrid');
+  if(!stocks.length){
+    wg.innerHTML=`<div class="empty" style="grid-column:1/-1">
+      <div class="empty-icon">⭐</div>
+      <div style="margin-bottom:8px">尚無追蹤股票</div>
+      <div style="font-size:13px">在 Discord 跟老闆說「幫我追蹤 2330、2317」</div>
+    </div>`;
+  } else {
+    wg.innerHTML=stocks.map(s=>{
+      const dir=s.changePct>0?'up':s.changePct<0?'dn':'flat';
+      const sign=s.changePct>0?'+':'';
+      const bc=s.confidenceColor||'#7c6fff';
+      return `<div class="watchlist-card">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${bc}"></div>
+        <div class="wl-top">
+          <div>
+            <div class="wl-name">${s.name||s.symbol}</div>
+            <div class="wl-sym">${s.symbol}</div>
+          </div>
+          <span class="wl-cat">${s.category||'—'}</span>
+        </div>
+        <div class="wl-price ${dir}">$${s.price||'—'}</div>
+        <div class="wl-chg ${dir}">${sign}${s.changePct||0}% (${sign}${s.change||0})</div>
+        <div class="wl-conf">
+          <div class="wl-conf-row">
+            <div>
+              <div class="wl-score" style="color:${bc}">${s.confidence}</div>
+              <div class="wl-label" style="color:${bc}">${s.confidenceLabel}</div>
+            </div>
+            <div style="font-size:11px;color:var(--muted)">信心分</div>
+          </div>
+          <div class="conf-bar">
+            <div class="conf-fill" style="width:${s.confidence}%;background:${bc}"></div>
+          </div>
+          <div class="wl-breakdown">
+            <div class="bd-item"><span>技術面</span><span>—</span></div>
+            <div class="bd-item"><span>籌碼面</span><span>—</span></div>
+            <div class="bd-item"><span>話題熱度</span><span>${s.newsScore||'—'}</span></div>
+            <div class="bd-item"><span>法人動向</span><span>—</span></div>
+          </div>
+        </div>
+        <div style="margin-top:8px;font-size:11px;color:var(--muted)">更新 ${s.updatedAt||'—'}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // table
+  const tb=document.getElementById('watchTableBody');
+  if(!stocks.length){
+    tb.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:30px">尚無資料</td></tr>';
+  } else {
+    tb.innerHTML=stocks.map(s=>{
+      const dir=s.changePct>0?'up':s.changePct<0?'dn':'flat';
+      const sign=s.changePct>0?'+':'';
+      const bc=s.confidenceColor||'#7c6fff';
+      return `<tr>
+        <td><strong>${s.symbol}</strong></td>
+        <td>${s.name||'—'}</td>
+        <td><span class="tag">${s.category||'—'}</span></td>
+        <td class="${dir}">$${s.price||'—'}</td>
+        <td class="${dir}">${sign}${s.changePct||0}%</td>
+        <td class="${dir}">${s.chg3d||'—'}</td>
+        <td><span style="color:${bc};font-weight:700">${s.confidence}</span></td>
+        <td style="color:var(--muted)">${s.updatedAt||'—'}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  if(data.updatedAt){
+    const d=new Date(data.updatedAt);
+    document.getElementById('watchUpdateTime').textContent=
+      '最後更新 '+d.toLocaleString('zh-TW',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
+  }
+
+  // 漲跌排行
+  if(topGain.length){
+    document.getElementById('topGainBody').innerHTML=topGain.slice(0,10).map((s,i)=>`
+      <tr>
+        <td class="rank-num">${i+1}</td>
+        <td><strong>${s.s||s.symbol}</strong> ${s.n||s.name}</td>
+        <td class="up">$${s.price||'—'}</td>
+        <td class="up">+${s.changePct||0}%</td>
+        <td><span class="tag">${s.cat||s.category||'—'}</span></td>
+      </tr>`).join('');
+  }
+  if(topLose.length){
+    document.getElementById('topLoseBody').innerHTML=topLose.slice(0,10).map((s,i)=>`
+      <tr>
+        <td class="rank-num">${i+1}</td>
+        <td><strong>${s.s||s.symbol}</strong> ${s.n||s.name}</td>
+        <td class="dn">$${s.price||'—'}</td>
+        <td class="dn">${s.changePct||0}%</td>
+        <td><span class="tag">${s.cat||s.category||'—'}</span></td>
+      </tr>`).join('');
   }
 }
 
-function addToWatchlist(symbol) {
-  alert(`跟老闆說「幫我追蹤 ${symbol}」，我來幫你加進引擎設定 ✅`);
+function addWatch(symbol){
+  alert(`在 Discord 跟老闆說「幫我追蹤 ${symbol}」，引擎自動加入並更新主控版 ✅`);
 }
 
-// ── 啟動 ──
+function isMarketOpen(){
+  const now=new Date();
+  const day=now.getDay();
+  if(day===0||day===6) return false;
+  const h=now.getHours(),m=now.getMinutes();
+  const t=h*60+m;
+  return t>=9*60 && t<=13*60+30;
+}
+
+// ══════════════════════════════════════════
+// 啟動
+// ══════════════════════════════════════════
+renderIndex();
+renderLists();
+renderThemes();
+renderSectorBtns();
 loadDashboard();
-// 開盤時每 5 分鐘自動刷新
-setInterval(loadDashboard, 5 * 60 * 1000);
+
+// 定時刷新
+setInterval(()=>{ renderIndex(); loadDashboard(); }, 5*60*1000);
 </script>
 </body>
 </html>
