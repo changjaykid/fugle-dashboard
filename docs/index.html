@@ -342,19 +342,20 @@ tr:hover td{background:rgba(26,26,38,.8)}
   <!-- 指標快覽 -->
   <div class="g4">
     <div class="card" style="margin-bottom:0">
-      <div class="ct">📊 融資融券 <span id="mktAlert" class="badge" style="display:none">雙向對決，波動大</span></div>
-      <div style="font-size:13px;line-height:2.2;color:var(--muted)">
-        <div style="display:flex;justify-content:space-between">
-          <span data-tooltip="融資：借錢買股票。增加表示看多。">融資餘額</span>
-          <span style="color:var(--text)">3,280億 <span class="dn" id="rzDir">↓✅</span></span>
+      <div class="ct">📊 融資融券即時狀態</div>
+      <div>
+        <div style="padding:12px;background:var(--surface2);border-radius:8px;margin-bottom:10px">
+          <div style="font-size:20px;font-weight:800;margin-bottom:4px" id="marginVerdict">✅ 市場健康</div>
+          <div style="font-size:12px;color:var(--muted)" id="marginDesc">融資適中，融券不高，籌碼面正常。</div>
         </div>
-        <div style="display:flex;justify-content:space-between">
-          <span data-tooltip="融券：借股票賣出。增加表示看空。">融券餘額</span>
-          <span style="color:var(--text)">182億 <span class="up" id="rjDir">↑⚠️</span></span>
+        <div style="font-size:12px;color:var(--muted);line-height:2.2">
+          <div>📈 融資：<span id="rzVal" style="color:var(--text)">3,280億</span> <span id="rzTrend" class="dn">↓ 籌碼乾淨✅</span></div>
+          <div>📉 融券：<span id="rjVal" style="color:var(--text)">182億</span> <span id="rjTrend" class="up">↑ 空單少增⚠️</span></div>
         </div>
-      </div>
-      <div style="font-size:10px;color:var(--muted);margin-top:6px;border-top:1px solid var(--border);padding-top:6px">
-        ✅ 籌碼乾淨 | ⚠️ 注意軋空
+        <div style="margin-top:8px;font-size:11px;padding:8px;background:rgba(124,111,255,.1);border-radius:6px;color:var(--muted)">
+          🟢 融資↓ = 散戶出場，籌碼乾淨，容易漲<br>
+          🟡 融券↑ = 有人放空，若股票反漲會被軋，漲更猛
+        </div>
       </div>
     </div>
     <div class="card" style="margin-bottom:0">
