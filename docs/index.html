@@ -262,7 +262,7 @@ tr:hover td{background:rgba(26,26,38,.8)}
 
     <!-- 快速盯盤提示 -->
     <div class="card" style="margin-bottom:0">
-      <div class="ct">⚡ 老闆今日注意</div>
+      <div class="ct">⚡ 老顧問今日注意</div>
       <div style="font-size:13px;line-height:2.1">
         <div>📍 <span style="color:var(--yellow)">AI伺服器</span>族群持續強勢，外資加碼中</div>
         <div>📍 <span style="color:var(--yellow)">低軌衛星</span>近三日法人同步布局</div>
@@ -501,250 +501,219 @@ const THEMES = [
      {s:'2392',n:'正崴',role:'連接器',price:'48',chg:'+1.2%',conf:64,rec:'hold',priceRange:'28~62',why:'多元連接器，衛星新題材'},
      {s:'3030',n:'晶豪科',role:'DRAM',price:'42',chg:'+1.8%',conf:62,rec:'hold',priceRange:'22~55',why:'衛星設備嵌入式記憶體'},
    ]},
-  {heat:88, icon:'🏗', name:'PCB / ABF載板',
-   conf:83, rec:'buy', recText:'積極布局',
-   why:'AI晶片對ABF載板需求激增，缺貨延伸至2026年，高層PCB受惠AI伺服器主板升級，台廠市占率超過60%。',
-   risk:'需注意消費電子PCB景氣仍疲，選擇AI/伺服器曝險高的標的。',
-   stocks:[
-     {s:'3037',n:'欣興',role:'高層HDI/ABF',price:'178',chg:'+4.1%',conf:87,rec:'buy',priceRange:'78~198',why:'AI伺服器基板龍頭，CoWoS封裝基板獨家'},
-     {s:'8046',n:'南電',role:'ABF載板',price:'445',chg:'+2.8%',conf:84,rec:'buy',priceRange:'165~490',why:'HBM+AI晶片載板需求強'},
-     {s:'3189',n:'景碩',role:'IC載板',price:'168',chg:'+3.5%',conf:80,rec:'buy',priceRange:'62~185',why:'伺服器+AI IC載板雙受惠'},
-     {s:'6213',n:'聯茂',role:'高頻PCB/車用',price:'98',chg:'+1.8%',conf:76,rec:'hold',priceRange:'52~118',why:'5G/車用高頻板，毛利率穩定'},
-     {s:'2345',n:'智邦',role:'網路設備+PCB',price:'562',chg:'+2.2%',conf:82,rec:'buy',priceRange:'185~625',why:'AI資料中心乙太網路交換器受惠'},
-   ]},
-  {heat:85, icon:'💰', name:'高股息ETF / 存股',
-   conf:72, rec:'hold', recText:'定期定額',
-   why:'降息預期強化存股需求，00878連續12季調升股息，資金持續流入，適合做為核心部位。',
-   risk:'ETF不適合短線操作，追求資本利得效率較低。',
-   stocks:[
-     {s:'00878',n:'國泰永續高股息',role:'ESG高股息ETF',price:'22.8',chg:'+0.4%',conf:74,rec:'hold',priceRange:'18.5~23.5',why:'存股族主流，季配息穩定成長'},
-     {s:'0056',n:'元大高股息',role:'高股息ETF',price:'38.5',chg:'+0.3%',conf:71,rec:'hold',priceRange:'32.8~39.8',why:'老牌高股息ETF，成交量大'},
-     {s:'00919',n:'群益台灣精選高息',role:'季配高股息',price:'21.2',chg:'+0.5%',conf:73,rec:'hold',priceRange:'17.5~22.1',why:'季配息+科技股比重高'},
-     {s:'00929',n:'復華台灣科技優息',role:'科技高股息',price:'19.8',chg:'+0.6%',conf:70,rec:'hold',priceRange:'16.2~21.0',why:'科技+股息組合，成立較新'},
-     {s:'0050',n:'元大台灣50',role:'市值型ETF',price:'198',chg:'+0.8%',conf:75,rec:'hold',priceRange:'152~210',why:'台股大盤代表，長期績效穩定'},
-   ]},
-  {heat:82, icon:'🚗', name:'電動車 / 充電樁',
-   conf:74, rec:'hold', recText:'觀望為主',
-   why:'特斯拉FSD進展+新車型，美國充電樁建設補貼，但整體電動車景氣修正中，選股需更謹慎。',
-   risk:'全球EV需求低於預期，短線不宜重押，以龍頭配件廠為主。',
-   stocks:[
-     {s:'2308',n:'台達電',role:'EV充電模組龍頭',price:'395',chg:'+1.5%',conf:82,rec:'buy',priceRange:'198~448',why:'北美充電樁採購龍頭，多角化佈局降風險'},
-     {s:'1605',n:'華新',role:'電纜/充電線材',price:'62',chg:'+0.8%',conf:72,rec:'hold',priceRange:'38~78',why:'充電樁線材需求穩定'},
-     {s:'3557',n:'嘉澤',role:'高速連接器',price:'168',chg:'+1.2%',conf:74,rec:'hold',priceRange:'82~195',why:'EV/AI連接器，兩條腿走路'},
-     {s:'6213',n:'聯茂',role:'車用PCB',price:'98',chg:'+1.8%',conf:72,rec:'hold',priceRange:'52~118',why:'車用高頻PCB，ADAS需求'},
-     {s:'1504',n:'東元',role:'EV馬達',price:'82',chg:'+2.1%',conf:74,rec:'hold',priceRange:'38~98',why:'電動巴士馬達台廠'},
-   ]},
-  {heat:80, icon:'💊', name:'AI醫療 / 生技',
-   conf:65, rec:'hold', recText:'謹慎選股',
-   why:'AI藥物開發縮短時程，GLP-1減肥藥熱潮，台廠CDMO代工受惠，但個股風險差異大，需逐一評估。',
-   risk:'生技股波動極大，單一新藥進展即可大漲大跌，倉位建議不超過5%。',
-   stocks:[
-     {s:'4541',n:'晟德',role:'製藥/投資控股',price:'42',chg:'+1.5%',conf:65,rec:'hold',priceRange:'28~58',why:'參股多家生技新創，題材多元'},
-     {s:'6547',n:'高端疫苗',role:'mRNA疫苗',price:'108',chg:'+3.2%',conf:60,rec:'avoid',priceRange:'58~185',why:'mRNA平台有潛力，但獲利仍負'},
-     {s:'6576',n:'逸達',role:'前列腺癌新藥',price:'85',chg:'+2.8%',conf:62,rec:'hold',priceRange:'45~120',why:'新藥申請進展為主要催化劑'},
-     {s:'4164',n:'博晟生醫',role:'骨科再生醫療',price:'68',chg:'+4.1%',conf:63,rec:'hold',priceRange:'35~95',why:'關節炎新藥進入三期臨床'},
-   ]},
-  {heat:78, icon:'☀️', name:'綠能 / 儲能',
-   conf:70, rec:'hold', recText:'長線布局',
-   why:'台灣2030再生能源目標+企業RE100採購，AI資料中心綠電需求爆增，儲能建置加速，政府政策明確支撐。',
-   risk:'政策變動風險存在，個別廠商執行力差異大。',
-   stocks:[
-     {s:'1101',n:'台泥',role:'水泥+儲能',price:'38',chg:'+0.5%',conf:68,rec:'hold',priceRange:'28~48',why:'旗下能元科技做儲能電池，長線轉型'},
-     {s:'3576',n:'聯合再生',role:'太陽能電池',price:'18',chg:'+1.2%',conf:62,rec:'hold',priceRange:'12~28',why:'台灣太陽能電池龍頭，受惠本土建置'},
-     {s:'6409',n:'旭隼',role:'充電樁/智慧電網',price:'245',chg:'+2.8%',conf:72,rec:'hold',priceRange:'98~285',why:'電動車充電樁+智慧電網雙題材'},
-     {s:'3519',n:'綠能',role:'太陽能電池片',price:'22',chg:'+0.8%',conf:60,rec:'avoid',priceRange:'15~32',why:'毛利率承壓，需觀察轉單情況'},
-   ]},
-  {heat:76, icon:'🔐', name:'資安 / 零信任',
-   conf:72, rec:'hold', recText:'分批佈局',
-   why:'AI時代資安威脅大增，企業零信任架構採購加速，政府資安預算連年提升，但台灣純資安標的較少。',
-   risk:'資安股流動性較差，選股難度高，建議少量布局。',
-   stocks:[
-     {s:'5315',n:'科嘉-KY',role:'企業資安',price:'142',chg:'+2.5%',conf:70,rec:'hold',priceRange:'65~168',why:'政府+企業資安解決方案'},
-     {s:'6214',n:'網擎資訊',role:'郵件安全',price:'85',chg:'+1.8%',conf:66,rec:'hold',priceRange:'48~98',why:'企業郵件安全龍頭'},
-   ]},
-  {heat:75, icon:'🌐', name:'5G / AIoT',
-   conf:71, rec:'hold', recText:'選龍頭',
-   why:'5G基礎建設進入第二波，AIoT裝置連接數爆發，台廠模組廠受惠出貨量成長，但競爭激烈。',
-   risk:'5G建設速度慢於預期，選股需挑有AI應用切入的廠商。',
-   stocks:[
-     {s:'2412',n:'中華電信',role:'5G電信龍頭',price:'132',chg:'+0.5%',conf:72,rec:'hold',priceRange:'112~145',why:'5G+雲端+資安三合一，高現金股息'},
-     {s:'3045',n:'台灣大哥大',role:'5G電信',price:'98',chg:'+0.8%',conf:70,rec:'hold',priceRange:'85~112',why:'AI+5G應用加速'},
-     {s:'6285',n:'啟碁',role:'5G天線模組',price:'178',chg:'+2.2%',conf:75,rec:'buy',priceRange:'82~198',why:'Wi-Fi 7+5G雙天線模組，北美客戶強'},
-     {s:'3484',n:'崧騰',role:'IoT模組',price:'52',chg:'+1.5%',conf:65,rec:'hold',priceRange:'28~68',why:'AIoT無線模組，客戶多元'},
-   ]},
-  {heat:72, icon:'🍎', name:'蘋果供應鏈 / AI iPhone',
-   conf:74, rec:'hold', recText:'等回調',
-   why:'Apple Intelligence帶動AI iPhone換機潮，新一代iPhone 17 Pro鏡頭規格大升級，台廠光學/結構件受惠。',
-   risk:'蘋果供應鏈競爭激烈，訂單集中度風險高。',
-   stocks:[
-     {s:'3008',n:'大立光',role:'iPhone鏡頭龍頭',price:'2,380',chg:'+2.5%',conf:78,rec:'buy',priceRange:'1,350~2,550',why:'iPhone 17 Pro潛望式鏡頭獨家供應'},
-     {s:'2354',n:'鴻準',role:'iPhone機殼',price:'92',chg:'+1.2%',conf:70,rec:'hold',priceRange:'52~108',why:'鈦合金機殼，良率提升'},
-     {s:'4938',n:'和碩',role:'iPhone組裝',price:'78',chg:'+1.2%',conf:70,rec:'hold',priceRange:'48~92',why:'Apple Watch+iPhone組裝'},
-     {s:'6781',n:'AES-KY',role:'生物辨識',price:'435',chg:'+3.1%',conf:72,rec:'hold',priceRange:'185~475',why:'iPhone Face ID模組'},
-     {s:'3673',n:'TPK-KY',role:'觸控面板',price:'45',chg:'+0.8%',conf:62,rec:'hold',priceRange:'28~58',why:'車用觸控+XR設備'},
-   ]},
-  {heat:68, icon:'🚢', name:'航運 / 散裝',
-   conf:55, rec:'avoid', recText:'觀望',
-   why:'紅海危機繞行效應減弱，美國關稅衝擊航運需求，貨櫃運費回落壓力大，散裝相對抗跌但無催化劑。',
-   risk:'外資持續賣超，避免逆勢操作。',
-   stocks:[
-     {s:'2603',n:'長榮',role:'貨櫃航運龍頭',price:'178',chg:'-2.1%',conf:52,rec:'avoid',priceRange:'98~295',why:'現金豐沛但運費下行壓力大'},
-     {s:'2615',n:'萬海',role:'近洋貨櫃',price:'68',chg:'-1.8%',conf:48,rec:'avoid',priceRange:'38~118',why:'近洋市場競爭激烈'},
-     {s:'5608',n:'四維航',role:'散裝航運',price:'42',chg:'-0.5%',conf:55,rec:'hold',priceRange:'28~58',why:'散裝相對抗跌，股息尚可'},
-   ]},
 ];
 
-// ── 完整類股 ──
 const SECTORS = [
   {icon:'⚡',name:'半導體',tag:'半導體',stocks:[
-    {s:'2330',n:'台積電',role:'晶圓代工龍頭',why:'3nm/2nm AI晶片需求爆炸'},
-    {s:'2303',n:'聯電',role:'成熟製程',why:'車用/工業晶片景氣回升'},
-    {s:'3711',n:'日月光投控',role:'封裝測試',why:'CoWoS先進封裝產能吃緊'},
-    {s:'2379',n:'瑞昱',role:'網路/音效IC',why:'以太網路晶片強勁'},
-    {s:'2454',n:'聯發科',role:'SoC設計',why:'AI手機+AIoT推動'},
-    {s:'3034',n:'聯詠',role:'顯示驅動IC',why:'面板需求回升'},
-    {s:'6533',n:'晶心科',role:'RISC-V IP',why:'開源架構崛起'},
-    {s:'2408',n:'南亞科',role:'DRAM',why:'記憶體漲價週期'},
-    {s:'2344',n:'華邦電',role:'NOR Flash',why:'AIoT嵌入式記憶體'},
-    {s:'5274',n:'信驊',role:'BMC晶片',why:'伺服器管理晶片需求'},
-    {s:'6415',n:'矽力-KY',role:'電源管理IC',why:'AI晶片電源需求'},
+    {s:'2330',n:'台積電',role:'晶圓代工龍頭',why:'AI晶片唯一先進製程',conf:92,rec:'buy',price:'1,050',chg:'+2.1%',priceRange:'680~1,180'},
+    {s:'2454',n:'聯發科',role:'SoC設計龍頭',why:'AI手機晶片市佔領先',conf:88,rec:'buy',price:'1,320',chg:'+1.5%',priceRange:'850~1,450'},
+    {s:'3711',n:'日月光投控',role:'先進封裝',why:'CoWoS封裝產能吃緊',conf:85,rec:'buy',price:'185',chg:'+0.8%',priceRange:'125~198'},
+    {s:'2379',n:'瑞昱',role:'網通IC設計',why:'Wi-Fi 7換機潮啟動',conf:78,rec:'hold',price:'542',chg:'+1.2%',priceRange:'385~580'},
+    {s:'3034',n:'聯詠',role:'驅動IC設計',why:'OLED滲透率持續提升',conf:72,rec:'hold',price:'615',chg:'+0.5%',priceRange:'420~650'},
+    {s:'2303',n:'聯電',role:'成熟製程',why:'車用/工業庫存去化',conf:65,rec:'hold',price:'52.5',chg:'-0.2%',priceRange:'45~55'},
+    {s:'5274',n:'信驊',role:'BMC管理晶片',why:'AI伺服器管理晶片龍頭',conf:86,rec:'buy',price:'4,520',chg:'+3.5%',priceRange:'2,100~4,800'},
+    {s:'6415',n:'矽力-KY',role:'電源管理IC',why:'資料中心電源需求大',conf:75,rec:'hold',price:'485',chg:'+2.8%',priceRange:'320~550'},
+    {s:'6533',n:'晶心科',role:'RISC-V IP',why:'開源架構AI應用增長',conf:70,rec:'hold',price:'428',chg:'+1.5%',priceRange:'350~520'},
+    {s:'3661',n:'世芯-KY',role:'AI ASIC設計',why:'北美雲端巨頭客製化AI晶片',conf:82,rec:'buy',price:'2,450',chg:'+4.2%',priceRange:'1,850~4,200'},
+    {s:'3443',n:'創意',role:'先進封裝設計',why:'台積電體系先進封裝設計',conf:79,rec:'hold',price:'1,280',chg:'+2.1%',priceRange:'950~1,800'},
+    {s:'6643',n:'M31',role:'高速介面IP',why:'先進製程高速IO需求',conf:76,rec:'hold',price:'1,150',chg:'+1.8%',priceRange:'820~1,600'}
   ]},
   {icon:'🤖',name:'AI伺服器',tag:'AI伺服器',stocks:[
-    {s:'2317',n:'鴻海',role:'ODM組裝龍頭',why:'NVIDIA GPU伺服器最大組裝商'},
-    {s:'6669',n:'緯穎',role:'超大型伺服器ODM',why:'AWS/Meta AI主供'},
-    {s:'3231',n:'緯創',role:'AI伺服器ODM',why:'AI伺服器出貨放量'},
-    {s:'4938',n:'和碩',role:'AI+消費電子ODM',why:'AI PC + 伺服器'},
-    {s:'2356',n:'英業達',role:'伺服器ODM',why:'液冷伺服器出貨'},
-    {s:'2382',n:'廣達',role:'雲端伺服器ODM',why:'Google/MS主供'},
-    {s:'6278',n:'台表科',role:'散熱模組',why:'AI伺服器散熱瓶頸'},
-    {s:'3450',n:'聯鈞',role:'光通訊模組',why:'資料中心400G光模組'},
-    {s:'2345',n:'智邦',role:'網路交換器',why:'AI資料中心以太網路'},
+    {s:'2317',n:'鴻海',role:'GB200整機組裝',why:'NVIDIA最核心合作夥伴',conf:90,rec:'buy',price:'225',chg:'+1.8%',priceRange:'122~248'},
+    {s:'6669',n:'緯穎',role:'雲端ODM',why:'AWS/Meta訂單滿載',conf:89,rec:'buy',price:'3,150',chg:'+3.2%',priceRange:'1,210~3,280'},
+    {s:'2382',n:'廣達',role:'雲端ODM',why:'Google/MS主供',conf:85,rec:'buy',price:'335',chg:'+0.9%',priceRange:'142~375'},
+    {s:'3231',n:'緯創',role:'GPU基板',why:'AI伺服器毛利顯著提升',conf:82,rec:'buy',price:'112',chg:'+1.5%',priceRange:'48~125'},
+    {s:'3017',n:'奇鋐',role:'水冷散熱',why:'GB200水冷關鍵零件',conf:91,rec:'buy',price:'720',chg:'+4.5%',priceRange:'285~850'},
+    {s:'3324',n:'雙鴻',role:'液冷散熱',why:'伺服器解熱方案升級',conf:88,rec:'buy',price:'780',chg:'+3.8%',priceRange:'310~920'},
+    {s:'2308',n:'台達電',role:'AI電源',why:'AI伺服器高瓦數電源龍頭',conf:87,rec:'buy',price:'395',chg:'+1.5%',priceRange:'198~448'},
+    {s:'2345',n:'智邦',role:'800G交換器',why:'AI資料中心交換器升級',conf:84,rec:'buy',price:'562',chg:'+2.2%',priceRange:'185~625'},
+    {s:'3653',n:'健策',role:'均熱片',why:'AI晶片散熱關鍵材料',conf:86,rec:'buy',price:'1,250',chg:'+2.8%',priceRange:'620~1,400'},
+    {s:'2059',n:'川湖',role:'伺服器導軌',why:'AI伺服器重量增加單價提昇',conf:85,rec:'buy',price:'1,350',chg:'+1.5%',priceRange:'850~1,550'},
+    {s:'6213',n:'聯茂',role:'高頻銅箔基板',why:'AI伺服器CCL需求',conf:75,rec:'hold',price:'98',chg:'+1.2%',priceRange:'65~125'},
+    {s:'2368',n:'金像電',role:'伺服器PCB',why:'高層數PCB板龍頭',conf:80,rec:'buy',price:'225',chg:'+2.1%',priceRange:'150~285'}
   ]},
   {icon:'🛰',name:'低軌衛星',tag:'低軌衛星',stocks:[
-    {s:'3491',n:'昇達科',role:'毫米波/微波元件',why:'Starlink衛星毫米波關鍵供應商，毛利率>50%，訂單滿到年底'},
-    {s:'3105',n:'穩懋',role:'砷化鎵磊晶/RF',why:'衛星通訊砷化鎵射頻晶片，Starlink新代衛星用量大增'},
-    {s:'2313',n:'華通',role:'高頻RF PCB',why:'衛星地面站高頻PCB龍頭，接單排隊'},
-    {s:'2367',n:'燿華',role:'高頻PCB',why:'衛星通訊高頻PCB，AST SpaceMobile供應商'},
-    {s:'4906',n:'正文',role:'衛星天線模組',why:'衛星地面天線模組整合廠，直接受惠Starlink擴張'},
-    {s:'6285',n:'啟碁',role:'衛星/5G天線',why:'Wi-Fi 7+衛星天線模組，北美客戶強'},
-    {s:'2345',n:'智邦',role:'衛星網路設備',why:'地面站網路交換器，Starlink地面基礎設施'},
-    {s:'2485',n:'兆赫',role:'RF/微波元件',why:'衛星通訊微波元件，訂單能見度提升'},
-    {s:'6443',n:'元晶',role:'衛星太陽能',why:'衛星太陽能電池板供應'},
-    {s:'2355',n:'敬鵬',role:'高階HDI PCB',why:'高階HDI多層板，衛星設備PCB'},
-    {s:'2419',n:'仲琦',role:'衛星通訊設備',why:'衛星寬頻設備整合'},
-    {s:'2455',n:'全新',role:'砷化鎵晶圓',why:'RF砷化鎵晶圓代工，衛星用量增'},
-    {s:'3163',n:'波若威',role:'衛星天線',why:'Starlink天線組件供應商'},
-    {s:'4961',n:'天鈺',role:'電源IC',why:'地面設備電源管理IC'},
-    {s:'6706',n:'惠特',role:'RF射頻元件',why:'衛星通訊射頻元件，毛利率高'},
-    {s:'3019',n:'亞光',role:'光通訊模組',why:'衛星800G光模組受惠'},
-    {s:'5443',n:'均豪',role:'光電模組',why:'衛星光通訊模組'},
-    {s:'3014',n:'聯陽',role:'連接IC',why:'衛星通訊介面IC'},
-    {s:'2392',n:'正崴',role:'連接器',why:'多元連接器，衛星題材'},
-    {s:'3030',n:'晶豪科',role:'DRAM',why:'衛星設備嵌入式記憶體'},
+    {s:'3491',n:'昇達科',role:'毫米波元件',why:'Starlink衛星關鍵供應商',conf:90,rec:'buy',price:'1,930',chg:'+4.3%',priceRange:'285~2,050'},
+    {s:'3105',n:'穩懋',role:'砷化鎵RF',why:'衛星射頻晶片需求增',conf:87,rec:'buy',price:'248',chg:'+3.8%',priceRange:'98~275'},
+    {s:'2313',n:'華通',role:'衛星PCB',why:'Starlink地面站PCB獨家',conf:85,rec:'buy',price:'85',chg:'+5.2%',priceRange:'38~95'},
+    {s:'2367',n:'燿華',role:'高頻PCB',why:'AST直連衛星供應商',conf:82,rec:'buy',price:'42',chg:'+7.0%',priceRange:'18~48'},
+    {s:'6285',n:'啟碁',role:'衛星天線',why:'北美地面站模組強',conf:80,rec:'buy',price:'178',chg:'+2.2%',priceRange:'82~198'},
+    {s:'4906',n:'正文',role:'衛星通訊模組',why:'衛星地面設備整合',conf:78,rec:'hold',price:'78',chg:'+6.5%',priceRange:'32~88'},
+    {s:'3380',n:'明泰',role:'網路設備',why:'低軌衛星網路組件',conf:72,rec:'hold',price:'35',chg:'+1.2%',priceRange:'28~42'},
+    {s:'3163',n:'波若威',role:'光通訊衛星',why:'衛星間光連結需求',conf:75,rec:'hold',price:'285',chg:'+8.5%',priceRange:'65~310'},
+    {s:'2345',n:'智邦',role:'衛星交換器',why:'衛星骨幹網路設備',conf:82,rec:'buy',price:'562',chg:'+2.2%',priceRange:'185~625'},
+    {s:'2455',n:'全新',role:'射頻磊晶',why:'射頻元件材料需求',conf:76,rec:'hold',price:'92',chg:'+4.8%',priceRange:'42~108'},
+    {s:'2314',n:'台揚',role:'VSAT天線',why:'老牌衛星通訊大廠',conf:65,rec:'hold',price:'32',chg:'+0.5%',priceRange:'25~45'},
+    {s:'6443',n:'元晶',role:'衛星電池',why:'衛星太陽能板關鍵',conf:72,rec:'hold',price:'38',chg:'+3.2%',priceRange:'18~45'}
   ]},
   {icon:'🏗',name:'PCB/載板',tag:'PCB',stocks:[
-    {s:'3037',n:'欣興',role:'高層HDI/ABF',why:'AI伺服器基板需求爆'},
-    {s:'8046',n:'南電',role:'ABF載板',why:'HBM相關載板需求'},
-    {s:'3189',n:'景碩',role:'IC載板',why:'AI晶片IC載板'},
-    {s:'6213',n:'聯茂',role:'高頻PCB/車用',why:'5G/車用高頻板'},
-    {s:'2345',n:'智邦',role:'網路設備+高層PCB',why:'AI資料中心交換器'},
-    {s:'4976',n:'佳邦',role:'被動元件PCB',why:'5G基站需求'},
+    {s:'3037',n:'欣興',role:'ABF載板龍頭',why:'AI晶片強勁帶動載板',conf:88,rec:'buy',price:'178',chg:'+4.1%',priceRange:'125~220'},
+    {s:'8046',n:'南電',role:'ABF載板',why:'HBM相關載板需求增',conf:84,rec:'buy',price:'445',chg:'+2.8%',priceRange:'165~490'},
+    {s:'3189',n:'景碩',role:'BT/ABF載板',why:'伺服器+手機雙受惠',conf:78,rec:'hold',price:'168',chg:'+3.5%',priceRange:'62~185'},
+    {s:'2368',n:'金像電',role:'伺服器PCB',why:'高層板技術領先',conf:85,rec:'buy',price:'225',chg:'+2.1%',priceRange:'150~285'},
+    {s:'2313',n:'華通',role:'HDI板龍頭',why:'衛星+AI伺服器需求',conf:86,rec:'buy',price:'85',chg:'+5.2%',priceRange:'38~95'},
+    {s:'6213',n:'聯茂',role:'CCL銅箔基板',why:'AI伺服器用高頻CCL',conf:74,rec:'hold',price:'98',chg:'+1.2%',priceRange:'65~125'},
+    {s:'2383',n:'台光電',role:'CCL大廠',why:'AI伺服器市佔領先',conf:85,rec:'buy',price:'485',chg:'+2.5%',priceRange:'320~550'},
+    {s:'6274',n:'台燿',role:'高階CCL',why:'800G交換器CCL主供',conf:82,rec:'buy',price:'182',chg:'+3.1%',priceRange:'110~210'},
+    {s:'3044',n:'健鼎',role:'多層PCB',why:'車用+伺服器PCB',conf:78,rec:'hold',price:'215',chg:'+1.5%',priceRange:'140~235'},
+    {s:'4958',n:'臻鼎-KY',role:'軟板/載板',why:'iPhone換機潮+AI載板',conf:76,rec:'hold',price:'125',chg:'+1.8%',priceRange:'95~145'}
   ]},
   {icon:'⚡',name:'電源/變壓器',tag:'電源',stocks:[
-    {s:'1519',n:'華城電機',role:'超高壓變壓器',why:'北美電網升級獨家'},
-    {s:'1503',n:'士林電機',role:'高壓變壓器',why:'電網建設訂單滿'},
-    {s:'2308',n:'台達電',role:'AI伺服器電源',why:'電源模組龍頭'},
-    {s:'1504',n:'東元',role:'馬達+電力',why:'工業+EV雙引擎'},
-    {s:'3672',n:'康舒',role:'電源供應器',why:'AI伺服器電源'},
-    {s:'1516',n:'川飛',role:'電力設備',why:'配電盤/開關'},
+    {s:'1519',n:'華城電機',role:'電力變壓器',why:'外銷美國電網唯一',conf:91,rec:'buy',price:'3,850',chg:'+7.2%',priceRange:'512~4,100'},
+    {s:'1503',n:'士林電機',role:'配電器材',why:'台電強韌電網計畫',conf:88,rec:'buy',price:'285',chg:'+6.8%',priceRange:'68~298'},
+    {s:'2308',n:'台達電',role:'電源供應器',why:'AI伺服器高瓦數電源',conf:87,rec:'buy',price:'395',chg:'+1.5%',priceRange:'198~448'},
+    {s:'1513',n:'中興電',role:'GIS重電',why:'電網升級+氫能',conf:84,rec:'buy',price:'215',chg:'+3.2%',priceRange:'85~235'},
+    {s:'1514',n:'亞力',role:'變壓器',why:'台電電網+半導體客戶',conf:80,rec:'buy',price:'152',chg:'+2.5%',priceRange:'52~178'},
+    {s:'3672',n:'康舒',role:'電源供應',why:'併購ABB受惠工業電源',conf:72,rec:'hold',price:'38',chg:'+0.8%',priceRange:'32~48'},
+    {s:'2301',n:'光寶科',role:'電源供應',why:'AI伺服器電源出貨增',conf:78,rec:'hold',price:'112',chg:'+1.2%',priceRange:'95~160'},
+    {s:'6282',n:'康舒',role:'通訊電源',why:'網通基礎設施需求',conf:70,rec:'hold',price:'35',chg:'+0.5%',priceRange:'28~45'},
+    {s:'1504',n:'東元',role:'工業馬達',why:'重電+EV馬達',conf:76,rec:'hold',price:'82',chg:'+2.1%',priceRange:'38~98'},
+    {s:'1605',n:'華新',role:'電線電纜',why:'電網建設需求大',conf:74,rec:'hold',price:'62',chg:'+0.8%',priceRange:'38~78'}
   ]},
   {icon:'🔋',name:'被動元件',tag:'被動元件',stocks:[
-    {s:'2327',n:'國巨',role:'MLCC龍頭',why:'車用+AI被動元件漲價'},
-    {s:'5283',n:'禾伸堂',role:'MLCC代理',why:'車用被動元件需求增'},
-    {s:'2344',n:'華邦電',role:'NOR Flash',why:'AIoT嵌入式記憶體'},
-    {s:'2049',n:'上銀',role:'線性傳動',why:'工業機器人需求'},
+    {s:'2327',n:'國巨',role:'被動元件龍頭',why:'車用/工控需求回升',conf:82,rec:'buy',price:'715',chg:'+2.8%',priceRange:'485~750'},
+    {s:'2492',n:'華新科',role:'MLCC/電阻',why:'庫存去化至尾聲',conf:72,rec:'hold',price:'118',chg:'+1.5%',priceRange:'95~135'},
+    {s:'3026',n:'禾伸堂',role:'高階電容',why:'工控+醫療利基市場',conf:75,rec:'hold',price:'105',chg:'+1.2%',priceRange:'92~118'},
+    {s:'6173',n:'信昌電',role:'陶瓷粉末',why:'被動元件上游',conf:70,rec:'hold',price:'48',chg:'+0.8%',priceRange:'42~55'},
+    {s:'2428',n:'興勤',role:'熱敏/壓敏電阻',why:'車用保護元件強',conf:78,rec:'hold',price:'185',chg:'+2.1%',priceRange:'140~210'},
+    {s:'5317',n:'凱美',role:'鋁電解電容',why:'風扇+變頻電源需求',conf:68,rec:'hold',price:'72',chg:'+0.5%',priceRange:'65~85'},
+    {s:'2375',n:'智寶',role:'電容大廠',why:'工控客戶穩定',conf:66,rec:'hold',price:'65',chg:'+0.3%',priceRange:'58~75'},
+    {s:'3042',n:'晶技',role:'石英元件',why:'手機+網通時脈零件',conf:80,rec:'buy',price:'125',chg:'+1.8%',priceRange:'95~135'},
+    {s:'6127',n:'九豪',role:'陶瓷基板',why:'被動元件關鍵材料',conf:62,rec:'hold',price:'32',chg:'+1.5%',priceRange:'25~38'},
+    {s:'3221',n:'台嘉碩',role:'表面聲波濾波器',why:'5G/衛星通訊組件',conf:65,rec:'hold',price:'28',chg:'+0.8%',priceRange:'22~35'}
   ]},
   {icon:'🚗',name:'電動車/車用',tag:'電動車',stocks:[
-    {s:'1605',n:'華新',role:'電纜線材',why:'充電樁/電動車線材'},
-    {s:'6213',n:'聯茂',role:'車用PCB',why:'車用高頻PCB'},
-    {s:'3557',n:'嘉澤',role:'高速連接器',why:'EV高速連接器'},
-    {s:'2308',n:'台達電',role:'車用電源',why:'EV充電模組龍頭'},
-    {s:'3005',n:'神基',role:'車用電腦',why:'強固型車用設備'},
-    {s:'6285',n:'啟碁',role:'車用天線',why:'ADAS天線需求'},
-    {s:'5283',n:'禾伸堂',role:'MLCC',why:'車用被動元件'},
-    {s:'1504',n:'東元',role:'EV馬達',why:'電動巴士馬達'},
+    {s:'2317',n:'鴻海',role:'EV整車製造',why:'Model C出貨量增',conf:88,rec:'buy',price:'225',chg:'+1.8%',priceRange:'122~248'},
+    {s:'2308',n:'台達電',role:'EV動力系統',why:'全球車用訂單穩定',conf:85,rec:'buy',price:'395',chg:'+1.5%',priceRange:'198~448'},
+    {s:'3557',n:'嘉澤',role:'EV連接器',why:'伺服器+車用高速傳輸',conf:82,rec:'buy',price:'168',chg:'+1.2%',priceRange:'82~195'},
+    {s:'6213',n:'聯茂',role:'車用PCB',why:'智慧座艙高頻板',conf:72,rec:'hold',price:'98',chg:'+1.8%',priceRange:'52~118'},
+    {s:'1504',n:'東元',role:'EV馬達',why:'電動巴士動力系統',conf:74,rec:'hold',price:'82',chg:'+2.1%',priceRange:'38~98'},
+    {s:'3005',n:'神基',role:'強固型電腦',why:'警用車載+工控',conf:80,rec:'buy',price:'135',chg:'+2.5%',priceRange:'85~148'},
+    {s:'2481',n:'強茂',role:'車用二極體',why:'功率半導體需求',conf:68,rec:'hold',price:'58',chg:'+0.5%',priceRange:'45~68'},
+    {s:'5425',n:'台半',role:'車用二極體',why:'Tier 1客戶穩定',conf:70,rec:'hold',price:'72',chg:'+0.8%',priceRange:'58~85'},
+    {s:'2201',n:'裕隆',role:'品牌與代工',why:'n7掛牌量領先',conf:76,rec:'hold',price:'75',chg:'+1.2%',priceRange:'62~88'},
+    {s:'1536',n:'和大',role:'減速齒輪',why:'Tesla零件供應',conf:65,rec:'hold',price:'55',chg:'-0.5%',priceRange:'48~65'}
   ]},
   {icon:'☁️',name:'雲端/資料中心',tag:'雲端',stocks:[
-    {s:'2382',n:'廣達',role:'雲端伺服器',why:'Google/MS雲端主供'},
-    {s:'3037',n:'欣興',role:'高層PCB',why:'雲端伺服器基板'},
-    {s:'6488',n:'環球晶',role:'矽晶圓',why:'先進製程矽晶圓'},
-    {s:'3450',n:'聯鈞',role:'光通訊',why:'資料中心光模組'},
-    {s:'2345',n:'智邦',role:'交換器',why:'AI資料中心網路'},
+    {s:'2382',n:'廣達',role:'雲端ODM大廠',why:'Google/MS伺服器主供',conf:86,rec:'buy',price:'335',chg:'+0.9%',priceRange:'142~375'},
+    {s:'6669',n:'緯穎',role:'超大型雲端ODM',why:'AWS AI伺服器主力',conf:89,rec:'buy',price:'3,150',chg:'+3.2%',priceRange:'1,210~3,280'},
+    {s:'2345',n:'智邦',role:'雲端交換器',why:'400G/800G交換器升級',conf:84,rec:'buy',price:'562',chg:'+2.2%',priceRange:'185~625'},
+    {s:'3450',n:'聯鈞',role:'光通訊封裝',why:'矽光子與CPO需求',conf:88,rec:'buy',price:'225',chg:'+4.8%',priceRange:'85~248'},
+    {s:'4979',n:'華星光',role:'光收發模組',why:'資料中心光纖通訊',conf:80,rec:'buy',price:'142',chg:'+3.5%',priceRange:'85~185'},
+    {s:'3037',n:'欣興',role:'高層PCB/載板',why:'雲端ASIC基板需求',conf:85,rec:'buy',price:'178',chg:'+4.1%',priceRange:'125~220'},
+    {s:'3105',n:'穩懋',role:'光通訊元件',why:'資料中心雷達元件',conf:78,rec:'hold',price:'248',chg:'+3.8%',priceRange:'98~275'},
+    {s:'3363',n:'上詮',role:'光纖連接',why:'台積電矽光子合作',conf:82,rec:'buy',price:'215',chg:'+2.5%',priceRange:'85~235'},
+    {s:'3081',n:'聯亞',role:'雷射晶片',why:'光通信傳輸晶片',conf:74,rec:'hold',price:'320',chg:'+1.2%',priceRange:'120~380'},
+    {s:'2454',n:'聯發科',role:'雲端ASIC',why:'AI專用ASIC設計',conf:86,rec:'buy',price:'1,320',chg:'+1.5%',priceRange:'850~1,450'}
   ]},
   {icon:'☀️',name:'綠能/儲能',tag:'綠能',stocks:[
-    {s:'1101',n:'台泥',role:'水泥+儲能',why:'台泥布局儲能'},
-    {s:'3576',n:'聯合再生',role:'太陽能電池',why:'國內再生能源'},
-    {s:'6409',n:'旭隼',role:'充電設備',why:'充電樁建設'},
-    {s:'1590',n:'亞德客',role:'氣動元件',why:'再生能源裝置'},
-    {s:'3519',n:'綠能',role:'太陽能電池片',why:'綠電建置'},
+    {s:'1513',n:'中興電',role:'重電/氫能',why:'台灣電網唯一GIS供應',conf:88,rec:'buy',price:'215',chg:'+3.2%',priceRange:'85~235'},
+    {s:'1519',n:'華城電機',role:'變壓器',why:'全台唯一外銷北美',conf:91,rec:'buy',price:'3,850',chg:'+7.2%',priceRange:'512~4,100'},
+    {s:'1101',n:'台泥',role:'水泥/儲能',why:'旗下能元科技儲能佈局',conf:70,rec:'hold',price:'38',chg:'+0.5%',priceRange:'28~48'},
+    {s:'6409',n:'旭隼',role:'UPS/變壓',why:'全球UPS代工龍頭',conf:84,rec:'buy',price:'245',chg:'+2.8%',priceRange:'98~285'},
+    {s:'6806',n:'森崴能源',role:'風電/綠電',why:'台電風場維運',conf:78,rec:'hold',price:'152',chg:'+2.1%',priceRange:'85~165'},
+    {s:'6443',n:'元晶',role:'太陽能板',why:'台灣太陽能建置受惠',conf:72,rec:'hold',price:'38',chg:'+3.2%',priceRange:'18~45'},
+    {s:'6869',n:'雲豹能源',role:'綠電整合',why:'企業綠電採購龍頭',conf:80,rec:'buy',price:'252',chg:'+4.5%',priceRange:'120~285'},
+    {s:'3576',n:'聯合再生',role:'太陽能板',why:'國內電網補給',conf:62,rec:'hold',price:'18',chg:'+1.2%',priceRange:'12~28'},
+    {s:'1514',n:'亞力',role:'變頻器',why:'再生能源配電設備',conf:76,rec:'hold',price:'152',chg:'+2.5%',priceRange:'52~178'},
+    {s:'3708',n:'上緯投控',role:'風電材料',why:'葉片材料市佔提昇',conf:74,rec:'hold',price:'125',chg:'+1.8%',priceRange:'85~145'}
   ]},
   {icon:'💊',name:'生技/醫療',tag:'生技',stocks:[
-    {s:'4541',n:'晟德',role:'製藥投資',why:'生技投控'},
-    {s:'4168',n:'醣聯',role:'醣類藥物',why:'罕見疾病藥品'},
-    {s:'6547',n:'高端疫苗',role:'mRNA平台',why:'疫苗/新藥'},
-    {s:'1788',n:'杏輝',role:'藥品通路',why:'藥品流通'},
-    {s:'6576',n:'逸達',role:'新藥開發',why:'前列腺癌新藥'},
-    {s:'4164',n:'博晟生醫',role:'骨科再生',why:'關節炎新藥'},
+    {s:'4147',n:'龍燈-KY',role:'特殊藥物',why:'北美藥證獲取',conf:68,rec:'hold',price:'42',chg:'+1.5%',priceRange:'35~52'},
+    {s:'1760',n:'寶齡富錦',role:'新藥開發',why:'腎臟新藥權利金',conf:72,rec:'hold',price:'115',chg:'+2.1%',priceRange:'95~135'},
+    {s:'4541',n:'晟德',role:'投控公司',why:'轉投資生技獲利增',conf:65,rec:'hold',price:'42',chg:'+1.5%',priceRange:'28~58'},
+    {s:'4162',n:'智擎',role:'癌藥研發',why:'權利金收入穩定',conf:76,rec:'hold',price:'108',chg:'+1.2%',priceRange:'85~125'},
+    {s:'6547',n:'高端疫苗',role:'疫苗開發',why:'新產品線申請中',conf:40,rec:'avoid',price:'65',chg:'-1.8%',priceRange:'58~185'},
+    {s:'6576',n:'逸達',role:'新藥研發',why:'前列腺癌藥證',conf:62,rec:'hold',price:'85',chg:'+2.8%',priceRange:'45~120'},
+    {s:'4164',n:'博晟生醫',role:'醫療器材',why:'骨科醫材成長',conf:63,rec:'hold',price:'68',chg:'+4.1%',priceRange:'35~95'},
+    {s:'6472',n:'保瑞',role:'CDMO代工',why:'併購藥廠產能倍增',conf:85,rec:'buy',price:'820',chg:'+3.5%',priceRange:'450~980'},
+    {s:'1795',n:'美時',role:'癌症學名藥',why:'血癌藥海外銷售強',conf:82,rec:'buy',price:'315',chg:'+2.1%',priceRange:'240~350'},
+    {s:'4743',n:'合一',role:'傷口新藥',why:'大陸藥證銷售進展',conf:55,rec:'avoid',price:'152',chg:'-2.5%',priceRange:'140~220'}
   ]},
   {icon:'🏦',name:'金融/保險',tag:'金融',stocks:[
-    {s:'2882',n:'國泰金',role:'壽險/銀行',why:'升息環境利差擴大'},
-    {s:'2884',n:'玉山金',role:'數位銀行',why:'數位金融佈局'},
-    {s:'2891',n:'中信金',role:'金控',why:'獲利穩定+股利'},
-    {s:'2886',n:'兆豐金',role:'公股銀行',why:'高股息防禦'},
-    {s:'2892',n:'第一金',role:'公股銀行',why:'國際放款增長'},
+    {s:'2882',n:'國泰金',role:'壽險龍頭',why:'降息循環利差擴大',conf:82,rec:'buy',price:'65',chg:'+1.2%',priceRange:'42~68'},
+    {s:'2881',n:'富邦金',role:'壽險/銀行',why:'獲利與資產增值',conf:84,rec:'buy',price:'88',chg:'+1.5%',priceRange:'58~92'},
+    {s:'2886',n:'兆豐金',role:'匯兌業務強',why:'公股獲利王+股息高',conf:78,rec:'hold',price:'42.5',chg:'+0.8%',priceRange:'35~45'},
+    {s:'2884',n:'玉山金',role:'數位金融',why:'數位信用卡業務領先',conf:76,rec:'hold',price:'29.8',chg:'+0.5%',priceRange:'24~32'},
+    {s:'2891',n:'中信金',role:'放款業務',why:'企金與消金雙軌並行',conf:80,rec:'buy',price:'36.5',chg:'+1.1%',priceRange:'22~38'},
+    {s:'2892',n:'第一金',role:'官股優等生',why:'配息穩定',conf:75,rec:'hold',price:'28.5',chg:'+0.3%',priceRange:'25~30'},
+    {s:'5876',n:'上海商銀',role:'兩岸金融',why:'匯兌服務優勢',conf:72,rec:'hold',price:'48',chg:'+0.5%',priceRange:'42~52'},
+    {s:'2885',n:'元大金',role:'證券龍頭',why:'台股熱絡成交手續費',conf:85,rec:'buy',price:'33.2',chg:'+2.1%',priceRange:'22~35'},
+    {s:'2880',n:'華南金',role:'官股穩健',why:'資產品質佳',conf:74,rec:'hold',price:'25.8',chg:'+0.4%',priceRange:'21~28'},
+    {s:'2883',n:'開發金',role:'併購/證券',why:'凱基證券貢獻提昇',conf:70,rec:'hold',price:'16.5',chg:'+0.8%',priceRange:'12~18'}
   ]},
   {icon:'📦',name:'ETF',tag:'ETF',stocks:[
-    {s:'0050',n:'元大台灣50',role:'市值型',why:'台灣前50大'},
-    {s:'0056',n:'元大高股息',role:'高股息',why:'存股族首選'},
-    {s:'00878',n:'國泰永續高股息',role:'ESG高股息',why:'ESG+高股息'},
-    {s:'00919',n:'群益台灣精選高息',role:'季配息',why:'季配高股息'},
-    {s:'00929',n:'復華台灣科技優息',role:'科技高股息',why:'科技+股息'},
-    {s:'00881',n:'國泰台灣5G+',role:'5G主題',why:'5G相關組合'},
+    {s:'0050',n:'元大台灣50',role:'市值型',why:'代表台股大盤權重股',conf:85,rec:'buy',price:'198',chg:'+0.8%',priceRange:'152~210'},
+    {s:'00878',n:'國泰永續高股息',role:'高股息',why:'ESG+季配息穩定',conf:82,rec:'buy',price:'22.8',chg:'+0.4%',priceRange:'18.5~23.5'},
+    {s:'0056',n:'元大高股息',role:'高股息',why:'老牌高股息代表',conf:78,rec:'hold',price:'38.5',chg:'+0.3%',priceRange:'32.8~39.8'},
+    {s:'00919',n:'群益精選高息',role:'高股息',why:'精選獲利高之個股',conf:80,rec:'buy',price:'21.2',chg:'+0.5%',priceRange:'17.5~22.1'},
+    {s:'00929',n:'復華科技優息',role:'科技月配',why:'專攻科技股+月配息',conf:76,rec:'hold',price:'19.8',chg:'+0.6%',priceRange:'16.2~21.0'},
+    {s:'00881',n:'國泰台灣5G+',role:'主題型',why:'5G與AI通訊龍頭',conf:81,rec:'buy',price:'24.5',chg:'+1.2%',priceRange:'16~26'},
+    {s:'00713',n:'元大高息低波',role:'低波動高息',why:'防禦型存股首選',conf:84,rec:'buy',price:'58.2',chg:'+0.2%',priceRange:'48~62'},
+    {s:'006208',n:'富邦台50',role:'低費率市值型',why:'管理費極低',conf:86,rec:'buy',price:'115',chg:'+0.8%',priceRange:'85~125'},
+    {s:'00940',n:'元大價值高息',role:'價值型高息',why:'大戶佈局籌碼穩',conf:65,rec:'hold',price:'9.8',chg:'+0.1%',priceRange:'9.2~10.5'},
+    {s:'00915',n:'凱基優選高股息',role:'高股息',why:'動能+品質篩選',conf:83,rec:'buy',price:'26.5',chg:'+0.5%',priceRange:'18~28'}
   ]},
   {icon:'🌐',name:'5G/通訊',tag:'5G',stocks:[
-    {s:'2412',n:'中華電信',role:'電信龍頭',why:'5G建設受惠'},
-    {s:'4904',n:'遠傳',role:'電信',why:'5G+雲端'},
-    {s:'3045',n:'台灣大哥大',role:'電信',why:'AI+5G'},
-    {s:'6285',n:'啟碁',role:'天線模組',why:'5G基站天線'},
-    {s:'3019',n:'亞光',role:'光通訊',why:'5G光纖模組'},
-    {s:'3484',n:'崧騰',role:'IoT模組',why:'AIoT連接'},
+    {s:'2412',n:'中華電信',role:'電信龍頭',why:'資安與雲端業務強',conf:78,rec:'hold',price:'132',chg:'+0.5%',priceRange:'112~145'},
+    {s:'3045',n:'台灣大哥大',role:'電信服務',why:'與台灣之星合併效應',conf:75,rec:'hold',price:'98',chg:'+0.8%',priceRange:'85~112'},
+    {s:'4904',n:'遠傳電信',role:'電信服務',why:'智慧城市與ICT佈局',conf:74,rec:'hold',price:'82',chg:'+0.4%',priceRange:'72~88'},
+    {s:'6285',n:'啟碁',role:'網通天線',why:'Wi-Fi 7升級潮',conf:82,rec:'buy',price:'178',chg:'+2.2%',priceRange:'82~198'},
+    {s:'5388',n:'中磊',role:'寬頻設備',why:'北美電信設備換機',conf:80,rec:'buy',price:'125',chg:'+1.8%',priceRange:'85~135'},
+    {s:'2345',n:'智邦',role:'網路交換器',why:'AI資料中心800G',conf:86,rec:'buy',price:'562',chg:'+2.2%',priceRange:'185~625'},
+    {s:'3450',n:'聯鈞',role:'光模組封裝',why:'矽光子技術受惠',conf:88,rec:'buy',price:'225',chg:'+4.8%',priceRange:'85~248'},
+    {s:'4979',n:'華星光',role:'光收發',why:'800G光模組出貨',conf:80,rec:'buy',price:'142',chg:'+3.5%',priceRange:'85~185'},
+    {s:'3363',n:'上詮',role:'光纖連接',why:'CPO先進封裝合作',conf:82,rec:'buy',price:'215',chg:'+2.5%',priceRange:'85~235'},
+    {s:'2314',n:'台揚',role:'微波通訊',why:'衛星地面站與O-RAN',conf:65,rec:'hold',price:'32',chg:'+0.5%',priceRange:'25~45'}
   ]},
   {icon:'🚢',name:'航運',tag:'航運',stocks:[
-    {s:'2603',n:'長榮',role:'貨櫃龍頭',why:'紅海繞行效應'},
-    {s:'2615',n:'萬海',role:'近洋貨櫃',why:'近洋航線佈局'},
-    {s:'2609',n:'陽明',role:'貨櫃',why:'景氣循環'},
-    {s:'5608',n:'四維航',role:'散裝船',why:'散裝景氣'},
+    {s:'2603',n:'長榮',role:'貨櫃龍頭',why:'紅海危機推升運費',conf:55,rec:'avoid',price:'178',chg:'-2.1%',priceRange:'98~295'},
+    {s:'2609',n:'陽明',role:'貨櫃',why:'全球運能受限',conf:52,rec:'avoid',price:'65',chg:'-1.8%',priceRange:'38~82'},
+    {s:'2615',n:'萬海',role:'近洋貨櫃',why:'東南亞景氣回升',conf:50,rec:'avoid',price:'68',chg:'-1.5%',priceRange:'38~118'},
+    {s:'2606',n:'裕民',role:'散裝航運',why:'鐵礦石需求穩定',conf:72,rec:'hold',price:'58',chg:'+0.8%',priceRange:'45~68'},
+    {s:'2617',n:'台航',role:'散裝航運',why:'BDI指數連動',conf:68,rec:'hold',price:'32',chg:'+0.5%',priceRange:'25~38'},
+    {s:'2618',n:'長榮航',role:'航空客運',why:'旅遊需求持續強勁',conf:78,rec:'hold',price:'35.8',chg:'+1.1%',priceRange:'28~42'},
+    {s:'2610',n:'華航',role:'航空貨運',why:'AI晶片空運急單',conf:75,rec:'hold',price:'22.5',chg:'+0.8%',priceRange:'18~28'},
+    {s:'5608',n:'四維航',role:'散裝船',why:'中小型散裝輪供需吃緊',conf:65,rec:'hold',price:'22',chg:'+0.3%',priceRange:'18~28'},
+    {s:'2637',n:'慧洋-KY',role:'散裝龍頭',why:'新船下水貢獻',conf:70,rec:'hold',price:'72',chg:'+1.2%',priceRange:'55~85'},
+    {s:'2636',n:'台驊投控',role:'貨運承攬',why:'高股息+操作獲利',conf:62,rec:'hold',price:'95',chg:'+0.5%',priceRange:'72~115'}
   ]},
   {icon:'🍎',name:'蘋果供應鏈',tag:'蘋果',stocks:[
-    {s:'3008',n:'大立光',role:'鏡頭',why:'iPhone高階鏡頭'},
-    {s:'2354',n:'鴻準',role:'機殼',why:'iPhone機殼'},
-    {s:'4938',n:'和碩',role:'組裝',why:'iPhone組裝'},
-    {s:'6781',n:'AES-KY',role:'生物辨識',why:'Face ID模組'},
-    {s:'3673',n:'TPK-KY',role:'觸控',why:'XR設備觸控'},
-    {s:'2357',n:'華碩',role:'電腦品牌',why:'AI PC新品週期'},
+    {s:'3008',n:'大立光',role:'鏡頭龍頭',why:'iPhone 17高階鏡頭',conf:82,rec:'buy',price:'2,380',chg:'+2.5%',priceRange:'1,350~2,550'},
+    {s:'2317',n:'鴻海',role:'整機組裝',why:'AI iPhone最大組裝廠',conf:88,rec:'buy',price:'225',chg:'+1.8%',priceRange:'122~248'},
+    {s:'4938',n:'和碩',role:'組裝',why:'印度產能擴大',conf:74,rec:'hold',price:'78',chg:'+1.2%',priceRange:'48~92'},
+    {s:'2354',n:'鴻準',role:'機殼',why:'鈦合金機殼良率提昇',conf:70,rec:'hold',price:'92',chg:'+1.2%',priceRange:'52~108'},
+    {s:'2474',n:'可成',role:'內構件',why:'筆電+手機機殼',conf:68,rec:'hold',price:'215',chg:'+0.5%',priceRange:'170~230'},
+    {s:'3406',n:'玉晶光',role:'鏡頭',why:'Vision Pro光學主供',conf:78,rec:'hold',price:'485',chg:'+2.1%',priceRange:'320~580'},
+    {s:'2330',n:'台積電',role:'處理器代工',why:'A19晶片採用2nm製程',conf:92,rec:'buy',price:'1,050',chg:'+2.1%',priceRange:'680~1,180'},
+    {s:'6781',n:'AES-KY',role:'電池模組',why:'資料中心+高階手機電池',conf:82,rec:'buy',price:'435',chg:'+3.1%',priceRange:'185~475'},
+    {s:'3673',n:'TPK-KY',role:'觸控模組',why:'折疊設備觸控開發',conf:62,rec:'hold',price:'45',chg:'+0.8%',priceRange:'28~58'},
+    {s:'3037',n:'欣興',role:'載板',why:'AI iPhone SLP板',conf:85,rec:'buy',price:'178',chg:'+4.1%',priceRange:'125~220'}
   ]},
   {icon:'🏠',name:'營建/不動產',tag:'營建',stocks:[
-    {s:'2511',n:'太子',role:'建商',why:'都更+住宅需求'},
-    {s:'2515',n:'中工',role:'營建工程',why:'公共工程'},
-    {s:'2520',n:'冠德',role:'建商',why:'商辦+住宅'},
-    {s:'5533',n:'皇鼎',role:'建商',why:'新北開發案'},
+    {s:'2520',n:'冠德',role:'商辦/住宅',why:'捷運聯開案開發',conf:80,rec:'buy',price:'52',chg:'+2.1%',priceRange:'35~58'},
+    {s:'2501',n:'國建',role:'營建龍頭',why:'全台推案量穩健',conf:78,rec:'hold',price:'32',chg:'+1.5%',priceRange:'22~38'},
+    {s:'2515',n:'中工',role:'工程/廠辦',why:'京華廣場商辦開發',conf:76,rec:'hold',price:'14.5',chg:'+0.8%',priceRange:'11~18'},
+    {s:'5533',n:'皇鼎',role:'建商',why:'雙北精華區推案',conf:74,rec:'hold',price:'35',chg:'+0.5%',priceRange:'28~42'},
+    {s:'2542',n:'興富發',role:'推案王',why:'全台商辦需求大增',conf:72,rec:'hold',price:'45',chg:'+1.2%',priceRange:'38~52'},
+    {s:'2548',n:'華固',role:'豪宅商辦',why:'大巨蛋帶動周邊效應',conf:82,rec:'buy',price:'142',chg:'+2.5%',priceRange:'95~165'},
+    {s:'2504',n:'國產',role:'預拌混凝土',why:'高科技建廠需求旺',conf:84,rec:'buy',price:'48.2',chg:'+2.8%',priceRange:'28~52'},
+    {s:'1101',n:'台泥',role:'建材/綠能',why:'長線轉型綠能投控',conf:70,rec:'hold',price:'38',chg:'+0.5%',priceRange:'28~48'},
+    {s:'5534',n:'長虹',role:'商辦專家',why:'內科商辦持續入帳',conf:81,rec:'buy',price:'118',chg:'+1.8%',priceRange:'85~125'},
+    {s:'2511',n:'太子',role:'營建/飯店',why:'租賃收入穩定',conf:68,rec:'hold',price:'12.5',chg:'+0.2%',priceRange:'10~15'}
   ]},
   {icon:'🛠',name:'機械/工具機',tag:'機械',stocks:[
-    {s:'1590',n:'亞德客',role:'氣動元件',why:'半導體設備大廠'},
-    {s:'2049',n:'上銀',role:'線性傳動',why:'工業機器人需求'},
-    {s:'1504',n:'東元',role:'工業馬達',why:'工業馬達+EV'},
-    {s:'2014',n:'中鋼構',role:'鋼構工程',why:'AI資料中心廠房'},
-  ]},
+    {s:'1590',n:'亞德客-KY',role:'氣動元件龍頭',why:'半導體設備需求復甦',conf:85,rec:'buy',price:'985',chg:'+3.2%',priceRange:'780~1,180'},
+    {s:'2049',n:'上銀',role:'滾珠螺桿龍頭',why:'機器人+自動化需求',conf:82,rec:'buy',price:'242',chg:'+2.5%',priceRange:'195~285'},
+    {s:'1504',n:'東元',role:'工業馬達',why:'馬達外銷美洲強',conf:76,rec:'hold',price:'82',chg:'+2.1%',priceRange:'38~98'},
+    {s:'2014',n:'中鋼構',role:'鋼構工程',why:'台積電建廠鋼構承攬',conf:84,rec:'buy',price:'65',chg:'+2.8%',priceRange:'45~72'},
+    {s:'1530',n:'亞崴',role:'加工中心機',why:'能源設備加工機',conf:68,rec:'hold',price:'35',chg:'+0.8%',priceRange:'28~42'},
+    {s:'1545',n:'瀧澤科',role:'CNC車床',why:'歐美市場訂單回溫',conf:72,rec:'hold',price:'48',chg:'+1.2%',priceRange:'35~55'},
+    {s:'2395',n:'研華',role:'工業電腦龍頭',why:'工業物聯網需求長紅',conf:80,rec:'buy',price:'385',chg:'+1.5%',priceRange:'320~420'},
+    {s:'6414',n:'樺漢',role:'IPC龍頭',why:'併購效應+雲端營收',conf:81,rec:'buy',price:'285',chg:'+2.1%',priceRange:'220~330'},
+    {s:'3005',n:'神基',role:'強固電腦',why:'各國國防預算提昇',conf:83,rec:'buy',price:'135',chg:'+2.5%',priceRange:'85~148'},
+    {s:'4583',n:'台灣精銳',role:'減速機',why:'協作機器人關鍵零件',conf:88,rec:'buy',price:'715',chg:'+4.5%',priceRange:'285~780'}
+  ]}
 ];
 
 // ── 法人排行 ──
@@ -783,14 +752,14 @@ function goPage(n){
 }
 
 function confColor(c){
-  if(c>=80)return'#00c853';
-  if(c>=65)return'#69f0ae';
-  if(c>=50)return'#ffd740';
-  if(c>=35)return'#ff9100';
+  if(c>=85)return'#00c853';
+  if(c>=70)return'#69f0ae';
+  if(c>=55)return'#ffd740';
+  if(c>=40)return'#ff9100';
   return'#ff4d4d';
 }
 function recChip(r){
-  if(r==='buy')return`<span class="rec-chip rec-buy">✅ 可買進</span>`;
+  if(r==='buy')return`<span class="rec-chip rec-buy">✅ 買進</span>`;
   if(r==='hold')return`<span class="rec-chip rec-hold">⏸ 觀望</span>`;
   return`<span class="rec-chip rec-avoid">🚫 避開</span>`;
 }
@@ -919,35 +888,36 @@ function showSector(tag){
   document.querySelectorAll('.sbtn').forEach(b=>b.classList.toggle('active',b.textContent.includes(sec.name)));
   document.getElementById('sResult').innerHTML=`
     <div class="card">
-      <div class="ct">${sec.icon} ${sec.name} — 完整供應鏈</div>
+      <div class="ct">${sec.icon} ${sec.name} — 核心供應鏈</div>
       <table>
-        <thead><tr><th>代號</th><th>公司</th><th>角色定位</th><th>現價</th><th>3日漲幅</th><th>為什麼漲</th><th></th></tr></thead>
+        <thead><tr><th>代號</th><th>公司</th><th>現價</th><th>信心分</th><th>建議</th><th>催化劑</th><th></th></tr></thead>
         <tbody>
-          ${sec.stocks.map(s=>`
-            <tr>
+          ${sec.stocks.map(s=>{
+            const sc=confColor(s.conf);
+            const dir=s.chg&&s.chg.startsWith('+')?'up':'dn';
+            return `<tr>
               <td><strong style="font-size:15px">${s.s}</strong></td>
-              <td>${s.n}</td>
-              <td><span class="tag">${s.role}</span></td>
-              <td style="color:var(--muted)">—</td>
-              <td style="color:var(--muted)">—</td>
-              <td style="font-size:12px;color:var(--muted)">${s.why}</td>
+              <td>${s.n}<br><span class="tag">${s.role}</span></td>
+              <td class="${dir}">$${s.price}<br><span style="font-size:11px">${s.chg}</span></td>
+              <td>
+                <div style="font-weight:800;color:${sc}">${s.conf}</div>
+                <div class="cbar" style="width:60px"><div class="cfill" style="width:${s.conf}%;background:${sc}"></div></div>
+              </td>
+              <td>${recChip(s.rec)}</td>
+              <td style="font-size:12px;color:var(--muted);max-width:300px">${s.why}</td>
               <td><button onclick="addWatch('${s.s}')" class="gbtn">+ 追蹤</button></td>
-            </tr>`).join('')}
+            </tr>`;
+          }).join('')}
         </tbody>
       </table>
-      <div style="margin-top:12px;padding:10px;background:var(--surface2);border-radius:8px;font-size:12px;color:var(--muted)">
-        💡 現價和漲幅由引擎每小時更新。串上 Fugle API 後即時顯示。
-      </div>
     </div>`;
 }
 
 function doSearch(){
   const q=document.getElementById('sIn').value.trim();
   if(!q)return;
-  // 先找題材
   const th=THEMES.find(t=>t.name.includes(q)||t.stocks.some(s=>s.s===q||s.n.includes(q)));
   if(th){openTheme(th.name);return;}
-  // 再找類股
   const sec=SECTORS.find(s=>s.name.includes(q)||s.tag.includes(q)||s.stocks.some(st=>st.s===q||st.n.includes(q)));
   if(sec){showSector(sec.tag);return;}
   document.getElementById('sResult').innerHTML=`<div class="card">
@@ -1000,7 +970,6 @@ function renderWatch(stocks, data){
       </div>`;
     }).join('');
   }
-  // table
   const tb=document.getElementById('wTable');
   if(!stocks.length){
     tb.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:30px">尚無資料</td></tr>';
@@ -1009,7 +978,7 @@ function renderWatch(stocks, data){
       const d=s.changePct>0?'up':s.changePct<0?'dn':'flat';
       const sg=s.changePct>0?'+':'';
       const bc=s.confidenceColor||'#7c6fff';
-      const rec=s.confidence>=75?'✅ 可買':s.confidence>=50?'⏸ 觀望':'🚫 避開';
+      const rec = s.confidence >= 85 ? '✅ 買進' : s.confidence >= 55 ? '⏸ 觀望' : '🚫 避開';
       return`<tr>
         <td><strong>${s.symbol}</strong></td><td>${s.name||'—'}</td>
         <td><span class="tag">${s.category||'—'}</span></td>
@@ -1037,7 +1006,6 @@ function isOpen(){
   return t>=540&&t<=810;
 }
 
-// ── 啟動 ──
 renderHome();
 renderThemes();
 renderSectorBtns();
