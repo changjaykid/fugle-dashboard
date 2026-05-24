@@ -564,7 +564,7 @@ tr:hover td{background:rgba(26,26,38,.8)}
 // 資料
 // ══════════════════════════════════
 
-// ── 熱門題材（完整版，含信心分 + 操作建議 + 個股清單） ──
+// ── 熱門題材 ──
 const THEMES = [
   {heat:96, icon:'🤖', name:'AI伺服器 / CoWoS先進封裝',
    conf:88, rec:'buy', recText:'積極布局',
@@ -639,19 +639,6 @@ const SECTORS = [
   ]}
 ];
 
-// ── 法人排行 ──
-const TOP_BUY=[
-  {r:1,s:'2330',n:'台積電',cat:'半導體',price:'1,050',foreign:'+45,280',trust:'+8,200',chg:'+5.2%',dir:'up'},
-  {r:2,s:'1519',n:'華城電機',cat:'電力',price:'3,850',foreign:'+28,500',trust:'+4,100',chg:'+18.5%',dir:'up'},
-  {r:3,s:'2317',n:'鴻海',cat:'AI伺服器',price:'225',foreign:'+22,100',trust:'+3,800',chg:'+3.8%',dir:'up'},
-  {r:4,s:'6669',n:'緯穎',cat:'AI伺服器',price:'3,150',foreign:'+18,900',trust:'+3,400',chg:'+7.1%',dir:'up'},
-  {r:5,s:'3711',n:'日月光投控',cat:'封裝測試',price:'168',foreign:'+15,200',trust:'+2,800',chg:'+2.9%',dir:'up'}
-];
-const TOP_SELL=[
-  {r:1,s:'2412',n:'中華電信',cat:'電信',price:'132',foreign:'-22,100',trust:'-3,200',chg:'-1.8%',dir:'dn'},
-  {r:2,s:'2882',n:'國泰金',cat:'金融',price:'58',foreign:'-18,500',trust:'-2,800',chg:'-2.1%',dir:'dn'}
-];
-
 // ── 模擬倉位資料 (Mock) ──
 let SIM_DATA = JSON.parse(localStorage.getItem('sim_data')) || {
   init: 200000,
@@ -689,28 +676,19 @@ function recChip(r){
 
 // ── 首頁 ──
 function renderHome(){
+  // 市場情緒說明文字與盤勢提示等
   const o=isOpen();
   document.getElementById('mktDot').className='dot'+(o?' open':'');
   document.getElementById('mktSt').textContent=o?'開盤中':'休市中';
-  const now=new Date();
-  document.getElementById('updTime').textContent='更新 '+now.toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'});
 
   // Check margin/short alert
   const rzHigh = true; // Mock logic
   const rjHigh = true;
   if(rzHigh && rjHigh) document.getElementById('mktAlert').style.display = 'inline-block';
 
-  document.getElementById('buyBody').innerHTML=TOP_BUY.map(r=>`
-    <tr><td class="rn">${r.r}</td>
-    <td><strong>${r.s}</strong> ${r.n}<br><span class="tag">${r.cat}</span></td>
-    <td class="${r.dir}" style="font-weight:700">${r.price||'—'}</td>
-    <td class="up">${r.foreign}</td><td class="up">${r.trust}</td>
-    <td class="${r.dir}">${r.chg}</td></tr>`).join('');
-  document.getElementById('sellBody').innerHTML=TOP_SELL.map(r=>`
-    <tr><td class="rn">${r.r}</td>
-    <td><strong>${r.s}</strong> ${r.n}<br><span class="tag">${r.cat}</span></td>
-    <td class="dn">${r.foreign}</td><td class="dn">${r.trust}</td>
-    <td class="${r.dir}">${r.chg}</td></tr>`).join('');
+  // 法人排行初始狀態
+  document.getElementById('buyBody').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">資料載入中...</td></tr>';
+  document.getElementById('sellBody').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">資料載入中...</td></tr>';
 }
 
 // ── 熱門題材 ──
@@ -846,13 +824,79 @@ function showSector(tag){
     </div>`;
 }
 
-// ── 自選股 ──
-async function loadDashboard(){
-  try{
-    const r=await fetch('./dashboard.json?t='+Date.now());
-    const d=await r.json();
-    renderWatch(d.stocks||[], d);
-  }catch(e){console.warn('dashboard.json尚未更新')}
+// ── Dashboard Data ──
+async function loadDashboard() {
+  try {
+    const r = await fetch('./dashboard.json?t=' + Date.now());
+    const d = await r.json();
+    
+    // 更新大盤指數
+    if (d.index) {
+      const idx = d.index;
+      const chgClass = idx.change && idx.change.startsWith('+') ? 'up' : 'dn';
+      document.getElementById('t-val').textContent = idx.taiex || '—';
+      document.getElementById('t-val').className = 'ic-val ' + chgClass;
+      document.getElementById('t-chg').textContent = (idx.change || '—') + ' (' + (idx.changePct || '—') + ')';
+      document.getElementById('t-chg').className = 'ic-chg ' + chgClass;
+      document.getElementById('t-sub').textContent = '成交量：' + (idx.volume || '—');
+      
+      // 更新最後更新時間
+      if (d.updatedAt) {
+        const dt = new Date(d.updatedAt);
+        document.getElementById('updTime').textContent = '資料日期 ' + dt.toLocaleDateString('zh-TW', {month:'numeric',day:'numeric'}) + ' ' + (d.tradeDate ? '收盤數據' : '');
+      }
+      
+      // 市場狀態
+      document.getElementById('mktDot').className = 'dot' + (d.marketOpen ? ' open' : '');
+      document.getElementById('mktSt').textContent = d.marketOpen ? '開盤中' : '休市中';
+    }
+    
+    // 更新法人買超/賣超排行（真實數據）
+    if (d.topBuy && d.topBuy.length) renderBuySell(d.topBuy, d.topSell || []);
+    
+    // 更新新聞
+    if (d.news && d.news.length) renderNews(d.news);
+    
+    // 更新自選股
+    renderWatch(d.stocks || [], d);
+    
+  } catch(e) {
+    console.warn('dashboard.json 載入失敗:', e);
+  }
+}
+
+function renderBuySell(topBuy, topSell) {
+  document.getElementById('buyBody').innerHTML = topBuy.map(r => `
+    <tr>
+      <td class="rn">${r.r}</td>
+      <td><strong>${r.s}</strong> ${r.n}${r.cat ? '<br><span class="tag">'+r.cat+'</span>' : ''}</td>
+      <td class="${r.dir}" style="font-weight:700">${r.price || '—'}</td>
+      <td class="up">${r.foreign}</td>
+      <td class="up">${r.trust}</td>
+      <td class="${r.dir}">${r.chg || '—'}</td>
+    </tr>`).join('');
+  
+  document.getElementById('sellBody').innerHTML = topSell.map(r => `
+    <tr>
+      <td class="rn">${r.r}</td>
+      <td><strong>${r.s}</strong> ${r.n}${r.cat ? '<br><span class="tag">'+r.cat+'</span>' : ''}</td>
+      <td class="${r.dir}" style="font-weight:700">${r.price || '—'}</td>
+      <td class="dn">${r.foreign}</td>
+      <td class="dn">${r.trust}</td>
+      <td class="${r.dir}">${r.chg || '—'}</td>
+    </tr>`).join('');
+}
+
+function renderNews(news) {
+  document.getElementById('newsList').innerHTML = news.map(n => `
+    <div class="ni">
+      <div class="ni-h"><span class="ntag">台股新聞</span></div>
+      <div class="ni-t">${n.title}</div>
+      <div class="ni-m">
+        <span>${n.date ? new Date(n.date).toLocaleString('zh-TW', {month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}) : ''}</span>
+        ${n.link ? '<a href="'+n.link+'" target="_blank" style="color:var(--accent)">閱讀全文 →</a>' : ''}
+      </div>
+    </div>`).join('');
 }
 
 function renderWatch(stocks, data){
@@ -930,6 +974,7 @@ function openAlert(sym){
 function closeAlert(){ document.getElementById('alertModal').classList.remove('open'); }
 function saveAlert(){
   const alerts = JSON.parse(localStorage.getItem('stock_alerts')) || {};
+
   alerts[CURRENT_ALERT_SYM] = {
     up: document.getElementById('alertUp').value,
     dn: document.getElementById('alertDn').value,
@@ -1001,11 +1046,11 @@ function isOpen(){
   return t>=540&&t<=810;
 }
 
-renderHome();
+renderHome();      // 靜態部分
 renderThemes();
 renderSectorBtns();
-loadDashboard();
-setInterval(()=>{renderHome();loadDashboard();},5*60*1000);
+loadDashboard();   // 非同步載入真實數據（含大盤、法人、新聞、自選股）
+setInterval(loadDashboard, 5 * 60 * 1000);
 </script>
 </body>
 </html>
