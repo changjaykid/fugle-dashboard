@@ -878,10 +878,7 @@ function renderHome(){
   document.getElementById('mktDot').className='dot'+(o?' open':'');
   document.getElementById('mktSt').textContent=o?'開盤中':'休市中';
 
-  // Check margin/short alert
-  const rzHigh = true; // Mock logic
-  const rjHigh = true;
-  if(rzHigh && rjHigh) document.getElementById('mktAlert').style.display = 'inline-block';
+  // Check margin/short alert (skipped — element removed)
 
   // 法人排行初始狀態
   document.getElementById('buyBody').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">資料載入中...</td></tr>';
