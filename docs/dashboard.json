@@ -13,7 +13,7 @@
       "confidence": 68,
       "confidenceLabel": "偏多",
       "confidenceColor": "#69f0ae",
-      "updatedAt": "17:33"
+      "updatedAt": "17:52"
     },
     {
       "symbol": "2317",
@@ -28,7 +28,7 @@
       "confidence": 80,
       "confidenceLabel": "偏多",
       "confidenceColor": "#69f0ae",
-      "updatedAt": "17:33"
+      "updatedAt": "17:52"
     },
     {
       "symbol": "2454",
@@ -43,7 +43,7 @@
       "confidence": 88,
       "confidenceLabel": "強力看多",
       "confidenceColor": "#00c853",
-      "updatedAt": "17:33"
+      "updatedAt": "17:52"
     },
     {
       "symbol": "2382",
@@ -58,7 +58,7 @@
       "confidence": 58,
       "confidenceLabel": "中性觀望",
       "confidenceColor": "#ffd740",
-      "updatedAt": "17:33"
+      "updatedAt": "17:52"
     },
     {
       "symbol": "3231",
@@ -73,7 +73,7 @@
       "confidence": 80,
       "confidenceLabel": "偏多",
       "confidenceColor": "#69f0ae",
-      "updatedAt": "17:33"
+      "updatedAt": "17:52"
     },
     {
       "symbol": "2308",
@@ -88,7 +88,7 @@
       "confidence": 88,
       "confidenceLabel": "強力看多",
       "confidenceColor": "#00c853",
-      "updatedAt": "17:33"
+      "updatedAt": "17:52"
     },
     {
       "symbol": "2303",
@@ -103,7 +103,7 @@
       "confidence": 88,
       "confidenceLabel": "強力看多",
       "confidenceColor": "#00c853",
-      "updatedAt": "17:33"
+      "updatedAt": "17:52"
     },
     {
       "symbol": "2337",
@@ -118,7 +118,7 @@
       "confidence": 68,
       "confidenceLabel": "偏多",
       "confidenceColor": "#69f0ae",
-      "updatedAt": "17:33"
+      "updatedAt": "17:52"
     },
     {
       "symbol": "3706",
@@ -133,7 +133,7 @@
       "confidence": 58,
       "confidenceLabel": "中性觀望",
       "confidenceColor": "#ffd740",
-      "updatedAt": "17:33"
+      "updatedAt": "17:52"
     },
     {
       "symbol": "2313",
@@ -148,7 +148,7 @@
       "confidence": 88,
       "confidenceLabel": "強力看多",
       "confidenceColor": "#00c853",
-      "updatedAt": "17:33"
+      "updatedAt": "17:52"
     }
   ],
   "sectors": [
@@ -10069,7 +10069,7 @@
       "dir": "up"
     }
   },
-  "updatedAt": "2026-05-25T17:33:08.485948+08:00",
+  "updatedAt": "2026-05-25T17:52:09.607594+08:00",
   "marketOpen": false,
   "source": "TWSE"
 }
