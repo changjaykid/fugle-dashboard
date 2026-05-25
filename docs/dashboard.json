@@ -13,7 +13,7 @@
       "confidence": 68,
       "confidenceLabel": "偏多",
       "confidenceColor": "#69f0ae",
-      "updatedAt": "17:52"
+      "updatedAt": "18:17"
     },
     {
       "symbol": "2317",
@@ -28,7 +28,7 @@
       "confidence": 80,
       "confidenceLabel": "偏多",
       "confidenceColor": "#69f0ae",
-      "updatedAt": "17:52"
+      "updatedAt": "18:17"
     },
     {
       "symbol": "2454",
@@ -43,7 +43,7 @@
       "confidence": 88,
       "confidenceLabel": "強力看多",
       "confidenceColor": "#00c853",
-      "updatedAt": "17:52"
+      "updatedAt": "18:17"
     },
     {
       "symbol": "2382",
@@ -58,7 +58,7 @@
       "confidence": 58,
       "confidenceLabel": "中性觀望",
       "confidenceColor": "#ffd740",
-      "updatedAt": "17:52"
+      "updatedAt": "18:17"
     },
     {
       "symbol": "3231",
@@ -73,7 +73,7 @@
       "confidence": 80,
       "confidenceLabel": "偏多",
       "confidenceColor": "#69f0ae",
-      "updatedAt": "17:52"
+      "updatedAt": "18:17"
     },
     {
       "symbol": "2308",
@@ -88,7 +88,7 @@
       "confidence": 88,
       "confidenceLabel": "強力看多",
       "confidenceColor": "#00c853",
-      "updatedAt": "17:52"
+      "updatedAt": "18:17"
     },
     {
       "symbol": "2303",
@@ -103,7 +103,7 @@
       "confidence": 88,
       "confidenceLabel": "強力看多",
       "confidenceColor": "#00c853",
-      "updatedAt": "17:52"
+      "updatedAt": "18:17"
     },
     {
       "symbol": "2337",
@@ -118,7 +118,7 @@
       "confidence": 68,
       "confidenceLabel": "偏多",
       "confidenceColor": "#69f0ae",
-      "updatedAt": "17:52"
+      "updatedAt": "18:17"
     },
     {
       "symbol": "3706",
@@ -133,7 +133,7 @@
       "confidence": 58,
       "confidenceLabel": "中性觀望",
       "confidenceColor": "#ffd740",
-      "updatedAt": "17:52"
+      "updatedAt": "18:17"
     },
     {
       "symbol": "2313",
@@ -148,7 +148,7 @@
       "confidence": 88,
       "confidenceLabel": "強力看多",
       "confidenceColor": "#00c853",
-      "updatedAt": "17:52"
+      "updatedAt": "18:17"
     }
   ],
   "sectors": [
@@ -1485,6 +1485,160 @@
       "changePct": -5.35,
       "chgStr": "-5.35%",
       "dir": "dn"
+    },
+    "3081": {
+      "price": 2925.0,
+      "change": 215.0,
+      "changePct": 7.93,
+      "chgStr": "+7.93%",
+      "dir": "up"
+    },
+    "3105": {
+      "price": 543.0,
+      "change": 12.0,
+      "changePct": 2.26,
+      "chgStr": "+2.26%",
+      "dir": "up"
+    },
+    "3163": {
+      "price": 1210.0,
+      "change": 65.0,
+      "changePct": 5.68,
+      "chgStr": "+5.68%",
+      "dir": "up"
+    },
+    "3221": {
+      "price": 60.2,
+      "change": 3.8,
+      "changePct": 6.74,
+      "chgStr": "+6.74%",
+      "dir": "up"
+    },
+    "3324": {
+      "price": 1010.0,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "3363": {
+      "price": 846.0,
+      "change": -6.0,
+      "changePct": -0.7,
+      "chgStr": "-0.7%",
+      "dir": "dn"
+    },
+    "3491": {
+      "price": 2090.0,
+      "change": 160.0,
+      "changePct": 8.29,
+      "chgStr": "+8.29%",
+      "dir": "up"
+    },
+    "3672": {
+      "price": 10.9,
+      "change": -0.5,
+      "changePct": -4.39,
+      "chgStr": "-4.39%",
+      "dir": "dn"
+    },
+    "4147": {
+      "price": 49.4,
+      "change": -1.1,
+      "changePct": -2.18,
+      "chgStr": "-2.18%",
+      "dir": "dn"
+    },
+    "4162": {
+      "price": 56.0,
+      "change": -0.4,
+      "changePct": -0.71,
+      "chgStr": "-0.71%",
+      "dir": "dn"
+    },
+    "4541": {
+      "price": 44.1,
+      "change": -0.2,
+      "changePct": -0.45,
+      "chgStr": "-0.45%",
+      "dir": "dn"
+    },
+    "4743": {
+      "price": 52.0,
+      "change": -1.0,
+      "changePct": -1.89,
+      "chgStr": "-1.89%",
+      "dir": "dn"
+    },
+    "4979": {
+      "price": 655.0,
+      "change": 25.0,
+      "changePct": 3.97,
+      "chgStr": "+3.97%",
+      "dir": "up"
+    },
+    "5274": {
+      "price": 17725.0,
+      "change": -55.0,
+      "changePct": -0.31,
+      "chgStr": "-0.31%",
+      "dir": "dn"
+    },
+    "5425": {
+      "price": 91.6,
+      "change": 4.5,
+      "changePct": 5.17,
+      "chgStr": "+5.17%",
+      "dir": "up"
+    },
+    "5443": {
+      "price": 132.0,
+      "change": 10.5,
+      "changePct": 8.64,
+      "chgStr": "+8.64%",
+      "dir": "up"
+    },
+    "6127": {
+      "price": 52.0,
+      "change": -0.5,
+      "changePct": -0.95,
+      "chgStr": "-0.95%",
+      "dir": "dn"
+    },
+    "6173": {
+      "price": 211.5,
+      "change": 19.0,
+      "changePct": 9.87,
+      "chgStr": "+9.87%",
+      "dir": "up"
+    },
+    "6274": {
+      "price": 1600.0,
+      "change": 145.0,
+      "changePct": 9.97,
+      "chgStr": "+9.97%",
+      "dir": "up"
+    },
+    "6547": {
+      "price": 46.7,
+      "change": -1.25,
+      "changePct": -2.61,
+      "chgStr": "-2.61%",
+      "dir": "dn"
+    },
+    "6576": {
+      "price": 78.4,
+      "change": -2.1,
+      "changePct": -2.61,
+      "chgStr": "-2.61%",
+      "dir": "dn"
+    },
+    "6643": {
+      "price": 606.0,
+      "change": 5.0,
+      "changePct": 0.83,
+      "chgStr": "+0.83%",
+      "dir": "up"
     },
     "00400A": {
       "price": 14.57,
@@ -10069,7 +10223,7 @@
       "dir": "up"
     }
   },
-  "updatedAt": "2026-05-25T17:52:09.607594+08:00",
+  "updatedAt": "2026-05-25T18:17:13.124375+08:00",
   "marketOpen": false,
   "source": "TWSE"
 }

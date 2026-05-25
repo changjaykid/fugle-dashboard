@@ -184,22 +184,33 @@ THEME_STOCKS = """0050 0056 1101 1503 1504 1513 1514 1516 1519 1530 1536 1545 15
 5274 5317 5388 5425 5443 5533 5534 5608 5876 6127 6173 6213 6274 6278 6282
 6285 6409 6414 6415 6443 6472 6533 6547 6576 6643 6669 6706 6781 6806 6869 8046""".split()
 
+# 這 24 支是上櫃（OTC），需用 otc_xxx.tw 查詢
+OTC_STOCKS = {'3081','3105','3163','3221','3324','3363','3491','3672',
+              '4147','4162','4541','4743','4979','5274','5317','5425',
+              '5443','6127','6173','6274','6547','6576','6643'}
+
 def fetch_quotes_batch(symbols):
-    """批次取得個股即時報價，同時抓 watchlist + 全題材股"""
+    """批次取得個股即時報價，自動區分上市/上櫃"""
     all_syms = list(dict.fromkeys(list(symbols) + THEME_STOCKS))  # 去重保序
-    tse_syms = [f'tse_{s}.tw' for s in all_syms]
-    ex_ch = '|'.join(tse_syms)
+    tse_syms = [f'tse_{s}.tw' for s in all_syms if s not in OTC_STOCKS]
+    otc_syms = [f'otc_{s}.tw' for s in all_syms if s in OTC_STOCKS]
+
+    result = {}
+    base = 'https://mis.twse.com.tw/stock/api/getStockInfo.jsp'
     try:
-        r = requests.get(
-            'https://mis.twse.com.tw/stock/api/getStockInfo.jsp',
-            params={'ex_ch': ex_ch, 'json': 1, 'delay': 0},
-            headers=HEADERS, timeout=15
-        )
-        result = {}
+        # 上市
+        r = requests.get(base, params={'ex_ch': '|'.join(tse_syms), 'json': 1, 'delay': 0},
+                         headers=HEADERS, timeout=15)
         for item in r.json().get('msgArray', []):
             sym = item.get('c', '')
-            if sym:
-                result[sym] = item
+            if sym: result[sym] = item
+        # 上櫃
+        if otc_syms:
+            r2 = requests.get(base, params={'ex_ch': '|'.join(otc_syms), 'json': 1, 'delay': 0},
+                              headers=HEADERS, timeout=15)
+            for item in r2.json().get('msgArray', []):
+                sym = item.get('c', '')
+                if sym: result[sym] = item
         return result
     except Exception as e:
         print(f'[ERROR] fetch_quotes_batch: {e}')
