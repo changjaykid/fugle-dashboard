@@ -228,6 +228,7 @@ tr:hover td{background:rgba(26,26,38,.8)}
 <nav>
   <button class="ntab active" onclick="goPage('home')">🏠 首頁總覽</button>
   <button class="ntab" onclick="goPage('theme')">🔥 熱門題材</button>
+  <button class="ntab" onclick="goPage('sim')">📈 模擬倉</button>
   <button class="ntab" onclick="goPage('sector')">🏭 類股分析</button>
   <button class="ntab" onclick="goPage('news')">📰 新聞雷達</button>
   <button class="ntab" onclick="goPage('watch')">⭐ 自選股</button>
@@ -277,6 +278,57 @@ tr:hover td{background:rgba(26,26,38,.8)}
 
   <div style="height:20px"></div>
 
+  <!-- 量能異常 & 避開清單 -->
+  <div class="g2">
+    <div class="card" style="margin-bottom:0">
+      <div class="ct">⚡ 量能異常榜 <span class="badge badge-y">成交量 > 市場平均 3 倍</span></div>
+      <table><thead><tr><th>股票</th><th>產業</th><th>現價</th><th>漲幅</th><th>量能比</th><th>信心分</th></tr></thead>
+      <tbody id="volSurgeBody"></tbody></table>
+    </div>
+    <div class="card" style="margin-bottom:0">
+      <div class="ct">🚨 避開清單 <span class="badge badge-r">法人大賣 / 爆量長黑 / 大跌</span></div>
+      <table><thead><tr><th>股票</th><th>原因</th><th>現價</th><th>跌幅</th><th>信心分</th></tr></thead>
+      <tbody id="avoidBody"></tbody></table>
+    </div>
+  </div>
+
+  <div style="height:20px"></div>
+
+  <!-- 強弱類股 -->
+  <div class="card">
+    <div class="ct">🏭 最強 / 最弱類股 <span class="badge">產業平均漲跌幅</span></div>
+    <div id="sectorStrengthGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:8px"></div>
+  </div>
+
+  <div style="height:20px"></div>
+
+</div>
+
+<!-- ⑥ 模擬倉 -->
+<div class="page" id="page-sim">
+  <div class="sim-header">
+    <div>
+      <div style="font-size:20px;font-weight:800;margin-bottom:4px">📈 模擬倉紀錄</div>
+      <div style="font-size:13px;color:var(--muted)">依據「明日關注清單」自動進場｜規則：虧 > 8%、獲利 > 15%、或持股 > 5日出場</div>
+    </div>
+    <div class="hdr-r" id="simStats"></div>
+  </div>
+
+  <div class="card">
+    <div class="ct">💰 當前持倉</div>
+    <table id="simHoldingsTable">
+      <thead><tr><th>代號</th><th>名稱</th><th>進場日期</th><th>進場價</th><th>現價</th><th>損益%</th><th>持有天數</th></tr></thead>
+      <tbody id="simHoldingsBody"></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="ct">📜 歷史出場記錄</div>
+    <table id="simHistoryTable">
+      <thead><tr><th>代號</th><th>名稱</th><th>進場價</th><th>出場價</th><th>損益%</th><th>出場原因</th><th>日期</th></tr></thead>
+      <tbody id="simHistoryBody"></tbody>
+    </table>
+  </div>
 </div>
 
 <!-- ② 熱門題材 -->
@@ -672,7 +724,244 @@ const SECTORS = [
   ]}
 ];
 
-function addWatch(s){alert(`在 Discord 跟老闆說「追蹤 ${s}」，引擎自動加入 ✅`)}
+function goPage(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.ntab').forEach(x=>x.classList.remove('active'));
+  const targetPage = document.getElementById('page-'+p);
+  if (targetPage) targetPage.classList.add('active');
+  const targetTab = document.querySelector(`button[onclick="goPage('${p}')"]`);
+  if (targetTab) targetTab.classList.add('active');
+  if(p==='sim') loadSimData();
+}
+
+async function loadDashboard(){
+  try {
+    const r = await fetch('dashboard.json?t=' + Date.now());
+    const d = await r.json();
+    window.dashboardData = d;
+    renderDynamic(d);
+  } catch(e) { console.error('Dashboard Error:', e); }
+}
+
+async function loadSimData(){
+  try {
+    const r = await fetch('sim_portfolio.json?t=' + Date.now());
+    const d = await r.json();
+    renderSim(d);
+  } catch(e) { console.error('Sim Data Error:', e); }
+}
+
+function renderDynamic(d){
+  if(d.updatedAt) document.getElementById('updTime').textContent = new Date(d.updatedAt).toLocaleString('zh-TW');
+  const mktSt = document.getElementById('mktSt');
+  const mktDot = document.getElementById('mktDot');
+  if(d.marketOpen) {
+    mktSt.textContent = '交易中';
+    mktDot.classList.add('open');
+  } else {
+    mktSt.textContent = '休市中';
+    mktDot.classList.remove('open');
+  }
+
+  // 明日關注
+  const twGrid = document.getElementById('tomorrowWatchGrid');
+  if(twGrid && d.tomorrowWatch) {
+    twGrid.innerHTML = d.tomorrowWatch.map(x=>`
+      <div class="tw-card">
+        <div class="tw-top">
+          <div><div class="tw-sym">${x.s}</div><div class="tw-name">${x.n}</div></div>
+          <div class="cscore" style="color:var(--accent)">${x.conf}</div>
+        </div>
+        <div class="tw-ind">${x.industry}</div>
+        <div class="tw-meta">
+          <div class="tw-num ${x.chg.startsWith('+')?'up':'dn'}">${x.price}</div>
+          <div class="tw-buy">法人買超 ${x.foreign}</div>
+        </div>
+      </div>
+    `).join('') || '<div class="empty">暫無數據</div>';
+  }
+
+  // 法人買賣
+  const renderTable = (id, list) => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.innerHTML = list.map(x=>`
+      <tr>
+        <td class="rn">${x.r}</td>
+        <td><b>${x.s}</b><br><span style="font-size:10px;color:var(--muted)">${x.n}</span></td>
+        <td><span class="tag">${x.industry}</span></td>
+        <td>${x.price}</td>
+        <td class="${x.foreign.startsWith('+')?'up':'dn'}">${x.foreign}</td>
+        <td class="${x.trust.startsWith('+')?'up':'dn'}">${x.trust}</td>
+        <td class="${x.dir}">${x.chg}</td>
+        <td><div class="cscore">${x.conf}</div></td>
+      </tr>
+    `).join('');
+  };
+  renderTable('buyBody', d.topBuy || []);
+  renderTable('sellBody', d.topSell || []);
+
+  // 漲跌排行
+  const renderMoverTable = (id, list) => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.innerHTML = list.map(x=>`
+      <tr>
+        <td class="rn">${x.r}</td>
+        <td><b>${x.s}</b><br><span style="font-size:10px;color:var(--muted)">${x.n}</span></td>
+        <td><span class="tag">${x.industry}</span></td>
+        <td>${x.price}</td>
+        <td class="${x.dir}">${x.chg}</td>
+        <td>${x.vol}</td>
+        <td><div class="cscore">${x.conf}</div></td>
+      </tr>
+    `).join('');
+  };
+  renderMoverTable('gainBody', d.gainers || []);
+  renderMoverTable('loseBody', d.losers || []);
+
+  // 量能異常
+  const volBody = document.getElementById('volSurgeBody');
+  if(volBody && d.volSurge) {
+    volBody.innerHTML = d.volSurge.map(x=>`
+      <tr>
+        <td><b>${x.s}</b> ${x.n}</td>
+        <td><span class="tag">${x.industry}</span></td>
+        <td>${x.price}</td>
+        <td class="up">+${x.changePct}%</td>
+        <td style="color:var(--yellow)">${x.volRatio}x</td>
+        <td><div class="cscore">${x.conf}</div></td>
+      </tr>
+    `).join('') || '<tr><td colspan="6" style="text-align:center">暫無爆量股</td></tr>';
+  }
+
+  // 避開清單
+  const avoidBody = document.getElementById('avoidBody');
+  if(avoidBody && d.avoidList) {
+    avoidBody.innerHTML = d.avoidList.map(x=>`
+      <tr>
+        <td><b>${x.s}</b> ${x.n}</td>
+        <td><span class="badge badge-r">${x.reason}</span></td>
+        <td>${x.price}</td>
+        <td class="dn">${x.changePct}%</td>
+        <td><div class="cscore">${x.conf}</div></td>
+      </tr>
+    `).join('') || '<tr><td colspan="5" style="text-align:center">盤勢良好</td></tr>';
+  }
+
+  // 類股強弱
+  const strengthGrid = document.getElementById('sectorStrengthGrid');
+  if(strengthGrid && d.sectorStrength) {
+    strengthGrid.innerHTML = d.sectorStrength.map(x=>`
+      <div class="sbtn ${x.dir === 'up' ? 'active' : ''}" style="border-left: 4px solid ${x.dir==='up'?'var(--red)':'var(--green)'}">
+        <span class="sn">${x.industry}</span>
+        <span class="sc ${x.dir}">${x.avgPct}% (${x.stocks_count}檔)</span>
+      </div>
+    `).join('');
+  }
+
+  // 自選股
+  renderWatch(d.stocks || []);
+}
+
+function renderSim(d){
+  const holdingsBody = document.getElementById('simHoldingsBody');
+  if(holdingsBody) {
+    holdingsBody.innerHTML = (d.holdings || []).map(x=>`
+      <tr>
+        <td><b>${x.s}</b></td>
+        <td>${x.n}</td>
+        <td>${x.entry_date}</td>
+        <td>${x.entry_price}</td>
+        <td>${x.current_price}</td>
+        <td class="${x.profit_pct>=0?'up':'dn'}">${x.profit_pct>=0?'+':''}${x.profit_pct}%</td>
+        <td>${x.days}</td>
+      </tr>
+    `).join('') || '<tr><td colspan="7" style="text-align:center">當前無持倉</td></tr>';
+  }
+
+  const historyBody = document.getElementById('simHistoryBody');
+  if(historyBody) {
+    historyBody.innerHTML = (d.history || []).map(x=>`
+      <tr>
+        <td><b>${x.s}</b></td>
+        <td>${x.n}</td>
+        <td>${x.entry_price}</td>
+        <td>${x.exit_price}</td>
+        <td class="${x.profit_pct>=0?'up':'dn'}">${x.profit_pct>=0?'+':''}${x.profit_pct}%</td>
+        <td><span class="tag">${x.reason}</span></td>
+        <td>${x.exit_date}</td>
+      </tr>
+    `).join('') || '<tr><td colspan="7" style="text-align:center">尚無歷史紀錄</td></tr>';
+  }
+  
+  const stats = document.getElementById('simStats');
+  if(stats && d.history) {
+    const totalTrades = d.history.length;
+    const wins = d.history.filter(x=>x.profit_pct > 0).length;
+    const winRate = totalTrades > 0 ? (wins/totalTrades*100).toFixed(1) : 0;
+    stats.innerHTML = `
+      <div class="sim-stat">
+        <div class="sim-stat-val">${totalTrades}</div>
+        <div class="sim-stat-lab">交易次數</div>
+      </div>
+      <div class="sim-stat">
+        <div class="sim-stat-val">${winRate}%</div>
+        <div class="sim-stat-lab">勝率</div>
+      </div>
+    `;
+  }
+}
+
+function renderWatch(stocks){
+  const grid = document.getElementById('wGrid');
+  const table = document.getElementById('wTable');
+  if(!grid || !table) return;
+  
+  if(stocks.length === 0) {
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="ei">⭐</div><div>尚無自選股</div></div>';
+    table.innerHTML = '<tr><td colspan="10" style="text-align:center">尚無數據</td></tr>';
+    return;
+  }
+
+  grid.innerHTML = stocks.map(x=>`
+    <div class="wcard">
+      <div class="wcard-top">
+        <div><div class="wcard-n">${x.name}</div><div class="wcard-s">${x.symbol}</div></div>
+        <div class="wcat">${x.category}</div>
+      </div>
+      <div style="display:flex;align-items:end;justify-content:space-between">
+        <div>
+          <div class="wpr">${x.price}</div>
+          <div class="wchg ${x.changePct>=0?'up':'dn'}">${x.changePct>=0?'+':''}${x.changePct}%</div>
+        </div>
+        <div style="text-align:right">
+          <div class="cscore">${x.confidence}</div>
+          <div style="font-size:10px;color:${x.confidenceColor}">${x.confidenceLabel}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  table.innerHTML = stocks.map(x=>`
+    <tr>
+      <td>${x.symbol}</td>
+      <td><b>${x.name}</b></td>
+      <td><span class="tag">${x.category}</span></td>
+      <td class="wpr-cell">${x.price}</td>
+      <td class="${x.changePct>=0?'up':'dn'}">${x.changePct>=0?'+':''}${x.changePct}%</td>
+      <td>—</td>
+      <td><div style="width:50px;height:4px;background:var(--surface2);border-radius:2px"><div style="width:70%;height:100%;background:var(--accent);border-radius:2px"></div></div></td>
+      <td><div class="cscore">${x.confidence}</div></td>
+      <td><span class="rec-chip ${x.confidence>=65?'rec-buy':x.confidence<=40?'rec-avoid':'rec-hold'}">${x.confidence>=65?'強勢':x.confidence<=40?'避開':'觀察'}</span></td>
+      <td><button class="gbtn">🔔</button></td>
+    </tr>
+  `).join('');
+}
+
+function renderHome(){
+  // 渲染首頁靜態結構
+}
 function isOpen(){
   const n=new Date(),d=n.getDay();
   if(d===0||d===6)return false;

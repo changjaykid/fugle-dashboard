@@ -13,7 +13,7 @@
       "confidence": 19,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "23:04"
+      "updatedAt": "23:35"
     },
     {
       "symbol": "2317",
@@ -28,7 +28,7 @@
       "confidence": 56,
       "confidenceLabel": "⏸️ 中性觀望",
       "confidenceColor": "#ffd740",
-      "updatedAt": "23:04"
+      "updatedAt": "23:35"
     },
     {
       "symbol": "2454",
@@ -43,7 +43,7 @@
       "confidence": 43,
       "confidenceLabel": "📉 偏空",
       "confidenceColor": "#ff6d00",
-      "updatedAt": "23:04"
+      "updatedAt": "23:35"
     },
     {
       "symbol": "2382",
@@ -58,7 +58,7 @@
       "confidence": 28,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "23:04"
+      "updatedAt": "23:35"
     },
     {
       "symbol": "3231",
@@ -73,7 +73,7 @@
       "confidence": 25,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "23:04"
+      "updatedAt": "23:35"
     },
     {
       "symbol": "2308",
@@ -88,7 +88,7 @@
       "confidence": 36,
       "confidenceLabel": "📉 偏空",
       "confidenceColor": "#ff6d00",
-      "updatedAt": "23:04"
+      "updatedAt": "23:35"
     },
     {
       "symbol": "2303",
@@ -103,7 +103,7 @@
       "confidence": 49,
       "confidenceLabel": "📉 偏空",
       "confidenceColor": "#ff6d00",
-      "updatedAt": "23:04"
+      "updatedAt": "23:35"
     },
     {
       "symbol": "2337",
@@ -118,7 +118,7 @@
       "confidence": 21,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "23:04"
+      "updatedAt": "23:35"
     },
     {
       "symbol": "3706",
@@ -133,7 +133,7 @@
       "confidence": 17,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "23:04"
+      "updatedAt": "23:35"
     },
     {
       "symbol": "2313",
@@ -148,7 +148,7 @@
       "confidence": 38,
       "confidenceLabel": "📉 偏空",
       "confidenceColor": "#ff6d00",
-      "updatedAt": "23:04"
+      "updatedAt": "23:35"
     }
   ],
   "sectors": [
@@ -174,7 +174,14 @@
     "change": "+1376.43",
     "changePct": "+3.26%",
     "changePctNum": 3.26,
-    "volume": "0張"
+    "volume": "0張",
+    "upCount": 11346,
+    "dnCount": 3053,
+    "flatCount": 551,
+    "limitUp": 1741,
+    "limitDn": 49,
+    "mood": 90,
+    "moodLabel": "🔥 強勢多頭"
   },
   "topBuy": [
     {
@@ -736,6 +743,216 @@
       "chg": "+7.02%",
       "foreign": "+8,249張",
       "conf": 63
+    }
+  ],
+  "volSurge": [
+    {
+      "s": "2344",
+      "n": "華邦電",
+      "industry": "半導體",
+      "price": 128.5,
+      "changePct": 2.8,
+      "volRatio": 37.8,
+      "conf": 79
+    },
+    {
+      "s": "2303",
+      "n": "聯電",
+      "industry": "半導體",
+      "price": 125.0,
+      "changePct": 9.65,
+      "volRatio": 36.0,
+      "conf": 74
+    },
+    {
+      "s": "6770",
+      "n": "力積電",
+      "industry": "半導體",
+      "price": 67.6,
+      "changePct": 5.96,
+      "volRatio": 34.0,
+      "conf": 93
+    },
+    {
+      "s": "2324",
+      "n": "仁寶",
+      "industry": "電腦周邊",
+      "price": 34.65,
+      "changePct": 10.0,
+      "volRatio": 29.5,
+      "conf": 79
+    },
+    {
+      "s": "2002",
+      "n": "中鋼",
+      "industry": "鋼鐵",
+      "price": 19.95,
+      "changePct": 9.92,
+      "volRatio": 22.2,
+      "conf": 63
+    },
+    {
+      "s": "1802",
+      "n": "台玻",
+      "industry": "玻璃陶瓷",
+      "price": 73.9,
+      "changePct": 4.82,
+      "volRatio": 19.6,
+      "conf": 79
+    },
+    {
+      "s": "2337",
+      "n": "旺宏",
+      "industry": "半導體",
+      "price": 152.5,
+      "changePct": 2.01,
+      "volRatio": 14.3,
+      "conf": 46
+    },
+    {
+      "s": "2356",
+      "n": "英業達",
+      "industry": "電腦周邊",
+      "price": 65.4,
+      "changePct": 9.92,
+      "volRatio": 14.3,
+      "conf": 64
+    }
+  ],
+  "sectorStrength": [
+    {
+      "industry": "鋼鐵",
+      "avgPct": 4.32,
+      "stocks_count": 31,
+      "dir": "up"
+    },
+    {
+      "industry": "半導體",
+      "avgPct": 3.64,
+      "stocks_count": 95,
+      "dir": "up"
+    },
+    {
+      "industry": "電腦周邊",
+      "avgPct": 2.75,
+      "stocks_count": 64,
+      "dir": "up"
+    },
+    {
+      "industry": "玻璃陶瓷",
+      "avgPct": 2.73,
+      "stocks_count": 5,
+      "dir": "up"
+    },
+    {
+      "industry": "其他電子",
+      "avgPct": 2.72,
+      "stocks_count": 46,
+      "dir": "up"
+    },
+    {
+      "industry": "建材營造",
+      "avgPct": -0.99,
+      "stocks_count": 55,
+      "dir": "dn"
+    },
+    {
+      "industry": "生技醫療",
+      "avgPct": -0.86,
+      "stocks_count": 60,
+      "dir": "dn"
+    },
+    {
+      "industry": "橡膠",
+      "avgPct": -0.59,
+      "stocks_count": 11,
+      "dir": "dn"
+    },
+    {
+      "industry": "觀光",
+      "avgPct": -0.57,
+      "stocks_count": 19,
+      "dir": "dn"
+    },
+    {
+      "industry": "油電燃氣",
+      "avgPct": -0.54,
+      "stocks_count": 8,
+      "dir": "dn"
+    }
+  ],
+  "avoidList": [
+    {
+      "s": "2424",
+      "n": "隴華",
+      "industry": "通信網路",
+      "price": 13.15,
+      "changePct": -9.93,
+      "reason": "法人大賣",
+      "conf": 27
+    },
+    {
+      "s": "6806",
+      "n": "森崴能源",
+      "industry": "",
+      "price": 8.35,
+      "changePct": -9.92,
+      "reason": "大跌",
+      "conf": 10
+    },
+    {
+      "s": "3024",
+      "n": "憶聲",
+      "industry": "光電",
+      "price": 16.05,
+      "changePct": -8.81,
+      "reason": "法人大賣",
+      "conf": 37
+    },
+    {
+      "s": "3033",
+      "n": "威健",
+      "industry": "電子通路",
+      "price": 49.2,
+      "changePct": -8.72,
+      "reason": "法人大賣",
+      "conf": 49
+    },
+    {
+      "s": "2543",
+      "n": "皇昌",
+      "industry": "建材營造",
+      "price": 42.2,
+      "changePct": -7.25,
+      "reason": "法人大賣",
+      "conf": 34
+    },
+    {
+      "s": "3717",
+      "n": "聯嘉投控",
+      "industry": "汽車",
+      "price": 22.95,
+      "changePct": -6.9,
+      "reason": "法人大賣",
+      "conf": 32
+    },
+    {
+      "s": "6887",
+      "n": "寶綠特-KY",
+      "industry": "",
+      "price": 31.7,
+      "changePct": -6.63,
+      "reason": "法人大賣",
+      "conf": 27
+    },
+    {
+      "s": "6861",
+      "n": "睿生光電",
+      "industry": "生技醫療",
+      "price": 422.0,
+      "changePct": -6.01,
+      "reason": "法人大賣",
+      "conf": 30
     }
   ],
   "priceMap": {
@@ -11756,7 +11973,7 @@
       "industry": "鋼鐵"
     }
   },
-  "updatedAt": "2026-05-25T23:04:37.476524+08:00",
+  "updatedAt": "2026-05-25T23:35:42.435072+08:00",
   "marketOpen": false,
   "source": "TWSE"
 }

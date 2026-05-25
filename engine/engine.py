@@ -486,6 +486,59 @@ def scan():
             'updatedAt': now.strftime('%H:%M')
         })
 
+    # 避開清單
+    avoid_list = []
+    for sym, m in all_map.items():
+        if not (len(sym) == 4 and sym.isdigit()): continue
+        inst = inst_map.get(sym, {})
+        reason = ""
+        if inst.get('total', 0) < -10000: reason = "法人大賣"
+        elif m['changePct'] < -5: reason = "大跌"
+        elif m['volume'] > avg_vol * 2 and m['changePct'] < 0: reason = "爆量長黑"
+        
+        if reason:
+            avoid_list.append({
+                's': sym, 'n': m['n'], 'industry': industry_cache.get(sym, ''),
+                'price': m['price'], 'changePct': m['changePct'],
+                'reason': reason, 'conf': m.get('conf', 50)
+            })
+    avoid_list = sorted(avoid_list, key=lambda x: x['changePct'])[:8]
+
+    # 量能異常榜
+    vol_surge = []
+    market_avg_vol = avg_vol # 這裡的 avg_vol 是全市場平均成交量(張)
+    for sym, m in all_map.items():
+        if not (len(sym) == 4 and sym.isdigit()): continue
+        vol_ratio = m['volume'] / market_avg_vol if market_avg_vol > 0 else 0
+        if vol_ratio > 3 and m['changePct'] > 0:
+            vol_surge.append({
+                's': sym, 'n': m['n'], 'industry': industry_cache.get(sym, ''),
+                'price': m['price'], 'changePct': m['changePct'],
+                'volRatio': round(vol_ratio, 1), 'conf': m.get('conf', 50)
+            })
+    vol_surge = sorted(vol_surge, key=lambda x: x['volRatio'], reverse=True)[:8]
+
+    # 最強/最弱類股
+    sector_map = {}
+    for sym, m in all_map.items():
+        ind = m.get('industry')
+        if not ind or ind == '其他': continue
+        if ind not in sector_map: sector_map[ind] = []
+        sector_map[ind].append(m['changePct'])
+    
+    sector_strength = []
+    for ind, pcts in sector_map.items():
+        avg_pct = round(sum(pcts) / len(pcts), 2)
+        sector_strength.append({
+            'industry': ind, 'avgPct': avg_pct, 'stocks_count': len(pcts),
+            'dir': 'up' if avg_pct >= 0 else 'dn'
+        })
+    
+    sector_strength = sorted(sector_strength, key=lambda x: x['avgPct'], reverse=True)
+    top_sectors = sector_strength[:5]
+    bot_sectors = sorted(sector_strength, key=lambda x: x['avgPct'])[:5]
+    sector_out = top_sectors + bot_sectors
+
     payload = {
         'stocks':        stocks,
         'sectors':       config.get('sectors', []),
@@ -495,6 +548,9 @@ def scan():
         'gainers':       [fmt_mover(i+1, m) for i, m in enumerate(gainers)],
         'losers':        [fmt_mover(i+1, m) for i, m in enumerate(losers)],
         'tomorrowWatch': tomorrow_watch,
+        'volSurge':      vol_surge,
+        'sectorStrength': sector_out,
+        'avoidList':     avoid_list,
         'priceMap':      price_map,
         'updatedAt':     now.isoformat(),
         'marketOpen':    is_market_open(),
@@ -507,7 +563,16 @@ def scan():
 
     print(f'✅ 完成：個股{len(stocks)} / 法人Top{len(top_buy_out)} / '
           f'漲Top{len(gainers)} / 明日關注{len(tomorrow_watch)} / '
+          f'爆量{len(vol_surge)} / 避開{len(avoid_list)} / '
           f'priceMap{len(price_map)} / 情緒{index_data.get("mood","?")}')
+    
+    # 觸發模擬倉更新
+    try:
+        from sim_engine import update_sim_portfolio
+        update_sim_portfolio()
+    except Exception as e:
+        print(f'[WARN] update_sim_portfolio error: {e}')
+
     return payload
 
 
