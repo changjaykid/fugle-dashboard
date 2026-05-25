@@ -154,6 +154,17 @@ tr:hover td{background:rgba(26,26,38,.8)}
 .wbk{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:8px}
 .wbi{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
 
+.watch-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.tw-card{background:linear-gradient(135deg,var(--surface),var(--surface2));border:1px solid var(--border);border-radius:var(--r);padding:16px}
+.tw-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.tw-sym{font-size:20px;font-weight:800}.tw-name{font-size:12px;color:var(--muted)}
+.tw-ind{display:inline-block;font-size:11px;padding:3px 8px;border-radius:20px;background:rgba(124,111,255,.15);color:var(--accent);margin:6px 0}
+.tw-meta{display:flex;justify-content:space-between;align-items:end;margin-top:8px}
+.tw-num{font-size:22px;font-weight:800}
+.tw-buy{font-size:12px;color:var(--muted)}
+@media(max-width:1100px){.watch-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:800px){.watch-grid{grid-template-columns:1fr}}
+
 /* 新聞 */
 .ni{padding:13px 0;border-bottom:1px solid var(--border)}
 .ni:last-child{border-bottom:none}
@@ -249,16 +260,33 @@ tr:hover td{background:rgba(26,26,38,.8)}
 
   <div style="height:20px"></div>
 
+  <div class="card">
+    <div class="ct">👀 明日關注清單 <span class="badge badge-g">法人買超 + 量能放大</span></div>
+    <div class="watch-grid" id="tomorrowWatchGrid">
+      <div class="empty" style="grid-column:1/-1;padding:24px 0">資料載入中...</div>
+    </div>
+  </div>
+
+  <div style="height:20px"></div>
+
+  <!-- 明日關注清單 -->
+  <div class="card" style="margin-bottom:20px">
+    <div class="ct">🔭 明日宜關注清單 <span class="badge badge-g">外資買超+量能放大+有漲未漲停</span></div>
+    <div id="tomorrowWatchGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:4px">
+      <div style="color:var(--muted);padding:20px;text-align:center">資料載入中...</div>
+    </div>
+  </div>
+
   <!-- 法人排行 -->
   <div class="g2">
     <div class="card" style="margin-bottom:0">
       <div class="ct">🏆 今日法人買超 Top 10 <span class="badge">真實數據</span></div>
-      <table><thead><tr><th></th><th>股票</th><th>現價</th><th>外資(張)</th><th>投信(張)</th><th>漲跌%</th><th>信心分</th></tr></thead>
+      <table><thead><tr><th></th><th>股票</th><th>產業</th><th>現價</th><th>外資(張)</th><th>投信(張)</th><th>漲跌%</th><th>信心分</th></tr></thead>
       <tbody id="buyBody"></tbody></table>
     </div>
     <div class="card" style="margin-bottom:0">
       <div class="ct">📉 今日法人賣超 Top 10 <span class="badge badge-r">真實數據</span></div>
-      <table><thead><tr><th></th><th>股票</th><th>現價</th><th>外資(張)</th><th>投信(張)</th><th>漲跌%</th><th>信心分</th></tr></thead>
+      <table><thead><tr><th></th><th>股票</th><th>產業</th><th>現價</th><th>外資(張)</th><th>投信(張)</th><th>漲跌%</th><th>信心分</th></tr></thead>
       <tbody id="sellBody"></tbody></table>
     </div>
   </div>
@@ -269,12 +297,12 @@ tr:hover td{background:rgba(26,26,38,.8)}
   <div class="g2">
     <div class="card" style="margin-bottom:0">
       <div class="ct">🚀 今日強勢股 Top 10</div>
-      <table><thead><tr><th></th><th>股票</th><th>現價</th><th>漲幅</th><th>量(萬張)</th></tr></thead>
+      <table><thead><tr><th></th><th>股票</th><th>產業</th><th>現價</th><th>漲幅</th><th>量(萬張)</th><th>信心分</th></tr></thead>
       <tbody id="gainBody"></tbody></table>
     </div>
     <div class="card" style="margin-bottom:0">
       <div class="ct">💣 今日弱勢股 Top 10</div>
-      <table><thead><tr><th></th><th>股票</th><th>現價</th><th>跌幅</th><th>量(萬張)</th></tr></thead>
+      <table><thead><tr><th></th><th>股票</th><th>產業</th><th>現價</th><th>跌幅</th><th>量(萬張)</th><th>信心分</th></tr></thead>
       <tbody id="loseBody"></tbody></table>
     </div>
   </div>
@@ -776,8 +804,8 @@ function renderHome(){
   // Check margin/short alert (skipped — element removed)
 
   // 法人排行初始狀態
-  document.getElementById('buyBody').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">資料載入中...</td></tr>';
-  document.getElementById('sellBody').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">資料載入中...</td></tr>';
+  document.getElementById('buyBody').innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:20px">資料載入中...</td></tr>';
+  document.getElementById('sellBody').innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:20px">資料載入中...</td></tr>';
 }
 
 // ── 熱門題材 ──
@@ -949,13 +977,20 @@ async function loadDashboard() {
       document.getElementById('mood-label').textContent = idx.moodLabel || '—';
       document.getElementById('mood-label').style.color = mc;
       document.getElementById('mood-counts').textContent =
-        `上漲 ${(idx.upCount||0).toLocaleString()} / 下跌 ${(idx.dnCount||0).toLocaleString()}`;
+        `上漲 ${(idx.upCount||0).toLocaleString()} / 下跌 ${(idx.dnCount||0).toLocaleString()} / 漲停 ${idx.limitUp||0} / 跌停 ${idx.limitDn||0}`;
       const lv = document.getElementById('limit-val');
       if (lv) {
         lv.textContent = `${idx.limitUp||0} / ${idx.limitDn||0}`;
         lv.style.color = idx.limitUp > 50 ? 'var(--red)' : 'var(--text)';
       }
+      const uds = document.getElementById('up-dn-counts');
+      if (uds) uds.textContent = `上漲 ${idx.upCount||0} / 下跌 ${idx.dnCount||0} / 平盤 ${idx.flatCount||0}`;
     }
+
+    if (d.tomorrowWatch) renderTomorrowWatch(d.tomorrowWatch);
+
+    // 明日關注清單
+    if (d.tomorrowWatch && d.tomorrowWatch.length) renderTomorrowWatch(d.tomorrowWatch);
 
     // 更新法人買超/賣超排行（真實數據）
     if (d.topBuy && d.topBuy.length) renderBuySell(d.topBuy, d.topSell || []);
@@ -979,12 +1014,40 @@ async function loadDashboard() {
   }
 }
 
-function confColor(s){return s>=85?'var(--green)':s>=68?'var(--yellow)':s>=52?'var(--muted)':'var(--red)';}
+function confColor(s){return s>=80?'var(--green)':s>=65?'#69f0ae':s>=50?'var(--yellow)':'var(--red)';}
+
+function renderTomorrowWatch(list) {
+  const el = document.getElementById('tomorrowWatchGrid');
+  if (!el) return;
+  el.innerHTML = list.map(s => {
+    const cc = confColor(s.conf);
+    const isUp = s.chg && s.chg.startsWith('+');
+    return `<div class="wcard" style="cursor:default">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${cc}"></div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+        <div>
+          <div style="font-size:16px;font-weight:800">${s.s}</div>
+          <div style="font-size:12px;color:var(--muted)">${s.n}</div>
+          ${s.industry ? `<span style="font-size:10px;padding:1px 6px;background:var(--surface2);border-radius:4px;color:var(--muted)">${s.industry}</span>` : ''}
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:18px;font-weight:800;color:${isUp?'var(--red)':'var(--green)'}">${s.price}</div>
+          <div style="font-size:12px;color:${isUp?'var(--red)':'var(--green)'}">${s.chg}</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">
+        <div style="font-size:11px;color:var(--muted)">外資 ${s.foreign}</div>
+        <div style="font-weight:800;font-size:15px;color:${cc}">${s.conf}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
 
 function renderBuySell(topBuy, topSell) {
   const row = (r, dir) => `<tr>
     <td class="rn">${r.r}</td>
     <td><strong>${r.s}</strong> ${r.n}</td>
+    <td><span class="tag">${r.industry||'其他'}</span></td>
     <td class="${r.dir}" style="font-weight:700">${r.price||'—'}</td>
     <td class="${dir}">${r.foreign}</td>
     <td class="${dir}">${r.trust}</td>
@@ -993,6 +1056,36 @@ function renderBuySell(topBuy, topSell) {
   </tr>`;
   document.getElementById('buyBody').innerHTML  = topBuy.map(r=>row(r,'up')).join('');
   document.getElementById('sellBody').innerHTML = topSell.map(r=>row(r,'dn')).join('');
+}
+
+function renderTomorrowWatch(items) {
+  const el = document.getElementById('tomorrowWatchGrid');
+  if (!el) return;
+  if (!items.length) {
+    el.innerHTML = '<div class="empty" style="grid-column:1/-1;padding:24px 0">今天沒有符合條件的明日關注股</div>';
+    return;
+  }
+  el.innerHTML = items.map(x => `
+    <div class="tw-card">
+      <div class="tw-top">
+        <div>
+          <div class="tw-sym">${x.s}</div>
+          <div class="tw-name">${x.n}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:11px;color:var(--muted)">信心分</div>
+          <div class="tw-num" style="color:${confColor(x.conf||50)}">${x.conf||50}</div>
+        </div>
+      </div>
+      <div class="tw-ind">${x.industry||'其他'}</div>
+      <div class="tw-meta">
+        <div>
+          <div class="${(x.chg||'').startsWith('-')?'dn':'up'}" style="font-weight:700">${x.chg||'—'}</div>
+          <div class="tw-buy">外資買超 ${(x.foreign||0).toLocaleString()} 張</div>
+        </div>
+        <div style="font-size:12px;color:var(--muted)">$${x.price||'—'}</div>
+      </div>
+    </div>`).join('');
 }
 
 // 用即時報價置換 THEMES/SECTORS 裡的靜態數字
@@ -1037,6 +1130,7 @@ function renderMovers(gainers, losers) {
   const moverRow = (r, dc) => `<tr>
     <td class="rn">${r.r}</td>
     <td><strong>${r.s}</strong> ${r.n}</td>
+    <td><span class="tag">${r.industry||'其他'}</span></td>
     <td class="${dc}" style="font-weight:700">${r.price}</td>
     <td class="${dc}">${r.chg}</td>
     <td style="color:var(--muted)">${r.vol}</td>
