@@ -227,9 +227,24 @@ tr:hover td{background:rgba(26,26,38,.8)}
 <div class="page active" id="page-home">
   <!-- 大盤指數 -->
   <div class="g4">
-    <div class="ic"><div class="ic-name">加權指數 TAIEX</div>
-      <div class="ic-val" id="t-val">—</div><div class="ic-chg" id="t-chg">—</div>
-      <div class="ic-sub" id="t-sub">成交量：—</div></div>
+    <div class="ic">
+      <div class="ic-name">加權指數 TAIEX</div>
+      <div class="ic-val" id="t-val">—</div>
+      <div class="ic-chg" id="t-chg">—</div>
+      <div class="ic-sub" id="t-sub">成交量：—</div>
+    </div>
+    <div class="ic">
+      <div class="ic-name">🧭 市場情緒指數</div>
+      <div class="ic-val" id="mood-val">—</div>
+      <div class="ic-chg" id="mood-label" style="font-size:12px">—</div>
+      <div class="ic-sub" id="mood-counts">漲跌家數載入中...</div>
+    </div>
+    <div class="ic">
+      <div class="ic-name">👉 漲停 / 跌停</div>
+      <div class="ic-val" id="limit-val">— / —</div>
+      <div class="ic-chg" id="limit-sub" style="font-size:12px;color:var(--muted)">強弱勢參考</div>
+      <div class="ic-sub" id="up-dn-counts">—</div>
+    </div>
   </div>
 
   <div style="height:20px"></div>
@@ -237,13 +252,13 @@ tr:hover td{background:rgba(26,26,38,.8)}
   <!-- 法人排行 -->
   <div class="g2">
     <div class="card" style="margin-bottom:0">
-      <div class="ct">🏆 近3日法人買超 Top 10 <span class="badge">每日更新</span></div>
-      <table><thead><tr><th></th><th>股票</th><th>現價</th><th>外資(張)</th><th>投信(張)</th><th>3日漲幅</th></tr></thead>
+      <div class="ct">🏆 今日法人買超 Top 10 <span class="badge">真實數據</span></div>
+      <table><thead><tr><th></th><th>股票</th><th>現價</th><th>外資(張)</th><th>投信(張)</th><th>漲跌%</th><th>信心分</th></tr></thead>
       <tbody id="buyBody"></tbody></table>
     </div>
     <div class="card" style="margin-bottom:0">
-      <div class="ct">📉 近3日法人賣超 Top 10</div>
-      <table><thead><tr><th></th><th>股票</th><th>現價</th><th>外資(張)</th><th>投信(張)</th><th>3日漲幅</th></tr></thead>
+      <div class="ct">📉 今日法人賣超 Top 10 <span class="badge badge-r">真實數據</span></div>
+      <table><thead><tr><th></th><th>股票</th><th>現價</th><th>外資(張)</th><th>投信(張)</th><th>漲跌%</th><th>信心分</th></tr></thead>
       <tbody id="sellBody"></tbody></table>
     </div>
   </div>
@@ -925,6 +940,23 @@ async function loadDashboard() {
       document.getElementById('mktSt').textContent = d.marketOpen ? '開盤中' : '休市中';
     }
     
+    // 更新市場情緒
+    if (d.index && d.index.mood !== undefined) {
+      const idx = d.index;
+      const mc  = idx.mood >= 70 ? 'var(--green)' : idx.mood >= 50 ? 'var(--yellow)' : 'var(--red)';
+      document.getElementById('mood-val').textContent  = idx.mood + ' / 100';
+      document.getElementById('mood-val').style.color  = mc;
+      document.getElementById('mood-label').textContent = idx.moodLabel || '—';
+      document.getElementById('mood-label').style.color = mc;
+      document.getElementById('mood-counts').textContent =
+        `上漲 ${(idx.upCount||0).toLocaleString()} / 下跌 ${(idx.dnCount||0).toLocaleString()}`;
+      const lv = document.getElementById('limit-val');
+      if (lv) {
+        lv.textContent = `${idx.limitUp||0} / ${idx.limitDn||0}`;
+        lv.style.color = idx.limitUp > 50 ? 'var(--red)' : 'var(--text)';
+      }
+    }
+
     // 更新法人買超/賣超排行（真實數據）
     if (d.topBuy && d.topBuy.length) renderBuySell(d.topBuy, d.topSell || []);
     
@@ -947,26 +979,20 @@ async function loadDashboard() {
   }
 }
 
+function confColor(s){return s>=85?'var(--green)':s>=68?'var(--yellow)':s>=52?'var(--muted)':'var(--red)';}
+
 function renderBuySell(topBuy, topSell) {
-  document.getElementById('buyBody').innerHTML = topBuy.map(r => `
-    <tr>
-      <td class="rn">${r.r}</td>
-      <td><strong>${r.s}</strong> ${r.n}${r.cat ? '<br><span class="tag">'+r.cat+'</span>' : ''}</td>
-      <td class="${r.dir}" style="font-weight:700">${r.price || '—'}</td>
-      <td class="up">${r.foreign}</td>
-      <td class="up">${r.trust}</td>
-      <td class="${r.dir}">${r.chg || '—'}</td>
-    </tr>`).join('');
-  
-  document.getElementById('sellBody').innerHTML = topSell.map(r => `
-    <tr>
-      <td class="rn">${r.r}</td>
-      <td><strong>${r.s}</strong> ${r.n}${r.cat ? '<br><span class="tag">'+r.cat+'</span>' : ''}</td>
-      <td class="${r.dir}" style="font-weight:700">${r.price || '—'}</td>
-      <td class="dn">${r.foreign}</td>
-      <td class="dn">${r.trust}</td>
-      <td class="${r.dir}">${r.chg || '—'}</td>
-    </tr>`).join('');
+  const row = (r, dir) => `<tr>
+    <td class="rn">${r.r}</td>
+    <td><strong>${r.s}</strong> ${r.n}</td>
+    <td class="${r.dir}" style="font-weight:700">${r.price||'—'}</td>
+    <td class="${dir}">${r.foreign}</td>
+    <td class="${dir}">${r.trust}</td>
+    <td class="${r.dir}">${r.chg||'—'}</td>
+    <td><span style="font-weight:800;color:${confColor(r.conf||50)}">${r.conf||'—'}</span></td>
+  </tr>`;
+  document.getElementById('buyBody').innerHTML  = topBuy.map(r=>row(r,'up')).join('');
+  document.getElementById('sellBody').innerHTML = topSell.map(r=>row(r,'dn')).join('');
 }
 
 // 用即時報價置換 THEMES/SECTORS 裡的靜態數字
@@ -1008,22 +1034,18 @@ function applyPriceMap(pm) {
 }
 
 function renderMovers(gainers, losers) {
-  const gainRow = r => `<tr>
+  const moverRow = (r, dc) => `<tr>
     <td class="rn">${r.r}</td>
     <td><strong>${r.s}</strong> ${r.n}</td>
-    <td class="up" style="font-weight:700">${r.price}</td>
-    <td class="up">${r.chg}</td>
-    <td style="color:var(--muted)">${r.vol}</td></tr>`;
-  const loseRow = r => `<tr>
-    <td class="rn">${r.r}</td>
-    <td><strong>${r.s}</strong> ${r.n}</td>
-    <td class="dn" style="font-weight:700">${r.price}</td>
-    <td class="dn">${r.chg}</td>
-    <td style="color:var(--muted)">${r.vol}</td></tr>`;
+    <td class="${dc}" style="font-weight:700">${r.price}</td>
+    <td class="${dc}">${r.chg}</td>
+    <td style="color:var(--muted)">${r.vol}</td>
+    <td><span style="font-weight:800;color:${confColor(r.conf||50)}">${r.conf||'—'}</span></td>
+  </tr>`;
   const gb = document.getElementById('gainBody');
   const lb = document.getElementById('loseBody');
-  if (gb) gb.innerHTML = gainers.map(gainRow).join('');
-  if (lb) lb.innerHTML = losers.map(loseRow).join('');
+  if (gb) gb.innerHTML = gainers.map(r => moverRow(r,'up')).join('');
+  if (lb) lb.innerHTML = losers.map(r  => moverRow(r,'dn')).join('');
 }
 
 function renderNews(news) {
