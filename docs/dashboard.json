@@ -13,7 +13,7 @@
       "confidence": 19,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "23:03"
+      "updatedAt": "23:04"
     },
     {
       "symbol": "2317",
@@ -28,7 +28,7 @@
       "confidence": 56,
       "confidenceLabel": "⏸️ 中性觀望",
       "confidenceColor": "#ffd740",
-      "updatedAt": "23:03"
+      "updatedAt": "23:04"
     },
     {
       "symbol": "2454",
@@ -43,7 +43,7 @@
       "confidence": 43,
       "confidenceLabel": "📉 偏空",
       "confidenceColor": "#ff6d00",
-      "updatedAt": "23:03"
+      "updatedAt": "23:04"
     },
     {
       "symbol": "2382",
@@ -58,7 +58,7 @@
       "confidence": 28,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "23:03"
+      "updatedAt": "23:04"
     },
     {
       "symbol": "3231",
@@ -73,7 +73,7 @@
       "confidence": 25,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "23:03"
+      "updatedAt": "23:04"
     },
     {
       "symbol": "2308",
@@ -88,7 +88,7 @@
       "confidence": 36,
       "confidenceLabel": "📉 偏空",
       "confidenceColor": "#ff6d00",
-      "updatedAt": "23:03"
+      "updatedAt": "23:04"
     },
     {
       "symbol": "2303",
@@ -103,7 +103,7 @@
       "confidence": 49,
       "confidenceLabel": "📉 偏空",
       "confidenceColor": "#ff6d00",
-      "updatedAt": "23:03"
+      "updatedAt": "23:04"
     },
     {
       "symbol": "2337",
@@ -118,7 +118,7 @@
       "confidence": 21,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "23:03"
+      "updatedAt": "23:04"
     },
     {
       "symbol": "3706",
@@ -133,7 +133,7 @@
       "confidence": 17,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "23:03"
+      "updatedAt": "23:04"
     },
     {
       "symbol": "2313",
@@ -148,7 +148,7 @@
       "confidence": 38,
       "confidenceLabel": "📉 偏空",
       "confidenceColor": "#ff6d00",
-      "updatedAt": "23:03"
+      "updatedAt": "23:04"
     }
   ],
   "sectors": [
@@ -174,14 +174,7 @@
     "change": "+1376.43",
     "changePct": "+3.26%",
     "changePctNum": 3.26,
-    "volume": "0張",
-    "upCount": 11346,
-    "dnCount": 3053,
-    "flatCount": 551,
-    "limitUp": 1741,
-    "limitDn": 49,
-    "mood": 90,
-    "moodLabel": "🔥 強勢多頭"
+    "volume": "0張"
   },
   "topBuy": [
     {
@@ -678,7 +671,7 @@
       "industry": "半導體",
       "price": 67.6,
       "chg": "+5.96%",
-      "foreign": 70137,
+      "foreign": "+70,137張",
       "conf": 93
     },
     {
@@ -687,7 +680,7 @@
       "industry": "其他電子",
       "price": 261.0,
       "chg": "+4.4%",
-      "foreign": 52052,
+      "foreign": "+52,052張",
       "conf": 81
     },
     {
@@ -696,7 +689,7 @@
       "industry": "玻璃陶瓷",
       "price": 73.9,
       "chg": "+4.82%",
-      "foreign": 43213,
+      "foreign": "+43,213張",
       "conf": 79
     },
     {
@@ -705,7 +698,7 @@
       "industry": "半導體",
       "price": 128.5,
       "chg": "+2.8%",
-      "foreign": 72092,
+      "foreign": "+72,092張",
       "conf": 79
     },
     {
@@ -714,7 +707,7 @@
       "industry": "",
       "price": 48.35,
       "chg": "+4.31%",
-      "foreign": 25779,
+      "foreign": "+25,779張",
       "conf": 68
     },
     {
@@ -723,7 +716,7 @@
       "industry": "半導體",
       "price": 317.0,
       "chg": "+7.09%",
-      "foreign": 10612,
+      "foreign": "+10,612張",
       "conf": 64
     },
     {
@@ -732,7 +725,7 @@
       "industry": "電子零組件",
       "price": 298.5,
       "chg": "+7.37%",
-      "foreign": 9606,
+      "foreign": "+9,606張",
       "conf": 63
     },
     {
@@ -741,7 +734,7 @@
       "industry": "半導體",
       "price": 34.3,
       "chg": "+7.02%",
-      "foreign": 8249,
+      "foreign": "+8,249張",
       "conf": 63
     }
   ],
@@ -11763,7 +11756,7 @@
       "industry": "鋼鐵"
     }
   },
-  "updatedAt": "2026-05-25T23:03:03.720944+08:00",
+  "updatedAt": "2026-05-25T23:04:37.476524+08:00",
   "marketOpen": false,
   "source": "TWSE"
 }

@@ -260,22 +260,15 @@ tr:hover td{background:rgba(26,26,38,.8)}
 
   <div style="height:20px"></div>
 
+  <!-- 明日關注清單 -->
   <div class="card">
-    <div class="ct">👀 明日關注清單 <span class="badge badge-g">法人買超 + 量能放大</span></div>
-    <div class="watch-grid" id="tomorrowWatchGrid">
-      <div class="empty" style="grid-column:1/-1;padding:24px 0">資料載入中...</div>
+    <div class="ct">🔭 明日關注清單 <span class="badge badge-g">外資買超+量能放大+有漲未漲停</span></div>
+    <div id="tomorrowWatchGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:8px">
+      <div style="color:var(--muted);padding:20px;text-align:center;grid-column:1/-1">資料載入中...</div>
     </div>
   </div>
 
   <div style="height:20px"></div>
-
-  <!-- 明日關注清單 -->
-  <div class="card" style="margin-bottom:20px">
-    <div class="ct">🔭 明日宜關注清單 <span class="badge badge-g">外資買超+量能放大+有漲未漲停</span></div>
-    <div id="tomorrowWatchGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:4px">
-      <div style="color:var(--muted);padding:20px;text-align:center">資料載入中...</div>
-    </div>
-  </div>
 
   <!-- 法人排行 -->
   <div class="g2">
@@ -1016,33 +1009,6 @@ async function loadDashboard() {
 
 function confColor(s){return s>=80?'var(--green)':s>=65?'#69f0ae':s>=50?'var(--yellow)':'var(--red)';}
 
-function renderTomorrowWatch(list) {
-  const el = document.getElementById('tomorrowWatchGrid');
-  if (!el) return;
-  el.innerHTML = list.map(s => {
-    const cc = confColor(s.conf);
-    const isUp = s.chg && s.chg.startsWith('+');
-    return `<div class="wcard" style="cursor:default">
-      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${cc}"></div>
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
-        <div>
-          <div style="font-size:16px;font-weight:800">${s.s}</div>
-          <div style="font-size:12px;color:var(--muted)">${s.n}</div>
-          ${s.industry ? `<span style="font-size:10px;padding:1px 6px;background:var(--surface2);border-radius:4px;color:var(--muted)">${s.industry}</span>` : ''}
-        </div>
-        <div style="text-align:right">
-          <div style="font-size:18px;font-weight:800;color:${isUp?'var(--red)':'var(--green)'}">${s.price}</div>
-          <div style="font-size:12px;color:${isUp?'var(--red)':'var(--green)'}">${s.chg}</div>
-        </div>
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">
-        <div style="font-size:11px;color:var(--muted)">外資 ${s.foreign}</div>
-        <div style="font-weight:800;font-size:15px;color:${cc}">${s.conf}</div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
 function renderBuySell(topBuy, topSell) {
   const row = (r, dir) => `<tr>
     <td class="rn">${r.r}</td>
@@ -1081,7 +1047,7 @@ function renderTomorrowWatch(items) {
       <div class="tw-meta">
         <div>
           <div class="${(x.chg||'').startsWith('-')?'dn':'up'}" style="font-weight:700">${x.chg||'—'}</div>
-          <div class="tw-buy">外資買超 ${(x.foreign||0).toLocaleString()} 張</div>
+          <div class="tw-buy">外資 ${x.foreign||'—'}</div>
         </div>
         <div style="font-size:12px;color:var(--muted)">$${x.price||'—'}</div>
       </div>

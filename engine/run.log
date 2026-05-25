@@ -1,0 +1,54 @@
+[2026-05-25 07:00:00] 開始掃描...
+[2026-05-25 07:00:00] 非開盤時間，跳過
+[2026-05-25 08:00:00] 開始掃描...
+/Users/kid/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+🔍 開始掃描...
+✅ 掃描完成，0 支股票
+To https://github.com/changjaykid/fugle-dashboard.git
+   d339d79..76f4d59  main -> main
+[2026-05-25 08:00:03] 推送完成
+[2026-05-25 09:00:00] 開始掃描...
+/Users/kid/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+🔍 開始掃描...
+✅ 掃描完成，0 支股票
+To https://github.com/changjaykid/fugle-dashboard.git
+   76f4d59..fd187bc  main -> main
+[2026-05-25 09:00:02] 推送完成
+[2026-05-25 10:00:00] 開始掃描...
+/Users/kid/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+🔍 開始掃描...
+✅ 掃描完成，0 支股票
+To https://github.com/changjaykid/fugle-dashboard.git
+   fd187bc..6da0262  main -> main
+[2026-05-25 10:00:03] 推送完成
+[2026-05-25 11:00:01] 開始掃描...
+/Users/kid/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+🔍 開始掃描...
+✅ 掃描完成，0 支股票
+To https://github.com/changjaykid/fugle-dashboard.git
+   6da0262..e184a5c  main -> main
+[2026-05-25 11:00:03] 推送完成
+[2026-05-25 12:00:00] 開始掃描...
+/Users/kid/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+🔍 開始掃描...
+✅ 掃描完成，0 支股票
+To https://github.com/changjaykid/fugle-dashboard.git
+   e184a5c..17f186a  main -> main
+[2026-05-25 12:00:02] 推送完成
+[2026-05-25 13:00:00] 開始掃描...
+/Users/kid/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+🔍 開始掃描...
+✅ 掃描完成，0 支股票
+To https://github.com/changjaykid/fugle-dashboard.git
+   17f186a..9626ca6  main -> main
+[2026-05-25 13:00:03] 推送完成
+[2026-05-25 14:00:00] 開始掃描...
+[2026-05-25 14:00:00] 非開盤時間，跳過
+[2026-05-25 15:00:00] 開始掃描...
+[2026-05-25 15:00:00] 非開盤時間，跳過
