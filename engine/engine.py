@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Fugle Dashboard Engine
-台股行情引擎 - 行情抓取、信心分析、新聞掃描
+台股行情引擎 - 使用台灣證交所公開 API（完全免費，無需 API key）
 """
 
 import json
@@ -16,124 +16,110 @@ BASE_DIR = Path(__file__).parent
 CONFIG_FILE = BASE_DIR / "config.json"
 DASHBOARD_FILE = BASE_DIR.parent / "docs" / "dashboard.json"
 
+HEADERS = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'}
+
 # ── 載入設定 ──────────────────────────────────────────────
 def load_config():
     with open(CONFIG_FILE) as f:
         return json.load(f)
 
-# ── Fugle Market Data API ─────────────────────────────────
-class FugleClient:
-    BASE = "https://api.fugle.tw/marketdata/v1.0/stock"
+# ── TWSE 公開 API ─────────────────────────────────────────
+class TWClient:
+    STOCK_INFO = "https://mis.twse.com.tw/stock/api/getStockInfo.jsp"
+    STOCK_DAY   = "https://www.twse.com.tw/exchangeReport/STOCK_DAY"
+    STOCK_DAY_OTC = "https://www.tpex.org.tw/web/stock/aftertrading/daily_trading_info/st43_print.php"
 
-    def __init__(self, api_key):
-        self.api_key = api_key
-        self.headers = {"X-API-KEY": api_key}
-
-    def quote(self, symbol):
-        """即時報價"""
+    def quote_batch(self, symbols):
+        """批次取得多支股票即時報價（TWSE）"""
+        # 先嘗試全部當上市查
+        tse_syms = [f'tse_{s}.tw' for s in symbols]
+        ex_ch = '|'.join(tse_syms)
         try:
-            r = requests.get(f"{self.BASE}/intraday/quote/{symbol}",
-                             headers=self.headers, timeout=10)
+            r = requests.get(self.STOCK_INFO, params={'ex_ch': ex_ch, 'json': 1, 'delay': 0},
+                             headers=HEADERS, timeout=10)
+            r.raise_for_status()
+            data = r.json().get('msgArray', [])
+            result = {}
+            for item in data:
+                sym = item.get('c', '')
+                if sym:
+                    result[sym] = item
+            return result
+        except Exception as e:
+            print(f"[ERROR] quote_batch: {e}")
+            return {}
+
+    def daily_candles(self, symbol):
+        """取得近月日 K 線（收盤後資料）"""
+        try:
+            r = requests.get(self.STOCK_DAY,
+                             params={'response': 'json', 'stockNo': symbol},
+                             headers=HEADERS, timeout=10)
             r.raise_for_status()
             return r.json()
         except Exception as e:
-            print(f"[ERROR] quote {symbol}: {e}")
+            print(f"[ERROR] daily_candles {symbol}: {e}")
             return None
 
-    def candles(self, symbol, timeframe="1"):
-        """K線（分鐘）"""
+# ── 解析 TWSE 報價資料 ────────────────────────────────────
+def parse_quote(item):
+    """
+    TWSE getStockInfo 欄位：
+    z = 成交價, y = 昨收, h = 最高, l = 最低, o = 開盤
+    tv = 成交量, n = 名稱, c = 代碼
+    """
+    def safe_float(v):
         try:
-            r = requests.get(f"{self.BASE}/intraday/candles/{symbol}",
-                             params={"timeframe": timeframe},
-                             headers=self.headers, timeout=10)
-            r.raise_for_status()
-            return r.json()
-        except Exception as e:
-            print(f"[ERROR] candles {symbol}: {e}")
-            return None
+            return float(v)
+        except:
+            return 0.0
 
-    def meta(self, symbol):
-        """股票基本資訊"""
-        try:
-            r = requests.get(f"{self.BASE}/intraday/meta/{symbol}",
-                             headers=self.headers, timeout=10)
-            r.raise_for_status()
-            return r.json()
-        except Exception as e:
-            print(f"[ERROR] meta {symbol}: {e}")
-            return None
+    price      = safe_float(item.get('z', 0))
+    prev_close = safe_float(item.get('y', 0))
+    high       = safe_float(item.get('h', 0))
+    low        = safe_float(item.get('l', 0))
+    volume     = safe_float(item.get('tv', 0))  # 張
+    name       = item.get('n', '')
 
-    def institutional(self, symbol):
-        """三大法人"""
-        try:
-            r = requests.get(f"{self.BASE}/historical/institutional/{symbol}",
-                             headers=self.headers, timeout=10)
-            r.raise_for_status()
-            return r.json()
-        except Exception as e:
-            print(f"[ERROR] institutional {symbol}: {e}")
-            return None
+    change     = round(price - prev_close, 2) if price and prev_close else 0
+    change_pct = round(change / prev_close * 100, 2) if prev_close else 0
+
+    return {
+        'price': price,
+        'prevClose': prev_close,
+        'high': high,
+        'low': low,
+        'volume': int(volume),
+        'name': name,
+        'change': change,
+        'changePct': change_pct,
+    }
 
 # ── 信心分數計算 ──────────────────────────────────────────
-def compute_confidence(quote_data, institutional_data, news_score=50):
+def compute_confidence(change_pct, volume=0):
     """
-    信心分數 0-100
-    - 技術面 25%：漲跌、成交量比
-    - 籌碼面 30%：外資、投信買賣超
-    - 話題熱度 20%：新聞分數（外部傳入）
-    - 法人動向 15%：三大法人合計
-    - 類股強度 10%：預設中性
+    簡易信心分 0-100
+    主要看漲跌幅，量能輔助
     """
-    score = 50  # 基礎分
-
-    # 技術面：漲跌幅
-    tech_score = 50
-    if quote_data:
-        change_pct = quote_data.get("changePercent", 0) or 0
-        if change_pct > 3:
-            tech_score = 85
-        elif change_pct > 1:
-            tech_score = 70
-        elif change_pct > 0:
-            tech_score = 60
-        elif change_pct < -3:
-            tech_score = 15
-        elif change_pct < -1:
-            tech_score = 30
-        else:
-            tech_score = 45
-
-    # 籌碼面：外資
-    chip_score = 50
-    if institutional_data and isinstance(institutional_data, dict):
-        data = institutional_data.get("data", [])
-        if data:
-            latest = data[0] if isinstance(data, list) else data
-            foreign = latest.get("foreignDealersBuyNet", 0) or 0
-            trust = latest.get("investmentTrustBuyNet", 0) or 0
-            net = foreign + trust
-            if net > 5000:
-                chip_score = 85
-            elif net > 1000:
-                chip_score = 70
-            elif net > 0:
-                chip_score = 60
-            elif net < -5000:
-                chip_score = 15
-            elif net < -1000:
-                chip_score = 30
-            else:
-                chip_score = 45
-
-    # 綜合加權
-    confidence = int(
-        tech_score * 0.25 +
-        chip_score * 0.30 +
-        news_score * 0.20 +
-        chip_score * 0.15 +  # 法人動向用籌碼面代替
-        50 * 0.10            # 類股強度預設中性
-    )
-    return max(0, min(100, confidence))
+    if change_pct > 5:
+        score = 88
+    elif change_pct > 3:
+        score = 80
+    elif change_pct > 1:
+        score = 68
+    elif change_pct > 0:
+        score = 58
+    elif change_pct == 0:
+        score = 50
+    elif change_pct > -1:
+        score = 42
+    elif change_pct > -3:
+        score = 32
+    elif change_pct > -5:
+        score = 22
+    else:
+        score = 12
+    return max(0, min(100, score))
 
 def confidence_label(score):
     if score >= 75:
@@ -147,88 +133,61 @@ def confidence_label(score):
     else:
         return "強力看空", "#d50000"
 
-# ── 新聞抓取（公開來源）────────────────────────────────────
-def fetch_news_score(symbol, company_name=""):
-    """
-    用關鍵字搜尋新聞，回傳熱度分數 0-100
-    目前用簡易 Yahoo Finance 台股新聞
-    """
-    try:
-        query = company_name or symbol
-        url = f"https://tw.stock.yahoo.com/quote/{symbol}/news"
-        r = requests.get(url, timeout=8,
-                         headers={"User-Agent": "Mozilla/5.0"})
-        # 簡易：有抓到回傳 60，錯誤回傳 50
-        if r.status_code == 200 and symbol in r.text:
-            return 60
-        return 50
-    except:
-        return 50
-
 # ── 主掃描流程 ────────────────────────────────────────────
 def scan():
     config = load_config()
-    client = FugleClient(config["api_key"])
+    client = TWClient()
     watchlist = config.get("watchlist", [])
+    symbols = [s if isinstance(s, str) else s.get("symbol", "") for s in watchlist]
+    symbols = [s for s in symbols if s]
+
+    if not symbols:
+        print("⚠️  watchlist 為空，無股票可掃描")
+        symbols = []
+
+    print(f"  批次查詢 {len(symbols)} 支股票...")
+    quotes = client.quote_batch(symbols)
 
     stocks = []
-    for item in watchlist:
-        symbol = item if isinstance(item, str) else item.get("symbol", "")
-        if not symbol:
+    now_tw = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8)))
+    updated_at = now_tw.strftime("%H:%M")
+
+    for symbol in symbols:
+        item = quotes.get(symbol, {})
+        if not item:
+            # 可能是 OTC 股票，或非交易時間
+            print(f"  [WARN] 查無 {symbol} 資料，跳過")
             continue
 
-        print(f"  掃描 {symbol}...")
-        quote_data = client.quote(symbol)
-        meta_data = client.meta(symbol)
-        inst_data = client.institutional(symbol)
-        news_score = fetch_news_score(symbol)
-
-        # 基本資訊
-        name = ""
-        category = ""
-        description = ""
-        if meta_data:
-            name = meta_data.get("name", symbol)
-            industry = meta_data.get("industry", "")
-            category = industry
-
-        # 報價
-        price = 0
-        change = 0
-        change_pct = 0
-        volume = 0
-        if quote_data:
-            price = quote_data.get("closePrice") or quote_data.get("lastPrice") or 0
-            change = quote_data.get("change", 0) or 0
-            change_pct = quote_data.get("changePercent", 0) or 0
-            volume = quote_data.get("total", {}).get("tradeVolume", 0) if isinstance(quote_data.get("total"), dict) else 0
-
-        confidence = compute_confidence(quote_data, inst_data, news_score)
+        q = parse_quote(item)
+        confidence = compute_confidence(q['changePct'], q['volume'])
         label, color = confidence_label(confidence)
 
         stocks.append({
             "symbol": symbol,
-            "name": name,
-            "category": category,
-            "price": price,
-            "change": round(change, 2),
-            "changePct": round(change_pct, 2),
-            "volume": volume,
+            "name": q['name'],
+            "category": "",
+            "price": q['price'],
+            "prevClose": q['prevClose'],
+            "high": q['high'],
+            "low": q['low'],
+            "change": q['change'],
+            "changePct": q['changePct'],
+            "volume": q['volume'],
             "confidence": confidence,
             "confidenceLabel": label,
             "confidenceColor": color,
-            "newsScore": news_score,
-            "updatedAt": datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).strftime("%H:%M")
+            "updatedAt": updated_at
         })
-        time.sleep(0.3)  # 避免打爆 API
 
     # 輸出 dashboard.json
     DASHBOARD_FILE.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "stocks": stocks,
         "sectors": config.get("sectors", []),
-        "updatedAt": datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).isoformat(),
-        "marketOpen": is_market_open()
+        "updatedAt": now_tw.isoformat(),
+        "marketOpen": is_market_open(),
+        "source": "TWSE"
     }
     with open(DASHBOARD_FILE, "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, indent=2)
@@ -243,24 +202,8 @@ def is_market_open():
     t = now.time()
     return datetime.time(9, 0) <= t <= datetime.time(13, 30)
 
-# ── 類股查詢（由 OpenClaw 呼叫）──────────────────────────
-def query_sector(sector_name):
-    """查詢類股，回傳相關股票清單（由 AI 補充分析）"""
-    # 預設台股類股對應表
-    SECTOR_MAP = {
-        "低軌衛星": ["6491", "3714", "4961", "6239", "3030"],
-        "AI伺服器": ["2317", "3045", "6669", "4938", "3231"],
-        "半導體": ["2330", "2303", "2308", "2379", "3711"],
-        "電動車": ["2603", "1605", "6213", "3557", "5483"],
-        "ETF": ["0050", "0056", "00878", "00919", "00929"],
-    }
-    return SECTOR_MAP.get(sector_name, [])
-
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "scan"
     if cmd == "scan":
         print("🔍 開始掃描...")
         scan()
-    elif cmd == "sector" and len(sys.argv) > 2:
-        symbols = query_sector(sys.argv[2])
-        print(json.dumps(symbols, ensure_ascii=False))
