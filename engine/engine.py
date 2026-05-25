@@ -31,23 +31,32 @@ INDUSTRY_MAP = {
 }
 
 def get_industry(code):
-    return INDUSTRY_MAP.get(str(code).zfill(2), '其他')
+    return INDUSTRY_MAP.get(str(code).strip().zfill(2), '')
+
+
+# ── 從 TWSE openapi 取上市公司產業別對照 ──────────────────
+_industry_cache_global = {}
 
 def fetch_industry_map():
+    """從 TWSE opendata 取得股票代碼→產業別對照（含 TSE+TDR）"""
+    global _industry_cache_global
+    if _industry_cache_global:
+        return _industry_cache_global
+    result = {}
     try:
         r = requests.get('https://openapi.twse.com.tw/v1/opendata/t187ap03_L',
                          headers=HEADERS, timeout=15)
-        rows = r.json()
-        result = {}
-        for row in rows:
-            sym = str(row.get('公司代號', '')).strip()
-            code = str(row.get('產業別', '')).strip()
-            if sym:
-                result[sym] = get_industry(code)
-        return result
+        for item in r.json():
+            code = str(item.get('公司代號', '')).strip()
+            ind  = str(item.get('產業別', '')).strip()
+            if code and ind:
+                result[code] = get_industry(ind)
     except Exception as e:
-        print(f'[WARN] fetch_industry_map: {e}')
-        return {}
+        print(f'[WARN] fetch_industry_map TSE: {e}')
+    _industry_cache_global = result
+    return result
+
+
 
 
 def load_config():
@@ -159,8 +168,8 @@ def fetch_institutional_raw():
             if len(sym) == 4 and sym.isdigit():
                 inst_map[sym] = {
                     'foreign': signed_int(row[4]),
-                    'trust':   signed_int(row[10]),
-                    'total':   signed_int(row[18])
+                    'trust':   signed_int(row[10]) if len(row) >= 19 else 0,
+                    'total':   signed_int(row[-1])  # 最後欄位永遠是三大法人合計
                 }
         return inst_map
     except Exception as e:
@@ -409,7 +418,7 @@ def scan():
                 's': sym, 'n': m['n'], 'industry': ind,
                 'price': m['price'],
                 'chg': ('+' if m['changePct'] >= 0 else '') + f"{m['changePct']}%",
-                'foreign': shares_to_lots(foreign_net),
+                'foreign': ('+' if foreign_net >= 0 else '') + format(shares_to_lots(foreign_net), ',') + '張',
                 'conf': conf
             })
 
