@@ -288,7 +288,7 @@ def scan():
             name      = item.get('n', sym)
             change    = round(price - prev, 2) if price and prev else 0
             changePct = round(change / prev * 100, 2) if prev else 0
-        elif sym in all_map:  # type: ignore
+        elif sym in all_map:
             m = all_map[sym]
             price = m['price']; changePct = m['changePct']
             change = m['change']; high = 0; low = 0; volume = int(m['volume'])

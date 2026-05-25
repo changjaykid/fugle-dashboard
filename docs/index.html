@@ -230,79 +230,6 @@ tr:hover td{background:rgba(26,26,38,.8)}
     <div class="ic"><div class="ic-name">加權指數 TAIEX</div>
       <div class="ic-val" id="t-val">—</div><div class="ic-chg" id="t-chg">—</div>
       <div class="ic-sub" id="t-sub">成交量：—</div></div>
-    <div class="ic"><div class="ic-name">OTC 櫃買指數</div>
-      <div class="ic-val" id="o-val">—</div><div class="ic-chg" id="o-chg">—</div>
-      <div class="ic-sub">中小型股參考</div></div>
-    <div class="ic"><div class="ic-name">費半 SOX（參考）</div>
-      <div class="ic-val" id="s-val">—</div><div class="ic-chg" id="s-chg">—</div>
-      <div class="ic-sub">台股半導體領先指標</div></div>
-    <div class="ic"><div class="ic-name">台幣 USD/TWD</div>
-      <div class="ic-val" id="f-val">—</div><div class="ic-chg" id="f-chg">—</div>
-      <div class="ic-sub" id="f-sub">貶值利出口股</div></div>
-  </div>
-
-  <div class="g3">
-    <!-- 市場情緒 -->
-    <div class="card" style="margin-bottom:0">
-      <div class="ct">🧭 市場情緒 & 今日盤感</div>
-      <div style="font-size:42px;font-weight:800;color:var(--accent)" id="moodS">72</div>
-      <div style="font-size:14px;margin:4px 0 10px;color:var(--yellow)" id="moodL">偏多、謹慎追高</div>
-      <div class="cbar" style="height:8px"><div class="cfill" id="moodB" style="width:72%;background:linear-gradient(90deg,var(--green),var(--yellow))"></div></div>
-      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:5px"><span>恐慌</span><span>中性</span><span>貪婪</span></div>
-      <div style="margin-top:14px;font-size:12px;color:var(--muted);line-height:1.8" id="moodTip">
-        外資連3日買超 +32億｜成交量放大至3,800億｜加權站上年線<br>
-        <span style="color:var(--yellow)">⚠ 短線過熱，逢回佈局優於追高</span>
-      </div>
-    </div>
-
-    <!-- 法人動向 -->
-    <div class="card" style="margin-bottom:0">
-      <div class="ct">💼 三大法人今日</div>
-      <div style="display:flex;flex-direction:column;gap:12px">
-        <div>
-          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
-            <span style="color:var(--muted)">🌍 外資</span><span class="up" id="f1">+45.2億</span>
-          </div>
-          <div class="cbar"><div class="cfill" style="width:80%;background:var(--red)"></div></div>
-        </div>
-        <div>
-          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
-            <span style="color:var(--muted)">🏦 投信</span><span class="up" id="f2">+8.1億</span>
-          </div>
-          <div class="cbar"><div class="cfill" style="width:55%;background:var(--red)"></div></div>
-        </div>
-        <div>
-          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
-            <span style="color:var(--muted)">🏢 自營商</span><span class="dn" id="f3">-3.2億</span>
-          </div>
-          <div class="cbar"><div class="cfill" style="width:35%;background:var(--green)"></div></div>
-        </div>
-        <div style="padding-top:10px;border-top:1px solid var(--border)">
-          <div style="display:flex;justify-content:space-between;font-size:13px">
-            <span style="color:var(--muted)">合計淨買</span><span class="up">+50.1億</span>
-          </div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px">連續買超：外資3日 / 投信5日</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 主力券商追蹤 (New) -->
-    <div class="card" style="margin-bottom:0">
-      <div class="ct">🏦 主力券商追蹤</div>
-      <div style="font-size:12px;margin-bottom:12px">
-        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-          <span style="color:var(--muted)">今日主力買進券商</span>
-          <span style="color:var(--accent);font-weight:600">富邦、元大、凱基</span>
-        </div>
-        <div style="display:flex;justify-content:space-between">
-          <span style="color:var(--muted)">主力集中買進股票</span>
-          <span style="color:var(--text)">2330、2317、1519</span>
-        </div>
-      </div>
-      <div style="padding:10px;background:var(--surface2);border-radius:8px;font-size:11px;color:var(--muted);line-height:1.6">
-        💡 <strong>說明：</strong>同一支股票被 3 家以上主力同時買進 = <span style="color:var(--red);font-weight:700">強烈訊號</span>。
-      </div>
-    </div>
   </div>
 
   <div style="height:20px"></div>
@@ -339,53 +266,6 @@ tr:hover td{background:rgba(26,26,38,.8)}
 
   <div style="height:20px"></div>
 
-  <!-- 指標快覽 -->
-  <div class="g4">
-    <div class="card" style="margin-bottom:0">
-      <div class="ct">📊 融資融券即時狀態</div>
-      <div>
-        <div style="padding:12px;background:var(--surface2);border-radius:8px;margin-bottom:10px">
-          <div style="font-size:20px;font-weight:800;margin-bottom:4px" id="marginVerdict">✅ 市場健康</div>
-          <div style="font-size:12px;color:var(--muted)" id="marginDesc">融資適中，融券不高，籌碼面正常。</div>
-        </div>
-        <div style="font-size:12px;color:var(--muted);line-height:2.2">
-          <div>📈 融資：<span id="rzVal" style="color:var(--text)">3,280億</span> <span id="rzTrend" class="dn">↓ 籌碼乾淨✅</span></div>
-          <div>📉 融券：<span id="rjVal" style="color:var(--text)">182億</span> <span id="rjTrend" class="up">↑ 空單少增⚠️</span></div>
-        </div>
-        <div style="margin-top:8px;font-size:11px;padding:8px;background:rgba(124,111,255,.1);border-radius:6px;color:var(--muted)">
-          🟢 融資↓ = 散戶出場，籌碼乾淨，容易漲<br>
-          🟡 融券↑ = 有人放空，若股票反漲會被軋，漲更猛
-        </div>
-      </div>
-    </div>
-    <div class="card" style="margin-bottom:0">
-      <div class="ct">🌍 國際市場</div>
-      <div style="font-size:13px;line-height:2;color:var(--muted)">
-        <div style="display:flex;justify-content:space-between"><span>S&P 500</span><span class="up" id="sp">—</span></div>
-        <div style="display:flex;justify-content:space-between"><span>Nasdaq</span><span class="up" id="nq">—</span></div>
-        <div style="display:flex;justify-content:space-between"><span>日經</span><span class="up" id="nk">—</span></div>
-        <div style="display:flex;justify-content:space-between"><span>韓KOSPI</span><span class="dn" id="ks">—</span></div>
-      </div>
-    </div>
-    <div class="card" style="margin-bottom:0">
-      <div class="ct">💎 原物料</div>
-      <div style="font-size:13px;line-height:2;color:var(--muted)">
-        <div style="display:flex;justify-content:space-between"><span>黃金(oz)</span><span style="color:var(--yellow)">$3,350</span></div>
-        <div style="display:flex;justify-content:space-between"><span>原油(WTI)</span><span style="color:var(--text)">$78.2</span></div>
-        <div style="display:flex;justify-content:space-between"><span>銅(lb)</span><span class="up">$4.85</span></div>
-        <div style="display:flex;justify-content:space-between"><span>DRAM現貨</span><span class="up">持平</span></div>
-      </div>
-    </div>
-    <div class="card" style="margin-bottom:0">
-      <div class="ct">📅 重要行事曆</div>
-      <div style="font-size:12px;line-height:2;color:var(--muted)">
-        <div>06/10 美CPI數據</div>
-        <div>06/12 Fed利率決議</div>
-        <div>06/19 台積電法說會</div>
-        <div>06/25 除息旺季開始</div>
-      </div>
-    </div>
-  </div>
 </div>
 
 <!-- ② 熱門題材 -->
