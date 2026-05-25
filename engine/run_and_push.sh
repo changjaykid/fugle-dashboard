@@ -18,13 +18,7 @@ fi
 # 時間範圍：09:00~14:00 都跑
 # 09:00~13:30 = 盤中即時更新
 # 13:31~14:00 = 收盤後最終數據
-HOUR=$(date '+%H')
-HOUR_INT=$((10#$HOUR))
-
-if [ "$HOUR_INT" -lt 9 ] || [ "$HOUR_INT" -gt 14 ]; then
-  echo "[$(date '+%Y-%m-%d %H:%M:%S')] 非盤中/盤後時間（${HOUR}:xx），跳過" >> "$LOG"
-  exit 0
-fi
+# cron 已限定 09-14 點，這裡不再重複檢查時間
 
 # 跑引擎
 python3 "$ENGINE" scan >> "$LOG" 2>&1
