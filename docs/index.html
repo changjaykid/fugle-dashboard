@@ -916,47 +916,15 @@ async function loadDashboard() {
     const r = await fetch('./dashboard.json?t=' + Date.now());
     const d = await r.json();
     
-    // 更新大盤指數
-    if (d.index) {
-      const idx = d.index;
-      const chgClass = idx.change && idx.change.startsWith('+') ? 'up' : 'dn';
-      document.getElementById('t-val').textContent = idx.taiex || '—';
-      document.getElementById('t-val').className = 'ic-val ' + chgClass;
-      document.getElementById('t-chg').textContent = (idx.change || '—') + ' (' + (idx.changePct || '—') + ')';
-      document.getElementById('t-chg').className = 'ic-chg ' + chgClass;
-      document.getElementById('t-sub').textContent = '成交量：' + (idx.volume || '—');
-      
-      // 更新最後更新時間
-      if (d.updatedAt) {
-        const dt = new Date(d.updatedAt);
-        document.getElementById('updTime').textContent = '資料日期 ' + dt.toLocaleDateString('zh-TW', {month:'numeric',day:'numeric'}) + ' ' + (d.tradeDate ? '收盤數據' : '');
-      }
-      
-      // 市場狀態
-      document.getElementById('mktDot').className = 'dot' + (d.marketOpen ? ' open' : '');
-      document.getElementById('mktSt').textContent = d.marketOpen ? '開盤中' : '休市中';
-    }
-    
-    // 更新市場情緒
-    if (d.index && d.index.mood !== undefined) {
-      const idx = d.index;
-      const mc  = idx.mood >= 70 ? 'var(--green)' : idx.mood >= 50 ? 'var(--yellow)' : 'var(--red)';
-      document.getElementById('mood-val').textContent  = idx.mood + ' / 100';
-      document.getElementById('mood-val').style.color  = mc;
-      document.getElementById('mood-label').textContent = idx.moodLabel || '—';
-      document.getElementById('mood-label').style.color = mc;
-      document.getElementById('mood-counts').textContent =
-        `上漲 ${(idx.upCount||0).toLocaleString()} / 下跌 ${(idx.dnCount||0).toLocaleString()} / 漲停 ${idx.limitUp||0} / 跌停 ${idx.limitDn||0}`;
-      const lv = document.getElementById('limit-val');
-      if (lv) {
-        lv.textContent = `${idx.limitUp||0} / ${idx.limitDn||0}`;
-        lv.style.color = idx.limitUp > 50 ? 'var(--red)' : 'var(--text)';
-      }
-      const uds = document.getElementById('up-dn-counts');
-      if (uds) uds.textContent = `上漲 ${idx.upCount||0} / 下跌 ${idx.dnCount||0} / 平盤 ${idx.flatCount||0}`;
+    // 更新最後更新時間
+    if (d.updatedAt) {
+      const dt = new Date(d.updatedAt);
+      document.getElementById('updTime').textContent = '資料日期 ' + dt.toLocaleDateString('zh-TW', {month:'numeric',day:'numeric'}) + ' ' + (d.tradeDate ? '收盤數據' : '');
     }
 
-    if (d.tomorrowWatch) renderTomorrowWatch(d.tomorrowWatch);
+    // 市場狀態
+    document.getElementById('mktDot').className = 'dot' + (d.marketOpen ? ' open' : '');
+    document.getElementById('mktSt').textContent = d.marketOpen ? '開盤中' : '休市中';
 
     // 明日關注清單
     if (d.tomorrowWatch && d.tomorrowWatch.length) renderTomorrowWatch(d.tomorrowWatch);
