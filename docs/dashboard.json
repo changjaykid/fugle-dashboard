@@ -13,7 +13,7 @@
       "confidence": 68,
       "confidenceLabel": "偏多",
       "confidenceColor": "#69f0ae",
-      "updatedAt": "16:59"
+      "updatedAt": "17:33"
     },
     {
       "symbol": "2317",
@@ -28,7 +28,7 @@
       "confidence": 80,
       "confidenceLabel": "偏多",
       "confidenceColor": "#69f0ae",
-      "updatedAt": "16:59"
+      "updatedAt": "17:33"
     },
     {
       "symbol": "2454",
@@ -43,7 +43,7 @@
       "confidence": 88,
       "confidenceLabel": "強力看多",
       "confidenceColor": "#00c853",
-      "updatedAt": "16:59"
+      "updatedAt": "17:33"
     },
     {
       "symbol": "2382",
@@ -58,7 +58,7 @@
       "confidence": 58,
       "confidenceLabel": "中性觀望",
       "confidenceColor": "#ffd740",
-      "updatedAt": "16:59"
+      "updatedAt": "17:33"
     },
     {
       "symbol": "3231",
@@ -73,7 +73,7 @@
       "confidence": 80,
       "confidenceLabel": "偏多",
       "confidenceColor": "#69f0ae",
-      "updatedAt": "16:59"
+      "updatedAt": "17:33"
     },
     {
       "symbol": "2308",
@@ -88,7 +88,7 @@
       "confidence": 88,
       "confidenceLabel": "強力看多",
       "confidenceColor": "#00c853",
-      "updatedAt": "16:59"
+      "updatedAt": "17:33"
     },
     {
       "symbol": "2303",
@@ -103,7 +103,7 @@
       "confidence": 88,
       "confidenceLabel": "強力看多",
       "confidenceColor": "#00c853",
-      "updatedAt": "16:59"
+      "updatedAt": "17:33"
     },
     {
       "symbol": "2337",
@@ -118,7 +118,7 @@
       "confidence": 68,
       "confidenceLabel": "偏多",
       "confidenceColor": "#69f0ae",
-      "updatedAt": "16:59"
+      "updatedAt": "17:33"
     },
     {
       "symbol": "3706",
@@ -133,7 +133,7 @@
       "confidence": 58,
       "confidenceLabel": "中性觀望",
       "confidenceColor": "#ffd740",
-      "updatedAt": "16:59"
+      "updatedAt": "17:33"
     },
     {
       "symbol": "2313",
@@ -148,7 +148,7 @@
       "confidence": 88,
       "confidenceLabel": "強力看多",
       "confidenceColor": "#00c853",
-      "updatedAt": "16:59"
+      "updatedAt": "17:33"
     }
   ],
   "sectors": [
@@ -582,7 +582,9494 @@
       "dir": "dn"
     }
   ],
-  "updatedAt": "2026-05-25T16:59:35.834985+08:00",
+  "priceMap": {
+    "2330": {
+      "price": 2310.0,
+      "change": 55.0,
+      "changePct": 2.44,
+      "chgStr": "+2.44%",
+      "dir": "up"
+    },
+    "2317": {
+      "price": 261.0,
+      "change": 11.0,
+      "changePct": 4.4,
+      "chgStr": "+4.4%",
+      "dir": "up"
+    },
+    "2454": {
+      "price": 4245.0,
+      "change": 385.0,
+      "changePct": 9.97,
+      "chgStr": "+9.97%",
+      "dir": "up"
+    },
+    "2382": {
+      "price": 316.5,
+      "change": 0.5,
+      "changePct": 0.16,
+      "chgStr": "+0.16%",
+      "dir": "up"
+    },
+    "3231": {
+      "price": 149.0,
+      "change": 4.5,
+      "changePct": 3.11,
+      "chgStr": "+3.11%",
+      "dir": "up"
+    },
+    "2308": {
+      "price": 2290.0,
+      "change": 195.0,
+      "changePct": 9.31,
+      "chgStr": "+9.31%",
+      "dir": "up"
+    },
+    "2303": {
+      "price": 125.0,
+      "change": 11.0,
+      "changePct": 9.65,
+      "chgStr": "+9.65%",
+      "dir": "up"
+    },
+    "2337": {
+      "price": 152.5,
+      "change": 3.0,
+      "changePct": 2.01,
+      "chgStr": "+2.01%",
+      "dir": "up"
+    },
+    "3706": {
+      "price": 88.5,
+      "change": 0.7,
+      "changePct": 0.8,
+      "chgStr": "+0.8%",
+      "dir": "up"
+    },
+    "2313": {
+      "price": 298.5,
+      "change": 20.5,
+      "changePct": 7.37,
+      "chgStr": "+7.37%",
+      "dir": "up"
+    },
+    "0050": {
+      "price": 100.8,
+      "change": 3.5,
+      "changePct": 3.6,
+      "chgStr": "+3.6%",
+      "dir": "up"
+    },
+    "0056": {
+      "price": 48.35,
+      "change": 2.0,
+      "changePct": 4.31,
+      "chgStr": "+4.31%",
+      "dir": "up"
+    },
+    "1101": {
+      "price": 24.3,
+      "change": 0.2,
+      "changePct": 0.83,
+      "chgStr": "+0.83%",
+      "dir": "up"
+    },
+    "1503": {
+      "price": 201.5,
+      "change": 4.5,
+      "changePct": 2.28,
+      "chgStr": "+2.28%",
+      "dir": "up"
+    },
+    "1504": {
+      "price": 72.0,
+      "change": -0.1,
+      "changePct": -0.14,
+      "chgStr": "-0.14%",
+      "dir": "dn"
+    },
+    "1513": {
+      "price": 160.0,
+      "change": 3.5,
+      "changePct": 2.24,
+      "chgStr": "+2.24%",
+      "dir": "up"
+    },
+    "1514": {
+      "price": 122.5,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "1516": {
+      "price": 21.0,
+      "change": 0.25,
+      "changePct": 1.2,
+      "chgStr": "+1.2%",
+      "dir": "up"
+    },
+    "1519": {
+      "price": 830.0,
+      "change": 4.0,
+      "changePct": 0.48,
+      "chgStr": "+0.48%",
+      "dir": "up"
+    },
+    "1530": {
+      "price": 29.05,
+      "change": 1.05,
+      "changePct": 3.75,
+      "chgStr": "+3.75%",
+      "dir": "up"
+    },
+    "1536": {
+      "price": 52.3,
+      "change": 0.7,
+      "changePct": 1.36,
+      "chgStr": "+1.36%",
+      "dir": "up"
+    },
+    "1590": {
+      "price": 1450.0,
+      "change": 40.0,
+      "changePct": 2.84,
+      "chgStr": "+2.84%",
+      "dir": "up"
+    },
+    "1598": {
+      "price": 20.15,
+      "change": 0.05,
+      "changePct": 0.25,
+      "chgStr": "+0.25%",
+      "dir": "up"
+    },
+    "1605": {
+      "price": 37.95,
+      "change": 1.45,
+      "changePct": 3.97,
+      "chgStr": "+3.97%",
+      "dir": "up"
+    },
+    "1760": {
+      "price": 61.0,
+      "change": -0.8,
+      "changePct": -1.29,
+      "chgStr": "-1.29%",
+      "dir": "dn"
+    },
+    "1795": {
+      "price": 197.5,
+      "change": -3.5,
+      "changePct": -1.74,
+      "chgStr": "-1.74%",
+      "dir": "dn"
+    },
+    "2014": {
+      "price": 18.85,
+      "change": 1.7,
+      "changePct": 9.91,
+      "chgStr": "+9.91%",
+      "dir": "up"
+    },
+    "2049": {
+      "price": 395.0,
+      "change": 18.5,
+      "changePct": 4.91,
+      "chgStr": "+4.91%",
+      "dir": "up"
+    },
+    "2059": {
+      "price": 4980.0,
+      "change": -110.0,
+      "changePct": -2.16,
+      "chgStr": "-2.16%",
+      "dir": "dn"
+    },
+    "2201": {
+      "price": 27.45,
+      "change": 0.6,
+      "changePct": 2.23,
+      "chgStr": "+2.23%",
+      "dir": "up"
+    },
+    "2301": {
+      "price": 227.5,
+      "change": 20.5,
+      "changePct": 9.9,
+      "chgStr": "+9.9%",
+      "dir": "up"
+    },
+    "2314": {
+      "price": 16.4,
+      "change": 0.6,
+      "changePct": 3.8,
+      "chgStr": "+3.8%",
+      "dir": "up"
+    },
+    "2327": {
+      "price": 691.0,
+      "change": 62.0,
+      "changePct": 9.86,
+      "chgStr": "+9.86%",
+      "dir": "up"
+    },
+    "2345": {
+      "price": 2540.0,
+      "change": 70.0,
+      "changePct": 2.83,
+      "chgStr": "+2.83%",
+      "dir": "up"
+    },
+    "2354": {
+      "price": 61.1,
+      "change": 0.9,
+      "changePct": 1.5,
+      "chgStr": "+1.5%",
+      "dir": "up"
+    },
+    "2355": {
+      "price": 67.0,
+      "change": 1.8,
+      "changePct": 2.76,
+      "chgStr": "+2.76%",
+      "dir": "up"
+    },
+    "2356": {
+      "price": 65.4,
+      "change": 5.9,
+      "changePct": 9.92,
+      "chgStr": "+9.92%",
+      "dir": "up"
+    },
+    "2367": {
+      "price": 70.1,
+      "change": 3.3,
+      "changePct": 4.94,
+      "chgStr": "+4.94%",
+      "dir": "up"
+    },
+    "2368": {
+      "price": 1425.0,
+      "change": 95.0,
+      "changePct": 7.14,
+      "chgStr": "+7.14%",
+      "dir": "up"
+    },
+    "2375": {
+      "price": 138.0,
+      "change": 3.5,
+      "changePct": 2.6,
+      "chgStr": "+2.6%",
+      "dir": "up"
+    },
+    "2379": {
+      "price": 583.0,
+      "change": 5.0,
+      "changePct": 0.87,
+      "chgStr": "+0.87%",
+      "dir": "up"
+    },
+    "2383": {
+      "price": 5505.0,
+      "change": 500.0,
+      "changePct": 9.99,
+      "chgStr": "+9.99%",
+      "dir": "up"
+    },
+    "2392": {
+      "price": 38.6,
+      "change": 0.55,
+      "changePct": 1.45,
+      "chgStr": "+1.45%",
+      "dir": "up"
+    },
+    "2395": {
+      "price": 498.5,
+      "change": 29.5,
+      "changePct": 6.29,
+      "chgStr": "+6.29%",
+      "dir": "up"
+    },
+    "2412": {
+      "price": 136.5,
+      "change": -0.5,
+      "changePct": -0.36,
+      "chgStr": "-0.36%",
+      "dir": "dn"
+    },
+    "2419": {
+      "price": 32.3,
+      "change": 0.7,
+      "changePct": 2.22,
+      "chgStr": "+2.22%",
+      "dir": "up"
+    },
+    "2428": {
+      "price": 243.0,
+      "change": 0.5,
+      "changePct": 0.21,
+      "chgStr": "+0.21%",
+      "dir": "up"
+    },
+    "2455": {
+      "price": 444.0,
+      "change": 19.0,
+      "changePct": 4.47,
+      "chgStr": "+4.47%",
+      "dir": "up"
+    },
+    "2474": {
+      "price": 186.5,
+      "change": -1.0,
+      "changePct": -0.53,
+      "chgStr": "-0.53%",
+      "dir": "dn"
+    },
+    "2481": {
+      "price": 134.0,
+      "change": 0.5,
+      "changePct": 0.37,
+      "chgStr": "+0.37%",
+      "dir": "up"
+    },
+    "2485": {
+      "price": 76.7,
+      "change": 3.7,
+      "changePct": 5.07,
+      "chgStr": "+5.07%",
+      "dir": "up"
+    },
+    "2492": {
+      "price": 321.5,
+      "change": 29.0,
+      "changePct": 9.91,
+      "chgStr": "+9.91%",
+      "dir": "up"
+    },
+    "2501": {
+      "price": 21.8,
+      "change": -0.25,
+      "changePct": -1.13,
+      "chgStr": "-1.13%",
+      "dir": "dn"
+    },
+    "2504": {
+      "price": 35.1,
+      "change": 0.45,
+      "changePct": 1.3,
+      "chgStr": "+1.3%",
+      "dir": "up"
+    },
+    "2511": {
+      "price": 7.69,
+      "change": -0.05,
+      "changePct": -0.65,
+      "chgStr": "-0.65%",
+      "dir": "dn"
+    },
+    "2515": {
+      "price": 13.15,
+      "change": -0.2,
+      "changePct": -1.5,
+      "chgStr": "-1.5%",
+      "dir": "dn"
+    },
+    "2520": {
+      "price": 30.05,
+      "change": -0.4,
+      "changePct": -1.31,
+      "chgStr": "-1.31%",
+      "dir": "dn"
+    },
+    "2542": {
+      "price": 42.4,
+      "change": -0.8,
+      "changePct": -1.85,
+      "chgStr": "-1.85%",
+      "dir": "dn"
+    },
+    "2548": {
+      "price": 122.0,
+      "change": -1.5,
+      "changePct": -1.21,
+      "chgStr": "-1.21%",
+      "dir": "dn"
+    },
+    "2603": {
+      "price": 214.0,
+      "change": -5.0,
+      "changePct": -2.28,
+      "chgStr": "-2.28%",
+      "dir": "dn"
+    },
+    "2606": {
+      "price": 67.9,
+      "change": 2.5,
+      "changePct": 3.82,
+      "chgStr": "+3.82%",
+      "dir": "up"
+    },
+    "2609": {
+      "price": 51.8,
+      "change": -1.2,
+      "changePct": -2.26,
+      "chgStr": "-2.26%",
+      "dir": "dn"
+    },
+    "2610": {
+      "price": 18.85,
+      "change": 0.3,
+      "changePct": 1.62,
+      "chgStr": "+1.62%",
+      "dir": "up"
+    },
+    "2615": {
+      "price": 83.3,
+      "change": -1.0,
+      "changePct": -1.19,
+      "chgStr": "-1.19%",
+      "dir": "dn"
+    },
+    "2617": {
+      "price": 29.1,
+      "change": 0.1,
+      "changePct": 0.34,
+      "chgStr": "+0.34%",
+      "dir": "up"
+    },
+    "2618": {
+      "price": 35.45,
+      "change": -0.05,
+      "changePct": -0.14,
+      "chgStr": "-0.14%",
+      "dir": "dn"
+    },
+    "2636": {
+      "price": 67.1,
+      "change": -0.1,
+      "changePct": -0.15,
+      "chgStr": "-0.15%",
+      "dir": "dn"
+    },
+    "2637": {
+      "price": 75.1,
+      "change": 3.9,
+      "changePct": 5.48,
+      "chgStr": "+5.48%",
+      "dir": "up"
+    },
+    "2880": {
+      "price": 30.55,
+      "change": -1.4,
+      "changePct": -4.38,
+      "chgStr": "-4.38%",
+      "dir": "dn"
+    },
+    "2881": {
+      "price": 97.7,
+      "change": 2.6,
+      "changePct": 2.73,
+      "chgStr": "+2.73%",
+      "dir": "up"
+    },
+    "2882": {
+      "price": 81.5,
+      "change": 1.8,
+      "changePct": 2.26,
+      "chgStr": "+2.26%",
+      "dir": "up"
+    },
+    "2883": {
+      "price": 21.65,
+      "change": -0.05,
+      "changePct": -0.23,
+      "chgStr": "-0.23%",
+      "dir": "dn"
+    },
+    "2884": {
+      "price": 30.9,
+      "change": -0.4,
+      "changePct": -1.28,
+      "chgStr": "-1.28%",
+      "dir": "dn"
+    },
+    "2885": {
+      "price": 56.1,
+      "change": 1.0,
+      "changePct": 1.81,
+      "chgStr": "+1.81%",
+      "dir": "up"
+    },
+    "2886": {
+      "price": 39.5,
+      "change": -0.4,
+      "changePct": -1.0,
+      "chgStr": "-1.0%",
+      "dir": "dn"
+    },
+    "2891": {
+      "price": 57.3,
+      "change": -0.3,
+      "changePct": -0.52,
+      "chgStr": "-0.52%",
+      "dir": "dn"
+    },
+    "2892": {
+      "price": 27.6,
+      "change": 0.05,
+      "changePct": 0.18,
+      "chgStr": "+0.18%",
+      "dir": "up"
+    },
+    "3005": {
+      "price": 103.5,
+      "change": -0.5,
+      "changePct": -0.48,
+      "chgStr": "-0.48%",
+      "dir": "dn"
+    },
+    "3008": {
+      "price": 3845.0,
+      "change": 305.0,
+      "changePct": 8.62,
+      "chgStr": "+8.62%",
+      "dir": "up"
+    },
+    "3014": {
+      "price": 148.5,
+      "change": 0.5,
+      "changePct": 0.34,
+      "chgStr": "+0.34%",
+      "dir": "up"
+    },
+    "3017": {
+      "price": 2575.0,
+      "change": 30.0,
+      "changePct": 1.18,
+      "chgStr": "+1.18%",
+      "dir": "up"
+    },
+    "3019": {
+      "price": 156.5,
+      "change": 3.0,
+      "changePct": 1.95,
+      "chgStr": "+1.95%",
+      "dir": "up"
+    },
+    "3026": {
+      "price": 523.0,
+      "change": 46.5,
+      "changePct": 9.76,
+      "chgStr": "+9.76%",
+      "dir": "up"
+    },
+    "3030": {
+      "price": 418.0,
+      "change": -1.5,
+      "changePct": -0.36,
+      "chgStr": "-0.36%",
+      "dir": "dn"
+    },
+    "3034": {
+      "price": 489.0,
+      "change": 3.5,
+      "changePct": 0.72,
+      "chgStr": "+0.72%",
+      "dir": "up"
+    },
+    "3037": {
+      "price": 990.0,
+      "change": 20.0,
+      "changePct": 2.06,
+      "chgStr": "+2.06%",
+      "dir": "up"
+    },
+    "3042": {
+      "price": 193.5,
+      "change": 17.5,
+      "changePct": 9.94,
+      "chgStr": "+9.94%",
+      "dir": "up"
+    },
+    "3044": {
+      "price": 494.0,
+      "change": 3.5,
+      "changePct": 0.71,
+      "chgStr": "+0.71%",
+      "dir": "up"
+    },
+    "3045": {
+      "price": 111.5,
+      "change": -0.5,
+      "changePct": -0.45,
+      "chgStr": "-0.45%",
+      "dir": "dn"
+    },
+    "3189": {
+      "price": 669.0,
+      "change": 60.0,
+      "changePct": 9.85,
+      "chgStr": "+9.85%",
+      "dir": "up"
+    },
+    "3380": {
+      "price": 35.8,
+      "change": 1.65,
+      "changePct": 4.83,
+      "chgStr": "+4.83%",
+      "dir": "up"
+    },
+    "3406": {
+      "price": 591.0,
+      "change": 15.0,
+      "changePct": 2.6,
+      "chgStr": "+2.6%",
+      "dir": "up"
+    },
+    "3443": {
+      "price": 5310.0,
+      "change": 170.0,
+      "changePct": 3.31,
+      "chgStr": "+3.31%",
+      "dir": "up"
+    },
+    "3450": {
+      "price": 501.0,
+      "change": 41.5,
+      "changePct": 9.03,
+      "chgStr": "+9.03%",
+      "dir": "up"
+    },
+    "3557": {
+      "price": 25.8,
+      "change": -0.1,
+      "changePct": -0.39,
+      "chgStr": "-0.39%",
+      "dir": "dn"
+    },
+    "3576": {
+      "price": 19.35,
+      "change": 1.1,
+      "changePct": 6.03,
+      "chgStr": "+6.03%",
+      "dir": "up"
+    },
+    "3653": {
+      "price": 3770.0,
+      "change": 110.0,
+      "changePct": 3.01,
+      "chgStr": "+3.01%",
+      "dir": "up"
+    },
+    "3661": {
+      "price": 4900.0,
+      "change": 5.0,
+      "changePct": 0.1,
+      "chgStr": "+0.1%",
+      "dir": "up"
+    },
+    "3673": {
+      "price": 79.5,
+      "change": 2.5,
+      "changePct": 3.25,
+      "chgStr": "+3.25%",
+      "dir": "up"
+    },
+    "3708": {
+      "price": 125.0,
+      "change": -1.0,
+      "changePct": -0.79,
+      "chgStr": "-0.79%",
+      "dir": "dn"
+    },
+    "3711": {
+      "price": 617.0,
+      "change": 56.0,
+      "changePct": 9.98,
+      "chgStr": "+9.98%",
+      "dir": "up"
+    },
+    "4164": {
+      "price": 28.3,
+      "change": -0.55,
+      "changePct": -1.91,
+      "chgStr": "-1.91%",
+      "dir": "dn"
+    },
+    "4583": {
+      "price": 731.0,
+      "change": 2.0,
+      "changePct": 0.27,
+      "chgStr": "+0.27%",
+      "dir": "up"
+    },
+    "4904": {
+      "price": 94.2,
+      "change": -1.3,
+      "changePct": -1.36,
+      "chgStr": "-1.36%",
+      "dir": "dn"
+    },
+    "4906": {
+      "price": 44.3,
+      "change": 4.0,
+      "changePct": 9.93,
+      "chgStr": "+9.93%",
+      "dir": "up"
+    },
+    "4938": {
+      "price": 81.2,
+      "change": 0.5,
+      "changePct": 0.62,
+      "chgStr": "+0.62%",
+      "dir": "up"
+    },
+    "4958": {
+      "price": 529.0,
+      "change": 13.0,
+      "changePct": 2.52,
+      "chgStr": "+2.52%",
+      "dir": "up"
+    },
+    "4961": {
+      "price": 175.5,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "5388": {
+      "price": 86.4,
+      "change": 1.3,
+      "changePct": 1.53,
+      "chgStr": "+1.53%",
+      "dir": "up"
+    },
+    "5533": {
+      "price": 13.85,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "5534": {
+      "price": 75.0,
+      "change": -0.5,
+      "changePct": -0.66,
+      "chgStr": "-0.66%",
+      "dir": "dn"
+    },
+    "5608": {
+      "price": 14.55,
+      "change": 0.3,
+      "changePct": 2.11,
+      "chgStr": "+2.11%",
+      "dir": "up"
+    },
+    "5876": {
+      "price": 39.75,
+      "change": -0.3,
+      "changePct": -0.75,
+      "chgStr": "-0.75%",
+      "dir": "dn"
+    },
+    "6213": {
+      "price": 267.0,
+      "change": 5.0,
+      "changePct": 1.91,
+      "chgStr": "+1.91%",
+      "dir": "up"
+    },
+    "6278": {
+      "price": 238.0,
+      "change": -7.0,
+      "changePct": -2.86,
+      "chgStr": "-2.86%",
+      "dir": "dn"
+    },
+    "6282": {
+      "price": 63.1,
+      "change": 5.7,
+      "changePct": 9.93,
+      "chgStr": "+9.93%",
+      "dir": "up"
+    },
+    "6285": {
+      "price": 298.0,
+      "change": 2.0,
+      "changePct": 0.68,
+      "chgStr": "+0.68%",
+      "dir": "up"
+    },
+    "6409": {
+      "price": 715.0,
+      "change": 38.0,
+      "changePct": 5.61,
+      "chgStr": "+5.61%",
+      "dir": "up"
+    },
+    "6414": {
+      "price": 363.5,
+      "change": 13.0,
+      "changePct": 3.71,
+      "chgStr": "+3.71%",
+      "dir": "up"
+    },
+    "6415": {
+      "price": 618.0,
+      "change": 56.0,
+      "changePct": 9.96,
+      "chgStr": "+9.96%",
+      "dir": "up"
+    },
+    "6443": {
+      "price": 43.25,
+      "change": 3.2,
+      "changePct": 7.99,
+      "chgStr": "+7.99%",
+      "dir": "up"
+    },
+    "6472": {
+      "price": 366.5,
+      "change": -13.0,
+      "changePct": -3.43,
+      "chgStr": "-3.43%",
+      "dir": "dn"
+    },
+    "6533": {
+      "price": 244.5,
+      "change": 4.5,
+      "changePct": 1.88,
+      "chgStr": "+1.88%",
+      "dir": "up"
+    },
+    "6669": {
+      "price": 5610.0,
+      "change": 85.0,
+      "changePct": 1.54,
+      "chgStr": "+1.54%",
+      "dir": "up"
+    },
+    "6706": {
+      "price": 179.5,
+      "change": -5.5,
+      "changePct": -2.97,
+      "chgStr": "-2.97%",
+      "dir": "dn"
+    },
+    "6781": {
+      "price": 1260.0,
+      "change": 50.0,
+      "changePct": 4.13,
+      "chgStr": "+4.13%",
+      "dir": "up"
+    },
+    "6806": {
+      "price": 8.35,
+      "change": -0.92,
+      "changePct": -9.92,
+      "chgStr": "-9.92%",
+      "dir": "dn"
+    },
+    "6869": {
+      "price": 83.2,
+      "change": 2.5,
+      "changePct": 3.1,
+      "chgStr": "+3.1%",
+      "dir": "up"
+    },
+    "8046": {
+      "price": 884.0,
+      "change": -50.0,
+      "changePct": -5.35,
+      "chgStr": "-5.35%",
+      "dir": "dn"
+    },
+    "00400A": {
+      "price": 14.57,
+      "change": 0.67,
+      "changePct": 4.82,
+      "chgStr": "+4.82%",
+      "dir": "up"
+    },
+    "00401A": {
+      "price": 13.59,
+      "change": 0.51,
+      "changePct": 3.9,
+      "chgStr": "+3.9%",
+      "dir": "up"
+    },
+    "00403A": {
+      "price": 10.58,
+      "change": 0.38,
+      "changePct": 3.73,
+      "chgStr": "+3.73%",
+      "dir": "up"
+    },
+    "0051": {
+      "price": 140.65,
+      "change": 4.25,
+      "changePct": 3.12,
+      "chgStr": "+3.12%",
+      "dir": "up"
+    },
+    "0052": {
+      "price": 59.6,
+      "change": 1.95,
+      "changePct": 3.38,
+      "chgStr": "+3.38%",
+      "dir": "up"
+    },
+    "0053": {
+      "price": 235.35,
+      "change": 9.5,
+      "changePct": 4.21,
+      "chgStr": "+4.21%",
+      "dir": "up"
+    },
+    "0055": {
+      "price": 33.95,
+      "change": 0.05,
+      "changePct": 0.15,
+      "chgStr": "+0.15%",
+      "dir": "up"
+    },
+    "0057": {
+      "price": 298.35,
+      "change": 8.95,
+      "changePct": 3.09,
+      "chgStr": "+3.09%",
+      "dir": "up"
+    },
+    "0061": {
+      "price": 24.83,
+      "change": 0.14,
+      "changePct": 0.57,
+      "chgStr": "+0.57%",
+      "dir": "up"
+    },
+    "006203": {
+      "price": 183.65,
+      "change": 6.4,
+      "changePct": 3.61,
+      "chgStr": "+3.61%",
+      "dir": "up"
+    },
+    "006204": {
+      "price": 218.0,
+      "change": 6.35,
+      "changePct": 3.0,
+      "chgStr": "+3.0%",
+      "dir": "up"
+    },
+    "006205": {
+      "price": 41.06,
+      "change": 0.34,
+      "changePct": 0.83,
+      "chgStr": "+0.83%",
+      "dir": "up"
+    },
+    "006206": {
+      "price": 36.71,
+      "change": 0.14,
+      "changePct": 0.38,
+      "chgStr": "+0.38%",
+      "dir": "up"
+    },
+    "006207": {
+      "price": 33.38,
+      "change": 0.39,
+      "changePct": 1.18,
+      "chgStr": "+1.18%",
+      "dir": "up"
+    },
+    "006208": {
+      "price": 233.15,
+      "change": 8.1,
+      "changePct": 3.6,
+      "chgStr": "+3.6%",
+      "dir": "up"
+    },
+    "00631L": {
+      "price": 34.56,
+      "change": 2.0,
+      "changePct": 6.14,
+      "chgStr": "+6.14%",
+      "dir": "up"
+    },
+    "00632R": {
+      "price": 10.68,
+      "change": -0.4,
+      "changePct": -3.61,
+      "chgStr": "-3.61%",
+      "dir": "dn"
+    },
+    "00633L": {
+      "price": 51.55,
+      "change": 0.85,
+      "changePct": 1.68,
+      "chgStr": "+1.68%",
+      "dir": "up"
+    },
+    "00634R": {
+      "price": 3.09,
+      "change": -0.02,
+      "changePct": -0.64,
+      "chgStr": "-0.64%",
+      "dir": "dn"
+    },
+    "00635U": {
+      "price": 47.66,
+      "change": 0.31,
+      "changePct": 0.65,
+      "chgStr": "+0.65%",
+      "dir": "up"
+    },
+    "00636": {
+      "price": 28.33,
+      "change": 0.25,
+      "changePct": 0.89,
+      "chgStr": "+0.89%",
+      "dir": "up"
+    },
+    "00636K": {
+      "price": 9.08,
+      "change": 0.12,
+      "changePct": 1.34,
+      "chgStr": "+1.34%",
+      "dir": "up"
+    },
+    "00637L": {
+      "price": 21.18,
+      "change": 0.27,
+      "changePct": 1.29,
+      "chgStr": "+1.29%",
+      "dir": "up"
+    },
+    "00638R": {
+      "price": 6.58,
+      "change": -0.07,
+      "changePct": -1.05,
+      "chgStr": "-1.05%",
+      "dir": "dn"
+    },
+    "00639": {
+      "price": 17.94,
+      "change": 0.24,
+      "changePct": 1.36,
+      "chgStr": "+1.36%",
+      "dir": "up"
+    },
+    "00640L": {
+      "price": 101.6,
+      "change": 1.9,
+      "changePct": 1.91,
+      "chgStr": "+1.91%",
+      "dir": "up"
+    },
+    "00641R": {
+      "price": 3.84,
+      "change": -0.07,
+      "changePct": -1.79,
+      "chgStr": "-1.79%",
+      "dir": "dn"
+    },
+    "00642U": {
+      "price": 28.64,
+      "change": -2.24,
+      "changePct": -7.25,
+      "chgStr": "-7.25%",
+      "dir": "dn"
+    },
+    "00643": {
+      "price": 20.33,
+      "change": 0.15,
+      "changePct": 0.74,
+      "chgStr": "+0.74%",
+      "dir": "up"
+    },
+    "00643K": {
+      "price": 4.34,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "00645": {
+      "price": 55.45,
+      "change": 0.6,
+      "changePct": 1.09,
+      "chgStr": "+1.09%",
+      "dir": "up"
+    },
+    "00646": {
+      "price": 74.65,
+      "change": 0.4,
+      "changePct": 0.54,
+      "chgStr": "+0.54%",
+      "dir": "up"
+    },
+    "00647L": {
+      "price": 136.1,
+      "change": 2.25,
+      "changePct": 1.68,
+      "chgStr": "+1.68%",
+      "dir": "up"
+    },
+    "00648R": {
+      "price": 3.95,
+      "change": -0.06,
+      "changePct": -1.5,
+      "chgStr": "-1.5%",
+      "dir": "dn"
+    },
+    "00650L": {
+      "price": 17.15,
+      "change": -0.09,
+      "changePct": -0.52,
+      "chgStr": "-0.52%",
+      "dir": "dn"
+    },
+    "00651R": {
+      "price": 5.26,
+      "change": 0.05,
+      "changePct": 0.96,
+      "chgStr": "+0.96%",
+      "dir": "up"
+    },
+    "00652": {
+      "price": 32.48,
+      "change": 0.19,
+      "changePct": 0.59,
+      "chgStr": "+0.59%",
+      "dir": "up"
+    },
+    "00653L": {
+      "price": 46.3,
+      "change": 0.69,
+      "changePct": 1.51,
+      "chgStr": "+1.51%",
+      "dir": "up"
+    },
+    "00654R": {
+      "price": 6.75,
+      "change": -0.11,
+      "changePct": -1.6,
+      "chgStr": "-1.6%",
+      "dir": "dn"
+    },
+    "00655L": {
+      "price": 35.84,
+      "change": 0.6,
+      "changePct": 1.7,
+      "chgStr": "+1.7%",
+      "dir": "up"
+    },
+    "00656R": {
+      "price": 5.82,
+      "change": -0.08,
+      "changePct": -1.36,
+      "chgStr": "-1.36%",
+      "dir": "dn"
+    },
+    "00657": {
+      "price": 76.55,
+      "change": 2.25,
+      "changePct": 3.03,
+      "chgStr": "+3.03%",
+      "dir": "up"
+    },
+    "00657K": {
+      "price": 24.42,
+      "change": 0.83,
+      "changePct": 3.52,
+      "chgStr": "+3.52%",
+      "dir": "up"
+    },
+    "00660": {
+      "price": 43.99,
+      "change": 0.29,
+      "changePct": 0.66,
+      "chgStr": "+0.66%",
+      "dir": "up"
+    },
+    "00661": {
+      "price": 84.2,
+      "change": 2.35,
+      "changePct": 2.87,
+      "chgStr": "+2.87%",
+      "dir": "up"
+    },
+    "00662": {
+      "price": 120.8,
+      "change": 1.3,
+      "changePct": 1.09,
+      "chgStr": "+1.09%",
+      "dir": "up"
+    },
+    "00663L": {
+      "price": 100.8,
+      "change": 6.4,
+      "changePct": 6.78,
+      "chgStr": "+6.78%",
+      "dir": "up"
+    },
+    "00664R": {
+      "price": 1.73,
+      "change": -0.06,
+      "changePct": -3.35,
+      "chgStr": "-3.35%",
+      "dir": "dn"
+    },
+    "00665L": {
+      "price": 9.62,
+      "change": -0.07,
+      "changePct": -0.72,
+      "chgStr": "-0.72%",
+      "dir": "dn"
+    },
+    "00666R": {
+      "price": 9.08,
+      "change": 0.03,
+      "changePct": 0.33,
+      "chgStr": "+0.33%",
+      "dir": "up"
+    },
+    "00668": {
+      "price": 58.4,
+      "change": 0.4,
+      "changePct": 0.69,
+      "chgStr": "+0.69%",
+      "dir": "up"
+    },
+    "00668K": {
+      "price": 18.48,
+      "change": 0.11,
+      "changePct": 0.6,
+      "chgStr": "+0.6%",
+      "dir": "up"
+    },
+    "00669R": {
+      "price": 5.38,
+      "change": -0.07,
+      "changePct": -1.28,
+      "chgStr": "-1.28%",
+      "dir": "dn"
+    },
+    "00670L": {
+      "price": 214.3,
+      "change": 5.3,
+      "changePct": 2.54,
+      "chgStr": "+2.54%",
+      "dir": "up"
+    },
+    "00671R": {
+      "price": 2.42,
+      "change": -0.02,
+      "changePct": -0.82,
+      "chgStr": "-0.82%",
+      "dir": "dn"
+    },
+    "00673R": {
+      "price": 12.64,
+      "change": 0.82,
+      "changePct": 6.94,
+      "chgStr": "+6.94%",
+      "dir": "up"
+    },
+    "00674R": {
+      "price": 27.06,
+      "change": -0.25,
+      "changePct": -0.92,
+      "chgStr": "-0.92%",
+      "dir": "dn"
+    },
+    "00675L": {
+      "price": 304.3,
+      "change": 18.45,
+      "changePct": 6.45,
+      "chgStr": "+6.45%",
+      "dir": "up"
+    },
+    "00676R": {
+      "price": 5.89,
+      "change": -0.21,
+      "changePct": -3.44,
+      "chgStr": "-3.44%",
+      "dir": "dn"
+    },
+    "00678": {
+      "price": 35.93,
+      "change": 0.12,
+      "changePct": 0.34,
+      "chgStr": "+0.34%",
+      "dir": "up"
+    },
+    "00680L": {
+      "price": 6.78,
+      "change": 0.11,
+      "changePct": 1.65,
+      "chgStr": "+1.65%",
+      "dir": "up"
+    },
+    "00681R": {
+      "price": 21.23,
+      "change": -0.2,
+      "changePct": -0.93,
+      "chgStr": "-0.93%",
+      "dir": "dn"
+    },
+    "00683L": {
+      "price": 21.07,
+      "change": -0.18,
+      "changePct": -0.85,
+      "chgStr": "-0.85%",
+      "dir": "dn"
+    },
+    "00685L": {
+      "price": 275.45,
+      "change": 17.1,
+      "changePct": 6.62,
+      "chgStr": "+6.62%",
+      "dir": "up"
+    },
+    "00686R": {
+      "price": 1.06,
+      "change": -0.04,
+      "changePct": -3.64,
+      "chgStr": "-3.64%",
+      "dir": "dn"
+    },
+    "00688L": {
+      "price": 6.77,
+      "change": 0.11,
+      "changePct": 1.65,
+      "chgStr": "+1.65%",
+      "dir": "up"
+    },
+    "00689R": {
+      "price": 22.1,
+      "change": -0.26,
+      "changePct": -1.16,
+      "chgStr": "-1.16%",
+      "dir": "dn"
+    },
+    "00690": {
+      "price": 77.5,
+      "change": 3.9,
+      "changePct": 5.3,
+      "chgStr": "+5.3%",
+      "dir": "up"
+    },
+    "00692": {
+      "price": 87.6,
+      "change": 3.0,
+      "changePct": 3.55,
+      "chgStr": "+3.55%",
+      "dir": "up"
+    },
+    "00693U": {
+      "price": 21.87,
+      "change": -0.24,
+      "changePct": -1.09,
+      "chgStr": "-1.09%",
+      "dir": "dn"
+    },
+    "00700": {
+      "price": 17.01,
+      "change": -0.14,
+      "changePct": -0.82,
+      "chgStr": "-0.82%",
+      "dir": "dn"
+    },
+    "00701": {
+      "price": 32.44,
+      "change": 0.36,
+      "changePct": 1.12,
+      "chgStr": "+1.12%",
+      "dir": "up"
+    },
+    "00702": {
+      "price": 24.03,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "00703": {
+      "price": 19.68,
+      "change": -0.05,
+      "changePct": -0.25,
+      "chgStr": "-0.25%",
+      "dir": "dn"
+    },
+    "00706L": {
+      "price": 19.3,
+      "change": 0.01,
+      "changePct": 0.05,
+      "chgStr": "+0.05%",
+      "dir": "up"
+    },
+    "00708L": {
+      "price": 91.0,
+      "change": 1.15,
+      "changePct": 1.28,
+      "chgStr": "+1.28%",
+      "dir": "up"
+    },
+    "00709": {
+      "price": 38.95,
+      "change": 0.27,
+      "changePct": 0.7,
+      "chgStr": "+0.7%",
+      "dir": "up"
+    },
+    "00710B": {
+      "price": 18.79,
+      "change": -0.06,
+      "changePct": -0.32,
+      "chgStr": "-0.32%",
+      "dir": "dn"
+    },
+    "00711B": {
+      "price": 15.83,
+      "change": 0.01,
+      "changePct": 0.06,
+      "chgStr": "+0.06%",
+      "dir": "up"
+    },
+    "00712": {
+      "price": 8.75,
+      "change": -0.02,
+      "changePct": -0.23,
+      "chgStr": "-0.23%",
+      "dir": "dn"
+    },
+    "00713": {
+      "price": 56.05,
+      "change": 0.35,
+      "changePct": 0.63,
+      "chgStr": "+0.63%",
+      "dir": "up"
+    },
+    "00714": {
+      "price": 21.61,
+      "change": 0.02,
+      "changePct": 0.09,
+      "chgStr": "+0.09%",
+      "dir": "up"
+    },
+    "00715L": {
+      "price": 54.45,
+      "change": -7.8,
+      "changePct": -12.53,
+      "chgStr": "-12.53%",
+      "dir": "dn"
+    },
+    "00717": {
+      "price": 14.95,
+      "change": 0.02,
+      "changePct": 0.13,
+      "chgStr": "+0.13%",
+      "dir": "up"
+    },
+    "00728": {
+      "price": 61.2,
+      "change": 2.15,
+      "changePct": 3.64,
+      "chgStr": "+3.64%",
+      "dir": "up"
+    },
+    "00730": {
+      "price": 27.89,
+      "change": 0.55,
+      "changePct": 2.01,
+      "chgStr": "+2.01%",
+      "dir": "up"
+    },
+    "00731": {
+      "price": 75.75,
+      "change": 0.4,
+      "changePct": 0.53,
+      "chgStr": "+0.53%",
+      "dir": "up"
+    },
+    "00733": {
+      "price": 75.6,
+      "change": 3.25,
+      "changePct": 4.49,
+      "chgStr": "+4.49%",
+      "dir": "up"
+    },
+    "00735": {
+      "price": 105.0,
+      "change": 3.8,
+      "changePct": 3.75,
+      "chgStr": "+3.75%",
+      "dir": "up"
+    },
+    "00736": {
+      "price": 30.52,
+      "change": 0.29,
+      "changePct": 0.96,
+      "chgStr": "+0.96%",
+      "dir": "up"
+    },
+    "00737": {
+      "price": 38.88,
+      "change": 0.93,
+      "changePct": 2.45,
+      "chgStr": "+2.45%",
+      "dir": "up"
+    },
+    "00738U": {
+      "price": 62.5,
+      "change": 0.7,
+      "changePct": 1.13,
+      "chgStr": "+1.13%",
+      "dir": "up"
+    },
+    "00739": {
+      "price": 28.83,
+      "change": 0.3,
+      "changePct": 1.05,
+      "chgStr": "+1.05%",
+      "dir": "up"
+    },
+    "00752": {
+      "price": 23.08,
+      "change": -0.18,
+      "changePct": -0.77,
+      "chgStr": "-0.77%",
+      "dir": "dn"
+    },
+    "00753L": {
+      "price": 9.9,
+      "change": -0.08,
+      "changePct": -0.8,
+      "chgStr": "-0.8%",
+      "dir": "dn"
+    },
+    "00757": {
+      "price": 129.5,
+      "change": 0.3,
+      "changePct": 0.23,
+      "chgStr": "+0.23%",
+      "dir": "up"
+    },
+    "00762": {
+      "price": 113.8,
+      "change": 2.3,
+      "changePct": 2.06,
+      "chgStr": "+2.06%",
+      "dir": "up"
+    },
+    "00763U": {
+      "price": 34.36,
+      "change": 0.2,
+      "changePct": 0.59,
+      "chgStr": "+0.59%",
+      "dir": "up"
+    },
+    "00770": {
+      "price": 66.25,
+      "change": 1.05,
+      "changePct": 1.61,
+      "chgStr": "+1.61%",
+      "dir": "up"
+    },
+    "00771": {
+      "price": 15.84,
+      "change": -0.03,
+      "changePct": -0.19,
+      "chgStr": "-0.19%",
+      "dir": "dn"
+    },
+    "00775B": {
+      "price": 31.98,
+      "change": 0.23,
+      "changePct": 0.72,
+      "chgStr": "+0.72%",
+      "dir": "up"
+    },
+    "00783": {
+      "price": 30.2,
+      "change": 0.35,
+      "changePct": 1.17,
+      "chgStr": "+1.17%",
+      "dir": "up"
+    },
+    "00830": {
+      "price": 87.8,
+      "change": 3.55,
+      "changePct": 4.21,
+      "chgStr": "+4.21%",
+      "dir": "up"
+    },
+    "00850": {
+      "price": 86.5,
+      "change": 3.65,
+      "changePct": 4.41,
+      "chgStr": "+4.41%",
+      "dir": "up"
+    },
+    "00851": {
+      "price": 67.4,
+      "change": 1.85,
+      "changePct": 2.82,
+      "chgStr": "+2.82%",
+      "dir": "up"
+    },
+    "00852L": {
+      "price": 33.06,
+      "change": 0.61,
+      "changePct": 1.88,
+      "chgStr": "+1.88%",
+      "dir": "up"
+    },
+    "00861": {
+      "price": 88.5,
+      "change": 2.75,
+      "changePct": 3.21,
+      "chgStr": "+3.21%",
+      "dir": "up"
+    },
+    "00865B": {
+      "price": 47.91,
+      "change": -0.06,
+      "changePct": -0.13,
+      "chgStr": "-0.13%",
+      "dir": "dn"
+    },
+    "00875": {
+      "price": 47.08,
+      "change": 1.81,
+      "changePct": 4.0,
+      "chgStr": "+4.0%",
+      "dir": "up"
+    },
+    "00876": {
+      "price": 90.25,
+      "change": 3.9,
+      "changePct": 4.52,
+      "chgStr": "+4.52%",
+      "dir": "up"
+    },
+    "00878": {
+      "price": 29.48,
+      "change": 1.21,
+      "changePct": 4.28,
+      "chgStr": "+4.28%",
+      "dir": "up"
+    },
+    "00881": {
+      "price": 53.45,
+      "change": 2.35,
+      "changePct": 4.6,
+      "chgStr": "+4.6%",
+      "dir": "up"
+    },
+    "00882": {
+      "price": 15.72,
+      "change": -0.07,
+      "changePct": -0.44,
+      "chgStr": "-0.44%",
+      "dir": "dn"
+    },
+    "00885": {
+      "price": 18.99,
+      "change": 0.03,
+      "changePct": 0.16,
+      "chgStr": "+0.16%",
+      "dir": "up"
+    },
+    "00891": {
+      "price": 35.09,
+      "change": 1.48,
+      "changePct": 4.4,
+      "chgStr": "+4.4%",
+      "dir": "up"
+    },
+    "00892": {
+      "price": 44.62,
+      "change": 1.57,
+      "changePct": 3.65,
+      "chgStr": "+3.65%",
+      "dir": "up"
+    },
+    "00893": {
+      "price": 46.28,
+      "change": 1.1,
+      "changePct": 2.43,
+      "chgStr": "+2.43%",
+      "dir": "up"
+    },
+    "00894": {
+      "price": 49.45,
+      "change": 2.08,
+      "changePct": 4.39,
+      "chgStr": "+4.39%",
+      "dir": "up"
+    },
+    "00895": {
+      "price": 51.2,
+      "change": 1.0,
+      "changePct": 1.99,
+      "chgStr": "+1.99%",
+      "dir": "up"
+    },
+    "00896": {
+      "price": 27.84,
+      "change": 1.04,
+      "changePct": 3.88,
+      "chgStr": "+3.88%",
+      "dir": "up"
+    },
+    "00897": {
+      "price": 9.82,
+      "change": 0.06,
+      "changePct": 0.61,
+      "chgStr": "+0.61%",
+      "dir": "up"
+    },
+    "00898": {
+      "price": 8.16,
+      "change": 0.13,
+      "changePct": 1.62,
+      "chgStr": "+1.62%",
+      "dir": "up"
+    },
+    "00899": {
+      "price": 28.44,
+      "change": 0.18,
+      "changePct": 0.64,
+      "chgStr": "+0.64%",
+      "dir": "up"
+    },
+    "00900": {
+      "price": 18.11,
+      "change": 0.68,
+      "changePct": 3.9,
+      "chgStr": "+3.9%",
+      "dir": "up"
+    },
+    "00901": {
+      "price": 45.22,
+      "change": 2.4,
+      "changePct": 5.6,
+      "chgStr": "+5.6%",
+      "dir": "up"
+    },
+    "00902": {
+      "price": 16.65,
+      "change": 0.23,
+      "changePct": 1.4,
+      "chgStr": "+1.4%",
+      "dir": "up"
+    },
+    "00903": {
+      "price": 22.1,
+      "change": 0.41,
+      "changePct": 1.89,
+      "chgStr": "+1.89%",
+      "dir": "up"
+    },
+    "00904": {
+      "price": 41.07,
+      "change": 1.6,
+      "changePct": 4.05,
+      "chgStr": "+4.05%",
+      "dir": "up"
+    },
+    "00905": {
+      "price": 26.55,
+      "change": 1.15,
+      "changePct": 4.53,
+      "chgStr": "+4.53%",
+      "dir": "up"
+    },
+    "00907": {
+      "price": 14.88,
+      "change": 0.01,
+      "changePct": 0.07,
+      "chgStr": "+0.07%",
+      "dir": "up"
+    },
+    "00908": {
+      "price": 14.37,
+      "change": -0.01,
+      "changePct": -0.07,
+      "chgStr": "-0.07%",
+      "dir": "dn"
+    },
+    "00909": {
+      "price": 49.78,
+      "change": 0.79,
+      "changePct": 1.61,
+      "chgStr": "+1.61%",
+      "dir": "up"
+    },
+    "00910": {
+      "price": 84.8,
+      "change": 6.7,
+      "changePct": 8.58,
+      "chgStr": "+8.58%",
+      "dir": "up"
+    },
+    "00911": {
+      "price": 59.15,
+      "change": 2.85,
+      "changePct": 5.06,
+      "chgStr": "+5.06%",
+      "dir": "up"
+    },
+    "00912": {
+      "price": 31.74,
+      "change": 0.87,
+      "changePct": 2.82,
+      "chgStr": "+2.82%",
+      "dir": "up"
+    },
+    "00913": {
+      "price": 47.97,
+      "change": 2.77,
+      "changePct": 6.13,
+      "chgStr": "+6.13%",
+      "dir": "up"
+    },
+    "00915": {
+      "price": 27.87,
+      "change": 0.44,
+      "changePct": 1.6,
+      "chgStr": "+1.6%",
+      "dir": "up"
+    },
+    "00916": {
+      "price": 28.24,
+      "change": 0.13,
+      "changePct": 0.46,
+      "chgStr": "+0.46%",
+      "dir": "up"
+    },
+    "00917": {
+      "price": 21.79,
+      "change": 0.07,
+      "changePct": 0.32,
+      "chgStr": "+0.32%",
+      "dir": "up"
+    },
+    "00918": {
+      "price": 27.83,
+      "change": 0.84,
+      "changePct": 3.11,
+      "chgStr": "+3.11%",
+      "dir": "up"
+    },
+    "00919": {
+      "price": 27.47,
+      "change": 0.74,
+      "changePct": 2.77,
+      "chgStr": "+2.77%",
+      "dir": "up"
+    },
+    "00920": {
+      "price": 27.23,
+      "change": 0.64,
+      "changePct": 2.41,
+      "chgStr": "+2.41%",
+      "dir": "up"
+    },
+    "00921": {
+      "price": 22.26,
+      "change": 0.53,
+      "changePct": 2.44,
+      "chgStr": "+2.44%",
+      "dir": "up"
+    },
+    "00922": {
+      "price": 38.49,
+      "change": 1.63,
+      "changePct": 4.42,
+      "chgStr": "+4.42%",
+      "dir": "up"
+    },
+    "00923": {
+      "price": 40.53,
+      "change": 1.66,
+      "changePct": 4.27,
+      "chgStr": "+4.27%",
+      "dir": "up"
+    },
+    "00924": {
+      "price": 32.39,
+      "change": 0.1,
+      "changePct": 0.31,
+      "chgStr": "+0.31%",
+      "dir": "up"
+    },
+    "00926": {
+      "price": 25.45,
+      "change": 0.02,
+      "changePct": 0.08,
+      "chgStr": "+0.08%",
+      "dir": "up"
+    },
+    "00927": {
+      "price": 39.0,
+      "change": 2.47,
+      "changePct": 6.76,
+      "chgStr": "+6.76%",
+      "dir": "up"
+    },
+    "00929": {
+      "price": 28.8,
+      "change": 1.72,
+      "changePct": 6.35,
+      "chgStr": "+6.35%",
+      "dir": "up"
+    },
+    "00930": {
+      "price": 23.3,
+      "change": 0.89,
+      "changePct": 3.97,
+      "chgStr": "+3.97%",
+      "dir": "up"
+    },
+    "00932": {
+      "price": 16.63,
+      "change": 0.07,
+      "changePct": 0.42,
+      "chgStr": "+0.42%",
+      "dir": "up"
+    },
+    "00934": {
+      "price": 26.92,
+      "change": 0.82,
+      "changePct": 3.14,
+      "chgStr": "+3.14%",
+      "dir": "up"
+    },
+    "00935": {
+      "price": 59.8,
+      "change": 3.45,
+      "changePct": 6.12,
+      "chgStr": "+6.12%",
+      "dir": "up"
+    },
+    "00936": {
+      "price": 20.33,
+      "change": 0.31,
+      "changePct": 1.55,
+      "chgStr": "+1.55%",
+      "dir": "up"
+    },
+    "00938": {
+      "price": 21.21,
+      "change": 0.22,
+      "changePct": 1.05,
+      "chgStr": "+1.05%",
+      "dir": "up"
+    },
+    "00939": {
+      "price": 19.38,
+      "change": 0.58,
+      "changePct": 3.09,
+      "chgStr": "+3.09%",
+      "dir": "up"
+    },
+    "00940": {
+      "price": 11.73,
+      "change": 0.24,
+      "changePct": 2.09,
+      "chgStr": "+2.09%",
+      "dir": "up"
+    },
+    "00941": {
+      "price": 25.54,
+      "change": 0.56,
+      "changePct": 2.24,
+      "chgStr": "+2.24%",
+      "dir": "up"
+    },
+    "00943": {
+      "price": 21.68,
+      "change": 0.66,
+      "changePct": 3.14,
+      "chgStr": "+3.14%",
+      "dir": "up"
+    },
+    "00944": {
+      "price": 19.46,
+      "change": 0.42,
+      "changePct": 2.21,
+      "chgStr": "+2.21%",
+      "dir": "up"
+    },
+    "00945B": {
+      "price": 14.35,
+      "change": -0.03,
+      "changePct": -0.21,
+      "chgStr": "-0.21%",
+      "dir": "dn"
+    },
+    "00946": {
+      "price": 14.1,
+      "change": 0.6,
+      "changePct": 4.44,
+      "chgStr": "+4.44%",
+      "dir": "up"
+    },
+    "00947": {
+      "price": 37.61,
+      "change": 1.22,
+      "changePct": 3.35,
+      "chgStr": "+3.35%",
+      "dir": "up"
+    },
+    "00949": {
+      "price": 20.41,
+      "change": 0.18,
+      "changePct": 0.89,
+      "chgStr": "+0.89%",
+      "dir": "up"
+    },
+    "00951": {
+      "price": 17.32,
+      "change": 0.83,
+      "changePct": 5.03,
+      "chgStr": "+5.03%",
+      "dir": "up"
+    },
+    "00952": {
+      "price": 18.62,
+      "change": 0.73,
+      "changePct": 4.08,
+      "chgStr": "+4.08%",
+      "dir": "up"
+    },
+    "00953B": {
+      "price": 9.56,
+      "change": -0.03,
+      "changePct": -0.31,
+      "chgStr": "-0.31%",
+      "dir": "dn"
+    },
+    "00954": {
+      "price": 18.49,
+      "change": 0.89,
+      "changePct": 5.06,
+      "chgStr": "+5.06%",
+      "dir": "up"
+    },
+    "00956": {
+      "price": 12.32,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "00960": {
+      "price": 17.54,
+      "change": -0.22,
+      "changePct": -1.24,
+      "chgStr": "-1.24%",
+      "dir": "dn"
+    },
+    "00961": {
+      "price": 11.93,
+      "change": 0.36,
+      "changePct": 3.11,
+      "chgStr": "+3.11%",
+      "dir": "up"
+    },
+    "00962": {
+      "price": 14.47,
+      "change": 0.58,
+      "changePct": 4.18,
+      "chgStr": "+4.18%",
+      "dir": "up"
+    },
+    "00963": {
+      "price": 12.76,
+      "change": -0.02,
+      "changePct": -0.16,
+      "chgStr": "-0.16%",
+      "dir": "dn"
+    },
+    "00964": {
+      "price": 14.35,
+      "change": 0.13,
+      "changePct": 0.91,
+      "chgStr": "+0.91%",
+      "dir": "up"
+    },
+    "00965": {
+      "price": 25.57,
+      "change": 0.23,
+      "changePct": 0.91,
+      "chgStr": "+0.91%",
+      "dir": "up"
+    },
+    "00971": {
+      "price": 16.91,
+      "change": 0.18,
+      "changePct": 1.08,
+      "chgStr": "+1.08%",
+      "dir": "up"
+    },
+    "00972": {
+      "price": 19.25,
+      "change": -0.03,
+      "changePct": -0.16,
+      "chgStr": "-0.16%",
+      "dir": "dn"
+    },
+    "009800": {
+      "price": 13.06,
+      "change": 0.15,
+      "changePct": 1.16,
+      "chgStr": "+1.16%",
+      "dir": "up"
+    },
+    "009801": {
+      "price": 12.27,
+      "change": 0.1,
+      "changePct": 0.82,
+      "chgStr": "+0.82%",
+      "dir": "up"
+    },
+    "009802": {
+      "price": 19.64,
+      "change": 1.31,
+      "changePct": 7.15,
+      "chgStr": "+7.15%",
+      "dir": "up"
+    },
+    "009803": {
+      "price": 21.33,
+      "change": 0.85,
+      "changePct": 4.15,
+      "chgStr": "+4.15%",
+      "dir": "up"
+    },
+    "009804": {
+      "price": 22.4,
+      "change": 0.91,
+      "changePct": 4.23,
+      "chgStr": "+4.23%",
+      "dir": "up"
+    },
+    "009805": {
+      "price": 17.0,
+      "change": 0.46,
+      "changePct": 2.78,
+      "chgStr": "+2.78%",
+      "dir": "up"
+    },
+    "009808": {
+      "price": 29.4,
+      "change": 0.91,
+      "changePct": 3.19,
+      "chgStr": "+3.19%",
+      "dir": "up"
+    },
+    "009809": {
+      "price": 16.28,
+      "change": 0.64,
+      "changePct": 4.09,
+      "chgStr": "+4.09%",
+      "dir": "up"
+    },
+    "00980A": {
+      "price": 23.97,
+      "change": 0.81,
+      "changePct": 3.5,
+      "chgStr": "+3.5%",
+      "dir": "up"
+    },
+    "009810": {
+      "price": 20.83,
+      "change": -0.01,
+      "changePct": -0.05,
+      "chgStr": "-0.05%",
+      "dir": "dn"
+    },
+    "009811": {
+      "price": 13.02,
+      "change": 0.06,
+      "changePct": 0.46,
+      "chgStr": "+0.46%",
+      "dir": "up"
+    },
+    "009812": {
+      "price": 12.19,
+      "change": 0.08,
+      "changePct": 0.66,
+      "chgStr": "+0.66%",
+      "dir": "up"
+    },
+    "009813": {
+      "price": 11.37,
+      "change": 0.01,
+      "changePct": 0.09,
+      "chgStr": "+0.09%",
+      "dir": "up"
+    },
+    "009816": {
+      "price": 14.76,
+      "change": 0.57,
+      "changePct": 4.02,
+      "chgStr": "+4.02%",
+      "dir": "up"
+    },
+    "009817": {
+      "price": 8.84,
+      "change": -0.04,
+      "changePct": -0.45,
+      "chgStr": "-0.45%",
+      "dir": "dn"
+    },
+    "009818": {
+      "price": 19.32,
+      "change": 0.19,
+      "changePct": 0.99,
+      "chgStr": "+0.99%",
+      "dir": "up"
+    },
+    "009819": {
+      "price": 10.26,
+      "change": 0.09,
+      "changePct": 0.88,
+      "chgStr": "+0.88%",
+      "dir": "up"
+    },
+    "00981A": {
+      "price": 31.61,
+      "change": 1.66,
+      "changePct": 5.54,
+      "chgStr": "+5.54%",
+      "dir": "up"
+    },
+    "00981T": {
+      "price": 11.86,
+      "change": 0.1,
+      "changePct": 0.85,
+      "chgStr": "+0.85%",
+      "dir": "up"
+    },
+    "009820": {
+      "price": 10.35,
+      "change": 0.13,
+      "changePct": 1.27,
+      "chgStr": "+1.27%",
+      "dir": "up"
+    },
+    "00982A": {
+      "price": 23.72,
+      "change": 1.08,
+      "changePct": 4.77,
+      "chgStr": "+4.77%",
+      "dir": "up"
+    },
+    "00982D": {
+      "price": 9.88,
+      "change": 0.01,
+      "changePct": 0.1,
+      "chgStr": "+0.1%",
+      "dir": "up"
+    },
+    "00982T": {
+      "price": 15.13,
+      "change": 0.47,
+      "changePct": 3.21,
+      "chgStr": "+3.21%",
+      "dir": "up"
+    },
+    "00983A": {
+      "price": 11.69,
+      "change": 0.1,
+      "changePct": 0.86,
+      "chgStr": "+0.86%",
+      "dir": "up"
+    },
+    "00983D": {
+      "price": 10.03,
+      "change": -0.01,
+      "changePct": -0.1,
+      "chgStr": "-0.1%",
+      "dir": "dn"
+    },
+    "00984A": {
+      "price": 15.75,
+      "change": 0.55,
+      "changePct": 3.62,
+      "chgStr": "+3.62%",
+      "dir": "up"
+    },
+    "00984D": {
+      "price": 10.06,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "00985A": {
+      "price": 21.93,
+      "change": 0.6,
+      "changePct": 2.81,
+      "chgStr": "+2.81%",
+      "dir": "up"
+    },
+    "00985B": {
+      "price": 10.14,
+      "change": -0.02,
+      "changePct": -0.2,
+      "chgStr": "-0.2%",
+      "dir": "dn"
+    },
+    "00986A": {
+      "price": 14.85,
+      "change": 0.18,
+      "changePct": 1.23,
+      "chgStr": "+1.23%",
+      "dir": "up"
+    },
+    "00987A": {
+      "price": 18.04,
+      "change": 0.7,
+      "changePct": 4.04,
+      "chgStr": "+4.04%",
+      "dir": "up"
+    },
+    "00988A": {
+      "price": 22.08,
+      "change": 1.72,
+      "changePct": 8.45,
+      "chgStr": "+8.45%",
+      "dir": "up"
+    },
+    "00989A": {
+      "price": 17.8,
+      "change": 0.29,
+      "changePct": 1.66,
+      "chgStr": "+1.66%",
+      "dir": "up"
+    },
+    "00990A": {
+      "price": 19.5,
+      "change": 0.97,
+      "changePct": 5.23,
+      "chgStr": "+5.23%",
+      "dir": "up"
+    },
+    "00991A": {
+      "price": 19.27,
+      "change": 0.69,
+      "changePct": 3.71,
+      "chgStr": "+3.71%",
+      "dir": "up"
+    },
+    "00992A": {
+      "price": 18.85,
+      "change": 0.57,
+      "changePct": 3.12,
+      "chgStr": "+3.12%",
+      "dir": "up"
+    },
+    "00993A": {
+      "price": 13.62,
+      "change": 0.5,
+      "changePct": 3.81,
+      "chgStr": "+3.81%",
+      "dir": "up"
+    },
+    "00994A": {
+      "price": 18.57,
+      "change": 0.93,
+      "changePct": 5.27,
+      "chgStr": "+5.27%",
+      "dir": "up"
+    },
+    "00995A": {
+      "price": 18.11,
+      "change": 0.82,
+      "changePct": 4.74,
+      "chgStr": "+4.74%",
+      "dir": "up"
+    },
+    "00996A": {
+      "price": 15.26,
+      "change": 0.64,
+      "changePct": 4.38,
+      "chgStr": "+4.38%",
+      "dir": "up"
+    },
+    "00997A": {
+      "price": 13.08,
+      "change": 0.42,
+      "changePct": 3.32,
+      "chgStr": "+3.32%",
+      "dir": "up"
+    },
+    "00999A": {
+      "price": 10.65,
+      "change": 0.23,
+      "changePct": 2.21,
+      "chgStr": "+2.21%",
+      "dir": "up"
+    },
+    "01001T": {
+      "price": 11.59,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "01002T": {
+      "price": 14.08,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "01004T": {
+      "price": 10.5,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "01007T": {
+      "price": 12.78,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "01009T": {
+      "price": 5.74,
+      "change": -0.01,
+      "changePct": -0.17,
+      "chgStr": "-0.17%",
+      "dir": "dn"
+    },
+    "01010T": {
+      "price": 10.0,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "020000": {
+      "price": 31.78,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "020012": {
+      "price": 25.06,
+      "change": 0.92,
+      "changePct": 3.81,
+      "chgStr": "+3.81%",
+      "dir": "up"
+    },
+    "02001L": {
+      "price": 156.35,
+      "change": 16.45,
+      "changePct": 11.76,
+      "chgStr": "+11.76%",
+      "dir": "up"
+    },
+    "02001R": {
+      "price": 0.43,
+      "change": -0.03,
+      "changePct": -6.52,
+      "chgStr": "-6.52%",
+      "dir": "dn"
+    },
+    "020020": {
+      "price": 27.18,
+      "change": 1.52,
+      "changePct": 5.92,
+      "chgStr": "+5.92%",
+      "dir": "up"
+    },
+    "020028": {
+      "price": 20.48,
+      "change": 1.23,
+      "changePct": 6.39,
+      "chgStr": "+6.39%",
+      "dir": "up"
+    },
+    "020029": {
+      "price": 16.67,
+      "change": 0.96,
+      "changePct": 6.11,
+      "chgStr": "+6.11%",
+      "dir": "up"
+    },
+    "020030": {
+      "price": 18.36,
+      "change": 0.98,
+      "changePct": 5.64,
+      "chgStr": "+5.64%",
+      "dir": "up"
+    },
+    "020031": {
+      "price": 10.9,
+      "change": 0.42,
+      "changePct": 4.01,
+      "chgStr": "+4.01%",
+      "dir": "up"
+    },
+    "020032": {
+      "price": 10.92,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "020034": {
+      "price": 14.26,
+      "change": 0.56,
+      "changePct": 4.09,
+      "chgStr": "+4.09%",
+      "dir": "up"
+    },
+    "020037": {
+      "price": 8.65,
+      "change": -0.01,
+      "changePct": -0.12,
+      "chgStr": "-0.12%",
+      "dir": "dn"
+    },
+    "020038": {
+      "price": 12.87,
+      "change": 0.72,
+      "changePct": 5.93,
+      "chgStr": "+5.93%",
+      "dir": "up"
+    },
+    "020039": {
+      "price": 13.82,
+      "change": 0.43,
+      "changePct": 3.21,
+      "chgStr": "+3.21%",
+      "dir": "up"
+    },
+    "1101B": {
+      "price": 45.4,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "1102": {
+      "price": 33.6,
+      "change": -0.8,
+      "changePct": -2.33,
+      "chgStr": "-2.33%",
+      "dir": "dn"
+    },
+    "1103": {
+      "price": 13.2,
+      "change": 0.1,
+      "changePct": 0.76,
+      "chgStr": "+0.76%",
+      "dir": "up"
+    },
+    "1104": {
+      "price": 27.55,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "1108": {
+      "price": 13.5,
+      "change": -0.05,
+      "changePct": -0.37,
+      "chgStr": "-0.37%",
+      "dir": "dn"
+    },
+    "1109": {
+      "price": 14.4,
+      "change": -0.15,
+      "changePct": -1.03,
+      "chgStr": "-1.03%",
+      "dir": "dn"
+    },
+    "1110": {
+      "price": 14.0,
+      "change": -0.2,
+      "changePct": -1.41,
+      "chgStr": "-1.41%",
+      "dir": "dn"
+    },
+    "1201": {
+      "price": 12.0,
+      "change": -0.05,
+      "changePct": -0.41,
+      "chgStr": "-0.41%",
+      "dir": "dn"
+    },
+    "1203": {
+      "price": 42.6,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "1210": {
+      "price": 52.1,
+      "change": -0.3,
+      "changePct": -0.57,
+      "chgStr": "-0.57%",
+      "dir": "dn"
+    },
+    "1213": {
+      "price": 8.27,
+      "change": -0.2,
+      "changePct": -2.36,
+      "chgStr": "-2.36%",
+      "dir": "dn"
+    },
+    "1215": {
+      "price": 142.5,
+      "change": -0.5,
+      "changePct": -0.35,
+      "chgStr": "-0.35%",
+      "dir": "dn"
+    },
+    "1216": {
+      "price": 71.2,
+      "change": -0.3,
+      "changePct": -0.42,
+      "chgStr": "-0.42%",
+      "dir": "dn"
+    },
+    "1217": {
+      "price": 9.41,
+      "change": -0.01,
+      "changePct": -0.11,
+      "chgStr": "-0.11%",
+      "dir": "dn"
+    },
+    "1218": {
+      "price": 18.45,
+      "change": -0.2,
+      "changePct": -1.07,
+      "chgStr": "-1.07%",
+      "dir": "dn"
+    },
+    "1219": {
+      "price": 12.45,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "1220": {
+      "price": 11.85,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "1225": {
+      "price": 29.8,
+      "change": 0.35,
+      "changePct": 1.19,
+      "chgStr": "+1.19%",
+      "dir": "up"
+    },
+    "1227": {
+      "price": 28.1,
+      "change": -0.35,
+      "changePct": -1.23,
+      "chgStr": "-1.23%",
+      "dir": "dn"
+    },
+    "1229": {
+      "price": 38.5,
+      "change": -0.2,
+      "changePct": -0.52,
+      "chgStr": "-0.52%",
+      "dir": "dn"
+    },
+    "1231": {
+      "price": 84.8,
+      "change": -1.0,
+      "changePct": -1.17,
+      "chgStr": "-1.17%",
+      "dir": "dn"
+    },
+    "1232": {
+      "price": 148.5,
+      "change": 1.0,
+      "changePct": 0.68,
+      "chgStr": "+0.68%",
+      "dir": "up"
+    },
+    "1233": {
+      "price": 28.55,
+      "change": -0.25,
+      "changePct": -0.87,
+      "chgStr": "-0.87%",
+      "dir": "dn"
+    },
+    "1234": {
+      "price": 33.95,
+      "change": 0.4,
+      "changePct": 1.19,
+      "chgStr": "+1.19%",
+      "dir": "up"
+    },
+    "1235": {
+      "price": 37.95,
+      "change": -0.4,
+      "changePct": -1.04,
+      "chgStr": "-1.04%",
+      "dir": "dn"
+    },
+    "1236": {
+      "price": 24.35,
+      "change": 0.35,
+      "changePct": 1.46,
+      "chgStr": "+1.46%",
+      "dir": "up"
+    },
+    "1256": {
+      "price": 184.0,
+      "change": 0.5,
+      "changePct": 0.27,
+      "chgStr": "+0.27%",
+      "dir": "up"
+    },
+    "1301": {
+      "price": 44.8,
+      "change": -0.45,
+      "changePct": -0.99,
+      "chgStr": "-0.99%",
+      "dir": "dn"
+    },
+    "1303": {
+      "price": 87.1,
+      "change": 0.4,
+      "changePct": 0.46,
+      "chgStr": "+0.46%",
+      "dir": "up"
+    },
+    "1304": {
+      "price": 12.15,
+      "change": -0.15,
+      "changePct": -1.22,
+      "chgStr": "-1.22%",
+      "dir": "dn"
+    },
+    "1305": {
+      "price": 12.35,
+      "change": -0.05,
+      "changePct": -0.4,
+      "chgStr": "-0.4%",
+      "dir": "dn"
+    },
+    "1307": {
+      "price": 31.0,
+      "change": -0.5,
+      "changePct": -1.59,
+      "chgStr": "-1.59%",
+      "dir": "dn"
+    },
+    "1308": {
+      "price": 13.35,
+      "change": 0.05,
+      "changePct": 0.38,
+      "chgStr": "+0.38%",
+      "dir": "up"
+    },
+    "1309": {
+      "price": 15.65,
+      "change": -0.1,
+      "changePct": -0.63,
+      "chgStr": "-0.63%",
+      "dir": "dn"
+    },
+    "1310": {
+      "price": 8.01,
+      "change": 0.03,
+      "changePct": 0.38,
+      "chgStr": "+0.38%",
+      "dir": "up"
+    },
+    "1312": {
+      "price": 10.4,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "1312A": {
+      "price": 20.55,
+      "change": -0.4,
+      "changePct": -1.91,
+      "chgStr": "-1.91%",
+      "dir": "dn"
+    },
+    "1313": {
+      "price": 10.7,
+      "change": 0.05,
+      "changePct": 0.47,
+      "chgStr": "+0.47%",
+      "dir": "up"
+    },
+    "1314": {
+      "price": 7.07,
+      "change": -0.01,
+      "changePct": -0.14,
+      "chgStr": "-0.14%",
+      "dir": "dn"
+    },
+    "1315": {
+      "price": 60.9,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "1316": {
+      "price": 10.25,
+      "change": -0.15,
+      "changePct": -1.44,
+      "chgStr": "-1.44%",
+      "dir": "dn"
+    },
+    "1319": {
+      "price": 80.8,
+      "change": -0.8,
+      "changePct": -0.98,
+      "chgStr": "-0.98%",
+      "dir": "dn"
+    },
+    "1321": {
+      "price": 28.85,
+      "change": -0.5,
+      "changePct": -1.7,
+      "chgStr": "-1.7%",
+      "dir": "dn"
+    },
+    "1323": {
+      "price": 20.15,
+      "change": 0.05,
+      "changePct": 0.25,
+      "chgStr": "+0.25%",
+      "dir": "up"
+    },
+    "1324": {
+      "price": 10.15,
+      "change": -0.05,
+      "changePct": -0.49,
+      "chgStr": "-0.49%",
+      "dir": "dn"
+    },
+    "1325": {
+      "price": 27.35,
+      "change": 0.75,
+      "changePct": 2.82,
+      "chgStr": "+2.82%",
+      "dir": "up"
+    },
+    "1326": {
+      "price": 44.95,
+      "change": -0.6,
+      "changePct": -1.32,
+      "chgStr": "-1.32%",
+      "dir": "dn"
+    },
+    "1337": {
+      "price": 4.76,
+      "change": -0.04,
+      "changePct": -0.83,
+      "chgStr": "-0.83%",
+      "dir": "dn"
+    },
+    "1338": {
+      "price": 15.7,
+      "change": -0.15,
+      "changePct": -0.95,
+      "chgStr": "-0.95%",
+      "dir": "dn"
+    },
+    "1339": {
+      "price": 40.7,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "1340": {
+      "price": 5.4,
+      "change": -0.05,
+      "changePct": -0.92,
+      "chgStr": "-0.92%",
+      "dir": "dn"
+    },
+    "1341": {
+      "price": 61.6,
+      "change": 0.3,
+      "changePct": 0.49,
+      "chgStr": "+0.49%",
+      "dir": "up"
+    },
+    "1342": {
+      "price": 93.3,
+      "change": -0.9,
+      "changePct": -0.96,
+      "chgStr": "-0.96%",
+      "dir": "dn"
+    },
+    "1402": {
+      "price": 27.2,
+      "change": 0.2,
+      "changePct": 0.74,
+      "chgStr": "+0.74%",
+      "dir": "up"
+    },
+    "1409": {
+      "price": 17.6,
+      "change": 0.4,
+      "changePct": 2.33,
+      "chgStr": "+2.33%",
+      "dir": "up"
+    },
+    "1410": {
+      "price": 26.5,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "1413": {
+      "price": 9.35,
+      "change": -0.07,
+      "changePct": -0.74,
+      "chgStr": "-0.74%",
+      "dir": "dn"
+    },
+    "1414": {
+      "price": 14.75,
+      "change": -0.7,
+      "changePct": -4.53,
+      "chgStr": "-4.53%",
+      "dir": "dn"
+    },
+    "1416": {
+      "price": 11.15,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "1417": {
+      "price": 8.2,
+      "change": 0.04,
+      "changePct": 0.49,
+      "chgStr": "+0.49%",
+      "dir": "up"
+    },
+    "1418": {
+      "price": 17.75,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "1419": {
+      "price": 65.9,
+      "change": 3.3,
+      "changePct": 5.27,
+      "chgStr": "+5.27%",
+      "dir": "up"
+    },
+    "1423": {
+      "price": 41.8,
+      "change": 0.9,
+      "changePct": 2.2,
+      "chgStr": "+2.2%",
+      "dir": "up"
+    },
+    "1432": {
+      "price": 16.4,
+      "change": -0.05,
+      "changePct": -0.3,
+      "chgStr": "-0.3%",
+      "dir": "dn"
+    },
+    "1434": {
+      "price": 15.1,
+      "change": -0.1,
+      "changePct": -0.66,
+      "chgStr": "-0.66%",
+      "dir": "dn"
+    },
+    "1436": {
+      "price": 44.6,
+      "change": -0.85,
+      "changePct": -1.87,
+      "chgStr": "-1.87%",
+      "dir": "dn"
+    },
+    "1437": {
+      "price": 28.25,
+      "change": -0.25,
+      "changePct": -0.88,
+      "chgStr": "-0.88%",
+      "dir": "dn"
+    },
+    "1438": {
+      "price": 20.9,
+      "change": 0.2,
+      "changePct": 0.97,
+      "chgStr": "+0.97%",
+      "dir": "up"
+    },
+    "1439": {
+      "price": 26.2,
+      "change": 0.3,
+      "changePct": 1.16,
+      "chgStr": "+1.16%",
+      "dir": "up"
+    },
+    "1440": {
+      "price": 12.0,
+      "change": 0.65,
+      "changePct": 5.73,
+      "chgStr": "+5.73%",
+      "dir": "up"
+    },
+    "1441": {
+      "price": 9.38,
+      "change": 0.04,
+      "changePct": 0.43,
+      "chgStr": "+0.43%",
+      "dir": "up"
+    },
+    "1442": {
+      "price": 25.8,
+      "change": -0.2,
+      "changePct": -0.77,
+      "chgStr": "-0.77%",
+      "dir": "dn"
+    },
+    "1443": {
+      "price": 25.9,
+      "change": -0.2,
+      "changePct": -0.77,
+      "chgStr": "-0.77%",
+      "dir": "dn"
+    },
+    "1444": {
+      "price": 5.93,
+      "change": -0.02,
+      "changePct": -0.34,
+      "chgStr": "-0.34%",
+      "dir": "dn"
+    },
+    "1445": {
+      "price": 11.7,
+      "change": -0.1,
+      "changePct": -0.85,
+      "chgStr": "-0.85%",
+      "dir": "dn"
+    },
+    "1446": {
+      "price": 15.5,
+      "change": -0.2,
+      "changePct": -1.27,
+      "chgStr": "-1.27%",
+      "dir": "dn"
+    },
+    "1447": {
+      "price": 5.85,
+      "change": -0.15,
+      "changePct": -2.5,
+      "chgStr": "-2.5%",
+      "dir": "dn"
+    },
+    "1449": {
+      "price": 12.4,
+      "change": -0.25,
+      "changePct": -1.98,
+      "chgStr": "-1.98%",
+      "dir": "dn"
+    },
+    "1451": {
+      "price": 16.55,
+      "change": -0.15,
+      "changePct": -0.9,
+      "chgStr": "-0.9%",
+      "dir": "dn"
+    },
+    "1452": {
+      "price": 10.45,
+      "change": -0.15,
+      "changePct": -1.42,
+      "chgStr": "-1.42%",
+      "dir": "dn"
+    },
+    "1453": {
+      "price": 11.3,
+      "change": -0.05,
+      "changePct": -0.44,
+      "chgStr": "-0.44%",
+      "dir": "dn"
+    },
+    "1454": {
+      "price": 12.5,
+      "change": -0.1,
+      "changePct": -0.79,
+      "chgStr": "-0.79%",
+      "dir": "dn"
+    },
+    "1455": {
+      "price": 8.07,
+      "change": -0.1,
+      "changePct": -1.22,
+      "chgStr": "-1.22%",
+      "dir": "dn"
+    },
+    "1456": {
+      "price": 12.95,
+      "change": 0.1,
+      "changePct": 0.78,
+      "chgStr": "+0.78%",
+      "dir": "up"
+    },
+    "1457": {
+      "price": 13.85,
+      "change": -0.2,
+      "changePct": -1.42,
+      "chgStr": "-1.42%",
+      "dir": "dn"
+    },
+    "1459": {
+      "price": 11.65,
+      "change": -0.1,
+      "changePct": -0.85,
+      "chgStr": "-0.85%",
+      "dir": "dn"
+    },
+    "1460": {
+      "price": 6.94,
+      "change": -0.04,
+      "changePct": -0.57,
+      "chgStr": "-0.57%",
+      "dir": "dn"
+    },
+    "1463": {
+      "price": 17.75,
+      "change": -0.15,
+      "changePct": -0.84,
+      "chgStr": "-0.84%",
+      "dir": "dn"
+    },
+    "1464": {
+      "price": 10.05,
+      "change": -0.05,
+      "changePct": -0.5,
+      "chgStr": "-0.5%",
+      "dir": "dn"
+    },
+    "1465": {
+      "price": 12.0,
+      "change": -0.05,
+      "changePct": -0.41,
+      "chgStr": "-0.41%",
+      "dir": "dn"
+    },
+    "1466": {
+      "price": 14.7,
+      "change": -0.05,
+      "changePct": -0.34,
+      "chgStr": "-0.34%",
+      "dir": "dn"
+    },
+    "1467": {
+      "price": 6.94,
+      "change": -0.01,
+      "changePct": -0.14,
+      "chgStr": "-0.14%",
+      "dir": "dn"
+    },
+    "1468": {
+      "price": 12.1,
+      "change": 0.05,
+      "changePct": 0.41,
+      "chgStr": "+0.41%",
+      "dir": "up"
+    },
+    "1470": {
+      "price": 22.0,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "1471": {
+      "price": 10.75,
+      "change": -0.1,
+      "changePct": -0.92,
+      "chgStr": "-0.92%",
+      "dir": "dn"
+    },
+    "1472": {
+      "price": 89.5,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "1473": {
+      "price": 20.2,
+      "change": -0.25,
+      "changePct": -1.22,
+      "chgStr": "-1.22%",
+      "dir": "dn"
+    },
+    "1474": {
+      "price": 9.8,
+      "change": -0.01,
+      "changePct": -0.1,
+      "chgStr": "-0.1%",
+      "dir": "dn"
+    },
+    "1475": {
+      "price": 25.1,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "1476": {
+      "price": 335.0,
+      "change": -7.5,
+      "changePct": -2.19,
+      "chgStr": "-2.19%",
+      "dir": "dn"
+    },
+    "1477": {
+      "price": 215.5,
+      "change": -3.5,
+      "changePct": -1.6,
+      "chgStr": "-1.6%",
+      "dir": "dn"
+    },
+    "1506": {
+      "price": 10.35,
+      "change": -0.6,
+      "changePct": -5.48,
+      "chgStr": "-5.48%",
+      "dir": "dn"
+    },
+    "1512": {
+      "price": 6.97,
+      "change": -0.02,
+      "changePct": -0.29,
+      "chgStr": "-0.29%",
+      "dir": "dn"
+    },
+    "1515": {
+      "price": 22.9,
+      "change": 0.25,
+      "changePct": 1.1,
+      "chgStr": "+1.1%",
+      "dir": "up"
+    },
+    "1517": {
+      "price": 10.05,
+      "change": 0.05,
+      "changePct": 0.5,
+      "chgStr": "+0.5%",
+      "dir": "up"
+    },
+    "1521": {
+      "price": 24.85,
+      "change": 0.7,
+      "changePct": 2.9,
+      "chgStr": "+2.9%",
+      "dir": "up"
+    },
+    "1522": {
+      "price": 29.2,
+      "change": -0.25,
+      "changePct": -0.85,
+      "chgStr": "-0.85%",
+      "dir": "dn"
+    },
+    "1522A": {
+      "price": 49.85,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "1524": {
+      "price": 29.7,
+      "change": 0.15,
+      "changePct": 0.51,
+      "chgStr": "+0.51%",
+      "dir": "up"
+    },
+    "1525": {
+      "price": 71.0,
+      "change": 6.2,
+      "changePct": 9.57,
+      "chgStr": "+9.57%",
+      "dir": "up"
+    },
+    "1526": {
+      "price": 14.4,
+      "change": -0.2,
+      "changePct": -1.37,
+      "chgStr": "-1.37%",
+      "dir": "dn"
+    },
+    "1527": {
+      "price": 32.55,
+      "change": -0.4,
+      "changePct": -1.21,
+      "chgStr": "-1.21%",
+      "dir": "dn"
+    },
+    "1528": {
+      "price": 27.0,
+      "change": 0.7,
+      "changePct": 2.66,
+      "chgStr": "+2.66%",
+      "dir": "up"
+    },
+    "1529": {
+      "price": 20.95,
+      "change": -0.05,
+      "changePct": -0.24,
+      "chgStr": "-0.24%",
+      "dir": "dn"
+    },
+    "1531": {
+      "price": 12.2,
+      "change": -0.15,
+      "changePct": -1.21,
+      "chgStr": "-1.21%",
+      "dir": "dn"
+    },
+    "1532": {
+      "price": 20.65,
+      "change": 0.1,
+      "changePct": 0.49,
+      "chgStr": "+0.49%",
+      "dir": "up"
+    },
+    "1533": {
+      "price": 38.85,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "1535": {
+      "price": 48.8,
+      "change": -0.65,
+      "changePct": -1.31,
+      "chgStr": "-1.31%",
+      "dir": "dn"
+    },
+    "1537": {
+      "price": 125.5,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "1538": {
+      "price": 11.8,
+      "change": -0.2,
+      "changePct": -1.67,
+      "chgStr": "-1.67%",
+      "dir": "dn"
+    },
+    "1539": {
+      "price": 16.2,
+      "change": 0.75,
+      "changePct": 4.85,
+      "chgStr": "+4.85%",
+      "dir": "up"
+    },
+    "1540": {
+      "price": 21.1,
+      "change": -0.25,
+      "changePct": -1.17,
+      "chgStr": "-1.17%",
+      "dir": "dn"
+    },
+    "1541": {
+      "price": 20.2,
+      "change": -0.5,
+      "changePct": -2.42,
+      "chgStr": "-2.42%",
+      "dir": "dn"
+    },
+    "1558": {
+      "price": 90.1,
+      "change": -0.7,
+      "changePct": -0.77,
+      "chgStr": "-0.77%",
+      "dir": "dn"
+    },
+    "1560": {
+      "price": 720.0,
+      "change": 32.0,
+      "changePct": 4.65,
+      "chgStr": "+4.65%",
+      "dir": "up"
+    },
+    "1563": {
+      "price": 46.0,
+      "change": -0.05,
+      "changePct": -0.11,
+      "chgStr": "-0.11%",
+      "dir": "dn"
+    },
+    "1568": {
+      "price": 31.95,
+      "change": 2.9,
+      "changePct": 9.98,
+      "chgStr": "+9.98%",
+      "dir": "up"
+    },
+    "1582": {
+      "price": 114.0,
+      "change": -1.0,
+      "changePct": -0.87,
+      "chgStr": "-0.87%",
+      "dir": "dn"
+    },
+    "1583": {
+      "price": 47.5,
+      "change": 0.25,
+      "changePct": 0.53,
+      "chgStr": "+0.53%",
+      "dir": "up"
+    },
+    "1587": {
+      "price": 28.3,
+      "change": -0.25,
+      "changePct": -0.88,
+      "chgStr": "-0.88%",
+      "dir": "dn"
+    },
+    "1597": {
+      "price": 201.0,
+      "change": 18.0,
+      "changePct": 9.84,
+      "chgStr": "+9.84%",
+      "dir": "up"
+    },
+    "1603": {
+      "price": 30.7,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "1604": {
+      "price": 23.2,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "1608": {
+      "price": 34.05,
+      "change": 0.75,
+      "changePct": 2.25,
+      "chgStr": "+2.25%",
+      "dir": "up"
+    },
+    "1609": {
+      "price": 36.0,
+      "change": 0.5,
+      "changePct": 1.41,
+      "chgStr": "+1.41%",
+      "dir": "up"
+    },
+    "1611": {
+      "price": 11.4,
+      "change": -0.1,
+      "changePct": -0.87,
+      "chgStr": "-0.87%",
+      "dir": "dn"
+    },
+    "1612": {
+      "price": 36.65,
+      "change": 0.05,
+      "changePct": 0.14,
+      "chgStr": "+0.14%",
+      "dir": "up"
+    },
+    "1614": {
+      "price": 30.7,
+      "change": -0.1,
+      "changePct": -0.32,
+      "chgStr": "-0.32%",
+      "dir": "dn"
+    },
+    "1615": {
+      "price": 42.8,
+      "change": -0.1,
+      "changePct": -0.23,
+      "chgStr": "-0.23%",
+      "dir": "dn"
+    },
+    "1616": {
+      "price": 22.05,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "1617": {
+      "price": 14.7,
+      "change": -0.2,
+      "changePct": -1.34,
+      "chgStr": "-1.34%",
+      "dir": "dn"
+    },
+    "1618": {
+      "price": 39.75,
+      "change": 0.45,
+      "changePct": 1.15,
+      "chgStr": "+1.15%",
+      "dir": "up"
+    },
+    "1623": {
+      "price": 228.0,
+      "change": 3.5,
+      "changePct": 1.56,
+      "chgStr": "+1.56%",
+      "dir": "up"
+    },
+    "1626": {
+      "price": 9.95,
+      "change": -0.01,
+      "changePct": -0.1,
+      "chgStr": "-0.1%",
+      "dir": "dn"
+    },
+    "1702": {
+      "price": 32.9,
+      "change": -0.35,
+      "changePct": -1.05,
+      "chgStr": "-1.05%",
+      "dir": "dn"
+    },
+    "1707": {
+      "price": 101.5,
+      "change": -1.5,
+      "changePct": -1.46,
+      "chgStr": "-1.46%",
+      "dir": "dn"
+    },
+    "1708": {
+      "price": 40.05,
+      "change": 0.9,
+      "changePct": 2.3,
+      "chgStr": "+2.3%",
+      "dir": "up"
+    },
+    "1709": {
+      "price": 19.15,
+      "change": 0.75,
+      "changePct": 4.08,
+      "chgStr": "+4.08%",
+      "dir": "up"
+    },
+    "1710": {
+      "price": 13.15,
+      "change": 0.2,
+      "changePct": 1.54,
+      "chgStr": "+1.54%",
+      "dir": "up"
+    },
+    "1711": {
+      "price": 51.1,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "1712": {
+      "price": 39.4,
+      "change": -0.5,
+      "changePct": -1.25,
+      "chgStr": "-1.25%",
+      "dir": "dn"
+    },
+    "1713": {
+      "price": 49.0,
+      "change": 1.2,
+      "changePct": 2.51,
+      "chgStr": "+2.51%",
+      "dir": "up"
+    },
+    "1714": {
+      "price": 9.65,
+      "change": -0.02,
+      "changePct": -0.21,
+      "chgStr": "-0.21%",
+      "dir": "dn"
+    },
+    "1717": {
+      "price": 82.2,
+      "change": -0.8,
+      "changePct": -0.96,
+      "chgStr": "-0.96%",
+      "dir": "dn"
+    },
+    "1718": {
+      "price": 6.4,
+      "change": -0.06,
+      "changePct": -0.93,
+      "chgStr": "-0.93%",
+      "dir": "dn"
+    },
+    "1720": {
+      "price": 61.4,
+      "change": -0.7,
+      "changePct": -1.13,
+      "chgStr": "-1.13%",
+      "dir": "dn"
+    },
+    "1721": {
+      "price": 28.15,
+      "change": -0.85,
+      "changePct": -2.93,
+      "chgStr": "-2.93%",
+      "dir": "dn"
+    },
+    "1722": {
+      "price": 45.85,
+      "change": -0.2,
+      "changePct": -0.43,
+      "chgStr": "-0.43%",
+      "dir": "dn"
+    },
+    "1723": {
+      "price": 82.7,
+      "change": 1.0,
+      "changePct": 1.22,
+      "chgStr": "+1.22%",
+      "dir": "up"
+    },
+    "1725": {
+      "price": 31.4,
+      "change": 0.3,
+      "changePct": 0.96,
+      "chgStr": "+0.96%",
+      "dir": "up"
+    },
+    "1726": {
+      "price": 77.0,
+      "change": 0.3,
+      "changePct": 0.39,
+      "chgStr": "+0.39%",
+      "dir": "up"
+    },
+    "1727": {
+      "price": 104.5,
+      "change": 2.5,
+      "changePct": 2.45,
+      "chgStr": "+2.45%",
+      "dir": "up"
+    },
+    "1730": {
+      "price": 52.7,
+      "change": 0.2,
+      "changePct": 0.38,
+      "chgStr": "+0.38%",
+      "dir": "up"
+    },
+    "1731": {
+      "price": 21.5,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "1732": {
+      "price": 26.4,
+      "change": -0.15,
+      "changePct": -0.56,
+      "chgStr": "-0.56%",
+      "dir": "dn"
+    },
+    "1733": {
+      "price": 29.9,
+      "change": 0.25,
+      "changePct": 0.84,
+      "chgStr": "+0.84%",
+      "dir": "up"
+    },
+    "1734": {
+      "price": 30.5,
+      "change": -0.25,
+      "changePct": -0.81,
+      "chgStr": "-0.81%",
+      "dir": "dn"
+    },
+    "1735": {
+      "price": 26.95,
+      "change": 0.15,
+      "changePct": 0.56,
+      "chgStr": "+0.56%",
+      "dir": "up"
+    },
+    "1736": {
+      "price": 119.0,
+      "change": 0.5,
+      "changePct": 0.42,
+      "chgStr": "+0.42%",
+      "dir": "up"
+    },
+    "1737": {
+      "price": 31.5,
+      "change": -0.05,
+      "changePct": -0.16,
+      "chgStr": "-0.16%",
+      "dir": "dn"
+    },
+    "1752": {
+      "price": 32.4,
+      "change": -0.35,
+      "changePct": -1.07,
+      "chgStr": "-1.07%",
+      "dir": "dn"
+    },
+    "1762": {
+      "price": 40.2,
+      "change": 2.25,
+      "changePct": 5.93,
+      "chgStr": "+5.93%",
+      "dir": "up"
+    },
+    "1773": {
+      "price": 189.0,
+      "change": 4.5,
+      "changePct": 2.44,
+      "chgStr": "+2.44%",
+      "dir": "up"
+    },
+    "1776": {
+      "price": 18.6,
+      "change": -0.35,
+      "changePct": -1.85,
+      "chgStr": "-1.85%",
+      "dir": "dn"
+    },
+    "1783": {
+      "price": 38.45,
+      "change": -0.55,
+      "changePct": -1.41,
+      "chgStr": "-1.41%",
+      "dir": "dn"
+    },
+    "1786": {
+      "price": 55.1,
+      "change": -3.1,
+      "changePct": -5.33,
+      "chgStr": "-5.33%",
+      "dir": "dn"
+    },
+    "1789": {
+      "price": 19.05,
+      "change": -0.3,
+      "changePct": -1.55,
+      "chgStr": "-1.55%",
+      "dir": "dn"
+    },
+    "1802": {
+      "price": 73.9,
+      "change": 3.4,
+      "changePct": 4.82,
+      "chgStr": "+4.82%",
+      "dir": "up"
+    },
+    "1805": {
+      "price": 10.0,
+      "change": -0.1,
+      "changePct": -0.99,
+      "chgStr": "-0.99%",
+      "dir": "dn"
+    },
+    "1806": {
+      "price": 8.04,
+      "change": -0.02,
+      "changePct": -0.25,
+      "chgStr": "-0.25%",
+      "dir": "dn"
+    },
+    "1808": {
+      "price": 28.95,
+      "change": 0.3,
+      "changePct": 1.05,
+      "chgStr": "+1.05%",
+      "dir": "up"
+    },
+    "1809": {
+      "price": 45.65,
+      "change": 4.15,
+      "changePct": 10.0,
+      "chgStr": "+10.0%",
+      "dir": "up"
+    },
+    "1810": {
+      "price": 18.9,
+      "change": -0.15,
+      "changePct": -0.79,
+      "chgStr": "-0.79%",
+      "dir": "dn"
+    },
+    "1817": {
+      "price": 39.3,
+      "change": -0.05,
+      "changePct": -0.13,
+      "chgStr": "-0.13%",
+      "dir": "dn"
+    },
+    "1903": {
+      "price": 50.2,
+      "change": 2.25,
+      "changePct": 4.69,
+      "chgStr": "+4.69%",
+      "dir": "up"
+    },
+    "1904": {
+      "price": 19.3,
+      "change": 0.2,
+      "changePct": 1.05,
+      "chgStr": "+1.05%",
+      "dir": "up"
+    },
+    "1905": {
+      "price": 12.25,
+      "change": 0.15,
+      "changePct": 1.24,
+      "chgStr": "+1.24%",
+      "dir": "up"
+    },
+    "1906": {
+      "price": 10.5,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "1907": {
+      "price": 24.85,
+      "change": 0.4,
+      "changePct": 1.64,
+      "chgStr": "+1.64%",
+      "dir": "up"
+    },
+    "1909": {
+      "price": 8.91,
+      "change": -0.05,
+      "changePct": -0.56,
+      "chgStr": "-0.56%",
+      "dir": "dn"
+    },
+    "2002": {
+      "price": 19.95,
+      "change": 1.8,
+      "changePct": 9.92,
+      "chgStr": "+9.92%",
+      "dir": "up"
+    },
+    "2002A": {
+      "price": 38.8,
+      "change": 0.05,
+      "changePct": 0.13,
+      "chgStr": "+0.13%",
+      "dir": "up"
+    },
+    "2006": {
+      "price": 66.3,
+      "change": 0.8,
+      "changePct": 1.22,
+      "chgStr": "+1.22%",
+      "dir": "up"
+    },
+    "2007": {
+      "price": 7.66,
+      "change": 0.69,
+      "changePct": 9.9,
+      "chgStr": "+9.9%",
+      "dir": "up"
+    },
+    "2008": {
+      "price": 27.75,
+      "change": 0.2,
+      "changePct": 0.73,
+      "chgStr": "+0.73%",
+      "dir": "up"
+    },
+    "2009": {
+      "price": 40.65,
+      "change": 1.35,
+      "changePct": 3.44,
+      "chgStr": "+3.44%",
+      "dir": "up"
+    },
+    "2010": {
+      "price": 23.05,
+      "change": 0.65,
+      "changePct": 2.9,
+      "chgStr": "+2.9%",
+      "dir": "up"
+    },
+    "2012": {
+      "price": 15.0,
+      "change": 0.8,
+      "changePct": 5.63,
+      "chgStr": "+5.63%",
+      "dir": "up"
+    },
+    "2013": {
+      "price": 42.8,
+      "change": 0.9,
+      "changePct": 2.15,
+      "chgStr": "+2.15%",
+      "dir": "up"
+    },
+    "2015": {
+      "price": 62.8,
+      "change": 1.2,
+      "changePct": 1.95,
+      "chgStr": "+1.95%",
+      "dir": "up"
+    },
+    "2017": {
+      "price": 9.2,
+      "change": 0.68,
+      "changePct": 7.98,
+      "chgStr": "+7.98%",
+      "dir": "up"
+    },
+    "2020": {
+      "price": 21.75,
+      "change": 0.45,
+      "changePct": 2.11,
+      "chgStr": "+2.11%",
+      "dir": "up"
+    },
+    "2022": {
+      "price": 8.2,
+      "change": 0.61,
+      "changePct": 8.04,
+      "chgStr": "+8.04%",
+      "dir": "up"
+    },
+    "2023": {
+      "price": 13.95,
+      "change": 0.25,
+      "changePct": 1.82,
+      "chgStr": "+1.82%",
+      "dir": "up"
+    },
+    "2024": {
+      "price": 14.25,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "2025": {
+      "price": 12.5,
+      "change": 0.1,
+      "changePct": 0.81,
+      "chgStr": "+0.81%",
+      "dir": "up"
+    },
+    "2027": {
+      "price": 43.8,
+      "change": 1.85,
+      "changePct": 4.41,
+      "chgStr": "+4.41%",
+      "dir": "up"
+    },
+    "2028": {
+      "price": 18.25,
+      "change": 1.15,
+      "changePct": 6.73,
+      "chgStr": "+6.73%",
+      "dir": "up"
+    },
+    "2029": {
+      "price": 20.7,
+      "change": 0.4,
+      "changePct": 1.97,
+      "chgStr": "+1.97%",
+      "dir": "up"
+    },
+    "2030": {
+      "price": 18.5,
+      "change": 1.4,
+      "changePct": 8.19,
+      "chgStr": "+8.19%",
+      "dir": "up"
+    },
+    "2031": {
+      "price": 39.6,
+      "change": 1.35,
+      "changePct": 3.53,
+      "chgStr": "+3.53%",
+      "dir": "up"
+    },
+    "2032": {
+      "price": 18.15,
+      "change": 1.65,
+      "changePct": 10.0,
+      "chgStr": "+10.0%",
+      "dir": "up"
+    },
+    "2033": {
+      "price": 15.6,
+      "change": 0.15,
+      "changePct": 0.97,
+      "chgStr": "+0.97%",
+      "dir": "up"
+    },
+    "2034": {
+      "price": 20.8,
+      "change": 1.0,
+      "changePct": 5.05,
+      "chgStr": "+5.05%",
+      "dir": "up"
+    },
+    "2038": {
+      "price": 14.5,
+      "change": 1.3,
+      "changePct": 9.85,
+      "chgStr": "+9.85%",
+      "dir": "up"
+    },
+    "2062": {
+      "price": 18.3,
+      "change": -0.2,
+      "changePct": -1.08,
+      "chgStr": "-1.08%",
+      "dir": "dn"
+    },
+    "2069": {
+      "price": 19.55,
+      "change": 0.35,
+      "changePct": 1.82,
+      "chgStr": "+1.82%",
+      "dir": "up"
+    },
+    "2072": {
+      "price": 167.5,
+      "change": -1.5,
+      "changePct": -0.89,
+      "chgStr": "-0.89%",
+      "dir": "dn"
+    },
+    "2101": {
+      "price": 30.2,
+      "change": -0.5,
+      "changePct": -1.63,
+      "chgStr": "-1.63%",
+      "dir": "dn"
+    },
+    "2102": {
+      "price": 18.05,
+      "change": -0.25,
+      "changePct": -1.37,
+      "chgStr": "-1.37%",
+      "dir": "dn"
+    },
+    "2103": {
+      "price": 19.5,
+      "change": -0.3,
+      "changePct": -1.52,
+      "chgStr": "-1.52%",
+      "dir": "dn"
+    },
+    "2104": {
+      "price": 10.05,
+      "change": 0.1,
+      "changePct": 1.01,
+      "chgStr": "+1.01%",
+      "dir": "up"
+    },
+    "2105": {
+      "price": 31.95,
+      "change": 0.05,
+      "changePct": 0.16,
+      "chgStr": "+0.16%",
+      "dir": "up"
+    },
+    "2106": {
+      "price": 16.65,
+      "change": -0.05,
+      "changePct": -0.3,
+      "chgStr": "-0.3%",
+      "dir": "dn"
+    },
+    "2107": {
+      "price": 24.9,
+      "change": -0.35,
+      "changePct": -1.39,
+      "chgStr": "-1.39%",
+      "dir": "dn"
+    },
+    "2108": {
+      "price": 27.4,
+      "change": -0.55,
+      "changePct": -1.97,
+      "chgStr": "-1.97%",
+      "dir": "dn"
+    },
+    "2109": {
+      "price": 13.95,
+      "change": -0.05,
+      "changePct": -0.36,
+      "chgStr": "-0.36%",
+      "dir": "dn"
+    },
+    "2114": {
+      "price": 91.6,
+      "change": 1.5,
+      "changePct": 1.66,
+      "chgStr": "+1.66%",
+      "dir": "up"
+    },
+    "2115": {
+      "price": 20.6,
+      "change": -0.1,
+      "changePct": -0.48,
+      "chgStr": "-0.48%",
+      "dir": "dn"
+    },
+    "2204": {
+      "price": 53.3,
+      "change": 0.2,
+      "changePct": 0.38,
+      "chgStr": "+0.38%",
+      "dir": "up"
+    },
+    "2206": {
+      "price": 59.8,
+      "change": -0.3,
+      "changePct": -0.5,
+      "chgStr": "-0.5%",
+      "dir": "dn"
+    },
+    "2207": {
+      "price": 460.5,
+      "change": -1.5,
+      "changePct": -0.32,
+      "chgStr": "-0.32%",
+      "dir": "dn"
+    },
+    "2208": {
+      "price": 18.15,
+      "change": -0.4,
+      "changePct": -2.16,
+      "chgStr": "-2.16%",
+      "dir": "dn"
+    },
+    "2211": {
+      "price": 92.9,
+      "change": 0.9,
+      "changePct": 0.98,
+      "chgStr": "+0.98%",
+      "dir": "up"
+    },
+    "2227": {
+      "price": 48.95,
+      "change": -0.25,
+      "changePct": -0.51,
+      "chgStr": "-0.51%",
+      "dir": "dn"
+    },
+    "2228": {
+      "price": 83.0,
+      "change": -0.6,
+      "changePct": -0.72,
+      "chgStr": "-0.72%",
+      "dir": "dn"
+    },
+    "2231": {
+      "price": 105.5,
+      "change": -1.0,
+      "changePct": -0.94,
+      "chgStr": "-0.94%",
+      "dir": "dn"
+    },
+    "2233": {
+      "price": 381.5,
+      "change": 34.5,
+      "changePct": 9.94,
+      "chgStr": "+9.94%",
+      "dir": "up"
+    },
+    "2236": {
+      "price": 144.5,
+      "change": -2.0,
+      "changePct": -1.37,
+      "chgStr": "-1.37%",
+      "dir": "dn"
+    },
+    "2239": {
+      "price": 22.4,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "2241": {
+      "price": 38.05,
+      "change": 0.2,
+      "changePct": 0.53,
+      "chgStr": "+0.53%",
+      "dir": "up"
+    },
+    "2243": {
+      "price": 23.5,
+      "change": 0.7,
+      "changePct": 3.07,
+      "chgStr": "+3.07%",
+      "dir": "up"
+    },
+    "2247": {
+      "price": 205.5,
+      "change": -1.5,
+      "changePct": -0.72,
+      "chgStr": "-0.72%",
+      "dir": "dn"
+    },
+    "2248": {
+      "price": 54.2,
+      "change": -0.4,
+      "changePct": -0.73,
+      "chgStr": "-0.73%",
+      "dir": "dn"
+    },
+    "2250": {
+      "price": 62.1,
+      "change": -0.9,
+      "changePct": -1.43,
+      "chgStr": "-1.43%",
+      "dir": "dn"
+    },
+    "2254": {
+      "price": 58.5,
+      "change": 0.4,
+      "changePct": 0.69,
+      "chgStr": "+0.69%",
+      "dir": "up"
+    },
+    "2258": {
+      "price": 29.95,
+      "change": -0.45,
+      "changePct": -1.48,
+      "chgStr": "-1.48%",
+      "dir": "dn"
+    },
+    "2302": {
+      "price": 30.9,
+      "change": 2.8,
+      "changePct": 9.96,
+      "chgStr": "+9.96%",
+      "dir": "up"
+    },
+    "2305": {
+      "price": 20.65,
+      "change": 1.85,
+      "changePct": 9.84,
+      "chgStr": "+9.84%",
+      "dir": "up"
+    },
+    "2312": {
+      "price": 36.4,
+      "change": 3.3,
+      "changePct": 9.97,
+      "chgStr": "+9.97%",
+      "dir": "up"
+    },
+    "2316": {
+      "price": 168.5,
+      "change": 15.0,
+      "changePct": 9.77,
+      "chgStr": "+9.77%",
+      "dir": "up"
+    },
+    "2321": {
+      "price": 13.0,
+      "change": 0.2,
+      "changePct": 1.56,
+      "chgStr": "+1.56%",
+      "dir": "up"
+    },
+    "2323": {
+      "price": 10.7,
+      "change": 0.5,
+      "changePct": 4.9,
+      "chgStr": "+4.9%",
+      "dir": "up"
+    },
+    "2324": {
+      "price": 34.65,
+      "change": 3.15,
+      "changePct": 10.0,
+      "chgStr": "+10.0%",
+      "dir": "up"
+    },
+    "2328": {
+      "price": 56.5,
+      "change": 1.7,
+      "changePct": 3.1,
+      "chgStr": "+3.1%",
+      "dir": "up"
+    },
+    "2329": {
+      "price": 56.4,
+      "change": 1.8,
+      "changePct": 3.3,
+      "chgStr": "+3.3%",
+      "dir": "up"
+    },
+    "2331": {
+      "price": 21.8,
+      "change": 0.95,
+      "changePct": 4.56,
+      "chgStr": "+4.56%",
+      "dir": "up"
+    },
+    "2332": {
+      "price": 15.7,
+      "change": 0.25,
+      "changePct": 1.62,
+      "chgStr": "+1.62%",
+      "dir": "up"
+    },
+    "2338": {
+      "price": 57.1,
+      "change": 2.7,
+      "changePct": 4.96,
+      "chgStr": "+4.96%",
+      "dir": "up"
+    },
+    "2340": {
+      "price": 39.7,
+      "change": 1.05,
+      "changePct": 2.72,
+      "chgStr": "+2.72%",
+      "dir": "up"
+    },
+    "2342": {
+      "price": 43.15,
+      "change": 1.75,
+      "changePct": 4.23,
+      "chgStr": "+4.23%",
+      "dir": "up"
+    },
+    "2344": {
+      "price": 128.5,
+      "change": 3.5,
+      "changePct": 2.8,
+      "chgStr": "+2.8%",
+      "dir": "up"
+    },
+    "2347": {
+      "price": 84.2,
+      "change": 0.1,
+      "changePct": 0.12,
+      "chgStr": "+0.12%",
+      "dir": "up"
+    },
+    "2348": {
+      "price": 68.3,
+      "change": -0.7,
+      "changePct": -1.01,
+      "chgStr": "-1.01%",
+      "dir": "dn"
+    },
+    "2348A": {
+      "price": 37.85,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "2349": {
+      "price": 14.3,
+      "change": 1.3,
+      "changePct": 10.0,
+      "chgStr": "+10.0%",
+      "dir": "up"
+    },
+    "2351": {
+      "price": 196.5,
+      "change": 10.0,
+      "changePct": 5.36,
+      "chgStr": "+5.36%",
+      "dir": "up"
+    },
+    "2352": {
+      "price": 28.65,
+      "change": -0.1,
+      "changePct": -0.35,
+      "chgStr": "-0.35%",
+      "dir": "dn"
+    },
+    "2353": {
+      "price": 32.5,
+      "change": 2.95,
+      "changePct": 9.98,
+      "chgStr": "+9.98%",
+      "dir": "up"
+    },
+    "2357": {
+      "price": 709.0,
+      "change": 27.0,
+      "changePct": 3.96,
+      "chgStr": "+3.96%",
+      "dir": "up"
+    },
+    "2359": {
+      "price": 141.5,
+      "change": 0.5,
+      "changePct": 0.35,
+      "chgStr": "+0.35%",
+      "dir": "up"
+    },
+    "2360": {
+      "price": 2460.0,
+      "change": 190.0,
+      "changePct": 8.37,
+      "chgStr": "+8.37%",
+      "dir": "up"
+    },
+    "2362": {
+      "price": 42.3,
+      "change": 1.45,
+      "changePct": 3.55,
+      "chgStr": "+3.55%",
+      "dir": "up"
+    },
+    "2363": {
+      "price": 69.2,
+      "change": 2.5,
+      "changePct": 3.75,
+      "chgStr": "+3.75%",
+      "dir": "up"
+    },
+    "2364": {
+      "price": 69.1,
+      "change": -0.6,
+      "changePct": -0.86,
+      "chgStr": "-0.86%",
+      "dir": "dn"
+    },
+    "2365": {
+      "price": 39.65,
+      "change": 0.5,
+      "changePct": 1.28,
+      "chgStr": "+1.28%",
+      "dir": "up"
+    },
+    "2369": {
+      "price": 34.3,
+      "change": 2.25,
+      "changePct": 7.02,
+      "chgStr": "+7.02%",
+      "dir": "up"
+    },
+    "2371": {
+      "price": 30.4,
+      "change": 0.9,
+      "changePct": 3.05,
+      "chgStr": "+3.05%",
+      "dir": "up"
+    },
+    "2373": {
+      "price": 57.3,
+      "change": 0.5,
+      "changePct": 0.88,
+      "chgStr": "+0.88%",
+      "dir": "up"
+    },
+    "2374": {
+      "price": 83.7,
+      "change": 0.3,
+      "changePct": 0.36,
+      "chgStr": "+0.36%",
+      "dir": "up"
+    },
+    "2376": {
+      "price": 336.5,
+      "change": 14.0,
+      "changePct": 4.34,
+      "chgStr": "+4.34%",
+      "dir": "up"
+    },
+    "2377": {
+      "price": 127.0,
+      "change": 3.0,
+      "changePct": 2.42,
+      "chgStr": "+2.42%",
+      "dir": "up"
+    },
+    "2380": {
+      "price": 5.85,
+      "change": 0.03,
+      "changePct": 0.52,
+      "chgStr": "+0.52%",
+      "dir": "up"
+    },
+    "2385": {
+      "price": 130.5,
+      "change": -1.0,
+      "changePct": -0.76,
+      "chgStr": "-0.76%",
+      "dir": "dn"
+    },
+    "2387": {
+      "price": 39.95,
+      "change": 0.3,
+      "changePct": 0.76,
+      "chgStr": "+0.76%",
+      "dir": "up"
+    },
+    "2388": {
+      "price": 84.2,
+      "change": -3.8,
+      "changePct": -4.32,
+      "chgStr": "-4.32%",
+      "dir": "dn"
+    },
+    "2390": {
+      "price": 10.5,
+      "change": -0.1,
+      "changePct": -0.94,
+      "chgStr": "-0.94%",
+      "dir": "dn"
+    },
+    "2393": {
+      "price": 65.6,
+      "change": 0.4,
+      "changePct": 0.61,
+      "chgStr": "+0.61%",
+      "dir": "up"
+    },
+    "2397": {
+      "price": 64.9,
+      "change": 2.8,
+      "changePct": 4.51,
+      "chgStr": "+4.51%",
+      "dir": "up"
+    },
+    "2399": {
+      "price": 47.4,
+      "change": 0.85,
+      "changePct": 1.83,
+      "chgStr": "+1.83%",
+      "dir": "up"
+    },
+    "2401": {
+      "price": 29.45,
+      "change": -1.3,
+      "changePct": -4.23,
+      "chgStr": "-4.23%",
+      "dir": "dn"
+    },
+    "2402": {
+      "price": 67.8,
+      "change": 1.9,
+      "changePct": 2.88,
+      "chgStr": "+2.88%",
+      "dir": "up"
+    },
+    "2404": {
+      "price": 1245.0,
+      "change": 90.0,
+      "changePct": 7.79,
+      "chgStr": "+7.79%",
+      "dir": "up"
+    },
+    "2405": {
+      "price": 17.05,
+      "change": 0.5,
+      "changePct": 3.02,
+      "chgStr": "+3.02%",
+      "dir": "up"
+    },
+    "2406": {
+      "price": 33.9,
+      "change": 2.15,
+      "changePct": 6.77,
+      "chgStr": "+6.77%",
+      "dir": "up"
+    },
+    "2408": {
+      "price": 296.0,
+      "change": -14.5,
+      "changePct": -4.67,
+      "chgStr": "-4.67%",
+      "dir": "dn"
+    },
+    "2409": {
+      "price": 24.4,
+      "change": 2.2,
+      "changePct": 9.91,
+      "chgStr": "+9.91%",
+      "dir": "up"
+    },
+    "2413": {
+      "price": 51.9,
+      "change": 0.4,
+      "changePct": 0.78,
+      "chgStr": "+0.78%",
+      "dir": "up"
+    },
+    "2414": {
+      "price": 50.0,
+      "change": -0.2,
+      "changePct": -0.4,
+      "chgStr": "-0.4%",
+      "dir": "dn"
+    },
+    "2415": {
+      "price": 27.0,
+      "change": -0.25,
+      "changePct": -0.92,
+      "chgStr": "-0.92%",
+      "dir": "dn"
+    },
+    "2417": {
+      "price": 51.9,
+      "change": 1.0,
+      "changePct": 1.96,
+      "chgStr": "+1.96%",
+      "dir": "up"
+    },
+    "2420": {
+      "price": 64.7,
+      "change": 2.0,
+      "changePct": 3.19,
+      "chgStr": "+3.19%",
+      "dir": "up"
+    },
+    "2421": {
+      "price": 162.5,
+      "change": 4.0,
+      "changePct": 2.52,
+      "chgStr": "+2.52%",
+      "dir": "up"
+    },
+    "2423": {
+      "price": 76.0,
+      "change": 1.3,
+      "changePct": 1.74,
+      "chgStr": "+1.74%",
+      "dir": "up"
+    },
+    "2424": {
+      "price": 13.15,
+      "change": -1.45,
+      "changePct": -9.93,
+      "chgStr": "-9.93%",
+      "dir": "dn"
+    },
+    "2425": {
+      "price": 35.0,
+      "change": 0.3,
+      "changePct": 0.86,
+      "chgStr": "+0.86%",
+      "dir": "up"
+    },
+    "2426": {
+      "price": 78.2,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "2427": {
+      "price": 20.65,
+      "change": -0.05,
+      "changePct": -0.24,
+      "chgStr": "-0.24%",
+      "dir": "dn"
+    },
+    "2429": {
+      "price": 46.55,
+      "change": -1.9,
+      "changePct": -3.92,
+      "chgStr": "-3.92%",
+      "dir": "dn"
+    },
+    "2430": {
+      "price": 18.45,
+      "change": 0.15,
+      "changePct": 0.82,
+      "chgStr": "+0.82%",
+      "dir": "up"
+    },
+    "2431": {
+      "price": 10.6,
+      "change": -0.05,
+      "changePct": -0.47,
+      "chgStr": "-0.47%",
+      "dir": "dn"
+    },
+    "2432": {
+      "price": 26.65,
+      "change": 0.4,
+      "changePct": 1.52,
+      "chgStr": "+1.52%",
+      "dir": "up"
+    },
+    "2433": {
+      "price": 44.1,
+      "change": -0.35,
+      "changePct": -0.79,
+      "chgStr": "-0.79%",
+      "dir": "dn"
+    },
+    "2434": {
+      "price": 30.0,
+      "change": 0.05,
+      "changePct": 0.17,
+      "chgStr": "+0.17%",
+      "dir": "up"
+    },
+    "2436": {
+      "price": 80.5,
+      "change": 2.9,
+      "changePct": 3.74,
+      "chgStr": "+3.74%",
+      "dir": "up"
+    },
+    "2438": {
+      "price": 22.5,
+      "change": 0.5,
+      "changePct": 2.27,
+      "chgStr": "+2.27%",
+      "dir": "up"
+    },
+    "2439": {
+      "price": 88.2,
+      "change": -0.1,
+      "changePct": -0.11,
+      "chgStr": "-0.11%",
+      "dir": "dn"
+    },
+    "2440": {
+      "price": 18.25,
+      "change": 0.25,
+      "changePct": 1.39,
+      "chgStr": "+1.39%",
+      "dir": "up"
+    },
+    "2441": {
+      "price": 128.5,
+      "change": 11.5,
+      "changePct": 9.83,
+      "chgStr": "+9.83%",
+      "dir": "up"
+    },
+    "2442": {
+      "price": 18.45,
+      "change": -0.05,
+      "changePct": -0.27,
+      "chgStr": "-0.27%",
+      "dir": "dn"
+    },
+    "2444": {
+      "price": 12.75,
+      "change": 0.1,
+      "changePct": 0.79,
+      "chgStr": "+0.79%",
+      "dir": "up"
+    },
+    "2449": {
+      "price": 317.0,
+      "change": 21.0,
+      "changePct": 7.09,
+      "chgStr": "+7.09%",
+      "dir": "up"
+    },
+    "2450": {
+      "price": 29.2,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "2451": {
+      "price": 311.0,
+      "change": -5.5,
+      "changePct": -1.74,
+      "chgStr": "-1.74%",
+      "dir": "dn"
+    },
+    "2453": {
+      "price": 57.5,
+      "change": 0.3,
+      "changePct": 0.52,
+      "chgStr": "+0.52%",
+      "dir": "up"
+    },
+    "2457": {
+      "price": 26.85,
+      "change": 0.65,
+      "changePct": 2.48,
+      "chgStr": "+2.48%",
+      "dir": "up"
+    },
+    "2458": {
+      "price": 163.5,
+      "change": 1.5,
+      "changePct": 0.93,
+      "chgStr": "+0.93%",
+      "dir": "up"
+    },
+    "2459": {
+      "price": 66.4,
+      "change": -0.7,
+      "changePct": -1.04,
+      "chgStr": "-1.04%",
+      "dir": "dn"
+    },
+    "2460": {
+      "price": 32.75,
+      "change": 0.2,
+      "changePct": 0.61,
+      "chgStr": "+0.61%",
+      "dir": "up"
+    },
+    "2461": {
+      "price": 16.65,
+      "change": -0.1,
+      "changePct": -0.6,
+      "chgStr": "-0.6%",
+      "dir": "dn"
+    },
+    "2462": {
+      "price": 20.9,
+      "change": 0.1,
+      "changePct": 0.48,
+      "chgStr": "+0.48%",
+      "dir": "up"
+    },
+    "2464": {
+      "price": 158.0,
+      "change": 14.0,
+      "changePct": 9.72,
+      "chgStr": "+9.72%",
+      "dir": "up"
+    },
+    "2465": {
+      "price": 86.2,
+      "change": 0.3,
+      "changePct": 0.35,
+      "chgStr": "+0.35%",
+      "dir": "up"
+    },
+    "2466": {
+      "price": 49.85,
+      "change": -0.45,
+      "changePct": -0.89,
+      "chgStr": "-0.89%",
+      "dir": "dn"
+    },
+    "2467": {
+      "price": 663.0,
+      "change": 60.0,
+      "changePct": 9.95,
+      "chgStr": "+9.95%",
+      "dir": "up"
+    },
+    "2468": {
+      "price": 33.75,
+      "change": -0.45,
+      "changePct": -1.32,
+      "chgStr": "-1.32%",
+      "dir": "dn"
+    },
+    "2471": {
+      "price": 50.4,
+      "change": -0.1,
+      "changePct": -0.2,
+      "chgStr": "-0.2%",
+      "dir": "dn"
+    },
+    "2472": {
+      "price": 279.5,
+      "change": 19.5,
+      "changePct": 7.5,
+      "chgStr": "+7.5%",
+      "dir": "up"
+    },
+    "2476": {
+      "price": 124.5,
+      "change": 3.5,
+      "changePct": 2.89,
+      "chgStr": "+2.89%",
+      "dir": "up"
+    },
+    "2477": {
+      "price": 20.95,
+      "change": -0.2,
+      "changePct": -0.95,
+      "chgStr": "-0.95%",
+      "dir": "dn"
+    },
+    "2478": {
+      "price": 120.0,
+      "change": -7.5,
+      "changePct": -5.88,
+      "chgStr": "-5.88%",
+      "dir": "dn"
+    },
+    "2480": {
+      "price": 146.5,
+      "change": -3.0,
+      "changePct": -2.01,
+      "chgStr": "-2.01%",
+      "dir": "dn"
+    },
+    "2482": {
+      "price": 16.85,
+      "change": -0.05,
+      "changePct": -0.3,
+      "chgStr": "-0.3%",
+      "dir": "dn"
+    },
+    "2483": {
+      "price": 25.35,
+      "change": -0.6,
+      "changePct": -2.31,
+      "chgStr": "-2.31%",
+      "dir": "dn"
+    },
+    "2484": {
+      "price": 54.2,
+      "change": 4.9,
+      "changePct": 9.94,
+      "chgStr": "+9.94%",
+      "dir": "up"
+    },
+    "2486": {
+      "price": 297.5,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "2488": {
+      "price": 53.7,
+      "change": -0.7,
+      "changePct": -1.29,
+      "chgStr": "-1.29%",
+      "dir": "dn"
+    },
+    "2489": {
+      "price": 56.5,
+      "change": 5.1,
+      "changePct": 9.92,
+      "chgStr": "+9.92%",
+      "dir": "up"
+    },
+    "2491": {
+      "price": 23.6,
+      "change": 1.45,
+      "changePct": 6.55,
+      "chgStr": "+6.55%",
+      "dir": "up"
+    },
+    "2493": {
+      "price": 149.0,
+      "change": 11.5,
+      "changePct": 8.36,
+      "chgStr": "+8.36%",
+      "dir": "up"
+    },
+    "2495": {
+      "price": 46.15,
+      "change": 1.95,
+      "changePct": 4.41,
+      "chgStr": "+4.41%",
+      "dir": "up"
+    },
+    "2496": {
+      "price": 64.5,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "2497": {
+      "price": 59.0,
+      "change": 2.0,
+      "changePct": 3.51,
+      "chgStr": "+3.51%",
+      "dir": "up"
+    },
+    "2498": {
+      "price": 46.2,
+      "change": -0.2,
+      "changePct": -0.43,
+      "chgStr": "-0.43%",
+      "dir": "dn"
+    },
+    "2505": {
+      "price": 17.7,
+      "change": -0.4,
+      "changePct": -2.21,
+      "chgStr": "-2.21%",
+      "dir": "dn"
+    },
+    "2506": {
+      "price": 8.65,
+      "change": -0.02,
+      "changePct": -0.23,
+      "chgStr": "-0.23%",
+      "dir": "dn"
+    },
+    "2509": {
+      "price": 12.45,
+      "change": -0.45,
+      "changePct": -3.49,
+      "chgStr": "-3.49%",
+      "dir": "dn"
+    },
+    "2514": {
+      "price": 12.95,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "2516": {
+      "price": 12.05,
+      "change": -0.3,
+      "changePct": -2.43,
+      "chgStr": "-2.43%",
+      "dir": "dn"
+    },
+    "2524": {
+      "price": 32.7,
+      "change": -0.65,
+      "changePct": -1.95,
+      "chgStr": "-1.95%",
+      "dir": "dn"
+    },
+    "2527": {
+      "price": 34.95,
+      "change": 1.4,
+      "changePct": 4.17,
+      "chgStr": "+4.17%",
+      "dir": "up"
+    },
+    "2528": {
+      "price": 22.15,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "2530": {
+      "price": 19.9,
+      "change": -0.55,
+      "changePct": -2.69,
+      "chgStr": "-2.69%",
+      "dir": "dn"
+    },
+    "2534": {
+      "price": 17.7,
+      "change": -0.4,
+      "changePct": -2.21,
+      "chgStr": "-2.21%",
+      "dir": "dn"
+    },
+    "2535": {
+      "price": 76.7,
+      "change": -0.8,
+      "changePct": -1.03,
+      "chgStr": "-1.03%",
+      "dir": "dn"
+    },
+    "2536": {
+      "price": 19.65,
+      "change": -0.3,
+      "changePct": -1.5,
+      "chgStr": "-1.5%",
+      "dir": "dn"
+    },
+    "2537": {
+      "price": 9.55,
+      "change": -0.02,
+      "changePct": -0.21,
+      "chgStr": "-0.21%",
+      "dir": "dn"
+    },
+    "2538": {
+      "price": 9.37,
+      "change": -0.04,
+      "changePct": -0.43,
+      "chgStr": "-0.43%",
+      "dir": "dn"
+    },
+    "2539": {
+      "price": 36.6,
+      "change": -1.6,
+      "changePct": -4.19,
+      "chgStr": "-4.19%",
+      "dir": "dn"
+    },
+    "2540": {
+      "price": 53.5,
+      "change": -2.3,
+      "changePct": -4.12,
+      "chgStr": "-4.12%",
+      "dir": "dn"
+    },
+    "2543": {
+      "price": 42.2,
+      "change": -3.3,
+      "changePct": -7.25,
+      "chgStr": "-7.25%",
+      "dir": "dn"
+    },
+    "2545": {
+      "price": 36.45,
+      "change": -0.5,
+      "changePct": -1.35,
+      "chgStr": "-1.35%",
+      "dir": "dn"
+    },
+    "2546": {
+      "price": 84.3,
+      "change": -0.3,
+      "changePct": -0.35,
+      "chgStr": "-0.35%",
+      "dir": "dn"
+    },
+    "2547": {
+      "price": 9.91,
+      "change": -0.09,
+      "changePct": -0.9,
+      "chgStr": "-0.9%",
+      "dir": "dn"
+    },
+    "2597": {
+      "price": 161.0,
+      "change": -2.5,
+      "changePct": -1.53,
+      "chgStr": "-1.53%",
+      "dir": "dn"
+    },
+    "2601": {
+      "price": 5.08,
+      "change": 0.05,
+      "changePct": 0.99,
+      "chgStr": "+0.99%",
+      "dir": "up"
+    },
+    "2605": {
+      "price": 31.3,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "2607": {
+      "price": 48.5,
+      "change": 0.6,
+      "changePct": 1.25,
+      "chgStr": "+1.25%",
+      "dir": "up"
+    },
+    "2608": {
+      "price": 28.8,
+      "change": -0.2,
+      "changePct": -0.69,
+      "chgStr": "-0.69%",
+      "dir": "dn"
+    },
+    "2611": {
+      "price": 12.9,
+      "change": -0.05,
+      "changePct": -0.39,
+      "chgStr": "-0.39%",
+      "dir": "dn"
+    },
+    "2612": {
+      "price": 56.9,
+      "change": 1.1,
+      "changePct": 1.97,
+      "chgStr": "+1.97%",
+      "dir": "up"
+    },
+    "2613": {
+      "price": 21.85,
+      "change": -0.1,
+      "changePct": -0.46,
+      "chgStr": "-0.46%",
+      "dir": "dn"
+    },
+    "2614": {
+      "price": 18.25,
+      "change": 0.15,
+      "changePct": 0.83,
+      "chgStr": "+0.83%",
+      "dir": "up"
+    },
+    "2616": {
+      "price": 13.4,
+      "change": -0.35,
+      "changePct": -2.55,
+      "chgStr": "-2.55%",
+      "dir": "dn"
+    },
+    "2630": {
+      "price": 42.95,
+      "change": -0.55,
+      "changePct": -1.26,
+      "chgStr": "-1.26%",
+      "dir": "dn"
+    },
+    "2633": {
+      "price": 25.3,
+      "change": -0.5,
+      "changePct": -1.94,
+      "chgStr": "-1.94%",
+      "dir": "dn"
+    },
+    "2634": {
+      "price": 46.4,
+      "change": -0.1,
+      "changePct": -0.22,
+      "chgStr": "-0.22%",
+      "dir": "dn"
+    },
+    "2642": {
+      "price": 20.35,
+      "change": -0.05,
+      "changePct": -0.25,
+      "chgStr": "-0.25%",
+      "dir": "dn"
+    },
+    "2645": {
+      "price": 162.5,
+      "change": 2.0,
+      "changePct": 1.25,
+      "chgStr": "+1.25%",
+      "dir": "up"
+    },
+    "2646": {
+      "price": 20.3,
+      "change": -0.15,
+      "changePct": -0.73,
+      "chgStr": "-0.73%",
+      "dir": "dn"
+    },
+    "2701": {
+      "price": 10.25,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "2702": {
+      "price": 12.8,
+      "change": -0.25,
+      "changePct": -1.92,
+      "chgStr": "-1.92%",
+      "dir": "dn"
+    },
+    "2704": {
+      "price": 42.05,
+      "change": 0.2,
+      "changePct": 0.48,
+      "chgStr": "+0.48%",
+      "dir": "up"
+    },
+    "2705": {
+      "price": 15.2,
+      "change": 0.05,
+      "changePct": 0.33,
+      "chgStr": "+0.33%",
+      "dir": "up"
+    },
+    "2706": {
+      "price": 11.9,
+      "change": -0.05,
+      "changePct": -0.42,
+      "chgStr": "-0.42%",
+      "dir": "dn"
+    },
+    "2707": {
+      "price": 172.0,
+      "change": -2.0,
+      "changePct": -1.15,
+      "chgStr": "-1.15%",
+      "dir": "dn"
+    },
+    "2712": {
+      "price": 15.0,
+      "change": -0.5,
+      "changePct": -3.23,
+      "chgStr": "-3.23%",
+      "dir": "dn"
+    },
+    "2722": {
+      "price": 22.55,
+      "change": -0.1,
+      "changePct": -0.44,
+      "chgStr": "-0.44%",
+      "dir": "dn"
+    },
+    "2723": {
+      "price": 61.9,
+      "change": -0.9,
+      "changePct": -1.43,
+      "chgStr": "-1.43%",
+      "dir": "dn"
+    },
+    "2727": {
+      "price": 229.5,
+      "change": -2.5,
+      "changePct": -1.08,
+      "chgStr": "-1.08%",
+      "dir": "dn"
+    },
+    "2731": {
+      "price": 160.0,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "2739": {
+      "price": 35.0,
+      "change": 0.3,
+      "changePct": 0.86,
+      "chgStr": "+0.86%",
+      "dir": "up"
+    },
+    "2748": {
+      "price": 39.2,
+      "change": -0.05,
+      "changePct": -0.13,
+      "chgStr": "-0.13%",
+      "dir": "dn"
+    },
+    "2753": {
+      "price": 174.5,
+      "change": 1.0,
+      "changePct": 0.58,
+      "chgStr": "+0.58%",
+      "dir": "up"
+    },
+    "2762": {
+      "price": 82.0,
+      "change": -0.9,
+      "changePct": -1.09,
+      "chgStr": "-1.09%",
+      "dir": "dn"
+    },
+    "2801": {
+      "price": 20.2,
+      "change": -0.1,
+      "changePct": -0.49,
+      "chgStr": "-0.49%",
+      "dir": "dn"
+    },
+    "2812": {
+      "price": 18.75,
+      "change": -0.2,
+      "changePct": -1.06,
+      "chgStr": "-1.06%",
+      "dir": "dn"
+    },
+    "2816": {
+      "price": 31.2,
+      "change": 0.2,
+      "changePct": 0.65,
+      "chgStr": "+0.65%",
+      "dir": "up"
+    },
+    "2820": {
+      "price": 16.8,
+      "change": -0.1,
+      "changePct": -0.59,
+      "chgStr": "-0.59%",
+      "dir": "dn"
+    },
+    "2832": {
+      "price": 52.9,
+      "change": -0.3,
+      "changePct": -0.56,
+      "chgStr": "-0.56%",
+      "dir": "dn"
+    },
+    "2834": {
+      "price": 15.9,
+      "change": -0.1,
+      "changePct": -0.62,
+      "chgStr": "-0.62%",
+      "dir": "dn"
+    },
+    "2836": {
+      "price": 11.8,
+      "change": -0.05,
+      "changePct": -0.42,
+      "chgStr": "-0.42%",
+      "dir": "dn"
+    },
+    "2836A": {
+      "price": 24.5,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "2838": {
+      "price": 20.1,
+      "change": -0.05,
+      "changePct": -0.25,
+      "chgStr": "-0.25%",
+      "dir": "dn"
+    },
+    "2838A": {
+      "price": 54.6,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "2845": {
+      "price": 12.05,
+      "change": -0.05,
+      "changePct": -0.41,
+      "chgStr": "-0.41%",
+      "dir": "dn"
+    },
+    "2849": {
+      "price": 13.3,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "2850": {
+      "price": 138.0,
+      "change": 1.5,
+      "changePct": 1.1,
+      "chgStr": "+1.1%",
+      "dir": "up"
+    },
+    "2851": {
+      "price": 35.1,
+      "change": 0.3,
+      "changePct": 0.86,
+      "chgStr": "+0.86%",
+      "dir": "up"
+    },
+    "2852": {
+      "price": 26.9,
+      "change": -0.05,
+      "changePct": -0.19,
+      "chgStr": "-0.19%",
+      "dir": "dn"
+    },
+    "2855": {
+      "price": 42.05,
+      "change": 1.3,
+      "changePct": 3.19,
+      "chgStr": "+3.19%",
+      "dir": "up"
+    },
+    "2867": {
+      "price": 7.5,
+      "change": -0.13,
+      "changePct": -1.7,
+      "chgStr": "-1.7%",
+      "dir": "dn"
+    },
+    "2881A": {
+      "price": 64.0,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "2881B": {
+      "price": 62.6,
+      "change": -0.1,
+      "changePct": -0.16,
+      "chgStr": "-0.16%",
+      "dir": "dn"
+    },
+    "2881C": {
+      "price": 51.1,
+      "change": -0.1,
+      "changePct": -0.2,
+      "chgStr": "-0.2%",
+      "dir": "dn"
+    },
+    "2882A": {
+      "price": 62.0,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "2882B": {
+      "price": 60.8,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "2883B": {
+      "price": 8.18,
+      "change": -0.02,
+      "changePct": -0.24,
+      "chgStr": "-0.24%",
+      "dir": "dn"
+    },
+    "2887": {
+      "price": 23.3,
+      "change": -0.5,
+      "changePct": -2.1,
+      "chgStr": "-2.1%",
+      "dir": "dn"
+    },
+    "2887E": {
+      "price": 51.1,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "2887F": {
+      "price": 47.2,
+      "change": -0.1,
+      "changePct": -0.21,
+      "chgStr": "-0.21%",
+      "dir": "dn"
+    },
+    "2887G": {
+      "price": 42.6,
+      "change": -0.05,
+      "changePct": -0.12,
+      "chgStr": "-0.12%",
+      "dir": "dn"
+    },
+    "2887H": {
+      "price": 40.9,
+      "change": -0.15,
+      "changePct": -0.37,
+      "chgStr": "-0.37%",
+      "dir": "dn"
+    },
+    "2887I": {
+      "price": 9.37,
+      "change": -0.03,
+      "changePct": -0.32,
+      "chgStr": "-0.32%",
+      "dir": "dn"
+    },
+    "2887Z1": {
+      "price": 17.35,
+      "change": 0.05,
+      "changePct": 0.29,
+      "chgStr": "+0.29%",
+      "dir": "up"
+    },
+    "2889": {
+      "price": 14.55,
+      "change": -0.1,
+      "changePct": -0.68,
+      "chgStr": "-0.68%",
+      "dir": "dn"
+    },
+    "2890": {
+      "price": 28.95,
+      "change": -0.15,
+      "changePct": -0.52,
+      "chgStr": "-0.52%",
+      "dir": "dn"
+    },
+    "2891B": {
+      "price": 64.4,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "2891C": {
+      "price": 62.4,
+      "change": 0.1,
+      "changePct": 0.16,
+      "chgStr": "+0.16%",
+      "dir": "up"
+    },
+    "2897": {
+      "price": 9.95,
+      "change": -0.05,
+      "changePct": -0.5,
+      "chgStr": "-0.5%",
+      "dir": "dn"
+    },
+    "2897B": {
+      "price": 11.85,
+      "change": -0.05,
+      "changePct": -0.42,
+      "chgStr": "-0.42%",
+      "dir": "dn"
+    },
+    "2901": {
+      "price": 23.3,
+      "change": 0.7,
+      "changePct": 3.1,
+      "chgStr": "+3.1%",
+      "dir": "up"
+    },
+    "2903": {
+      "price": 22.15,
+      "change": -0.1,
+      "changePct": -0.45,
+      "chgStr": "-0.45%",
+      "dir": "dn"
+    },
+    "2904": {
+      "price": 14.05,
+      "change": -0.2,
+      "changePct": -1.4,
+      "chgStr": "-1.4%",
+      "dir": "dn"
+    },
+    "2905": {
+      "price": 13.5,
+      "change": -0.15,
+      "changePct": -1.1,
+      "chgStr": "-1.1%",
+      "dir": "dn"
+    },
+    "2906": {
+      "price": 12.5,
+      "change": -0.15,
+      "changePct": -1.19,
+      "chgStr": "-1.19%",
+      "dir": "dn"
+    },
+    "2908": {
+      "price": 21.15,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "2910": {
+      "price": 21.15,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "2911": {
+      "price": 9.55,
+      "change": 0.86,
+      "changePct": 9.9,
+      "chgStr": "+9.9%",
+      "dir": "up"
+    },
+    "2912": {
+      "price": 212.5,
+      "change": -7.5,
+      "changePct": -3.41,
+      "chgStr": "-3.41%",
+      "dir": "dn"
+    },
+    "2913": {
+      "price": 10.8,
+      "change": -0.1,
+      "changePct": -0.92,
+      "chgStr": "-0.92%",
+      "dir": "dn"
+    },
+    "2915": {
+      "price": 42.6,
+      "change": -0.7,
+      "changePct": -1.62,
+      "chgStr": "-1.62%",
+      "dir": "dn"
+    },
+    "2923": {
+      "price": 22.5,
+      "change": 1.05,
+      "changePct": 4.9,
+      "chgStr": "+4.9%",
+      "dir": "up"
+    },
+    "2929": {
+      "price": 5.5,
+      "change": -0.23,
+      "changePct": -4.01,
+      "chgStr": "-4.01%",
+      "dir": "dn"
+    },
+    "2939": {
+      "price": 22.7,
+      "change": 0.2,
+      "changePct": 0.89,
+      "chgStr": "+0.89%",
+      "dir": "up"
+    },
+    "2945": {
+      "price": 41.35,
+      "change": 0.4,
+      "changePct": 0.98,
+      "chgStr": "+0.98%",
+      "dir": "up"
+    },
+    "3002": {
+      "price": 17.5,
+      "change": -0.05,
+      "changePct": -0.28,
+      "chgStr": "-0.28%",
+      "dir": "dn"
+    },
+    "3003": {
+      "price": 61.0,
+      "change": -0.9,
+      "changePct": -1.45,
+      "chgStr": "-1.45%",
+      "dir": "dn"
+    },
+    "3004": {
+      "price": 140.5,
+      "change": 10.0,
+      "changePct": 7.66,
+      "chgStr": "+7.66%",
+      "dir": "up"
+    },
+    "3006": {
+      "price": 229.0,
+      "change": -8.5,
+      "changePct": -3.58,
+      "chgStr": "-3.58%",
+      "dir": "dn"
+    },
+    "3010": {
+      "price": 140.0,
+      "change": 2.0,
+      "changePct": 1.45,
+      "chgStr": "+1.45%",
+      "dir": "up"
+    },
+    "3011": {
+      "price": 13.1,
+      "change": -0.6,
+      "changePct": -4.38,
+      "chgStr": "-4.38%",
+      "dir": "dn"
+    },
+    "3013": {
+      "price": 121.5,
+      "change": 11.0,
+      "changePct": 9.95,
+      "chgStr": "+9.95%",
+      "dir": "up"
+    },
+    "3015": {
+      "price": 52.0,
+      "change": 0.5,
+      "changePct": 0.97,
+      "chgStr": "+0.97%",
+      "dir": "up"
+    },
+    "3016": {
+      "price": 133.0,
+      "change": 12.0,
+      "changePct": 9.92,
+      "chgStr": "+9.92%",
+      "dir": "up"
+    },
+    "3018": {
+      "price": 9.49,
+      "change": -0.39,
+      "changePct": -3.95,
+      "chgStr": "-3.95%",
+      "dir": "dn"
+    },
+    "3021": {
+      "price": 20.65,
+      "change": 1.85,
+      "changePct": 9.84,
+      "chgStr": "+9.84%",
+      "dir": "up"
+    },
+    "3022": {
+      "price": 73.5,
+      "change": 1.9,
+      "changePct": 2.65,
+      "chgStr": "+2.65%",
+      "dir": "up"
+    },
+    "3023": {
+      "price": 314.0,
+      "change": -0.5,
+      "changePct": -0.16,
+      "chgStr": "-0.16%",
+      "dir": "dn"
+    },
+    "3024": {
+      "price": 16.05,
+      "change": -1.55,
+      "changePct": -8.81,
+      "chgStr": "-8.81%",
+      "dir": "dn"
+    },
+    "3025": {
+      "price": 78.1,
+      "change": 7.1,
+      "changePct": 10.0,
+      "chgStr": "+10.0%",
+      "dir": "up"
+    },
+    "3027": {
+      "price": 18.95,
+      "change": 0.8,
+      "changePct": 4.41,
+      "chgStr": "+4.41%",
+      "dir": "up"
+    },
+    "3028": {
+      "price": 81.3,
+      "change": -1.0,
+      "changePct": -1.22,
+      "chgStr": "-1.22%",
+      "dir": "dn"
+    },
+    "3029": {
+      "price": 97.0,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "3031": {
+      "price": 32.85,
+      "change": -0.9,
+      "changePct": -2.67,
+      "chgStr": "-2.67%",
+      "dir": "dn"
+    },
+    "3032": {
+      "price": 91.0,
+      "change": 3.8,
+      "changePct": 4.36,
+      "chgStr": "+4.36%",
+      "dir": "up"
+    },
+    "3033": {
+      "price": 49.2,
+      "change": -4.7,
+      "changePct": -8.72,
+      "chgStr": "-8.72%",
+      "dir": "dn"
+    },
+    "3035": {
+      "price": 218.5,
+      "change": 7.5,
+      "changePct": 3.55,
+      "chgStr": "+3.55%",
+      "dir": "up"
+    },
+    "3036": {
+      "price": 301.5,
+      "change": 12.5,
+      "changePct": 4.33,
+      "chgStr": "+4.33%",
+      "dir": "up"
+    },
+    "3038": {
+      "price": 23.5,
+      "change": 0.35,
+      "changePct": 1.51,
+      "chgStr": "+1.51%",
+      "dir": "up"
+    },
+    "3040": {
+      "price": 39.5,
+      "change": -0.1,
+      "changePct": -0.25,
+      "chgStr": "-0.25%",
+      "dir": "dn"
+    },
+    "3041": {
+      "price": 27.0,
+      "change": -0.15,
+      "changePct": -0.55,
+      "chgStr": "-0.55%",
+      "dir": "dn"
+    },
+    "3043": {
+      "price": 21.05,
+      "change": -0.35,
+      "changePct": -1.64,
+      "chgStr": "-1.64%",
+      "dir": "dn"
+    },
+    "3046": {
+      "price": 54.0,
+      "change": 0.6,
+      "changePct": 1.12,
+      "chgStr": "+1.12%",
+      "dir": "up"
+    },
+    "3047": {
+      "price": 15.55,
+      "change": 0.15,
+      "changePct": 0.97,
+      "chgStr": "+0.97%",
+      "dir": "up"
+    },
+    "3048": {
+      "price": 73.3,
+      "change": -1.2,
+      "changePct": -1.61,
+      "chgStr": "-1.61%",
+      "dir": "dn"
+    },
+    "3049": {
+      "price": 12.75,
+      "change": 0.3,
+      "changePct": 2.41,
+      "chgStr": "+2.41%",
+      "dir": "up"
+    },
+    "3050": {
+      "price": 12.75,
+      "change": 0.25,
+      "changePct": 2.0,
+      "chgStr": "+2.0%",
+      "dir": "up"
+    },
+    "3051": {
+      "price": 30.8,
+      "change": 2.6,
+      "changePct": 9.22,
+      "chgStr": "+9.22%",
+      "dir": "up"
+    },
+    "3052": {
+      "price": 10.6,
+      "change": 0.05,
+      "changePct": 0.47,
+      "chgStr": "+0.47%",
+      "dir": "up"
+    },
+    "3054": {
+      "price": 69.0,
+      "change": 1.4,
+      "changePct": 2.07,
+      "chgStr": "+2.07%",
+      "dir": "up"
+    },
+    "3055": {
+      "price": 118.0,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "3056": {
+      "price": 13.35,
+      "change": -0.25,
+      "changePct": -1.84,
+      "chgStr": "-1.84%",
+      "dir": "dn"
+    },
+    "3057": {
+      "price": 20.0,
+      "change": 0.25,
+      "changePct": 1.27,
+      "chgStr": "+1.27%",
+      "dir": "up"
+    },
+    "3058": {
+      "price": 8.26,
+      "change": -0.16,
+      "changePct": -1.9,
+      "chgStr": "-1.9%",
+      "dir": "dn"
+    },
+    "3059": {
+      "price": 43.3,
+      "change": -0.25,
+      "changePct": -0.57,
+      "chgStr": "-0.57%",
+      "dir": "dn"
+    },
+    "3060": {
+      "price": 29.0,
+      "change": 0.15,
+      "changePct": 0.52,
+      "chgStr": "+0.52%",
+      "dir": "up"
+    },
+    "3062": {
+      "price": 31.25,
+      "change": 1.9,
+      "changePct": 6.47,
+      "chgStr": "+6.47%",
+      "dir": "up"
+    },
+    "3090": {
+      "price": 236.5,
+      "change": 21.5,
+      "changePct": 10.0,
+      "chgStr": "+10.0%",
+      "dir": "up"
+    },
+    "3092": {
+      "price": 30.3,
+      "change": -0.4,
+      "changePct": -1.3,
+      "chgStr": "-1.3%",
+      "dir": "dn"
+    },
+    "3094": {
+      "price": 36.6,
+      "change": 1.25,
+      "changePct": 3.54,
+      "chgStr": "+3.54%",
+      "dir": "up"
+    },
+    "3130": {
+      "price": 220.5,
+      "change": -0.5,
+      "changePct": -0.23,
+      "chgStr": "-0.23%",
+      "dir": "dn"
+    },
+    "3135": {
+      "price": 213.5,
+      "change": 2.0,
+      "changePct": 0.95,
+      "chgStr": "+0.95%",
+      "dir": "up"
+    },
+    "3138": {
+      "price": 176.5,
+      "change": 7.0,
+      "changePct": 4.13,
+      "chgStr": "+4.13%",
+      "dir": "up"
+    },
+    "3149": {
+      "price": 65.0,
+      "change": 5.9,
+      "changePct": 9.98,
+      "chgStr": "+9.98%",
+      "dir": "up"
+    },
+    "3150": {
+      "price": 19.8,
+      "change": -0.35,
+      "changePct": -1.74,
+      "chgStr": "-1.74%",
+      "dir": "dn"
+    },
+    "3164": {
+      "price": 16.45,
+      "change": -0.35,
+      "changePct": -2.08,
+      "chgStr": "-2.08%",
+      "dir": "dn"
+    },
+    "3167": {
+      "price": 879.0,
+      "change": 48.0,
+      "changePct": 5.78,
+      "chgStr": "+5.78%",
+      "dir": "up"
+    },
+    "3168": {
+      "price": 49.85,
+      "change": 4.5,
+      "changePct": 9.92,
+      "chgStr": "+9.92%",
+      "dir": "up"
+    },
+    "3209": {
+      "price": 73.9,
+      "change": -4.1,
+      "changePct": -5.26,
+      "chgStr": "-5.26%",
+      "dir": "dn"
+    },
+    "3229": {
+      "price": 43.55,
+      "change": 3.95,
+      "changePct": 9.97,
+      "chgStr": "+9.97%",
+      "dir": "up"
+    },
+    "3257": {
+      "price": 54.4,
+      "change": 1.6,
+      "changePct": 3.03,
+      "chgStr": "+3.03%",
+      "dir": "up"
+    },
+    "3266": {
+      "price": 12.85,
+      "change": 0.45,
+      "changePct": 3.63,
+      "chgStr": "+3.63%",
+      "dir": "up"
+    },
+    "3296": {
+      "price": 20.1,
+      "change": 0.45,
+      "changePct": 2.29,
+      "chgStr": "+2.29%",
+      "dir": "up"
+    },
+    "3305": {
+      "price": 160.5,
+      "change": 14.5,
+      "changePct": 9.93,
+      "chgStr": "+9.93%",
+      "dir": "up"
+    },
+    "3308": {
+      "price": 20.3,
+      "change": -0.2,
+      "changePct": -0.98,
+      "chgStr": "-0.98%",
+      "dir": "dn"
+    },
+    "3311": {
+      "price": 33.85,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "3312": {
+      "price": 50.4,
+      "change": 2.75,
+      "changePct": 5.77,
+      "chgStr": "+5.77%",
+      "dir": "up"
+    },
+    "3321": {
+      "price": 16.55,
+      "change": 0.6,
+      "changePct": 3.76,
+      "chgStr": "+3.76%",
+      "dir": "up"
+    },
+    "3338": {
+      "price": 76.4,
+      "change": -0.6,
+      "changePct": -0.78,
+      "chgStr": "-0.78%",
+      "dir": "dn"
+    },
+    "3346": {
+      "price": 16.0,
+      "change": -0.35,
+      "changePct": -2.14,
+      "chgStr": "-2.14%",
+      "dir": "dn"
+    },
+    "3356": {
+      "price": 65.3,
+      "change": 2.0,
+      "changePct": 3.16,
+      "chgStr": "+3.16%",
+      "dir": "up"
+    },
+    "3376": {
+      "price": 220.5,
+      "change": 10.5,
+      "changePct": 5.0,
+      "chgStr": "+5.0%",
+      "dir": "up"
+    },
+    "3413": {
+      "price": 349.0,
+      "change": 24.0,
+      "changePct": 7.38,
+      "chgStr": "+7.38%",
+      "dir": "up"
+    },
+    "3416": {
+      "price": 190.5,
+      "change": 7.5,
+      "changePct": 4.1,
+      "chgStr": "+4.1%",
+      "dir": "up"
+    },
+    "3419": {
+      "price": 14.1,
+      "change": 0.1,
+      "changePct": 0.71,
+      "chgStr": "+0.71%",
+      "dir": "up"
+    },
+    "3432": {
+      "price": 19.9,
+      "change": 0.75,
+      "changePct": 3.92,
+      "chgStr": "+3.92%",
+      "dir": "up"
+    },
+    "3437": {
+      "price": 25.65,
+      "change": -0.5,
+      "changePct": -1.91,
+      "chgStr": "-1.91%",
+      "dir": "dn"
+    },
+    "3447": {
+      "price": 38.0,
+      "change": -0.05,
+      "changePct": -0.13,
+      "chgStr": "-0.13%",
+      "dir": "dn"
+    },
+    "3481": {
+      "price": 49.1,
+      "change": 4.45,
+      "changePct": 9.97,
+      "chgStr": "+9.97%",
+      "dir": "up"
+    },
+    "3494": {
+      "price": 8.08,
+      "change": 0.13,
+      "changePct": 1.64,
+      "chgStr": "+1.64%",
+      "dir": "up"
+    },
+    "3501": {
+      "price": 40.0,
+      "change": -0.05,
+      "changePct": -0.12,
+      "chgStr": "-0.12%",
+      "dir": "dn"
+    },
+    "3504": {
+      "price": 82.7,
+      "change": -0.7,
+      "changePct": -0.84,
+      "chgStr": "-0.84%",
+      "dir": "dn"
+    },
+    "3515": {
+      "price": 245.0,
+      "change": 13.0,
+      "changePct": 5.6,
+      "chgStr": "+5.6%",
+      "dir": "up"
+    },
+    "3518": {
+      "price": 37.45,
+      "change": 1.8,
+      "changePct": 5.05,
+      "chgStr": "+5.05%",
+      "dir": "up"
+    },
+    "3528": {
+      "price": 91.6,
+      "change": -2.2,
+      "changePct": -2.35,
+      "chgStr": "-2.35%",
+      "dir": "dn"
+    },
+    "3530": {
+      "price": 70.9,
+      "change": 1.9,
+      "changePct": 2.75,
+      "chgStr": "+2.75%",
+      "dir": "up"
+    },
+    "3532": {
+      "price": 273.0,
+      "change": 24.5,
+      "changePct": 9.86,
+      "chgStr": "+9.86%",
+      "dir": "up"
+    },
+    "3533": {
+      "price": 2585.0,
+      "change": 30.0,
+      "changePct": 1.17,
+      "chgStr": "+1.17%",
+      "dir": "up"
+    },
+    "3535": {
+      "price": 130.0,
+      "change": 2.5,
+      "changePct": 1.96,
+      "chgStr": "+1.96%",
+      "dir": "up"
+    },
+    "3543": {
+      "price": 36.1,
+      "change": -0.9,
+      "changePct": -2.43,
+      "chgStr": "-2.43%",
+      "dir": "dn"
+    },
+    "3545": {
+      "price": 61.6,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "3550": {
+      "price": 21.5,
+      "change": -0.25,
+      "changePct": -1.15,
+      "chgStr": "-1.15%",
+      "dir": "dn"
+    },
+    "3563": {
+      "price": 892.0,
+      "change": -4.0,
+      "changePct": -0.45,
+      "chgStr": "-0.45%",
+      "dir": "dn"
+    },
+    "3583": {
+      "price": 916.0,
+      "change": 41.0,
+      "changePct": 4.69,
+      "chgStr": "+4.69%",
+      "dir": "up"
+    },
+    "3588": {
+      "price": 64.8,
+      "change": 1.7,
+      "changePct": 2.69,
+      "chgStr": "+2.69%",
+      "dir": "up"
+    },
+    "3591": {
+      "price": 26.5,
+      "change": -0.25,
+      "changePct": -0.93,
+      "chgStr": "-0.93%",
+      "dir": "dn"
+    },
+    "3592": {
+      "price": 284.5,
+      "change": 19.0,
+      "changePct": 7.16,
+      "chgStr": "+7.16%",
+      "dir": "up"
+    },
+    "3593": {
+      "price": 17.45,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "3596": {
+      "price": 189.0,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "3605": {
+      "price": 80.6,
+      "change": -0.3,
+      "changePct": -0.37,
+      "chgStr": "-0.37%",
+      "dir": "dn"
+    },
+    "3607": {
+      "price": 15.1,
+      "change": 0.15,
+      "changePct": 1.0,
+      "chgStr": "+1.0%",
+      "dir": "up"
+    },
+    "3617": {
+      "price": 205.5,
+      "change": 5.0,
+      "changePct": 2.49,
+      "chgStr": "+2.49%",
+      "dir": "up"
+    },
+    "3622": {
+      "price": 56.5,
+      "change": 0.6,
+      "changePct": 1.07,
+      "chgStr": "+1.07%",
+      "dir": "up"
+    },
+    "3645": {
+      "price": 117.5,
+      "change": 8.5,
+      "changePct": 7.8,
+      "chgStr": "+7.8%",
+      "dir": "up"
+    },
+    "3652": {
+      "price": 31.95,
+      "change": 0.6,
+      "changePct": 1.91,
+      "chgStr": "+1.91%",
+      "dir": "up"
+    },
+    "3665": {
+      "price": 2385.0,
+      "change": 160.0,
+      "changePct": 7.19,
+      "chgStr": "+7.19%",
+      "dir": "up"
+    },
+    "3669": {
+      "price": 38.95,
+      "change": 0.45,
+      "changePct": 1.17,
+      "chgStr": "+1.17%",
+      "dir": "up"
+    },
+    "3679": {
+      "price": 119.5,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "3686": {
+      "price": 18.2,
+      "change": -0.05,
+      "changePct": -0.27,
+      "chgStr": "-0.27%",
+      "dir": "dn"
+    },
+    "3694": {
+      "price": 70.8,
+      "change": 0.3,
+      "changePct": 0.43,
+      "chgStr": "+0.43%",
+      "dir": "up"
+    },
+    "3701": {
+      "price": 57.6,
+      "change": 0.6,
+      "changePct": 1.05,
+      "chgStr": "+1.05%",
+      "dir": "up"
+    },
+    "3702": {
+      "price": 123.5,
+      "change": 5.5,
+      "changePct": 4.66,
+      "chgStr": "+4.66%",
+      "dir": "up"
+    },
+    "3703": {
+      "price": 20.05,
+      "change": -0.1,
+      "changePct": -0.5,
+      "chgStr": "-0.5%",
+      "dir": "dn"
+    },
+    "3704": {
+      "price": 43.5,
+      "change": -0.5,
+      "changePct": -1.14,
+      "chgStr": "-1.14%",
+      "dir": "dn"
+    },
+    "3705": {
+      "price": 55.8,
+      "change": 0.1,
+      "changePct": 0.18,
+      "chgStr": "+0.18%",
+      "dir": "up"
+    },
+    "3712": {
+      "price": 16.0,
+      "change": -0.15,
+      "changePct": -0.93,
+      "chgStr": "-0.93%",
+      "dir": "dn"
+    },
+    "3714": {
+      "price": 79.7,
+      "change": -1.7,
+      "changePct": -2.09,
+      "chgStr": "-2.09%",
+      "dir": "dn"
+    },
+    "3715": {
+      "price": 179.0,
+      "change": 4.5,
+      "changePct": 2.58,
+      "chgStr": "+2.58%",
+      "dir": "up"
+    },
+    "3716": {
+      "price": 34.6,
+      "change": 0.25,
+      "changePct": 0.73,
+      "chgStr": "+0.73%",
+      "dir": "up"
+    },
+    "3717": {
+      "price": 22.95,
+      "change": -1.7,
+      "changePct": -6.9,
+      "chgStr": "-6.9%",
+      "dir": "dn"
+    },
+    "4104": {
+      "price": 70.0,
+      "change": -0.4,
+      "changePct": -0.57,
+      "chgStr": "-0.57%",
+      "dir": "dn"
+    },
+    "4106": {
+      "price": 23.35,
+      "change": 0.05,
+      "changePct": 0.21,
+      "chgStr": "+0.21%",
+      "dir": "up"
+    },
+    "4108": {
+      "price": 12.55,
+      "change": -0.35,
+      "changePct": -2.71,
+      "chgStr": "-2.71%",
+      "dir": "dn"
+    },
+    "4119": {
+      "price": 41.3,
+      "change": -0.95,
+      "changePct": -2.25,
+      "chgStr": "-2.25%",
+      "dir": "dn"
+    },
+    "4133": {
+      "price": 21.15,
+      "change": -0.15,
+      "changePct": -0.7,
+      "chgStr": "-0.7%",
+      "dir": "dn"
+    },
+    "4137": {
+      "price": 103.0,
+      "change": -1.0,
+      "changePct": -0.96,
+      "chgStr": "-0.96%",
+      "dir": "dn"
+    },
+    "4142": {
+      "price": 17.4,
+      "change": -0.1,
+      "changePct": -0.57,
+      "chgStr": "-0.57%",
+      "dir": "dn"
+    },
+    "4148": {
+      "price": 32.45,
+      "change": -1.8,
+      "changePct": -5.26,
+      "chgStr": "-5.26%",
+      "dir": "dn"
+    },
+    "4155": {
+      "price": 14.75,
+      "change": -0.45,
+      "changePct": -2.96,
+      "chgStr": "-2.96%",
+      "dir": "dn"
+    },
+    "4169": {
+      "price": 158.5,
+      "change": -0.5,
+      "changePct": -0.31,
+      "chgStr": "-0.31%",
+      "dir": "dn"
+    },
+    "4178": {
+      "price": 18.9,
+      "change": -0.05,
+      "changePct": -0.26,
+      "chgStr": "-0.26%",
+      "dir": "dn"
+    },
+    "4190": {
+      "price": 24.85,
+      "change": 0.1,
+      "changePct": 0.4,
+      "chgStr": "+0.4%",
+      "dir": "up"
+    },
+    "4195": {
+      "price": 17.9,
+      "change": -0.95,
+      "changePct": -5.04,
+      "chgStr": "-5.04%",
+      "dir": "dn"
+    },
+    "4306": {
+      "price": 14.05,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "4414": {
+      "price": 7.97,
+      "change": -0.07,
+      "changePct": -0.87,
+      "chgStr": "-0.87%",
+      "dir": "dn"
+    },
+    "4426": {
+      "price": 7.6,
+      "change": -0.01,
+      "changePct": -0.13,
+      "chgStr": "-0.13%",
+      "dir": "dn"
+    },
+    "4438": {
+      "price": 57.9,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "4439": {
+      "price": 93.0,
+      "change": 1.0,
+      "changePct": 1.09,
+      "chgStr": "+1.09%",
+      "dir": "up"
+    },
+    "4440": {
+      "price": 17.75,
+      "change": -0.5,
+      "changePct": -2.74,
+      "chgStr": "-2.74%",
+      "dir": "dn"
+    },
+    "4441": {
+      "price": 202.0,
+      "change": -5.5,
+      "changePct": -2.65,
+      "chgStr": "-2.65%",
+      "dir": "dn"
+    },
+    "4526": {
+      "price": 40.35,
+      "change": 0.9,
+      "changePct": 2.28,
+      "chgStr": "+2.28%",
+      "dir": "up"
+    },
+    "4532": {
+      "price": 23.95,
+      "change": 0.55,
+      "changePct": 2.35,
+      "chgStr": "+2.35%",
+      "dir": "up"
+    },
+    "4536": {
+      "price": 159.5,
+      "change": -3.5,
+      "changePct": -2.15,
+      "chgStr": "-2.15%",
+      "dir": "dn"
+    },
+    "4540": {
+      "price": 72.7,
+      "change": 0.1,
+      "changePct": 0.14,
+      "chgStr": "+0.14%",
+      "dir": "up"
+    },
+    "4545": {
+      "price": 32.85,
+      "change": -0.35,
+      "changePct": -1.05,
+      "chgStr": "-1.05%",
+      "dir": "dn"
+    },
+    "4551": {
+      "price": 157.0,
+      "change": 1.5,
+      "changePct": 0.96,
+      "chgStr": "+0.96%",
+      "dir": "up"
+    },
+    "4552": {
+      "price": 20.0,
+      "change": 0.1,
+      "changePct": 0.5,
+      "chgStr": "+0.5%",
+      "dir": "up"
+    },
+    "4555": {
+      "price": 53.2,
+      "change": 3.5,
+      "changePct": 7.04,
+      "chgStr": "+7.04%",
+      "dir": "up"
+    },
+    "4557": {
+      "price": 44.65,
+      "change": -2.35,
+      "changePct": -5.0,
+      "chgStr": "-5.0%",
+      "dir": "dn"
+    },
+    "4560": {
+      "price": 32.3,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "4562": {
+      "price": 42.25,
+      "change": -0.55,
+      "changePct": -1.29,
+      "chgStr": "-1.29%",
+      "dir": "dn"
+    },
+    "4564": {
+      "price": 15.5,
+      "change": -0.3,
+      "changePct": -1.9,
+      "chgStr": "-1.9%",
+      "dir": "dn"
+    },
+    "4566": {
+      "price": 64.6,
+      "change": 1.4,
+      "changePct": 2.22,
+      "chgStr": "+2.22%",
+      "dir": "up"
+    },
+    "4569": {
+      "price": 192.0,
+      "change": 5.0,
+      "changePct": 2.67,
+      "chgStr": "+2.67%",
+      "dir": "up"
+    },
+    "4571": {
+      "price": 227.0,
+      "change": -2.5,
+      "changePct": -1.09,
+      "chgStr": "-1.09%",
+      "dir": "dn"
+    },
+    "4572": {
+      "price": 144.5,
+      "change": 1.5,
+      "changePct": 1.05,
+      "chgStr": "+1.05%",
+      "dir": "up"
+    },
+    "4576": {
+      "price": 277.0,
+      "change": 15.5,
+      "changePct": 5.93,
+      "chgStr": "+5.93%",
+      "dir": "up"
+    },
+    "4581": {
+      "price": 50.4,
+      "change": 0.95,
+      "changePct": 1.92,
+      "chgStr": "+1.92%",
+      "dir": "up"
+    },
+    "4582": {
+      "price": 23.45,
+      "change": -0.7,
+      "changePct": -2.9,
+      "chgStr": "-2.9%",
+      "dir": "dn"
+    },
+    "4585": {
+      "price": 357.5,
+      "change": 6.5,
+      "changePct": 1.85,
+      "chgStr": "+1.85%",
+      "dir": "up"
+    },
+    "4588": {
+      "price": 54.9,
+      "change": -1.3,
+      "changePct": -2.31,
+      "chgStr": "-2.31%",
+      "dir": "dn"
+    },
+    "4590": {
+      "price": 73.2,
+      "change": -0.8,
+      "changePct": -1.08,
+      "chgStr": "-1.08%",
+      "dir": "dn"
+    },
+    "4720": {
+      "price": 25.5,
+      "change": -0.3,
+      "changePct": -1.16,
+      "chgStr": "-1.16%",
+      "dir": "dn"
+    },
+    "4722": {
+      "price": 284.0,
+      "change": -2.5,
+      "changePct": -0.87,
+      "chgStr": "-0.87%",
+      "dir": "dn"
+    },
+    "4736": {
+      "price": 122.5,
+      "change": -0.5,
+      "changePct": -0.41,
+      "chgStr": "-0.41%",
+      "dir": "dn"
+    },
+    "4737": {
+      "price": 56.3,
+      "change": -0.7,
+      "changePct": -1.23,
+      "chgStr": "-1.23%",
+      "dir": "dn"
+    },
+    "4739": {
+      "price": 106.0,
+      "change": 5.0,
+      "changePct": 4.95,
+      "chgStr": "+4.95%",
+      "dir": "up"
+    },
+    "4746": {
+      "price": 51.3,
+      "change": -1.0,
+      "changePct": -1.91,
+      "chgStr": "-1.91%",
+      "dir": "dn"
+    },
+    "4755": {
+      "price": 153.0,
+      "change": 6.5,
+      "changePct": 4.44,
+      "chgStr": "+4.44%",
+      "dir": "up"
+    },
+    "4763": {
+      "price": 43.05,
+      "change": -0.65,
+      "changePct": -1.49,
+      "chgStr": "-1.49%",
+      "dir": "dn"
+    },
+    "4764": {
+      "price": 352.0,
+      "change": 32.0,
+      "changePct": 10.0,
+      "chgStr": "+10.0%",
+      "dir": "up"
+    },
+    "4766": {
+      "price": 375.5,
+      "change": -6.0,
+      "changePct": -1.57,
+      "chgStr": "-1.57%",
+      "dir": "dn"
+    },
+    "4770": {
+      "price": 251.0,
+      "change": 22.5,
+      "changePct": 9.85,
+      "chgStr": "+9.85%",
+      "dir": "up"
+    },
+    "4771": {
+      "price": 193.5,
+      "change": 1.0,
+      "changePct": 0.52,
+      "chgStr": "+0.52%",
+      "dir": "up"
+    },
+    "4807": {
+      "price": 23.85,
+      "change": 0.9,
+      "changePct": 3.92,
+      "chgStr": "+3.92%",
+      "dir": "up"
+    },
+    "4912": {
+      "price": 110.0,
+      "change": 4.0,
+      "changePct": 3.77,
+      "chgStr": "+3.77%",
+      "dir": "up"
+    },
+    "4915": {
+      "price": 72.3,
+      "change": 0.3,
+      "changePct": 0.42,
+      "chgStr": "+0.42%",
+      "dir": "up"
+    },
+    "4916": {
+      "price": 101.5,
+      "change": 3.2,
+      "changePct": 3.26,
+      "chgStr": "+3.26%",
+      "dir": "up"
+    },
+    "4919": {
+      "price": 219.0,
+      "change": 19.5,
+      "changePct": 9.77,
+      "chgStr": "+9.77%",
+      "dir": "up"
+    },
+    "4927": {
+      "price": 61.9,
+      "change": 5.6,
+      "changePct": 9.95,
+      "chgStr": "+9.95%",
+      "dir": "up"
+    },
+    "4930": {
+      "price": 17.3,
+      "change": 0.6,
+      "changePct": 3.59,
+      "chgStr": "+3.59%",
+      "dir": "up"
+    },
+    "4934": {
+      "price": 17.85,
+      "change": 0.45,
+      "changePct": 2.59,
+      "chgStr": "+2.59%",
+      "dir": "up"
+    },
+    "4935": {
+      "price": 37.25,
+      "change": 0.25,
+      "changePct": 0.68,
+      "chgStr": "+0.68%",
+      "dir": "up"
+    },
+    "4942": {
+      "price": 37.95,
+      "change": 0.3,
+      "changePct": 0.8,
+      "chgStr": "+0.8%",
+      "dir": "up"
+    },
+    "4943": {
+      "price": 8.9,
+      "change": -0.04,
+      "changePct": -0.45,
+      "chgStr": "-0.45%",
+      "dir": "dn"
+    },
+    "4949": {
+      "price": 108.0,
+      "change": 9.8,
+      "changePct": 9.98,
+      "chgStr": "+9.98%",
+      "dir": "up"
+    },
+    "4952": {
+      "price": 54.7,
+      "change": 0.8,
+      "changePct": 1.48,
+      "chgStr": "+1.48%",
+      "dir": "up"
+    },
+    "4956": {
+      "price": 50.4,
+      "change": 2.2,
+      "changePct": 4.56,
+      "chgStr": "+4.56%",
+      "dir": "up"
+    },
+    "4960": {
+      "price": 36.0,
+      "change": 0.2,
+      "changePct": 0.56,
+      "chgStr": "+0.56%",
+      "dir": "up"
+    },
+    "4967": {
+      "price": 271.5,
+      "change": 1.0,
+      "changePct": 0.37,
+      "chgStr": "+0.37%",
+      "dir": "up"
+    },
+    "4968": {
+      "price": 120.5,
+      "change": 1.0,
+      "changePct": 0.84,
+      "chgStr": "+0.84%",
+      "dir": "up"
+    },
+    "4976": {
+      "price": 32.5,
+      "change": -0.4,
+      "changePct": -1.22,
+      "chgStr": "-1.22%",
+      "dir": "dn"
+    },
+    "4977": {
+      "price": 230.5,
+      "change": 11.0,
+      "changePct": 5.01,
+      "chgStr": "+5.01%",
+      "dir": "up"
+    },
+    "4989": {
+      "price": 99.5,
+      "change": 0.1,
+      "changePct": 0.1,
+      "chgStr": "+0.1%",
+      "dir": "up"
+    },
+    "4994": {
+      "price": 95.2,
+      "change": 5.8,
+      "changePct": 6.49,
+      "chgStr": "+6.49%",
+      "dir": "up"
+    },
+    "4999": {
+      "price": 20.0,
+      "change": -0.1,
+      "changePct": -0.5,
+      "chgStr": "-0.5%",
+      "dir": "dn"
+    },
+    "5007": {
+      "price": 56.7,
+      "change": -0.1,
+      "changePct": -0.18,
+      "chgStr": "-0.18%",
+      "dir": "dn"
+    },
+    "5203": {
+      "price": 64.9,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "5215": {
+      "price": 46.5,
+      "change": 0.95,
+      "changePct": 2.09,
+      "chgStr": "+2.09%",
+      "dir": "up"
+    },
+    "5222": {
+      "price": 128.0,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "5225": {
+      "price": 70.5,
+      "change": -0.7,
+      "changePct": -0.98,
+      "chgStr": "-0.98%",
+      "dir": "dn"
+    },
+    "5234": {
+      "price": 449.5,
+      "change": 6.0,
+      "changePct": 1.35,
+      "chgStr": "+1.35%",
+      "dir": "up"
+    },
+    "5243": {
+      "price": 135.0,
+      "change": 12.0,
+      "changePct": 9.76,
+      "chgStr": "+9.76%",
+      "dir": "up"
+    },
+    "5244": {
+      "price": 40.45,
+      "change": -0.75,
+      "changePct": -1.82,
+      "chgStr": "-1.82%",
+      "dir": "dn"
+    },
+    "5258": {
+      "price": 58.3,
+      "change": 0.7,
+      "changePct": 1.22,
+      "chgStr": "+1.22%",
+      "dir": "up"
+    },
+    "5269": {
+      "price": 1535.0,
+      "change": 55.0,
+      "changePct": 3.72,
+      "chgStr": "+3.72%",
+      "dir": "up"
+    },
+    "5283": {
+      "price": 51.9,
+      "change": -0.2,
+      "changePct": -0.38,
+      "chgStr": "-0.38%",
+      "dir": "dn"
+    },
+    "5284": {
+      "price": 408.5,
+      "change": -1.5,
+      "changePct": -0.37,
+      "chgStr": "-0.37%",
+      "dir": "dn"
+    },
+    "5285": {
+      "price": 81.5,
+      "change": 2.4,
+      "changePct": 3.03,
+      "chgStr": "+3.03%",
+      "dir": "up"
+    },
+    "5288": {
+      "price": 152.0,
+      "change": 1.5,
+      "changePct": 1.0,
+      "chgStr": "+1.0%",
+      "dir": "up"
+    },
+    "5292": {
+      "price": 220.0,
+      "change": 0.5,
+      "changePct": 0.23,
+      "chgStr": "+0.23%",
+      "dir": "up"
+    },
+    "5306": {
+      "price": 83.0,
+      "change": -0.2,
+      "changePct": -0.24,
+      "chgStr": "-0.24%",
+      "dir": "dn"
+    },
+    "5434": {
+      "price": 485.0,
+      "change": 35.5,
+      "changePct": 7.9,
+      "chgStr": "+7.9%",
+      "dir": "up"
+    },
+    "5469": {
+      "price": 83.5,
+      "change": 0.6,
+      "changePct": 0.72,
+      "chgStr": "+0.72%",
+      "dir": "up"
+    },
+    "5471": {
+      "price": 53.0,
+      "change": -1.0,
+      "changePct": -1.85,
+      "chgStr": "-1.85%",
+      "dir": "dn"
+    },
+    "5484": {
+      "price": 49.15,
+      "change": 4.45,
+      "changePct": 9.96,
+      "chgStr": "+9.96%",
+      "dir": "up"
+    },
+    "5515": {
+      "price": 40.7,
+      "change": 0.5,
+      "changePct": 1.24,
+      "chgStr": "+1.24%",
+      "dir": "up"
+    },
+    "5519": {
+      "price": 32.3,
+      "change": -0.35,
+      "changePct": -1.07,
+      "chgStr": "-1.07%",
+      "dir": "dn"
+    },
+    "5521": {
+      "price": 10.35,
+      "change": -0.35,
+      "changePct": -3.27,
+      "chgStr": "-3.27%",
+      "dir": "dn"
+    },
+    "5522": {
+      "price": 69.2,
+      "change": -0.3,
+      "changePct": -0.43,
+      "chgStr": "-0.43%",
+      "dir": "dn"
+    },
+    "5525": {
+      "price": 21.0,
+      "change": -0.7,
+      "changePct": -3.23,
+      "chgStr": "-3.23%",
+      "dir": "dn"
+    },
+    "5531": {
+      "price": 7.65,
+      "change": -0.07,
+      "changePct": -0.91,
+      "chgStr": "-0.91%",
+      "dir": "dn"
+    },
+    "5538": {
+      "price": 34.45,
+      "change": 0.45,
+      "changePct": 1.32,
+      "chgStr": "+1.32%",
+      "dir": "up"
+    },
+    "5546": {
+      "price": 16.45,
+      "change": -0.45,
+      "changePct": -2.66,
+      "chgStr": "-2.66%",
+      "dir": "dn"
+    },
+    "5607": {
+      "price": 50.5,
+      "change": 0.4,
+      "changePct": 0.8,
+      "chgStr": "+0.8%",
+      "dir": "up"
+    },
+    "5706": {
+      "price": 49.65,
+      "change": -0.3,
+      "changePct": -0.6,
+      "chgStr": "-0.6%",
+      "dir": "dn"
+    },
+    "5871": {
+      "price": 109.0,
+      "change": -2.0,
+      "changePct": -1.8,
+      "chgStr": "-1.8%",
+      "dir": "dn"
+    },
+    "5871A": {
+      "price": 102.5,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "5880": {
+      "price": 22.65,
+      "change": -0.05,
+      "changePct": -0.22,
+      "chgStr": "-0.22%",
+      "dir": "dn"
+    },
+    "5907": {
+      "price": 4.89,
+      "change": -0.13,
+      "changePct": -2.59,
+      "chgStr": "-2.59%",
+      "dir": "dn"
+    },
+    "6005": {
+      "price": 32.7,
+      "change": 0.8,
+      "changePct": 2.51,
+      "chgStr": "+2.51%",
+      "dir": "up"
+    },
+    "6024": {
+      "price": 55.8,
+      "change": -0.7,
+      "changePct": -1.24,
+      "chgStr": "-1.24%",
+      "dir": "dn"
+    },
+    "6108": {
+      "price": 19.85,
+      "change": 0.4,
+      "changePct": 2.06,
+      "chgStr": "+2.06%",
+      "dir": "up"
+    },
+    "6112": {
+      "price": 42.9,
+      "change": -0.15,
+      "changePct": -0.35,
+      "chgStr": "-0.35%",
+      "dir": "dn"
+    },
+    "6115": {
+      "price": 46.8,
+      "change": -0.15,
+      "changePct": -0.32,
+      "chgStr": "-0.32%",
+      "dir": "dn"
+    },
+    "6116": {
+      "price": 13.0,
+      "change": 1.15,
+      "changePct": 9.7,
+      "chgStr": "+9.7%",
+      "dir": "up"
+    },
+    "6117": {
+      "price": 91.9,
+      "change": 3.4,
+      "changePct": 3.84,
+      "chgStr": "+3.84%",
+      "dir": "up"
+    },
+    "6120": {
+      "price": 15.15,
+      "change": 0.45,
+      "changePct": 3.06,
+      "chgStr": "+3.06%",
+      "dir": "up"
+    },
+    "6128": {
+      "price": 18.8,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "6133": {
+      "price": 24.1,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "6136": {
+      "price": 25.6,
+      "change": -0.15,
+      "changePct": -0.58,
+      "chgStr": "-0.58%",
+      "dir": "dn"
+    },
+    "6139": {
+      "price": 807.0,
+      "change": 38.0,
+      "changePct": 4.94,
+      "chgStr": "+4.94%",
+      "dir": "up"
+    },
+    "6141": {
+      "price": 32.5,
+      "change": -1.5,
+      "changePct": -4.41,
+      "chgStr": "-4.41%",
+      "dir": "dn"
+    },
+    "6142": {
+      "price": 8.12,
+      "change": -0.13,
+      "changePct": -1.58,
+      "chgStr": "-1.58%",
+      "dir": "dn"
+    },
+    "6152": {
+      "price": 15.65,
+      "change": -0.45,
+      "changePct": -2.8,
+      "chgStr": "-2.8%",
+      "dir": "dn"
+    },
+    "6153": {
+      "price": 19.1,
+      "change": -0.25,
+      "changePct": -1.29,
+      "chgStr": "-1.29%",
+      "dir": "dn"
+    },
+    "6155": {
+      "price": 61.2,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "6164": {
+      "price": 12.55,
+      "change": -0.05,
+      "changePct": -0.4,
+      "chgStr": "-0.4%",
+      "dir": "dn"
+    },
+    "6165": {
+      "price": 48.35,
+      "change": -1.1,
+      "changePct": -2.22,
+      "chgStr": "-2.22%",
+      "dir": "dn"
+    },
+    "6166": {
+      "price": 126.5,
+      "change": -0.5,
+      "changePct": -0.39,
+      "chgStr": "-0.39%",
+      "dir": "dn"
+    },
+    "6168": {
+      "price": 30.9,
+      "change": 0.1,
+      "changePct": 0.32,
+      "chgStr": "+0.32%",
+      "dir": "up"
+    },
+    "6176": {
+      "price": 107.5,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "6177": {
+      "price": 42.65,
+      "change": -1.6,
+      "changePct": -3.62,
+      "chgStr": "-3.62%",
+      "dir": "dn"
+    },
+    "6183": {
+      "price": 91.4,
+      "change": -0.2,
+      "changePct": -0.22,
+      "chgStr": "-0.22%",
+      "dir": "dn"
+    },
+    "6184": {
+      "price": 46.0,
+      "change": -0.15,
+      "changePct": -0.33,
+      "chgStr": "-0.33%",
+      "dir": "dn"
+    },
+    "6189": {
+      "price": 51.6,
+      "change": -0.1,
+      "changePct": -0.19,
+      "chgStr": "-0.19%",
+      "dir": "dn"
+    },
+    "6191": {
+      "price": 98.0,
+      "change": 1.2,
+      "changePct": 1.24,
+      "chgStr": "+1.24%",
+      "dir": "up"
+    },
+    "6192": {
+      "price": 131.0,
+      "change": -1.0,
+      "changePct": -0.76,
+      "chgStr": "-0.76%",
+      "dir": "dn"
+    },
+    "6196": {
+      "price": 486.0,
+      "change": 44.0,
+      "changePct": 9.95,
+      "chgStr": "+9.95%",
+      "dir": "up"
+    },
+    "6197": {
+      "price": 274.0,
+      "change": 18.0,
+      "changePct": 7.03,
+      "chgStr": "+7.03%",
+      "dir": "up"
+    },
+    "6201": {
+      "price": 48.0,
+      "change": 1.0,
+      "changePct": 2.13,
+      "chgStr": "+2.13%",
+      "dir": "up"
+    },
+    "6202": {
+      "price": 61.1,
+      "change": 0.3,
+      "changePct": 0.49,
+      "chgStr": "+0.49%",
+      "dir": "up"
+    },
+    "6205": {
+      "price": 86.5,
+      "change": 1.6,
+      "changePct": 1.88,
+      "chgStr": "+1.88%",
+      "dir": "up"
+    },
+    "6206": {
+      "price": 144.0,
+      "change": 4.0,
+      "changePct": 2.86,
+      "chgStr": "+2.86%",
+      "dir": "up"
+    },
+    "6209": {
+      "price": 86.2,
+      "change": 0.4,
+      "changePct": 0.47,
+      "chgStr": "+0.47%",
+      "dir": "up"
+    },
+    "6214": {
+      "price": 129.0,
+      "change": -1.0,
+      "changePct": -0.77,
+      "chgStr": "-0.77%",
+      "dir": "dn"
+    },
+    "6215": {
+      "price": 135.0,
+      "change": 0.5,
+      "changePct": 0.37,
+      "chgStr": "+0.37%",
+      "dir": "up"
+    },
+    "6216": {
+      "price": 22.35,
+      "change": -0.35,
+      "changePct": -1.54,
+      "chgStr": "-1.54%",
+      "dir": "dn"
+    },
+    "6224": {
+      "price": 84.6,
+      "change": -1.5,
+      "changePct": -1.74,
+      "chgStr": "-1.74%",
+      "dir": "dn"
+    },
+    "6225": {
+      "price": 25.0,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "6226": {
+      "price": 14.0,
+      "change": 0.85,
+      "changePct": 6.46,
+      "chgStr": "+6.46%",
+      "dir": "up"
+    },
+    "6230": {
+      "price": 141.5,
+      "change": 3.0,
+      "changePct": 2.17,
+      "chgStr": "+2.17%",
+      "dir": "up"
+    },
+    "6235": {
+      "price": 41.3,
+      "change": -0.6,
+      "changePct": -1.43,
+      "chgStr": "-1.43%",
+      "dir": "dn"
+    },
+    "6239": {
+      "price": 311.0,
+      "change": 28.0,
+      "changePct": 9.89,
+      "chgStr": "+9.89%",
+      "dir": "up"
+    },
+    "6243": {
+      "price": 35.9,
+      "change": -0.4,
+      "changePct": -1.1,
+      "chgStr": "-1.1%",
+      "dir": "dn"
+    },
+    "6257": {
+      "price": 231.5,
+      "change": 9.5,
+      "changePct": 4.28,
+      "chgStr": "+4.28%",
+      "dir": "up"
+    },
+    "6269": {
+      "price": 64.7,
+      "change": 2.3,
+      "changePct": 3.69,
+      "chgStr": "+3.69%",
+      "dir": "up"
+    },
+    "6271": {
+      "price": 243.5,
+      "change": 17.0,
+      "changePct": 7.51,
+      "chgStr": "+7.51%",
+      "dir": "up"
+    },
+    "6272": {
+      "price": 33.0,
+      "change": -0.65,
+      "changePct": -1.93,
+      "chgStr": "-1.93%",
+      "dir": "dn"
+    },
+    "6277": {
+      "price": 75.7,
+      "change": 1.2,
+      "changePct": 1.61,
+      "chgStr": "+1.61%",
+      "dir": "up"
+    },
+    "6281": {
+      "price": 50.3,
+      "change": -0.4,
+      "changePct": -0.79,
+      "chgStr": "-0.79%",
+      "dir": "dn"
+    },
+    "6283": {
+      "price": 24.9,
+      "change": 0.3,
+      "changePct": 1.22,
+      "chgStr": "+1.22%",
+      "dir": "up"
+    },
+    "6405": {
+      "price": 69.0,
+      "change": 6.2,
+      "changePct": 9.87,
+      "chgStr": "+9.87%",
+      "dir": "up"
+    },
+    "6412": {
+      "price": 104.0,
+      "change": 3.5,
+      "changePct": 3.48,
+      "chgStr": "+3.48%",
+      "dir": "up"
+    },
+    "6416": {
+      "price": 91.7,
+      "change": 0.2,
+      "changePct": 0.22,
+      "chgStr": "+0.22%",
+      "dir": "up"
+    },
+    "6426": {
+      "price": 274.0,
+      "change": 6.0,
+      "changePct": 2.24,
+      "chgStr": "+2.24%",
+      "dir": "up"
+    },
+    "6431": {
+      "price": 20.7,
+      "change": -0.1,
+      "changePct": -0.48,
+      "chgStr": "-0.48%",
+      "dir": "dn"
+    },
+    "6438": {
+      "price": 174.0,
+      "change": 5.0,
+      "changePct": 2.96,
+      "chgStr": "+2.96%",
+      "dir": "up"
+    },
+    "6442": {
+      "price": 2060.0,
+      "change": 185.0,
+      "changePct": 9.87,
+      "chgStr": "+9.87%",
+      "dir": "up"
+    },
+    "6446": {
+      "price": 840.0,
+      "change": 30.0,
+      "changePct": 3.7,
+      "chgStr": "+3.7%",
+      "dir": "up"
+    },
+    "6449": {
+      "price": 320.0,
+      "change": 14.5,
+      "changePct": 4.75,
+      "chgStr": "+4.75%",
+      "dir": "up"
+    },
+    "6451": {
+      "price": 576.0,
+      "change": 52.0,
+      "changePct": 9.92,
+      "chgStr": "+9.92%",
+      "dir": "up"
+    },
+    "6456": {
+      "price": 74.6,
+      "change": -1.5,
+      "changePct": -1.97,
+      "chgStr": "-1.97%",
+      "dir": "dn"
+    },
+    "6464": {
+      "price": 78.0,
+      "change": -0.1,
+      "changePct": -0.13,
+      "chgStr": "-0.13%",
+      "dir": "dn"
+    },
+    "6477": {
+      "price": 34.9,
+      "change": 0.45,
+      "changePct": 1.31,
+      "chgStr": "+1.31%",
+      "dir": "up"
+    },
+    "6491": {
+      "price": 307.5,
+      "change": -0.5,
+      "changePct": -0.16,
+      "chgStr": "-0.16%",
+      "dir": "dn"
+    },
+    "6504": {
+      "price": 38.1,
+      "change": -0.45,
+      "changePct": -1.17,
+      "chgStr": "-1.17%",
+      "dir": "dn"
+    },
+    "6505": {
+      "price": 49.5,
+      "change": -1.5,
+      "changePct": -2.94,
+      "chgStr": "-2.94%",
+      "dir": "dn"
+    },
+    "6515": {
+      "price": 8850.0,
+      "change": 150.0,
+      "changePct": 1.72,
+      "chgStr": "+1.72%",
+      "dir": "up"
+    },
+    "6525": {
+      "price": 122.0,
+      "change": 6.0,
+      "changePct": 5.17,
+      "chgStr": "+5.17%",
+      "dir": "up"
+    },
+    "6526": {
+      "price": 750.0,
+      "change": 25.0,
+      "changePct": 3.45,
+      "chgStr": "+3.45%",
+      "dir": "up"
+    },
+    "6531": {
+      "price": 1055.0,
+      "change": 92.0,
+      "changePct": 9.55,
+      "chgStr": "+9.55%",
+      "dir": "up"
+    },
+    "6534": {
+      "price": 97.0,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "6541": {
+      "price": 38.0,
+      "change": -0.6,
+      "changePct": -1.55,
+      "chgStr": "-1.55%",
+      "dir": "dn"
+    },
+    "6550": {
+      "price": 16.75,
+      "change": 0.5,
+      "changePct": 3.08,
+      "chgStr": "+3.08%",
+      "dir": "up"
+    },
+    "6552": {
+      "price": 34.7,
+      "change": 3.15,
+      "changePct": 9.98,
+      "chgStr": "+9.98%",
+      "dir": "up"
+    },
+    "6558": {
+      "price": 33.25,
+      "change": 0.25,
+      "changePct": 0.76,
+      "chgStr": "+0.76%",
+      "dir": "up"
+    },
+    "6573": {
+      "price": 13.4,
+      "change": 0.25,
+      "changePct": 1.9,
+      "chgStr": "+1.9%",
+      "dir": "up"
+    },
+    "6579": {
+      "price": 159.0,
+      "change": 4.5,
+      "changePct": 2.91,
+      "chgStr": "+2.91%",
+      "dir": "up"
+    },
+    "6581": {
+      "price": 107.0,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "6582": {
+      "price": 30.6,
+      "change": -0.25,
+      "changePct": -0.81,
+      "chgStr": "-0.81%",
+      "dir": "dn"
+    },
+    "6585": {
+      "price": 95.9,
+      "change": 0.6,
+      "changePct": 0.63,
+      "chgStr": "+0.63%",
+      "dir": "up"
+    },
+    "6589": {
+      "price": 41.95,
+      "change": -1.75,
+      "changePct": -4.0,
+      "chgStr": "-4.0%",
+      "dir": "dn"
+    },
+    "6591": {
+      "price": 54.6,
+      "change": 1.1,
+      "changePct": 2.06,
+      "chgStr": "+2.06%",
+      "dir": "up"
+    },
+    "6592": {
+      "price": 60.4,
+      "change": -0.2,
+      "changePct": -0.33,
+      "chgStr": "-0.33%",
+      "dir": "dn"
+    },
+    "6592A": {
+      "price": 96.9,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "6592B": {
+      "price": 97.0,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "6598": {
+      "price": 24.5,
+      "change": 0.2,
+      "changePct": 0.82,
+      "chgStr": "+0.82%",
+      "dir": "up"
+    },
+    "6605": {
+      "price": 129.5,
+      "change": -0.5,
+      "changePct": -0.38,
+      "chgStr": "-0.38%",
+      "dir": "dn"
+    },
+    "6606": {
+      "price": 25.15,
+      "change": 0.45,
+      "changePct": 1.82,
+      "chgStr": "+1.82%",
+      "dir": "up"
+    },
+    "6614": {
+      "price": 38.95,
+      "change": -0.45,
+      "changePct": -1.14,
+      "chgStr": "-1.14%",
+      "dir": "dn"
+    },
+    "6625": {
+      "price": 73.7,
+      "change": 0.6,
+      "changePct": 0.82,
+      "chgStr": "+0.82%",
+      "dir": "up"
+    },
+    "6641": {
+      "price": 18.45,
+      "change": 0.1,
+      "changePct": 0.54,
+      "chgStr": "+0.54%",
+      "dir": "up"
+    },
+    "6645": {
+      "price": 11.8,
+      "change": -0.15,
+      "changePct": -1.26,
+      "chgStr": "-1.26%",
+      "dir": "dn"
+    },
+    "6655": {
+      "price": 131.5,
+      "change": -1.0,
+      "changePct": -0.75,
+      "chgStr": "-0.75%",
+      "dir": "dn"
+    },
+    "6657": {
+      "price": 39.2,
+      "change": -1.15,
+      "changePct": -2.85,
+      "chgStr": "-2.85%",
+      "dir": "dn"
+    },
+    "6658": {
+      "price": 212.0,
+      "change": 19.0,
+      "changePct": 9.84,
+      "chgStr": "+9.84%",
+      "dir": "up"
+    },
+    "6666": {
+      "price": 40.05,
+      "change": -0.55,
+      "changePct": -1.35,
+      "chgStr": "-1.35%",
+      "dir": "dn"
+    },
+    "6668": {
+      "price": 41.05,
+      "change": 1.4,
+      "changePct": 3.53,
+      "chgStr": "+3.53%",
+      "dir": "up"
+    },
+    "6670": {
+      "price": 256.0,
+      "change": -4.5,
+      "changePct": -1.73,
+      "chgStr": "-1.73%",
+      "dir": "dn"
+    },
+    "6671": {
+      "price": 27.5,
+      "change": -0.5,
+      "changePct": -1.79,
+      "chgStr": "-1.79%",
+      "dir": "dn"
+    },
+    "6672": {
+      "price": 210.0,
+      "change": 17.0,
+      "changePct": 8.81,
+      "chgStr": "+8.81%",
+      "dir": "up"
+    },
+    "6674": {
+      "price": 18.05,
+      "change": 0.45,
+      "changePct": 2.56,
+      "chgStr": "+2.56%",
+      "dir": "up"
+    },
+    "6689": {
+      "price": 67.5,
+      "change": 0.6,
+      "changePct": 0.9,
+      "chgStr": "+0.9%",
+      "dir": "up"
+    },
+    "6691": {
+      "price": 646.0,
+      "change": 18.0,
+      "changePct": 2.87,
+      "chgStr": "+2.87%",
+      "dir": "up"
+    },
+    "6695": {
+      "price": 62.2,
+      "change": 5.6,
+      "changePct": 9.89,
+      "chgStr": "+9.89%",
+      "dir": "up"
+    },
+    "6698": {
+      "price": 34.8,
+      "change": 0.6,
+      "changePct": 1.75,
+      "chgStr": "+1.75%",
+      "dir": "up"
+    },
+    "6715": {
+      "price": 459.5,
+      "change": -2.0,
+      "changePct": -0.43,
+      "chgStr": "-0.43%",
+      "dir": "dn"
+    },
+    "6719": {
+      "price": 255.0,
+      "change": 23.0,
+      "changePct": 9.91,
+      "chgStr": "+9.91%",
+      "dir": "up"
+    },
+    "6722": {
+      "price": 38.15,
+      "change": 0.55,
+      "changePct": 1.46,
+      "chgStr": "+1.46%",
+      "dir": "up"
+    },
+    "6742": {
+      "price": 59.5,
+      "change": -2.0,
+      "changePct": -3.25,
+      "chgStr": "-3.25%",
+      "dir": "dn"
+    },
+    "6743": {
+      "price": 28.9,
+      "change": -0.25,
+      "changePct": -0.86,
+      "chgStr": "-0.86%",
+      "dir": "dn"
+    },
+    "6753": {
+      "price": 124.5,
+      "change": -2.0,
+      "changePct": -1.58,
+      "chgStr": "-1.58%",
+      "dir": "dn"
+    },
+    "6754": {
+      "price": 44.35,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "6756": {
+      "price": 112.5,
+      "change": 7.5,
+      "changePct": 7.14,
+      "chgStr": "+7.14%",
+      "dir": "up"
+    },
+    "6757": {
+      "price": 54.4,
+      "change": 0.3,
+      "changePct": 0.55,
+      "chgStr": "+0.55%",
+      "dir": "up"
+    },
+    "6768": {
+      "price": 84.0,
+      "change": -0.2,
+      "changePct": -0.24,
+      "chgStr": "-0.24%",
+      "dir": "dn"
+    },
+    "6770": {
+      "price": 67.6,
+      "change": 3.8,
+      "changePct": 5.96,
+      "chgStr": "+5.96%",
+      "dir": "up"
+    },
+    "6771": {
+      "price": 41.65,
+      "change": -0.05,
+      "changePct": -0.12,
+      "chgStr": "-0.12%",
+      "dir": "dn"
+    },
+    "6776": {
+      "price": 58.7,
+      "change": -0.4,
+      "changePct": -0.68,
+      "chgStr": "-0.68%",
+      "dir": "dn"
+    },
+    "6782": {
+      "price": 190.0,
+      "change": -1.0,
+      "changePct": -0.52,
+      "chgStr": "-0.52%",
+      "dir": "dn"
+    },
+    "6789": {
+      "price": 569.0,
+      "change": 13.0,
+      "changePct": 2.34,
+      "chgStr": "+2.34%",
+      "dir": "up"
+    },
+    "6790": {
+      "price": 39.2,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "6792": {
+      "price": 69.4,
+      "change": 0.9,
+      "changePct": 1.31,
+      "chgStr": "+1.31%",
+      "dir": "up"
+    },
+    "6794": {
+      "price": 79.9,
+      "change": 0.4,
+      "changePct": 0.5,
+      "chgStr": "+0.5%",
+      "dir": "up"
+    },
+    "6796": {
+      "price": 60.5,
+      "change": -1.1,
+      "changePct": -1.79,
+      "chgStr": "-1.79%",
+      "dir": "dn"
+    },
+    "6799": {
+      "price": 101.0,
+      "change": 0.5,
+      "changePct": 0.5,
+      "chgStr": "+0.5%",
+      "dir": "up"
+    },
+    "6805": {
+      "price": 1745.0,
+      "change": -50.0,
+      "changePct": -2.79,
+      "chgStr": "-2.79%",
+      "dir": "dn"
+    },
+    "6807": {
+      "price": 33.55,
+      "change": 0.25,
+      "changePct": 0.75,
+      "chgStr": "+0.75%",
+      "dir": "up"
+    },
+    "6830": {
+      "price": 787.0,
+      "change": 71.0,
+      "changePct": 9.92,
+      "chgStr": "+9.92%",
+      "dir": "up"
+    },
+    "6831": {
+      "price": 792.0,
+      "change": 6.0,
+      "changePct": 0.76,
+      "chgStr": "+0.76%",
+      "dir": "up"
+    },
+    "6834": {
+      "price": 77.5,
+      "change": 7.0,
+      "changePct": 9.93,
+      "chgStr": "+9.93%",
+      "dir": "up"
+    },
+    "6835": {
+      "price": 38.15,
+      "change": -1.15,
+      "changePct": -2.93,
+      "chgStr": "-2.93%",
+      "dir": "dn"
+    },
+    "6838": {
+      "price": 25.65,
+      "change": -0.25,
+      "changePct": -0.97,
+      "chgStr": "-0.97%",
+      "dir": "dn"
+    },
+    "6854": {
+      "price": 172.5,
+      "change": 3.0,
+      "changePct": 1.77,
+      "chgStr": "+1.77%",
+      "dir": "up"
+    },
+    "6861": {
+      "price": 422.0,
+      "change": -27.0,
+      "changePct": -6.01,
+      "chgStr": "-6.01%",
+      "dir": "dn"
+    },
+    "6862": {
+      "price": 185.5,
+      "change": -3.5,
+      "changePct": -1.85,
+      "chgStr": "-1.85%",
+      "dir": "dn"
+    },
+    "6863": {
+      "price": 112.0,
+      "change": 2.0,
+      "changePct": 1.82,
+      "chgStr": "+1.82%",
+      "dir": "up"
+    },
+    "6873": {
+      "price": 87.7,
+      "change": 0.3,
+      "changePct": 0.34,
+      "chgStr": "+0.34%",
+      "dir": "up"
+    },
+    "6885": {
+      "price": 21.5,
+      "change": -0.9,
+      "changePct": -4.02,
+      "chgStr": "-4.02%",
+      "dir": "dn"
+    },
+    "6887": {
+      "price": 31.7,
+      "change": -2.25,
+      "changePct": -6.63,
+      "chgStr": "-6.63%",
+      "dir": "dn"
+    },
+    "6890": {
+      "price": 169.5,
+      "change": 0.5,
+      "changePct": 0.3,
+      "chgStr": "+0.3%",
+      "dir": "up"
+    },
+    "6901": {
+      "price": 13.3,
+      "change": -0.7,
+      "changePct": -5.0,
+      "chgStr": "-5.0%",
+      "dir": "dn"
+    },
+    "6902": {
+      "price": 138.0,
+      "change": 8.5,
+      "changePct": 6.56,
+      "chgStr": "+6.56%",
+      "dir": "up"
+    },
+    "6906": {
+      "price": 92.7,
+      "change": 8.4,
+      "changePct": 9.96,
+      "chgStr": "+9.96%",
+      "dir": "up"
+    },
+    "6908": {
+      "price": 38.65,
+      "change": 0.35,
+      "changePct": 0.91,
+      "chgStr": "+0.91%",
+      "dir": "up"
+    },
+    "6909": {
+      "price": 54.4,
+      "change": 0.7,
+      "changePct": 1.3,
+      "chgStr": "+1.3%",
+      "dir": "up"
+    },
+    "6914": {
+      "price": 141.5,
+      "change": -2.0,
+      "changePct": -1.39,
+      "chgStr": "-1.39%",
+      "dir": "dn"
+    },
+    "6916": {
+      "price": 18.45,
+      "change": 0.65,
+      "changePct": 3.65,
+      "chgStr": "+3.65%",
+      "dir": "up"
+    },
+    "6918": {
+      "price": 74.0,
+      "change": -0.5,
+      "changePct": -0.67,
+      "chgStr": "-0.67%",
+      "dir": "dn"
+    },
+    "6919": {
+      "price": 108.0,
+      "change": 4.0,
+      "changePct": 3.85,
+      "chgStr": "+3.85%",
+      "dir": "up"
+    },
+    "6921": {
+      "price": 78.0,
+      "change": -0.2,
+      "changePct": -0.26,
+      "chgStr": "-0.26%",
+      "dir": "dn"
+    },
+    "6923": {
+      "price": 78.7,
+      "change": -0.5,
+      "changePct": -0.63,
+      "chgStr": "-0.63%",
+      "dir": "dn"
+    },
+    "6924": {
+      "price": 162.0,
+      "change": -6.5,
+      "changePct": -3.86,
+      "chgStr": "-3.86%",
+      "dir": "dn"
+    },
+    "6928": {
+      "price": 46.85,
+      "change": -0.15,
+      "changePct": -0.32,
+      "chgStr": "-0.32%",
+      "dir": "dn"
+    },
+    "6931": {
+      "price": 40.0,
+      "change": -0.95,
+      "changePct": -2.32,
+      "chgStr": "-2.32%",
+      "dir": "dn"
+    },
+    "6933": {
+      "price": 167.0,
+      "change": 2.0,
+      "changePct": 1.21,
+      "chgStr": "+1.21%",
+      "dir": "up"
+    },
+    "6934": {
+      "price": 75.8,
+      "change": -1.0,
+      "changePct": -1.3,
+      "chgStr": "-1.3%",
+      "dir": "dn"
+    },
+    "6936": {
+      "price": 33.1,
+      "change": -0.5,
+      "changePct": -1.49,
+      "chgStr": "-1.49%",
+      "dir": "dn"
+    },
+    "6937": {
+      "price": 351.5,
+      "change": 28.0,
+      "changePct": 8.66,
+      "chgStr": "+8.66%",
+      "dir": "up"
+    },
+    "6944": {
+      "price": 931.0,
+      "change": 7.0,
+      "changePct": 0.76,
+      "chgStr": "+0.76%",
+      "dir": "up"
+    },
+    "6949": {
+      "price": 656.0,
+      "change": -13.0,
+      "changePct": -1.94,
+      "chgStr": "-1.94%",
+      "dir": "dn"
+    },
+    "6951": {
+      "price": 81.0,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "6952": {
+      "price": 36.5,
+      "change": -0.25,
+      "changePct": -0.68,
+      "chgStr": "-0.68%",
+      "dir": "dn"
+    },
+    "6955": {
+      "price": 151.5,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "6957": {
+      "price": 160.0,
+      "change": -0.5,
+      "changePct": -0.31,
+      "chgStr": "-0.31%",
+      "dir": "dn"
+    },
+    "6958": {
+      "price": 16.9,
+      "change": -0.45,
+      "changePct": -2.59,
+      "chgStr": "-2.59%",
+      "dir": "dn"
+    },
+    "6958A": {
+      "price": 18.45,
+      "change": -0.1,
+      "changePct": -0.54,
+      "chgStr": "-0.54%",
+      "dir": "dn"
+    },
+    "6962": {
+      "price": 39.1,
+      "change": -0.75,
+      "changePct": -1.88,
+      "chgStr": "-1.88%",
+      "dir": "dn"
+    },
+    "6965": {
+      "price": 76.5,
+      "change": -0.5,
+      "changePct": -0.65,
+      "chgStr": "-0.65%",
+      "dir": "dn"
+    },
+    "6969": {
+      "price": 27.8,
+      "change": -0.2,
+      "changePct": -0.71,
+      "chgStr": "-0.71%",
+      "dir": "dn"
+    },
+    "6988": {
+      "price": 16.65,
+      "change": -0.05,
+      "changePct": -0.3,
+      "chgStr": "-0.3%",
+      "dir": "dn"
+    },
+    "6994": {
+      "price": 55.1,
+      "change": -0.9,
+      "changePct": -1.61,
+      "chgStr": "-1.61%",
+      "dir": "dn"
+    },
+    "7610": {
+      "price": 1250.0,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "7631": {
+      "price": 125.5,
+      "change": -0.5,
+      "changePct": -0.4,
+      "chgStr": "-0.4%",
+      "dir": "dn"
+    },
+    "7705": {
+      "price": 31.25,
+      "change": -0.65,
+      "changePct": -2.04,
+      "chgStr": "-2.04%",
+      "dir": "dn"
+    },
+    "7711": {
+      "price": 396.0,
+      "change": 7.0,
+      "changePct": 1.8,
+      "chgStr": "+1.8%",
+      "dir": "up"
+    },
+    "7721": {
+      "price": 81.0,
+      "change": 1.0,
+      "changePct": 1.25,
+      "chgStr": "+1.25%",
+      "dir": "up"
+    },
+    "7722": {
+      "price": 261.5,
+      "change": -4.5,
+      "changePct": -1.69,
+      "chgStr": "-1.69%",
+      "dir": "dn"
+    },
+    "7730": {
+      "price": 219.0,
+      "change": -11.0,
+      "changePct": -4.78,
+      "chgStr": "-4.78%",
+      "dir": "dn"
+    },
+    "7732": {
+      "price": 35.5,
+      "change": 0.3,
+      "changePct": 0.85,
+      "chgStr": "+0.85%",
+      "dir": "up"
+    },
+    "7736": {
+      "price": 72.1,
+      "change": 0.6,
+      "changePct": 0.84,
+      "chgStr": "+0.84%",
+      "dir": "up"
+    },
+    "7740": {
+      "price": 174.5,
+      "change": -8.0,
+      "changePct": -4.38,
+      "chgStr": "-4.38%",
+      "dir": "dn"
+    },
+    "7749": {
+      "price": 535.0,
+      "change": -9.0,
+      "changePct": -1.65,
+      "chgStr": "-1.65%",
+      "dir": "dn"
+    },
+    "7750": {
+      "price": 2535.0,
+      "change": 145.0,
+      "changePct": 6.07,
+      "chgStr": "+6.07%",
+      "dir": "up"
+    },
+    "7760": {
+      "price": 33.3,
+      "change": -0.1,
+      "changePct": -0.3,
+      "chgStr": "-0.3%",
+      "dir": "dn"
+    },
+    "7765": {
+      "price": 246.0,
+      "change": -3.0,
+      "changePct": -1.2,
+      "chgStr": "-1.2%",
+      "dir": "dn"
+    },
+    "7768": {
+      "price": 394.0,
+      "change": 16.0,
+      "changePct": 4.23,
+      "chgStr": "+4.23%",
+      "dir": "up"
+    },
+    "7769": {
+      "price": 7645.0,
+      "change": -85.0,
+      "changePct": -1.1,
+      "chgStr": "-1.1%",
+      "dir": "dn"
+    },
+    "7780": {
+      "price": 18.15,
+      "change": -0.35,
+      "changePct": -1.89,
+      "chgStr": "-1.89%",
+      "dir": "dn"
+    },
+    "7786": {
+      "price": 119.0,
+      "change": 0.5,
+      "changePct": 0.42,
+      "chgStr": "+0.42%",
+      "dir": "up"
+    },
+    "7788": {
+      "price": 193.5,
+      "change": 1.0,
+      "changePct": 0.52,
+      "chgStr": "+0.52%",
+      "dir": "up"
+    },
+    "7791": {
+      "price": 64.4,
+      "change": 1.2,
+      "changePct": 1.9,
+      "chgStr": "+1.9%",
+      "dir": "up"
+    },
+    "7795": {
+      "price": 430.0,
+      "change": 15.5,
+      "changePct": 3.74,
+      "chgStr": "+3.74%",
+      "dir": "up"
+    },
+    "7799": {
+      "price": 338.5,
+      "change": 10.0,
+      "changePct": 3.04,
+      "chgStr": "+3.04%",
+      "dir": "up"
+    },
+    "7803": {
+      "price": 25.25,
+      "change": 1.35,
+      "changePct": 5.65,
+      "chgStr": "+5.65%",
+      "dir": "up"
+    },
+    "7818": {
+      "price": 65.9,
+      "change": 0.9,
+      "changePct": 1.38,
+      "chgStr": "+1.38%",
+      "dir": "up"
+    },
+    "7821": {
+      "price": 44.6,
+      "change": 0.2,
+      "changePct": 0.45,
+      "chgStr": "+0.45%",
+      "dir": "up"
+    },
+    "7822": {
+      "price": 1175.0,
+      "change": 105.0,
+      "changePct": 9.81,
+      "chgStr": "+9.81%",
+      "dir": "up"
+    },
+    "7823": {
+      "price": 102.0,
+      "change": -5.0,
+      "changePct": -4.67,
+      "chgStr": "-4.67%",
+      "dir": "dn"
+    },
+    "8011": {
+      "price": 18.25,
+      "change": -0.15,
+      "changePct": -0.82,
+      "chgStr": "-0.82%",
+      "dir": "dn"
+    },
+    "8016": {
+      "price": 291.0,
+      "change": -1.0,
+      "changePct": -0.34,
+      "chgStr": "-0.34%",
+      "dir": "dn"
+    },
+    "8021": {
+      "price": 464.0,
+      "change": 42.0,
+      "changePct": 9.95,
+      "chgStr": "+9.95%",
+      "dir": "up"
+    },
+    "8028": {
+      "price": 311.5,
+      "change": 17.5,
+      "changePct": 5.95,
+      "chgStr": "+5.95%",
+      "dir": "up"
+    },
+    "8033": {
+      "price": 138.5,
+      "change": 0.5,
+      "changePct": 0.36,
+      "chgStr": "+0.36%",
+      "dir": "up"
+    },
+    "8039": {
+      "price": 149.5,
+      "change": -1.5,
+      "changePct": -0.99,
+      "chgStr": "-0.99%",
+      "dir": "dn"
+    },
+    "8045": {
+      "price": 69.6,
+      "change": -2.2,
+      "changePct": -3.06,
+      "chgStr": "-3.06%",
+      "dir": "dn"
+    },
+    "8070": {
+      "price": 46.35,
+      "change": 1.45,
+      "changePct": 3.23,
+      "chgStr": "+3.23%",
+      "dir": "up"
+    },
+    "8072": {
+      "price": 28.2,
+      "change": 0.3,
+      "changePct": 1.08,
+      "chgStr": "+1.08%",
+      "dir": "up"
+    },
+    "8081": {
+      "price": 288.0,
+      "change": 8.5,
+      "changePct": 3.04,
+      "chgStr": "+3.04%",
+      "dir": "up"
+    },
+    "8101": {
+      "price": 13.9,
+      "change": 0.9,
+      "changePct": 6.92,
+      "chgStr": "+6.92%",
+      "dir": "up"
+    },
+    "8103": {
+      "price": 107.5,
+      "change": 2.0,
+      "changePct": 1.9,
+      "chgStr": "+1.9%",
+      "dir": "up"
+    },
+    "8104": {
+      "price": 35.9,
+      "change": 0.5,
+      "changePct": 1.41,
+      "chgStr": "+1.41%",
+      "dir": "up"
+    },
+    "8105": {
+      "price": 17.35,
+      "change": -0.05,
+      "changePct": -0.29,
+      "chgStr": "-0.29%",
+      "dir": "dn"
+    },
+    "8110": {
+      "price": 50.1,
+      "change": 0.95,
+      "changePct": 1.93,
+      "chgStr": "+1.93%",
+      "dir": "up"
+    },
+    "8112": {
+      "price": 83.4,
+      "change": -2.8,
+      "changePct": -3.25,
+      "chgStr": "-3.25%",
+      "dir": "dn"
+    },
+    "8112A": {
+      "price": 46.35,
+      "change": 0.05,
+      "changePct": 0.11,
+      "chgStr": "+0.11%",
+      "dir": "up"
+    },
+    "8114": {
+      "price": 260.0,
+      "change": 23.5,
+      "changePct": 9.94,
+      "chgStr": "+9.94%",
+      "dir": "up"
+    },
+    "8131": {
+      "price": 65.3,
+      "change": 0.6,
+      "changePct": 0.93,
+      "chgStr": "+0.93%",
+      "dir": "up"
+    },
+    "8150": {
+      "price": 86.8,
+      "change": 7.7,
+      "changePct": 9.73,
+      "chgStr": "+9.73%",
+      "dir": "up"
+    },
+    "8162": {
+      "price": 66.8,
+      "change": 6.0,
+      "changePct": 9.87,
+      "chgStr": "+9.87%",
+      "dir": "up"
+    },
+    "8163": {
+      "price": 35.55,
+      "change": -0.1,
+      "changePct": -0.28,
+      "chgStr": "-0.28%",
+      "dir": "dn"
+    },
+    "8201": {
+      "price": 13.85,
+      "change": 0.55,
+      "changePct": 4.14,
+      "chgStr": "+4.14%",
+      "dir": "up"
+    },
+    "8210": {
+      "price": 1435.0,
+      "change": 90.0,
+      "changePct": 6.69,
+      "chgStr": "+6.69%",
+      "dir": "up"
+    },
+    "8213": {
+      "price": 39.55,
+      "change": 1.0,
+      "changePct": 2.59,
+      "chgStr": "+2.59%",
+      "dir": "up"
+    },
+    "8215": {
+      "price": 29.75,
+      "change": 0.4,
+      "changePct": 1.36,
+      "chgStr": "+1.36%",
+      "dir": "up"
+    },
+    "8222": {
+      "price": 35.75,
+      "change": -0.6,
+      "changePct": -1.65,
+      "chgStr": "-1.65%",
+      "dir": "dn"
+    },
+    "8249": {
+      "price": 53.0,
+      "change": 0.2,
+      "changePct": 0.38,
+      "chgStr": "+0.38%",
+      "dir": "up"
+    },
+    "8261": {
+      "price": 176.0,
+      "change": 16.0,
+      "changePct": 10.0,
+      "chgStr": "+10.0%",
+      "dir": "up"
+    },
+    "8271": {
+      "price": 229.0,
+      "change": 4.5,
+      "changePct": 2.0,
+      "chgStr": "+2.0%",
+      "dir": "up"
+    },
+    "8341": {
+      "price": 75.7,
+      "change": -0.5,
+      "changePct": -0.66,
+      "chgStr": "-0.66%",
+      "dir": "dn"
+    },
+    "8367": {
+      "price": 40.6,
+      "change": -0.5,
+      "changePct": -1.22,
+      "chgStr": "-1.22%",
+      "dir": "dn"
+    },
+    "8374": {
+      "price": 112.5,
+      "change": 3.5,
+      "changePct": 3.21,
+      "chgStr": "+3.21%",
+      "dir": "up"
+    },
+    "8404": {
+      "price": 16.8,
+      "change": 0.2,
+      "changePct": 1.2,
+      "chgStr": "+1.2%",
+      "dir": "up"
+    },
+    "8411": {
+      "price": 12.1,
+      "change": 0.1,
+      "changePct": 0.83,
+      "chgStr": "+0.83%",
+      "dir": "up"
+    },
+    "8422": {
+      "price": 27.55,
+      "change": 0.75,
+      "changePct": 2.8,
+      "chgStr": "+2.8%",
+      "dir": "up"
+    },
+    "8429": {
+      "price": 6.11,
+      "change": -0.16,
+      "changePct": -2.55,
+      "chgStr": "-2.55%",
+      "dir": "dn"
+    },
+    "8438": {
+      "price": 91.5,
+      "change": -1.0,
+      "changePct": -1.08,
+      "chgStr": "-1.08%",
+      "dir": "dn"
+    },
+    "8442": {
+      "price": 40.05,
+      "change": -0.45,
+      "changePct": -1.11,
+      "chgStr": "-1.11%",
+      "dir": "dn"
+    },
+    "8443": {
+      "price": 11.15,
+      "change": -0.15,
+      "changePct": -1.33,
+      "chgStr": "-1.33%",
+      "dir": "dn"
+    },
+    "8454": {
+      "price": 188.0,
+      "change": -3.5,
+      "changePct": -1.83,
+      "chgStr": "-1.83%",
+      "dir": "dn"
+    },
+    "8462": {
+      "price": 138.0,
+      "change": -0.5,
+      "changePct": -0.36,
+      "chgStr": "-0.36%",
+      "dir": "dn"
+    },
+    "8463": {
+      "price": 21.25,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "8464": {
+      "price": 319.0,
+      "change": 2.5,
+      "changePct": 0.79,
+      "chgStr": "+0.79%",
+      "dir": "up"
+    },
+    "8466": {
+      "price": 14.5,
+      "change": 0.4,
+      "changePct": 2.84,
+      "chgStr": "+2.84%",
+      "dir": "up"
+    },
+    "8467": {
+      "price": 127.0,
+      "change": 1.0,
+      "changePct": 0.79,
+      "chgStr": "+0.79%",
+      "dir": "up"
+    },
+    "8473": {
+      "price": 41.9,
+      "change": 2.1,
+      "changePct": 5.28,
+      "chgStr": "+5.28%",
+      "dir": "up"
+    },
+    "8476": {
+      "price": 15.45,
+      "change": -0.4,
+      "changePct": -2.52,
+      "chgStr": "-2.52%",
+      "dir": "dn"
+    },
+    "8478": {
+      "price": 150.5,
+      "change": -2.0,
+      "changePct": -1.31,
+      "chgStr": "-1.31%",
+      "dir": "dn"
+    },
+    "8481": {
+      "price": 40.2,
+      "change": -0.4,
+      "changePct": -0.99,
+      "chgStr": "-0.99%",
+      "dir": "dn"
+    },
+    "8482": {
+      "price": 49.0,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "8487": {
+      "price": 81.1,
+      "change": 0.7,
+      "changePct": 0.87,
+      "chgStr": "+0.87%",
+      "dir": "up"
+    },
+    "8488": {
+      "price": 9.71,
+      "change": -0.14,
+      "changePct": -1.42,
+      "chgStr": "-1.42%",
+      "dir": "dn"
+    },
+    "8499": {
+      "price": 328.0,
+      "change": 11.5,
+      "changePct": 3.63,
+      "chgStr": "+3.63%",
+      "dir": "up"
+    },
+    "8926": {
+      "price": 62.5,
+      "change": 1.6,
+      "changePct": 2.63,
+      "chgStr": "+2.63%",
+      "dir": "up"
+    },
+    "8940": {
+      "price": 17.05,
+      "change": 0.05,
+      "changePct": 0.29,
+      "chgStr": "+0.29%",
+      "dir": "up"
+    },
+    "8996": {
+      "price": 1135.0,
+      "change": -35.0,
+      "changePct": -2.99,
+      "chgStr": "-2.99%",
+      "dir": "dn"
+    },
+    "9103": {
+      "price": 5.55,
+      "change": 0.35,
+      "changePct": 6.73,
+      "chgStr": "+6.73%",
+      "dir": "up"
+    },
+    "910322": {
+      "price": 23.3,
+      "change": -0.15,
+      "changePct": -0.64,
+      "chgStr": "-0.64%",
+      "dir": "dn"
+    },
+    "9105": {
+      "price": 7.42,
+      "change": 0.67,
+      "changePct": 9.93,
+      "chgStr": "+9.93%",
+      "dir": "up"
+    },
+    "910861": {
+      "price": 4.85,
+      "change": -0.12,
+      "changePct": -2.41,
+      "chgStr": "-2.41%",
+      "dir": "dn"
+    },
+    "9110": {
+      "price": 2.6,
+      "change": 0.09,
+      "changePct": 3.59,
+      "chgStr": "+3.59%",
+      "dir": "up"
+    },
+    "911608": {
+      "price": 2.64,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "911622": {
+      "price": 3.7,
+      "change": 0.18,
+      "changePct": 5.11,
+      "chgStr": "+5.11%",
+      "dir": "up"
+    },
+    "911868": {
+      "price": 1.21,
+      "change": 0.01,
+      "changePct": 0.83,
+      "chgStr": "+0.83%",
+      "dir": "up"
+    },
+    "912000": {
+      "price": 2.39,
+      "change": -0.01,
+      "changePct": -0.42,
+      "chgStr": "-0.42%",
+      "dir": "dn"
+    },
+    "9136": {
+      "price": 11.3,
+      "change": 0.35,
+      "changePct": 3.2,
+      "chgStr": "+3.2%",
+      "dir": "up"
+    },
+    "9802": {
+      "price": 73.8,
+      "change": -1.3,
+      "changePct": -1.73,
+      "chgStr": "-1.73%",
+      "dir": "dn"
+    },
+    "9902": {
+      "price": 14.0,
+      "change": 0.35,
+      "changePct": 2.56,
+      "chgStr": "+2.56%",
+      "dir": "up"
+    },
+    "9904": {
+      "price": 25.65,
+      "change": -0.15,
+      "changePct": -0.58,
+      "chgStr": "-0.58%",
+      "dir": "dn"
+    },
+    "9905": {
+      "price": 20.75,
+      "change": 0.05,
+      "changePct": 0.24,
+      "chgStr": "+0.24%",
+      "dir": "up"
+    },
+    "9906": {
+      "price": 33.7,
+      "change": -0.8,
+      "changePct": -2.32,
+      "chgStr": "-2.32%",
+      "dir": "dn"
+    },
+    "9907": {
+      "price": 15.95,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "9908": {
+      "price": 29.05,
+      "change": -0.15,
+      "changePct": -0.51,
+      "chgStr": "-0.51%",
+      "dir": "dn"
+    },
+    "9910": {
+      "price": 67.8,
+      "change": -0.9,
+      "changePct": -1.31,
+      "chgStr": "-1.31%",
+      "dir": "dn"
+    },
+    "9911": {
+      "price": 82.2,
+      "change": -0.5,
+      "changePct": -0.6,
+      "chgStr": "-0.6%",
+      "dir": "dn"
+    },
+    "9912": {
+      "price": 12.75,
+      "change": 0.25,
+      "changePct": 2.0,
+      "chgStr": "+2.0%",
+      "dir": "up"
+    },
+    "9914": {
+      "price": 68.2,
+      "change": 0.4,
+      "changePct": 0.59,
+      "chgStr": "+0.59%",
+      "dir": "up"
+    },
+    "9917": {
+      "price": 113.0,
+      "change": 1.0,
+      "changePct": 0.89,
+      "chgStr": "+0.89%",
+      "dir": "up"
+    },
+    "9918": {
+      "price": 43.25,
+      "change": -0.3,
+      "changePct": -0.69,
+      "chgStr": "-0.69%",
+      "dir": "dn"
+    },
+    "9919": {
+      "price": 14.3,
+      "change": 0.05,
+      "changePct": 0.35,
+      "chgStr": "+0.35%",
+      "dir": "up"
+    },
+    "9921": {
+      "price": 69.5,
+      "change": -0.8,
+      "changePct": -1.14,
+      "chgStr": "-1.14%",
+      "dir": "dn"
+    },
+    "9924": {
+      "price": 42.25,
+      "change": 0.35,
+      "changePct": 0.84,
+      "chgStr": "+0.84%",
+      "dir": "up"
+    },
+    "9925": {
+      "price": 40.15,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "9926": {
+      "price": 48.95,
+      "change": -0.05,
+      "changePct": -0.1,
+      "chgStr": "-0.1%",
+      "dir": "dn"
+    },
+    "9927": {
+      "price": 67.2,
+      "change": -0.5,
+      "changePct": -0.74,
+      "chgStr": "-0.74%",
+      "dir": "dn"
+    },
+    "9928": {
+      "price": 17.9,
+      "change": -0.05,
+      "changePct": -0.28,
+      "chgStr": "-0.28%",
+      "dir": "dn"
+    },
+    "9929": {
+      "price": 11.6,
+      "change": 0.2,
+      "changePct": 1.75,
+      "chgStr": "+1.75%",
+      "dir": "up"
+    },
+    "9930": {
+      "price": 67.7,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "9931": {
+      "price": 33.85,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "9933": {
+      "price": 39.5,
+      "change": 0.2,
+      "changePct": 0.51,
+      "chgStr": "+0.51%",
+      "dir": "up"
+    },
+    "9934": {
+      "price": 9.63,
+      "change": -0.08,
+      "changePct": -0.82,
+      "chgStr": "-0.82%",
+      "dir": "dn"
+    },
+    "9935": {
+      "price": 18.7,
+      "change": 0.1,
+      "changePct": 0.54,
+      "chgStr": "+0.54%",
+      "dir": "up"
+    },
+    "9937": {
+      "price": 55.5,
+      "change": -0.1,
+      "changePct": -0.18,
+      "chgStr": "-0.18%",
+      "dir": "dn"
+    },
+    "9938": {
+      "price": 42.6,
+      "change": -0.55,
+      "changePct": -1.27,
+      "chgStr": "-1.27%",
+      "dir": "dn"
+    },
+    "9939": {
+      "price": 124.5,
+      "change": -2.5,
+      "changePct": -1.97,
+      "chgStr": "-1.97%",
+      "dir": "dn"
+    },
+    "9940": {
+      "price": 18.6,
+      "change": -0.15,
+      "changePct": -0.8,
+      "chgStr": "-0.8%",
+      "dir": "dn"
+    },
+    "9941": {
+      "price": 72.9,
+      "change": -0.6,
+      "changePct": -0.82,
+      "chgStr": "-0.82%",
+      "dir": "dn"
+    },
+    "9941A": {
+      "price": 50.4,
+      "change": -0.1,
+      "changePct": -0.2,
+      "chgStr": "-0.2%",
+      "dir": "dn"
+    },
+    "9942": {
+      "price": 118.0,
+      "change": 1.0,
+      "changePct": 0.85,
+      "chgStr": "+0.85%",
+      "dir": "up"
+    },
+    "9943": {
+      "price": 55.3,
+      "change": -0.4,
+      "changePct": -0.72,
+      "chgStr": "-0.72%",
+      "dir": "dn"
+    },
+    "9944": {
+      "price": 17.05,
+      "change": 0.05,
+      "changePct": 0.29,
+      "chgStr": "+0.29%",
+      "dir": "up"
+    },
+    "9945": {
+      "price": 22.95,
+      "change": -0.35,
+      "changePct": -1.5,
+      "chgStr": "-1.5%",
+      "dir": "dn"
+    },
+    "9946": {
+      "price": 16.4,
+      "change": -0.4,
+      "changePct": -2.38,
+      "chgStr": "-2.38%",
+      "dir": "dn"
+    },
+    "9955": {
+      "price": 28.15,
+      "change": 0.0,
+      "changePct": 0.0,
+      "chgStr": "+0.0%",
+      "dir": "up"
+    },
+    "9958": {
+      "price": 104.5,
+      "change": 3.0,
+      "changePct": 2.96,
+      "chgStr": "+2.96%",
+      "dir": "up"
+    }
+  },
+  "updatedAt": "2026-05-25T17:33:08.485948+08:00",
   "marketOpen": false,
   "source": "TWSE"
 }

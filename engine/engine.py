@@ -173,15 +173,27 @@ def fetch_institutional():
 
 
 # ── TWSE 個股批次報價 ─────────────────────────────────────
+THEME_STOCKS = """0050 0056 1101 1503 1504 1513 1514 1516 1519 1530 1536 1545 1590 1598 1605
+1760 1795 2014 2049 2059 2201 2301 2303 2308 2313 2314 2317 2327 2330 2345
+2354 2355 2356 2367 2368 2375 2379 2382 2383 2392 2395 2412 2419 2428 2454
+2455 2474 2481 2485 2492 2501 2504 2511 2515 2520 2542 2548 2603 2606 2609
+2610 2615 2617 2618 2636 2637 2880 2881 2882 2883 2884 2885 2886 2891 2892
+3005 3008 3014 3017 3019 3026 3030 3034 3037 3042 3044 3045 3081 3105 3163
+3189 3221 3231 3324 3363 3380 3406 3443 3450 3491 3557 3576 3653 3661 3672
+3673 3708 3711 4147 4162 4164 4541 4583 4743 4904 4906 4938 4958 4961 4979
+5274 5317 5388 5425 5443 5533 5534 5608 5876 6127 6173 6213 6274 6278 6282
+6285 6409 6414 6415 6443 6472 6533 6547 6576 6643 6669 6706 6781 6806 6869 8046""".split()
+
 def fetch_quotes_batch(symbols):
-    """批次取得個股即時報價"""
-    tse_syms = [f'tse_{s}.tw' for s in symbols]
+    """批次取得個股即時報價，同時抓 watchlist + 全題材股"""
+    all_syms = list(dict.fromkeys(list(symbols) + THEME_STOCKS))  # 去重保序
+    tse_syms = [f'tse_{s}.tw' for s in all_syms]
     ex_ch = '|'.join(tse_syms)
     try:
         r = requests.get(
             'https://mis.twse.com.tw/stock/api/getStockInfo.jsp',
             params={'ex_ch': ex_ch, 'json': 1, 'delay': 0},
-            headers=HEADERS, timeout=10
+            headers=HEADERS, timeout=15
         )
         result = {}
         for item in r.json().get('msgArray', []):
@@ -285,6 +297,43 @@ def scan():
             'updatedAt': updated_str
         })
 
+    # 建立全股票價格字典（供前端題材/類股使用）
+    price_map = {}
+    for sym, item in quotes.items():
+        price = safe_float(item.get('z', 0))
+        prev  = safe_float(item.get('y', 0))
+        if not price:
+            # 用盤後資料補
+            m = all_map.get(sym)
+            if m:
+                price = m['price']
+                pct   = m['changePct']
+                chg   = m['change']
+            else:
+                continue
+        else:
+            chg = round(price - prev, 2) if prev else 0
+            pct = round(chg / prev * 100, 2) if prev else 0
+        sg = '+' if pct >= 0 else ''
+        price_map[sym] = {
+            'price': price,
+            'change': chg,
+            'changePct': pct,
+            'chgStr': f'{sg}{pct}%',
+            'dir': 'up' if pct >= 0 else 'dn'
+        }
+    # 用盤後資料補齊未能即時查到的
+    for sym, m in all_map.items():
+        if sym not in price_map:
+            sg = '+' if m['changePct'] >= 0 else ''
+            price_map[sym] = {
+                'price': m['price'],
+                'change': m['change'],
+                'changePct': m['changePct'],
+                'chgStr': f"{sg}{m['changePct']}%",
+                'dir': 'up' if m['changePct'] >= 0 else 'dn'
+            }
+
     # 格式化漲跌排行
     def fmt_mover(rank, m):
         d = 'up' if m['changePct'] >= 0 else 'dn'
@@ -306,6 +355,7 @@ def scan():
         'topSell': top_sell,
         'gainers': [fmt_mover(i+1, m) for i, m in enumerate(gainers)],
         'losers':  [fmt_mover(i+1, m) for i, m in enumerate(losers)],
+        'priceMap': price_map,
         'updatedAt': now.isoformat(),
         'marketOpen': is_market_open(),
         'source': 'TWSE'

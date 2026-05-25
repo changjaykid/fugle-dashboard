@@ -1059,6 +1059,11 @@ async function loadDashboard() {
     
     // 更新自選股
     renderWatch(d.stocks || [], d);
+
+    // 用即時報價更新題材/類股數字
+    if (d.priceMap && Object.keys(d.priceMap).length) {
+      applyPriceMap(d.priceMap);
+    }
     
   } catch(e) {
     console.warn('dashboard.json 載入失敗:', e);
@@ -1085,6 +1090,44 @@ function renderBuySell(topBuy, topSell) {
       <td class="dn">${r.trust}</td>
       <td class="${r.dir}">${r.chg || '—'}</td>
     </tr>`).join('');
+}
+
+// 用即時報價置換 THEMES/SECTORS 裡的靜態數字
+function applyPriceMap(pm) {
+  // 更新 THEMES
+  THEMES.forEach(t => {
+    t.stocks.forEach(s => {
+      const p = pm[s.s];
+      if (p) {
+        s.price = String(p.price);
+        s.chg   = p.chgStr;
+        // 用漲跌幅重新計算信心分
+        const pct = p.changePct;
+        s.conf = pct > 5 ? 88 : pct > 3 ? 80 : pct > 1 ? 68 : pct > 0 ? 58 :
+                 pct === 0 ? 50 : pct > -1 ? 42 : pct > -3 ? 32 : pct > -5 ? 22 : 12;
+      }
+    });
+    // 題材整體信心分 = 各股平均
+    if (t.stocks.length) {
+      t.conf = Math.round(t.stocks.reduce((a, s) => a + (s.conf || 50), 0) / t.stocks.length);
+    }
+  });
+  // 更新 SECTORS
+  SECTORS.forEach(sec => {
+    sec.stocks.forEach(s => {
+      const p = pm[s.s];
+      if (p) {
+        s.price = String(p.price);
+        s.chg   = p.chgStr;
+        const pct = p.changePct;
+        s.conf = pct > 5 ? 88 : pct > 3 ? 80 : pct > 1 ? 68 : pct > 0 ? 58 :
+                 pct === 0 ? 50 : pct > -1 ? 42 : pct > -3 ? 32 : pct > -5 ? 22 : 12;
+      }
+    });
+  });
+  // 重新渲染
+  renderThemes();
+  renderSectorBtns();
 }
 
 function renderMovers(gainers, losers) {
