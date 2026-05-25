@@ -1051,6 +1051,9 @@ async function loadDashboard() {
     // 更新法人買超/賣超排行（真實數據）
     if (d.topBuy && d.topBuy.length) renderBuySell(d.topBuy, d.topSell || []);
     
+    // 更新漲跌排行
+    if (d.gainers && d.gainers.length) renderMovers(d.gainers, d.losers || []);
+    
     // 更新新聞
     if (d.news && d.news.length) renderNews(d.news);
     
@@ -1082,6 +1085,25 @@ function renderBuySell(topBuy, topSell) {
       <td class="dn">${r.trust}</td>
       <td class="${r.dir}">${r.chg || '—'}</td>
     </tr>`).join('');
+}
+
+function renderMovers(gainers, losers) {
+  const gainRow = r => `<tr>
+    <td class="rn">${r.r}</td>
+    <td><strong>${r.s}</strong> ${r.n}</td>
+    <td class="up" style="font-weight:700">${r.price}</td>
+    <td class="up">${r.chg}</td>
+    <td style="color:var(--muted)">${r.vol}</td></tr>`;
+  const loseRow = r => `<tr>
+    <td class="rn">${r.r}</td>
+    <td><strong>${r.s}</strong> ${r.n}</td>
+    <td class="dn" style="font-weight:700">${r.price}</td>
+    <td class="dn">${r.chg}</td>
+    <td style="color:var(--muted)">${r.vol}</td></tr>`;
+  const gb = document.getElementById('gainBody');
+  const lb = document.getElementById('loseBody');
+  if (gb) gb.innerHTML = gainers.map(gainRow).join('');
+  if (lb) lb.innerHTML = losers.map(loseRow).join('');
 }
 
 function renderNews(news) {

@@ -133,30 +133,36 @@ def fetch_institutional():
             except:
                 continue
 
-        top_buy  = sorted(parsed, key=lambda x: x['total'], reverse=True)[:10]
-        top_sell = sorted(parsed, key=lambda x: x['total'])[:10]
+        # 過濾掉 ETF / 反向槓桿（代號含字母或超過4碼）
+        def is_stock(sym):
+            return sym.isdigit() and len(sym) == 4
 
-        def fmt(x, sign=True):
-            v = int(x)
-            s = ('+' if v >= 0 else '') + format(v, ',') if sign else format(abs(v), ',')
-            return s + '張'
+        stocks_only = [x for x in parsed if is_stock(x['s'])]
+        top_buy  = sorted(stocks_only, key=lambda x: x['total'], reverse=True)[:10]
+        top_sell = sorted(stocks_only, key=lambda x: x['total'])[:10]
+
+        def fmt_shares(v):
+            iv = int(v)
+            return ('+' if iv >= 0 else '') + format(iv, ',') + '張'
 
         buy_result = [{
             'r': str(i+1),
             's': x['s'],
             'n': x['n'],
-            'foreign': fmt(x['foreign']),
-            'trust': fmt(x['trust']),
-            'dir': 'up' if x['total'] >= 0 else 'dn'
+            'foreign': fmt_shares(x['foreign']),
+            'trust': fmt_shares(x['trust']),
+            'total': fmt_shares(x['total']),
+            'dir': 'up'
         } for i, x in enumerate(top_buy)]
 
         sell_result = [{
             'r': str(i+1),
             's': x['s'],
             'n': x['n'],
-            'foreign': fmt(x['foreign']),
-            'trust': fmt(x['trust']),
-            'dir': 'up' if x['total'] >= 0 else 'dn'
+            'foreign': fmt_shares(x['foreign']),
+            'trust': fmt_shares(x['trust']),
+            'total': fmt_shares(x['total']),
+            'dir': 'dn'
         } for i, x in enumerate(top_sell)]
 
         return buy_result, sell_result
@@ -226,13 +232,27 @@ def scan():
 
     print('  🚀 漲跌排行...')
     gainers, losers, all_stocks = fetch_movers()
+    all_map = {s['s']: s for s in all_stocks}
 
     print(f'  📊 個股報價 ({len(symbols)} 支)...')
     quotes = fetch_quotes_batch(symbols) if symbols else {}
 
+    # 補上法人資料的 price/chg
+    def enrich_inst(lst):
+        for item in lst:
+            m = all_map.get(item['s'])
+            if m:
+                sg = '+' if m['changePct'] >= 0 else ''
+                item['price'] = str(m['price'])
+                item['chg']   = f"{sg}{m['changePct']}%"
+                item['dir']   = 'up' if m['changePct'] >= 0 else 'dn'
+        return lst
+
+    top_buy  = enrich_inst(top_buy)
+    top_sell = enrich_inst(top_sell)
+
     # 個股卡
     stocks = []
-    all_map = {s['s']: s for s in all_stocks}
     for sym in symbols:
         # 優先用即時報價，fallback 用盤後資料
         item = quotes.get(sym)
@@ -245,7 +265,7 @@ def scan():
             name      = item.get('n', sym)
             change    = round(price - prev, 2) if price and prev else 0
             changePct = round(change / prev * 100, 2) if prev else 0
-        elif sym in all_map:
+        elif sym in all_map:  # type: ignore
             m = all_map[sym]
             price = m['price']; changePct = m['changePct']
             change = m['change']; high = 0; low = 0; volume = int(m['volume'])

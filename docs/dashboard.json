@@ -13,7 +13,7 @@
       "confidence": 68,
       "confidenceLabel": "偏多",
       "confidenceColor": "#69f0ae",
-      "updatedAt": "16:53"
+      "updatedAt": "16:59"
     },
     {
       "symbol": "2317",
@@ -28,7 +28,7 @@
       "confidence": 80,
       "confidenceLabel": "偏多",
       "confidenceColor": "#69f0ae",
-      "updatedAt": "16:53"
+      "updatedAt": "16:59"
     },
     {
       "symbol": "2454",
@@ -43,7 +43,7 @@
       "confidence": 88,
       "confidenceLabel": "強力看多",
       "confidenceColor": "#00c853",
-      "updatedAt": "16:53"
+      "updatedAt": "16:59"
     },
     {
       "symbol": "2382",
@@ -58,7 +58,7 @@
       "confidence": 58,
       "confidenceLabel": "中性觀望",
       "confidenceColor": "#ffd740",
-      "updatedAt": "16:53"
+      "updatedAt": "16:59"
     },
     {
       "symbol": "3231",
@@ -73,7 +73,7 @@
       "confidence": 80,
       "confidenceLabel": "偏多",
       "confidenceColor": "#69f0ae",
-      "updatedAt": "16:53"
+      "updatedAt": "16:59"
     },
     {
       "symbol": "2308",
@@ -88,7 +88,7 @@
       "confidence": 88,
       "confidenceLabel": "強力看多",
       "confidenceColor": "#00c853",
-      "updatedAt": "16:53"
+      "updatedAt": "16:59"
     },
     {
       "symbol": "2303",
@@ -103,7 +103,7 @@
       "confidence": 88,
       "confidenceLabel": "強力看多",
       "confidenceColor": "#00c853",
-      "updatedAt": "16:53"
+      "updatedAt": "16:59"
     },
     {
       "symbol": "2337",
@@ -118,7 +118,7 @@
       "confidence": 68,
       "confidenceLabel": "偏多",
       "confidenceColor": "#69f0ae",
-      "updatedAt": "16:53"
+      "updatedAt": "16:59"
     },
     {
       "symbol": "3706",
@@ -133,7 +133,7 @@
       "confidence": 58,
       "confidenceLabel": "中性觀望",
       "confidenceColor": "#ffd740",
-      "updatedAt": "16:53"
+      "updatedAt": "16:59"
     },
     {
       "symbol": "2313",
@@ -148,7 +148,7 @@
       "confidence": 88,
       "confidenceLabel": "強力看多",
       "confidenceColor": "#00c853",
-      "updatedAt": "16:53"
+      "updatedAt": "16:59"
     }
   ],
   "sectors": [
@@ -181,161 +181,221 @@
       "n": "中信金",
       "foreign": "+8,416,533張",
       "trust": "+0張",
-      "dir": "up"
+      "total": "+3,469,995張",
+      "dir": "dn",
+      "price": "57.3",
+      "chg": "-0.52%"
     },
     {
       "r": "2",
-      "s": "00991A",
-      "n": "主動復華未來50",
-      "foreign": "-1,868,501張",
-      "trust": "+0張",
-      "dir": "up"
-    },
-    {
-      "r": "3",
-      "s": "00632R",
-      "n": "元大台灣50反1",
-      "foreign": "-449,000張",
-      "trust": "+0張",
-      "dir": "up"
-    },
-    {
-      "r": "4",
       "s": "2408",
       "n": "南亞科",
       "foreign": "-1,301,220張",
       "trust": "+0張",
-      "dir": "up"
+      "total": "+1,138,700張",
+      "dir": "dn",
+      "price": "296.0",
+      "chg": "-4.67%"
     },
     {
-      "r": "5",
-      "s": "00981A",
-      "n": "主動統一台股增長",
-      "foreign": "+22,872,242張",
-      "trust": "+0張",
-      "dir": "up"
-    },
-    {
-      "r": "6",
+      "r": "3",
       "s": "1802",
       "n": "台玻",
       "foreign": "+43,212,609張",
       "trust": "+0張",
-      "dir": "up"
+      "total": "+1,033,000張",
+      "dir": "up",
+      "price": "73.9",
+      "chg": "+4.82%"
     },
     {
-      "r": "7",
+      "r": "4",
       "s": "6770",
       "n": "力積電",
       "foreign": "+70,137,018張",
       "trust": "+0張",
-      "dir": "up"
+      "total": "+829,000張",
+      "dir": "up",
+      "price": "67.6",
+      "chg": "+5.96%"
     },
     {
-      "r": "8",
+      "r": "5",
       "s": "2356",
       "n": "英業達",
       "foreign": "-14,575,023張",
       "trust": "+0張",
-      "dir": "up"
+      "total": "+819,142張",
+      "dir": "up",
+      "price": "65.4",
+      "chg": "+9.92%"
     },
     {
-      "r": "9",
-      "s": "00919",
-      "n": "群益台灣精選高息",
-      "foreign": "+31,796,888張",
-      "trust": "+0張",
-      "dir": "up"
-    },
-    {
-      "r": "10",
+      "r": "6",
       "s": "2609",
       "n": "陽明",
       "foreign": "-6,815,291張",
       "trust": "+0張",
-      "dir": "up"
+      "total": "+723,134張",
+      "dir": "dn",
+      "price": "51.8",
+      "chg": "-2.26%"
+    },
+    {
+      "r": "7",
+      "s": "3703",
+      "n": "欣陸",
+      "foreign": "-418,000張",
+      "trust": "+0張",
+      "total": "+623,469張",
+      "dir": "dn",
+      "price": "20.05",
+      "chg": "-0.5%"
+    },
+    {
+      "r": "8",
+      "s": "6282",
+      "n": "康舒",
+      "foreign": "+7,423,438張",
+      "trust": "+0張",
+      "total": "+604,000張",
+      "dir": "up",
+      "price": "63.1",
+      "chg": "+9.93%"
+    },
+    {
+      "r": "9",
+      "s": "0056",
+      "n": "元大高股息",
+      "foreign": "+25,778,945張",
+      "trust": "+0張",
+      "total": "+463,000張",
+      "dir": "up",
+      "price": "48.35",
+      "chg": "+4.31%"
+    },
+    {
+      "r": "10",
+      "s": "2303",
+      "n": "聯電",
+      "foreign": "+48,519,878張",
+      "trust": "+0張",
+      "total": "+419,000張",
+      "dir": "up",
+      "price": "125.0",
+      "chg": "+9.65%"
     }
   ],
   "topSell": [
     {
       "r": "1",
-      "s": "00999A",
-      "n": "主動野村臺灣高息",
-      "foreign": "+21,753,000張",
+      "s": "2610",
+      "n": "華航",
+      "foreign": "+15,202,574張",
       "trust": "+0張",
-      "dir": "up"
+      "total": "+0張",
+      "dir": "up",
+      "price": "18.85",
+      "chg": "+1.62%"
     },
     {
       "r": "2",
-      "s": "00891",
-      "n": "中信關鍵半導體",
-      "foreign": "+26,704,802張",
+      "s": "9105",
+      "n": "泰金寶-DR",
+      "foreign": "+328,000張",
       "trust": "+0張",
-      "dir": "up"
+      "total": "+0張",
+      "dir": "up",
+      "price": "7.42",
+      "chg": "+9.93%"
     },
     {
       "r": "3",
-      "s": "00992A",
-      "n": "主動群益科技創新",
-      "foreign": "+21,298,749張",
+      "s": "6005",
+      "n": "群益證",
+      "foreign": "+4,806,000張",
       "trust": "+0張",
-      "dir": "up"
+      "total": "+0張",
+      "dir": "up",
+      "price": "32.7",
+      "chg": "+2.51%"
     },
     {
       "r": "4",
-      "s": "009820",
-      "n": "元大納斯達克精選",
-      "foreign": "+15,742,000張",
+      "s": "2606",
+      "n": "裕民",
+      "foreign": "+3,093,659張",
       "trust": "+0張",
-      "dir": "up"
+      "total": "+0張",
+      "dir": "up",
+      "price": "67.9",
+      "chg": "+3.82%"
     },
     {
       "r": "5",
-      "s": "00940",
-      "n": "元大台灣價值高息",
-      "foreign": "+701,000張",
+      "s": "6116",
+      "n": "彩晶",
+      "foreign": "+455,700張",
       "trust": "+0張",
-      "dir": "up"
+      "total": "+0張",
+      "dir": "up",
+      "price": "13.0",
+      "chg": "+9.7%"
     },
     {
       "r": "6",
-      "s": "00673R",
-      "n": "期元大S&P原油反1",
-      "foreign": "+910,000張",
+      "s": "6919",
+      "n": "康霈*",
+      "foreign": "+1,739,150張",
       "trust": "+0張",
-      "dir": "up"
+      "total": "+0張",
+      "dir": "up",
+      "price": "108.0",
+      "chg": "+3.85%"
     },
     {
       "r": "7",
-      "s": "00980A",
-      "n": "主動野村臺灣優選",
-      "foreign": "+10,695,000張",
+      "s": "5388",
+      "n": "中磊",
+      "foreign": "+1,721,000張",
       "trust": "+0張",
-      "dir": "up"
+      "total": "+0張",
+      "dir": "up",
+      "price": "86.4",
+      "chg": "+1.53%"
     },
     {
       "r": "8",
-      "s": "00400A",
-      "n": "主動國泰動能高息",
-      "foreign": "+15,195,290張",
+      "s": "2399",
+      "n": "映泰",
+      "foreign": "+1,687,310張",
       "trust": "+0張",
-      "dir": "up"
+      "total": "+0張",
+      "dir": "up",
+      "price": "47.4",
+      "chg": "+1.83%"
     },
     {
       "r": "9",
-      "s": "009819",
-      "n": "中信數據及電力",
-      "foreign": "-3,000張",
+      "s": "1608",
+      "n": "華榮",
+      "foreign": "+1,388,930張",
       "trust": "+0張",
-      "dir": "up"
+      "total": "+0張",
+      "dir": "up",
+      "price": "34.05",
+      "chg": "+2.25%"
     },
     {
       "r": "10",
-      "s": "00680L",
-      "n": "元大美債20正2",
-      "foreign": "+8,550,000張",
+      "s": "3596",
+      "n": "智易",
+      "foreign": "+1,363,000張",
       "trust": "+0張",
-      "dir": "up"
+      "total": "+0張",
+      "dir": "up",
+      "price": "189.0",
+      "chg": "+0.0%"
     }
   ],
   "gainers": [
@@ -522,7 +582,7 @@
       "dir": "dn"
     }
   ],
-  "updatedAt": "2026-05-25T16:53:01.269886+08:00",
+  "updatedAt": "2026-05-25T16:59:35.834985+08:00",
   "marketOpen": false,
   "source": "TWSE"
 }
