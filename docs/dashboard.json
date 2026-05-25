@@ -5,7 +5,6 @@
       "name": "台積電",
       "category": "",
       "price": 2310.0,
-      "prevClose": 2255.0,
       "high": 2310.0,
       "low": 2275.0,
       "change": 55.0,
@@ -14,30 +13,28 @@
       "confidence": 68,
       "confidenceLabel": "偏多",
       "confidenceColor": "#69f0ae",
-      "updatedAt": "16:50"
+      "updatedAt": "16:53"
     },
     {
       "symbol": "2317",
       "name": "鴻海",
       "category": "",
       "price": 261.0,
-      "prevClose": 250.0,
       "high": 263.5,
       "low": 255.0,
       "change": 11.0,
       "changePct": 4.4,
       "volume": 3908,
       "confidence": 80,
-      "confidenceLabel": "強力看多",
-      "confidenceColor": "#00c853",
-      "updatedAt": "16:50"
+      "confidenceLabel": "偏多",
+      "confidenceColor": "#69f0ae",
+      "updatedAt": "16:53"
     },
     {
       "symbol": "2454",
       "name": "聯發科",
       "category": "",
       "price": 4245.0,
-      "prevClose": 3860.0,
       "high": 4245.0,
       "low": 4245.0,
       "change": 385.0,
@@ -46,14 +43,13 @@
       "confidence": 88,
       "confidenceLabel": "強力看多",
       "confidenceColor": "#00c853",
-      "updatedAt": "16:50"
+      "updatedAt": "16:53"
     },
     {
       "symbol": "2382",
       "name": "廣達",
       "category": "",
       "price": 316.5,
-      "prevClose": 316.0,
       "high": 325.0,
       "low": 316.5,
       "change": 0.5,
@@ -62,30 +58,28 @@
       "confidence": 58,
       "confidenceLabel": "中性觀望",
       "confidenceColor": "#ffd740",
-      "updatedAt": "16:50"
+      "updatedAt": "16:53"
     },
     {
       "symbol": "3231",
       "name": "緯創",
       "category": "",
       "price": 149.0,
-      "prevClose": 144.5,
       "high": 150.5,
       "low": 147.0,
       "change": 4.5,
       "changePct": 3.11,
       "volume": 2782,
       "confidence": 80,
-      "confidenceLabel": "強力看多",
-      "confidenceColor": "#00c853",
-      "updatedAt": "16:50"
+      "confidenceLabel": "偏多",
+      "confidenceColor": "#69f0ae",
+      "updatedAt": "16:53"
     },
     {
       "symbol": "2308",
       "name": "台達電",
       "category": "",
       "price": 2290.0,
-      "prevClose": 2095.0,
       "high": 2300.0,
       "low": 2185.0,
       "change": 195.0,
@@ -94,14 +88,13 @@
       "confidence": 88,
       "confidenceLabel": "強力看多",
       "confidenceColor": "#00c853",
-      "updatedAt": "16:50"
+      "updatedAt": "16:53"
     },
     {
       "symbol": "2303",
       "name": "聯電",
       "category": "",
       "price": 125.0,
-      "prevClose": 114.0,
       "high": 125.0,
       "low": 113.0,
       "change": 11.0,
@@ -110,14 +103,13 @@
       "confidence": 88,
       "confidenceLabel": "強力看多",
       "confidenceColor": "#00c853",
-      "updatedAt": "16:50"
+      "updatedAt": "16:53"
     },
     {
       "symbol": "2337",
       "name": "旺宏",
       "category": "",
       "price": 152.5,
-      "prevClose": 149.5,
       "high": 154.5,
       "low": 140.5,
       "change": 3.0,
@@ -126,14 +118,13 @@
       "confidence": 68,
       "confidenceLabel": "偏多",
       "confidenceColor": "#69f0ae",
-      "updatedAt": "16:50"
+      "updatedAt": "16:53"
     },
     {
       "symbol": "3706",
       "name": "神達",
       "category": "",
       "price": 88.5,
-      "prevClose": 87.8,
       "high": 89.3,
       "low": 87.2,
       "change": 0.7,
@@ -142,14 +133,13 @@
       "confidence": 58,
       "confidenceLabel": "中性觀望",
       "confidenceColor": "#ffd740",
-      "updatedAt": "16:50"
+      "updatedAt": "16:53"
     },
     {
       "symbol": "2313",
       "name": "華通",
       "category": "",
       "price": 298.5,
-      "prevClose": 278.0,
       "high": 305.5,
       "low": 287.0,
       "change": 20.5,
@@ -158,7 +148,7 @@
       "confidence": 88,
       "confidenceLabel": "強力看多",
       "confidenceColor": "#00c853",
-      "updatedAt": "16:50"
+      "updatedAt": "16:53"
     }
   ],
   "sectors": [
@@ -178,7 +168,361 @@
       "trend": "side"
     }
   ],
-  "updatedAt": "2026-05-25T16:50:03.351631+08:00",
+  "index": {
+    "taiex": "43644.4",
+    "change": "+1376.43",
+    "changePct": "+3.26%",
+    "volume": "0 張"
+  },
+  "topBuy": [
+    {
+      "r": "1",
+      "s": "2891",
+      "n": "中信金",
+      "foreign": "+8,416,533張",
+      "trust": "+0張",
+      "dir": "up"
+    },
+    {
+      "r": "2",
+      "s": "00991A",
+      "n": "主動復華未來50",
+      "foreign": "-1,868,501張",
+      "trust": "+0張",
+      "dir": "up"
+    },
+    {
+      "r": "3",
+      "s": "00632R",
+      "n": "元大台灣50反1",
+      "foreign": "-449,000張",
+      "trust": "+0張",
+      "dir": "up"
+    },
+    {
+      "r": "4",
+      "s": "2408",
+      "n": "南亞科",
+      "foreign": "-1,301,220張",
+      "trust": "+0張",
+      "dir": "up"
+    },
+    {
+      "r": "5",
+      "s": "00981A",
+      "n": "主動統一台股增長",
+      "foreign": "+22,872,242張",
+      "trust": "+0張",
+      "dir": "up"
+    },
+    {
+      "r": "6",
+      "s": "1802",
+      "n": "台玻",
+      "foreign": "+43,212,609張",
+      "trust": "+0張",
+      "dir": "up"
+    },
+    {
+      "r": "7",
+      "s": "6770",
+      "n": "力積電",
+      "foreign": "+70,137,018張",
+      "trust": "+0張",
+      "dir": "up"
+    },
+    {
+      "r": "8",
+      "s": "2356",
+      "n": "英業達",
+      "foreign": "-14,575,023張",
+      "trust": "+0張",
+      "dir": "up"
+    },
+    {
+      "r": "9",
+      "s": "00919",
+      "n": "群益台灣精選高息",
+      "foreign": "+31,796,888張",
+      "trust": "+0張",
+      "dir": "up"
+    },
+    {
+      "r": "10",
+      "s": "2609",
+      "n": "陽明",
+      "foreign": "-6,815,291張",
+      "trust": "+0張",
+      "dir": "up"
+    }
+  ],
+  "topSell": [
+    {
+      "r": "1",
+      "s": "00999A",
+      "n": "主動野村臺灣高息",
+      "foreign": "+21,753,000張",
+      "trust": "+0張",
+      "dir": "up"
+    },
+    {
+      "r": "2",
+      "s": "00891",
+      "n": "中信關鍵半導體",
+      "foreign": "+26,704,802張",
+      "trust": "+0張",
+      "dir": "up"
+    },
+    {
+      "r": "3",
+      "s": "00992A",
+      "n": "主動群益科技創新",
+      "foreign": "+21,298,749張",
+      "trust": "+0張",
+      "dir": "up"
+    },
+    {
+      "r": "4",
+      "s": "009820",
+      "n": "元大納斯達克精選",
+      "foreign": "+15,742,000張",
+      "trust": "+0張",
+      "dir": "up"
+    },
+    {
+      "r": "5",
+      "s": "00940",
+      "n": "元大台灣價值高息",
+      "foreign": "+701,000張",
+      "trust": "+0張",
+      "dir": "up"
+    },
+    {
+      "r": "6",
+      "s": "00673R",
+      "n": "期元大S&P原油反1",
+      "foreign": "+910,000張",
+      "trust": "+0張",
+      "dir": "up"
+    },
+    {
+      "r": "7",
+      "s": "00980A",
+      "n": "主動野村臺灣優選",
+      "foreign": "+10,695,000張",
+      "trust": "+0張",
+      "dir": "up"
+    },
+    {
+      "r": "8",
+      "s": "00400A",
+      "n": "主動國泰動能高息",
+      "foreign": "+15,195,290張",
+      "trust": "+0張",
+      "dir": "up"
+    },
+    {
+      "r": "9",
+      "s": "009819",
+      "n": "中信數據及電力",
+      "foreign": "-3,000張",
+      "trust": "+0張",
+      "dir": "up"
+    },
+    {
+      "r": "10",
+      "s": "00680L",
+      "n": "元大美債20正2",
+      "foreign": "+8,550,000張",
+      "trust": "+0張",
+      "dir": "up"
+    }
+  ],
+  "gainers": [
+    {
+      "r": "1",
+      "s": "02001L",
+      "n": "富邦蘋果正二N",
+      "price": "156.35",
+      "chg": "+11.76%",
+      "vol": "0.0萬",
+      "dir": "up"
+    },
+    {
+      "r": "2",
+      "s": "1809",
+      "n": "中釉",
+      "price": "45.65",
+      "chg": "+10.0%",
+      "vol": "0.5萬",
+      "dir": "up"
+    },
+    {
+      "r": "3",
+      "s": "2032",
+      "n": "新鋼",
+      "price": "18.15",
+      "chg": "+10.0%",
+      "vol": "0.3萬",
+      "dir": "up"
+    },
+    {
+      "r": "4",
+      "s": "2324",
+      "n": "仁寶",
+      "price": "34.65",
+      "chg": "+10.0%",
+      "vol": "28.0萬",
+      "dir": "up"
+    },
+    {
+      "r": "5",
+      "s": "2349",
+      "n": "錸德",
+      "price": "14.3",
+      "chg": "+10.0%",
+      "vol": "1.7萬",
+      "dir": "up"
+    },
+    {
+      "r": "6",
+      "s": "3025",
+      "n": "星通",
+      "price": "78.1",
+      "chg": "+10.0%",
+      "vol": "0.2萬",
+      "dir": "up"
+    },
+    {
+      "r": "7",
+      "s": "3090",
+      "n": "日電貿",
+      "price": "236.5",
+      "chg": "+10.0%",
+      "vol": "0.4萬",
+      "dir": "up"
+    },
+    {
+      "r": "8",
+      "s": "4764",
+      "n": "雙鍵",
+      "price": "352.0",
+      "chg": "+10.0%",
+      "vol": "0.3萬",
+      "dir": "up"
+    },
+    {
+      "r": "9",
+      "s": "8261",
+      "n": "富鼎",
+      "price": "176.0",
+      "chg": "+10.0%",
+      "vol": "0.5萬",
+      "dir": "up"
+    },
+    {
+      "r": "10",
+      "s": "2383",
+      "n": "台光電",
+      "price": "5505.0",
+      "chg": "+9.99%",
+      "vol": "0.2萬",
+      "dir": "up"
+    }
+  ],
+  "losers": [
+    {
+      "r": "1",
+      "s": "00715L",
+      "n": "期街口布蘭特正2",
+      "price": "54.45",
+      "chg": "-12.53%",
+      "vol": "1.9萬",
+      "dir": "dn"
+    },
+    {
+      "r": "2",
+      "s": "2424",
+      "n": "隴華",
+      "price": "13.15",
+      "chg": "-9.93%",
+      "vol": "0.0萬",
+      "dir": "dn"
+    },
+    {
+      "r": "3",
+      "s": "6806",
+      "n": "森崴能源",
+      "price": "8.35",
+      "chg": "-9.92%",
+      "vol": "0.0萬",
+      "dir": "dn"
+    },
+    {
+      "r": "4",
+      "s": "3024",
+      "n": "憶聲",
+      "price": "16.05",
+      "chg": "-8.81%",
+      "vol": "0.8萬",
+      "dir": "dn"
+    },
+    {
+      "r": "5",
+      "s": "3033",
+      "n": "威健",
+      "price": "49.2",
+      "chg": "-8.72%",
+      "vol": "4.3萬",
+      "dir": "dn"
+    },
+    {
+      "r": "6",
+      "s": "00642U",
+      "n": "期元大S&P石油",
+      "price": "28.64",
+      "chg": "-7.25%",
+      "vol": "1.0萬",
+      "dir": "dn"
+    },
+    {
+      "r": "7",
+      "s": "2543",
+      "n": "皇昌",
+      "price": "42.2",
+      "chg": "-7.25%",
+      "vol": "0.5萬",
+      "dir": "dn"
+    },
+    {
+      "r": "8",
+      "s": "3717",
+      "n": "聯嘉投控",
+      "price": "22.95",
+      "chg": "-6.9%",
+      "vol": "0.4萬",
+      "dir": "dn"
+    },
+    {
+      "r": "9",
+      "s": "6887",
+      "n": "寶綠特-KY",
+      "price": "31.7",
+      "chg": "-6.63%",
+      "vol": "0.0萬",
+      "dir": "dn"
+    },
+    {
+      "r": "10",
+      "s": "02001R",
+      "n": "富邦蘋果反一N",
+      "price": "0.43",
+      "chg": "-6.52%",
+      "vol": "0.9萬",
+      "dir": "dn"
+    }
+  ],
+  "updatedAt": "2026-05-25T16:53:01.269886+08:00",
   "marketOpen": false,
   "source": "TWSE"
 }
