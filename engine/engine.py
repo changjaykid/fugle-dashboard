@@ -6,7 +6,7 @@
       + 產業分類 / 升級信心分 / 明日關注清單
 """
 
-import json, sys, datetime, requests
+import json, sys, datetime, requests, xml.etree.ElementTree as ET
 from pathlib import Path
 
 BASE_DIR       = Path(__file__).parent
@@ -87,7 +87,115 @@ def parse_count(s):
     except: return 0, 0
 
 
-# ── 大盤指數 + 漲跌家數 + 市場情緒 ─────────────────────────
+# ── 新聞抓取 ──────────────────────────────────────────
+def fetch_news():
+    """抓取 Yahoo 財經 RSS 或 鉅亨網台股新聞"""
+    news = []
+    # 嘗試 Yahoo RSS
+    try:
+        r = requests.get('https://tw.stock.yahoo.com/rss?s=.TWI', headers=HEADERS, timeout=10)
+        if r.status_code == 200:
+            root = ET.fromstring(r.content)
+            for item in root.findall('./channel/item')[:10]:
+                title = item.find('title').text
+                url = item.find('link').text
+                pub = item.find('pubDate').text
+                news.append({
+                    'title': title,
+                    'url': url,
+                    'published': pub,
+                    'source': 'Yahoo財經'
+                })
+    except Exception as e:
+        print(f'[WARN] fetch_news Yahoo: {e}')
+
+    # 如果 Yahoo 沒抓到或太少，嘗試鉅亨網
+    if len(news) < 5:
+        try:
+            r = requests.get('https://news.cnyes.com/news/cat/tw_stock', headers=HEADERS, timeout=10)
+            if r.status_code == 200:
+                from html.parser import HTMLParser
+                class CnyesParser(HTMLParser):
+                    def __init__(self):
+                        super().__init__()
+                        self.links = []
+                        self.in_a = False
+                        self.current_href = ""
+                    def handle_starttag(self, tag, attrs):
+                        if tag == 'a':
+                            attrs_dict = dict(attrs)
+                            href = attrs_dict.get('href', '')
+                            if '/news/id/' in href:
+                                self.in_a = True
+                                self.current_href = 'https://news.cnyes.com' + href
+                    def handle_endtag(self, tag):
+                        if tag == 'a': self.in_a = False
+                    def handle_data(self, data):
+                        if self.in_a and data.strip():
+                            if not any(x['url'] == self.current_href for x in news):
+                                self.links.append({
+                                    'title': data.strip(),
+                                    'url': self.current_href,
+                                    'published': '',
+                                    'source': '鉅亨網'
+                                })
+                parser = CnyesParser()
+                parser.feed(r.text)
+                news.extend(parser.links[:10-len(news)])
+        except Exception as e:
+            print(f'[WARN] fetch_news Cnyes: {e}')
+    
+    return news[:10]
+
+# ── 個股指標計算 (RSI, 52週位置, 5日量比) ────────────────
+def fetch_stock_indicators(symbol):
+    """抓取並計算 RSI, 52週位置, 5日量比"""
+    res = {'rsi': None, 'week52Pos': None, 'volRatio5d': None}
+    try:
+        # 1. RSI (14日) + 5日量比
+        # 從 STOCK_DAY 抓最近資料
+        r = requests.get(f'https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo={symbol}', 
+                         headers=HEADERS, timeout=10)
+        data = r.json().get('data', [])
+        if len(data) >= 15:
+            # 算 RSI
+            closes = [safe_float(row[6]) for row in data[-15:]]
+            diffs = [closes[i] - closes[i-1] for i in range(1, len(closes))]
+            up = [d if d > 0 else 0 for d in diffs]
+            dn = [-d if d < 0 else 0 for d in diffs]
+            avg_up = sum(up) / 14
+            avg_dn = sum(dn) / 14
+            if avg_dn == 0: res['rsi'] = 100
+            else:
+                rs = avg_up / avg_dn
+                res['rsi'] = round(100 - (100 / (1 + rs)), 2)
+            
+            # 算 5日量比
+            vols = [safe_float(row[1]) for row in data[-5:]]
+            avg_vol_5d = sum(vols) / 5
+            today_vol = vols[-1]
+            if avg_vol_5d > 0:
+                res['volRatio5d'] = round(today_vol / avg_vol_5d, 2)
+
+        # 2. 52週位置 (用月報簡化)
+        r_m = requests.get(f'https://www.twse.com.tw/exchangeReport/STOCK_DAY_AVG?response=json&stockNo={symbol}',
+                           headers=HEADERS, timeout=10)
+        # 註：STOCK_DAY_AVG 只有當月，真正的 52 週需要更大量資料，這裡用 STOCK_DAY 湊合或簡化邏輯
+        # 由於 TWSE API 限制，這裡實作最穩定的版本：如果當前 data 足夠就用 data
+        if len(data) > 0:
+            prices = [safe_float(row[4]) for row in data] # 最高
+            prices_l = [safe_float(row[5]) for row in data] # 最低
+            high52 = max(prices)
+            low52 = min(prices_l)
+            curr = safe_float(data[-1][6]) # 最新收盤
+            if high52 > low52:
+                res['week52Pos'] = round((curr - low52) / (high52 - low52) * 100, 2)
+    except Exception as e:
+        print(f'[WARN] indicators for {symbol}: {e}')
+    return res
+
+
+# ── 大盤指數 + 市場情緒 ──────────────────────────────────────────
 def fetch_index():
     result = {}
     try:
@@ -539,10 +647,58 @@ def scan():
     bot_sectors = sorted(sector_strength, key=lambda x: x['avgPct'])[:5]
     sector_out = top_sectors + bot_sectors
 
+    print('  📰 抓取財經新聞...')
+    news = fetch_news()
+
+    print('  🔥 動態題材分析...')
+    themes = []
+    try:
+        # 用 sectorStrength 找漲幅前5
+        top_sects = sorted([s for s in sector_out if s['dir'] == 'up'], key=lambda x: x['avgPct'], reverse=True)[:5]
+        # 用 top_buy 找法人最愛類股
+        inst_sects = {}
+        for s in top_buy:
+            ind = industry_cache.get(s['s'], '')
+            if ind:
+                if ind not in inst_sects: inst_sects[ind] = []
+                inst_sects[ind].append(s)
+        
+        theme_names = set([s['industry'] for s in top_sects]) | set(inst_sects.keys())
+        icon_map = {'半導體':'⚡', '金融保險':'🏦', '航運':'🚢', '電子':'💻', '生技醫療':'💊'}
+        
+        for name in list(theme_names)[:6]:
+            sect_data = next((s for s in sector_out if s['industry'] == name), {'avgPct': 0})
+            reason = "法人買超" if name in inst_sects else "強勢上漲"
+            # 該類股內的 topBuy 股票
+            sect_top = [s for s in top_buy if industry_cache.get(s['s']) == name][:3]
+            avg_conf = sum([s['conf'] for s in sect_top]) / len(sect_top) if sect_top else 50
+            
+            themes.append({
+                'name': name,
+                'icon': icon_map.get(name, '📊'),
+                'avgPct': sect_data['avgPct'],
+                'conf': round(avg_conf, 1),
+                'reason': reason,
+                'topStocks': [{
+                    's': s['s'], 'n': s.get('n', s['s']),
+                    'conf': s.get('conf', 50),
+                    'chg': ('+' if s.get('changePct', 0) >= 0 else '') + str(s.get('changePct', 0)) + '%'
+                } for s in sect_top]
+            })
+    except Exception as e:
+        print(f'[WARN] themes analysis: {e}')
+
+    # 更新 stocks 指標
+    for s in stocks:
+        indices = fetch_stock_indicators(s['symbol'])
+        s.update(indices)
+
     payload = {
         'stocks':        stocks,
         'sectors':       config.get('sectors', []),
         'index':         index_data,
+        'news':          news,
+        'themes':        themes,
         'topBuy':        top_buy_out,
         'topSell':       top_sell_out,
         'gainers':       [fmt_mover(i+1, m) for i, m in enumerate(gainers)],

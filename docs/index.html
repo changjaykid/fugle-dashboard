@@ -302,6 +302,16 @@ tr:hover td{background:rgba(26,26,38,.8)}
 
   <div style="height:20px"></div>
 
+  <!-- 法人買超類股（動態）-->
+  <div class="card">
+    <div class="ct">📊 今日法人買超類股 <span class="badge">真實TWSE日列資料</span></div>
+    <div id="instThemesGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:8px">
+      <div style="color:var(--muted);padding:20px;text-align:center;grid-column:1/-1">資料載入中...</div>
+    </div>
+  </div>
+
+  <div style="height:20px"></div>
+
 </div>
 
 <!-- ⑥ 模擬倉 -->
@@ -861,6 +871,37 @@ function renderDynamic(d){
     `).join('');
   }
 
+  // 新聞
+  const newsList = document.getElementById('newsList');
+  if(newsList && d.news && d.news.length > 0) {
+    newsList.innerHTML = d.news.map(n => `
+      <div class="ni">
+        <div class="ni-h"><span class="ntag">${n.source||'財經'}</span></div>
+        <a href="${n.url}" target="_blank" rel="noopener">
+          <div class="ni-t">${n.title}</div>
+        </a>
+        <div class="ni-m">
+          <span>${n.published||''}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // 法人買超類股（動態題材）
+  const themesCard = document.getElementById('instThemesGrid');
+  if(themesCard && d.themes && d.themes.length > 0) {
+    themesCard.innerHTML = d.themes.map(t => `
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-size:16px;font-weight:800">${t.icon} ${t.name}</span>
+          <span class="badge ${t.avgPct>=0?'badge-g':'badge-r'}">${t.avgPct>=0?'+':''}${t.avgPct}%</span>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:8px">${t.reason} | 信心 ${t.conf}</div>
+        ${t.topStocks.map(s=>`<div style="font-size:12px;padding:3px 0"><b>${s.s} ${s.n}</b> <span class="${s.chg.startsWith('+')?'up':'dn'}">${s.chg}</span></div>`).join('')}
+      </div>
+    `).join('');
+  }
+
   // 自選股
   renderWatch(d.stocks || []);
 }
@@ -925,24 +966,34 @@ function renderWatch(stocks){
     return;
   }
 
-  grid.innerHTML = stocks.map(x=>`
+  grid.innerHTML = stocks.map(x=>{
+    const rsiColor = x.rsi != null ? (x.rsi>=70?'var(--red)':x.rsi<=30?'var(--green)':'var(--muted)') : 'var(--muted)';
+    const w52bar = x.week52Pos != null ? `<div style="width:100%;height:4px;background:var(--surface2);border-radius:2px;margin-top:3px"><div style="width:${x.week52Pos}%;height:100%;background:var(--accent);border-radius:2px"></div></div>` : '';
+    return `
     <div class="wcard">
       <div class="wcard-top">
-        <div><div class="wcard-n">${x.name}</div><div class="wcard-s">${x.symbol}</div></div>
-        <div class="wcat">${x.category}</div>
-      </div>
-      <div style="display:flex;align-items:end;justify-content:space-between">
-        <div>
-          <div class="wpr">${x.price}</div>
-          <div class="wchg ${x.changePct>=0?'up':'dn'}">${x.changePct>=0?'+':''}${x.changePct}%</div>
-        </div>
+        <div><div class="wcard-n">${x.name}</div><div class="wcard-s">${x.symbol} <span class="tag">${x.category}</span></div></div>
         <div style="text-align:right">
           <div class="cscore">${x.confidence}</div>
           <div style="font-size:10px;color:${x.confidenceColor}">${x.confidenceLabel}</div>
         </div>
       </div>
-    </div>
-  `).join('');
+      <div style="display:flex;align-items:end;justify-content:space-between;margin-bottom:10px">
+        <div>
+          <div class="wpr">${x.price}</div>
+          <div class="wchg ${x.changePct>=0?'up':'dn'}">${x.changePct>=0?'+':''}${x.changePct}%</div>
+        </div>
+      </div>
+      <div class="wbk">
+        <div class="wbi"><span>RSI(14)</span><span style="color:${rsiColor};font-weight:700">${x.rsi!=null?x.rsi:'--'}</span></div>
+        <div class="wbi"><span>5日量比</span><span style="color:${x.volRatio5d!=null&&x.volRatio5d>1.5?'var(--red)':'var(--text)'}">${x.volRatio5d!=null?x.volRatio5d+'x':'--'}</span></div>
+        <div class="wbi" style="grid-column:1/-1">
+          <span>52週位置 ${x.week52Pos!=null?x.week52Pos+'%':'--'}</span>
+        </div>
+      </div>
+      ${w52bar}
+    </div>`;
+  }).join('');
 
   table.innerHTML = stocks.map(x=>`
     <tr>

@@ -17,7 +17,7 @@ def update_sim_portfolio():
     if not STOCK_PICKS_JSON.exists():
         STOCK_PICKS_JSON.parent.mkdir(parents=True, exist_ok=True)
         with open(STOCK_PICKS_JSON, 'w') as f:
-            json.dump({}, f)
+            json.dump([], f)
     
     if not DASHBOARD_JSON.exists():
         print("⚠️ dashboard.json 不存在，跳過模擬倉更新")
@@ -37,46 +37,35 @@ def update_sim_portfolio():
             portfolio = json.load(f)
 
     with open(STOCK_PICKS_JSON, 'r') as f:
-        picks_data = json.load(f)
+        picks_list_all = json.load(f)
 
     # 2. Process stock-picks.json to enter new positions
-    # Look at last 5 days of picks
-    dates = sorted(picks_data.keys(), reverse=True)[:5]
-    
-    modified_picks = False
-    for date in dates:
-        picks_list = picks_data[date]
-        if not isinstance(picks_list, list): continue
+    # 讀最近一筆 picks
+    if picks_list_all and isinstance(picks_list_all, list):
+        latest_entry = picks_list_all[-1]
+        picks_list = latest_entry.get('picks', [])
         
         for pick in picks_list:
-            if not isinstance(pick, dict): continue
+            sym = pick.get('symbol')
+            if not sym: continue
             
-            # If not entered yet and we have a price today
-            if pick.get('entry_price') is None and pick.get('s') in price_map:
-                price_info = price_map[pick['s']]
+            # Check if we have a price today and not already in holdings
+            if sym in price_map and not any(h['s'] == sym for h in portfolio['holdings']):
+                price_info = price_map[sym]
                 current_price = price_info['price']
                 
-                # Check if already in holdings
-                if not any(h['s'] == pick['s'] for h in portfolio['holdings']):
-                    new_holding = {
-                        "s": pick['s'],
-                        "n": pick['n'],
-                        "entry_date": today_str,
-                        "entry_price": current_price,
-                        "current_price": current_price,
-                        "conf": pick.get('conf', 0),
-                        "days": 0
-                    }
-                    portfolio['holdings'].append(new_holding)
-                    
-                    # Update stock-picks.json
-                    pick['entry_price'] = current_price
-                    modified_picks = True
-                    print(f"📈 模擬進場: {pick['s']} {pick['n']} @ {current_price}")
+                new_holding = {
+                    "s": sym,
+                    "n": pick.get('name', sym),
+                    "entry_date": today_str,
+                    "entry_price": current_price,
+                    "current_price": current_price,
+                    "conf": pick.get('conf', 0),
+                    "days": 0
+                }
+                portfolio['holdings'].append(new_holding)
+                print(f"📈 模擬進場: {sym} {new_holding['n']} @ {current_price}")
 
-    if modified_picks:
-        with open(STOCK_PICKS_JSON, 'w') as f:
-            json.dump(picks_data, f, ensure_ascii=False, indent=2)
 
     # 3. Update existing holdings
     new_holdings = []

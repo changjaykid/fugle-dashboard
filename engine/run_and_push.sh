@@ -22,10 +22,11 @@ fi
 
 # 跑引擎
 python3 "$ENGINE" scan >> "$LOG" 2>&1
+python3 "$REPO/engine/sim_engine.py" >> "$LOG" 2>&1
 
 # 推 GitHub
 cd "$REPO"
-git add docs/dashboard.json
+git add docs/dashboard.json docs/sim_portfolio.json
 if git diff --cached --quiet; then
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] 無變動，不推送" >> "$LOG"
 else

@@ -1,5 +1,56 @@
 {
-  "holdings": [],
+  "holdings": [
+    {
+      "s": "6770",
+      "n": "力積電",
+      "entry_date": "2026-05-26",
+      "entry_price": 70.8,
+      "current_price": 70.8,
+      "conf": 91,
+      "days": 3,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2344",
+      "n": "華邦電",
+      "entry_date": "2026-05-26",
+      "entry_price": 141.0,
+      "current_price": 141.0,
+      "conf": 86,
+      "days": 3,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2303",
+      "n": "聯電",
+      "entry_date": "2026-05-26",
+      "entry_price": 130.5,
+      "current_price": 130.5,
+      "conf": 80,
+      "days": 3,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2881",
+      "n": "富邦金",
+      "entry_date": "2026-05-26",
+      "entry_price": 103.5,
+      "current_price": 103.5,
+      "conf": 68,
+      "days": 3,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2324",
+      "n": "仁寶",
+      "entry_date": "2026-05-26",
+      "entry_price": 33.6,
+      "current_price": 33.6,
+      "conf": 65,
+      "days": 3,
+      "profit_pct": 0.0
+    }
+  ],
   "history": [],
-  "updatedAt": "2026-05-26T14:00:01.065831+08:00"
+  "updatedAt": "2026-05-26T18:48:37.226211+08:00"
 }
