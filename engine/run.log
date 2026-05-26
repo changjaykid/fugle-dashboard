@@ -52,3 +52,183 @@ To https://github.com/changjaykid/fugle-dashboard.git
 [2026-05-25 14:00:00] 非開盤時間，跳過
 [2026-05-25 15:00:00] 開始掃描...
 [2026-05-25 15:00:00] 非開盤時間，跳過
+[2026-05-26 09:00:00] 開始掃描...
+/Users/kid/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+🔍 開始掃描...
+  📈 大盤指數 + 市場情緒...
+  📊 漲跌排行...
+  🏭 產業分類...
+  🏆 法人買賣超...
+  🔍 個股報價 (10 + 151 題材股)...
+✅ 完成：個股10 / 法人Top10 / 漲Top10 / 明日關注8 / 爆量8 / 避開8 / priceMap1359 / 情緒60
+🔄 更新模擬倉...
+✅ 模擬倉更新完成
+[main 1ee691a] data: 行情更新 09:00
+ Committer: Kid舊mac <kid@KidjiumacdeMBP.hitronhub.home>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 1 file changed, 227 insertions(+), 371 deletions(-)
+To https://github.com/changjaykid/fugle-dashboard.git
+   87a5c27..1ee691a  main -> main
+[2026-05-26 09:00:15] 推送完成
+[2026-05-26 10:00:01] 開始掃描...
+/Users/kid/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+🔍 開始掃描...
+  📈 大盤指數 + 市場情緒...
+  📊 漲跌排行...
+  🏭 產業分類...
+  🏆 法人買賣超...
+  🔍 個股報價 (10 + 151 題材股)...
+✅ 完成：個股10 / 法人Top10 / 漲Top10 / 明日關注8 / 爆量8 / 避開8 / priceMap1359 / 情緒74
+🔄 更新模擬倉...
+✅ 模擬倉更新完成
+[main 2d8ff1e] data: 行情更新 10:00
+ Committer: Kid舊mac <kid@KidjiumacdeMBP.hitronhub.home>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 1 file changed, 274 insertions(+), 274 deletions(-)
+To https://github.com/changjaykid/fugle-dashboard.git
+   1ee691a..2d8ff1e  main -> main
+[2026-05-26 10:00:28] 推送完成
+[2026-05-26 11:00:00] 開始掃描...
+/Users/kid/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+🔍 開始掃描...
+  📈 大盤指數 + 市場情緒...
+  📊 漲跌排行...
+  🏭 產業分類...
+  🏆 法人買賣超...
+  🔍 個股報價 (10 + 151 題材股)...
+✅ 完成：個股10 / 法人Top10 / 漲Top10 / 明日關注8 / 爆量8 / 避開8 / priceMap1358 / 情緒75
+🔄 更新模擬倉...
+✅ 模擬倉更新完成
+[main d9e6142] data: 行情更新 11:00
+ Committer: Kid舊mac <kid@KidjiumacdeMBP.hitronhub.home>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 1 file changed, 237 insertions(+), 245 deletions(-)
+To https://github.com/changjaykid/fugle-dashboard.git
+   2d8ff1e..d9e6142  main -> main
+[2026-05-26 11:00:12] 推送完成
+[2026-05-26 12:00:00] 開始掃描...
+/Users/kid/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+🔍 開始掃描...
+  📈 大盤指數 + 市場情緒...
+  📊 漲跌排行...
+  🏭 產業分類...
+  🏆 法人買賣超...
+  🔍 個股報價 (10 + 151 題材股)...
+✅ 完成：個股10 / 法人Top10 / 漲Top10 / 明日關注8 / 爆量8 / 避開8 / priceMap1361 / 情緒74
+🔄 更新模擬倉...
+✅ 模擬倉更新完成
+[main 15bf6a7] data: 行情更新 12:00
+ Committer: Kid舊mac <kid@KidjiumacdeMBP.hitronhub.home>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 1 file changed, 236 insertions(+), 212 deletions(-)
+To https://github.com/changjaykid/fugle-dashboard.git
+   d9e6142..15bf6a7  main -> main
+[2026-05-26 12:00:21] 推送完成
+[2026-05-26 13:00:00] 開始掃描...
+/Users/kid/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+🔍 開始掃描...
+  📈 大盤指數 + 市場情緒...
+  📊 漲跌排行...
+  🏭 產業分類...
+  🏆 法人買賣超...
+  🔍 個股報價 (10 + 151 題材股)...
+✅ 完成：個股10 / 法人Top10 / 漲Top10 / 明日關注8 / 爆量8 / 避開8 / priceMap1359 / 情緒75
+🔄 更新模擬倉...
+✅ 模擬倉更新完成
+[main 75f2fdd] data: 行情更新 13:00
+ Committer: Kid舊mac <kid@KidjiumacdeMBP.hitronhub.home>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 1 file changed, 216 insertions(+), 232 deletions(-)
+To https://github.com/changjaykid/fugle-dashboard.git
+   15bf6a7..75f2fdd  main -> main
+[2026-05-26 13:00:09] 推送完成
+[2026-05-26 14:00:00] 開始掃描...
+/Users/kid/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+🔍 開始掃描...
+  📈 大盤指數 + 市場情緒...
+  📊 漲跌排行...
+  🏭 產業分類...
+  🏆 法人買賣超...
+  🔍 個股報價 (10 + 151 題材股)...
+✅ 完成：個股10 / 法人Top10 / 漲Top10 / 明日關注8 / 爆量8 / 避開8 / priceMap1375 / 情緒62
+🔄 更新模擬倉...
+✅ 模擬倉更新完成
+[main 1f2f361] data: 行情更新 14:00
+ Committer: Kid舊mac <kid@KidjiumacdeMBP.hitronhub.home>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 1 file changed, 6510 insertions(+), 6382 deletions(-)
+To https://github.com/changjaykid/fugle-dashboard.git
+   75f2fdd..1f2f361  main -> main
+[2026-05-26 14:00:23] 推送完成
