@@ -421,7 +421,7 @@ tr:hover td{background:rgba(26,26,38,.8)}
     <div class="ct">📋 自選股完整資料</div>
     <table><thead><tr>
       <th>代號</th><th>名稱</th><th>類別</th><th>現價</th>
-      <th>漲跌%</th><th>3日漲幅</th><th>52週位置</th><th>信心分</th><th>建議</th><th>操作</th>
+      <th>漲跌%</th><th>RSI</th><th>52週位置</th><th>信心分</th><th>建議</th><th>5日量比</th>
     </tr></thead>
     <tbody id="wTable"><tr><td colspan="10" style="text-align:center;color:var(--muted);padding:30px">尚無資料</td></tr></tbody>
     </table>
@@ -751,6 +751,7 @@ async function loadDashboard(){
     const d = await r.json();
     window.dashboardData = d;
     renderDynamic(d);
+    if(typeof renderThemes === 'function') renderThemes();
   } catch(e) { console.error('Dashboard Error:', e); }
 }
 
@@ -959,7 +960,9 @@ function renderWatch(stocks){
   const grid = document.getElementById('wGrid');
   const table = document.getElementById('wTable');
   if(!grid || !table) return;
-  
+
+  const fmt = v => (v === null || v === undefined ? '--' : v);
+
   if(stocks.length === 0) {
     grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="ei">⭐</div><div>尚無自選股</div></div>';
     table.innerHTML = '<tr><td colspan="10" style="text-align:center">尚無數據</td></tr>';
@@ -968,7 +971,7 @@ function renderWatch(stocks){
 
   grid.innerHTML = stocks.map(x=>{
     const rsiColor = x.rsi != null ? (x.rsi>=70?'var(--red)':x.rsi<=30?'var(--green)':'var(--muted)') : 'var(--muted)';
-    const w52bar = x.week52Pos != null ? `<div style="width:100%;height:4px;background:var(--surface2);border-radius:2px;margin-top:3px"><div style="width:${x.week52Pos}%;height:100%;background:var(--accent);border-radius:2px"></div></div>` : '';
+    const w52 = Math.max(0, Math.min(100, x.week52Pos ?? 0));
     return `
     <div class="wcard">
       <div class="wcard-top">
@@ -985,30 +988,30 @@ function renderWatch(stocks){
         </div>
       </div>
       <div class="wbk">
-        <div class="wbi"><span>RSI(14)</span><span style="color:${rsiColor};font-weight:700">${x.rsi!=null?x.rsi:'--'}</span></div>
+        <div class="wbi"><span>RSI(14)</span><span style="color:${rsiColor};font-weight:700">${fmt(x.rsi)}</span></div>
         <div class="wbi"><span>5日量比</span><span style="color:${x.volRatio5d!=null&&x.volRatio5d>1.5?'var(--red)':'var(--text)'}">${x.volRatio5d!=null?x.volRatio5d+'x':'--'}</span></div>
-        <div class="wbi" style="grid-column:1/-1">
-          <span>52週位置 ${x.week52Pos!=null?x.week52Pos+'%':'--'}</span>
-        </div>
+        <div class="wbi" style="grid-column:1/-1"><span>52週位置 ${x.week52Pos!=null?x.week52Pos+'%':'--'}</span></div>
       </div>
-      ${w52bar}
+      <div style="width:100%;height:4px;background:var(--surface2);border-radius:2px;margin-top:3px"><div style="width:${w52}%;height:100%;background:var(--accent);border-radius:2px"></div></div>
     </div>`;
   }).join('');
 
-  table.innerHTML = stocks.map(x=>`
+  table.innerHTML = stocks.map(x=>{
+    const w52 = Math.max(0, Math.min(100, x.week52Pos ?? 0));
+    return `
     <tr>
       <td>${x.symbol}</td>
       <td><b>${x.name}</b></td>
       <td><span class="tag">${x.category}</span></td>
       <td class="wpr-cell">${x.price}</td>
       <td class="${x.changePct>=0?'up':'dn'}">${x.changePct>=0?'+':''}${x.changePct}%</td>
-      <td>—</td>
-      <td><div style="width:50px;height:4px;background:var(--surface2);border-radius:2px"><div style="width:70%;height:100%;background:var(--accent);border-radius:2px"></div></div></td>
+      <td>${fmt(x.rsi)}</td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div style="width:50px;height:4px;background:var(--surface2);border-radius:2px"><div style="width:${w52}%;height:100%;background:var(--accent);border-radius:2px"></div></div><span>${x.week52Pos!=null?x.week52Pos+'%':'--'}</span></div></td>
       <td><div class="cscore">${x.confidence}</div></td>
       <td><span class="rec-chip ${x.confidence>=65?'rec-buy':x.confidence<=40?'rec-avoid':'rec-hold'}">${x.confidence>=65?'強勢':x.confidence<=40?'避開':'觀察'}</span></td>
-      <td><button class="gbtn">🔔</button></td>
-    </tr>
-  `).join('');
+      <td><button class="gbtn">${x.volRatio5d!=null?x.volRatio5d+'x':'🔔'}</button></td>
+    </tr>`;
+  }).join('');
 }
 
 function renderHome(){
@@ -1018,7 +1021,24 @@ function renderHome(){
 function renderThemes(){
   const g = document.getElementById('thGrid');
   if(!g) return;
-  g.innerHTML = THEMES.map((t,i) => `
+  const sourceThemes = (window.dashboardData && window.dashboardData.themes && window.dashboardData.themes.length)
+    ? window.dashboardData.themes.map(t => ({
+        icon: t.icon || '📊',
+        name: t.name,
+        heat: Math.round(Math.min(100, Math.max(0, 50 + (t.avgPct || 0) * 8))),
+        conf: t.conf ?? 50,
+        rec: (t.conf ?? 50) >= 65 ? 'buy' : 'hold',
+        recText: t.reason || '動態題材',
+        why: `${t.reason || '動態題材'}，平均漲幅 ${t.avgPct ?? 0}%`,
+        risk: '依當日盤勢動態更新',
+        stocks: (t.topStocks || []).map(s => ({
+          s: s.s, n: s.n, role: t.name, why: `${t.name} 代表股`, conf: s.conf ?? t.conf ?? 50,
+          rec: (s.conf ?? 50) >= 65 ? 'buy' : 'hold', price: '—', chg: s.chg || '—'
+        }))
+      }))
+    : THEMES;
+  window.activeThemes = sourceThemes;
+  g.innerHTML = sourceThemes.map((t,i) => `
     <div class="card th-card" onclick="showTheme(${i})" style="cursor:pointer">
       <div class="th-head">
         <div style="font-size:22px">${t.icon}</div>
@@ -1036,7 +1056,7 @@ function renderThemes(){
 }
 
 function showTheme(i){
-  const t = THEMES[i];
+  const t = (window.activeThemes || THEMES)[i];
   if(!t) return;
   const detailEl = document.getElementById('thDetail');
   if(detailEl){

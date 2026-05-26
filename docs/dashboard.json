@@ -13,7 +13,7 @@
       "confidence": 28,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "18:48",
+      "updatedAt": "18:56",
       "rsi": 52.04,
       "week52Pos": 53.12,
       "volRatio5d": 1.08
@@ -31,7 +31,7 @@
       "confidence": 13,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "18:48",
+      "updatedAt": "18:56",
       "rsi": 56.73,
       "week52Pos": 88.75,
       "volRatio5d": 0.8
@@ -49,7 +49,7 @@
       "confidence": 22,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "18:48",
+      "updatedAt": "18:56",
       "rsi": 66.15,
       "week52Pos": 88.85,
       "volRatio5d": 1.62
@@ -67,7 +67,7 @@
       "confidence": 36,
       "confidenceLabel": "📉 偏空",
       "confidenceColor": "#ff6d00",
-      "updatedAt": "18:48",
+      "updatedAt": "18:56",
       "rsi": 33.33,
       "week52Pos": 43.75,
       "volRatio5d": 1.13
@@ -85,7 +85,7 @@
       "confidence": 29,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "18:48",
+      "updatedAt": "18:56",
       "rsi": 49.37,
       "week52Pos": 75.68,
       "volRatio5d": 0.71
@@ -103,7 +103,7 @@
       "confidence": 25,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "18:48",
+      "updatedAt": "18:56",
       "rsi": 57.29,
       "week52Pos": 88.68,
       "volRatio5d": 1.1
@@ -121,7 +121,7 @@
       "confidence": 44,
       "confidenceLabel": "📉 偏空",
       "confidenceColor": "#ff6d00",
-      "updatedAt": "18:48",
+      "updatedAt": "18:56",
       "rsi": 75.83,
       "week52Pos": 94.45,
       "volRatio5d": 1.16
@@ -139,7 +139,7 @@
       "confidence": 39,
       "confidenceLabel": "📉 偏空",
       "confidenceColor": "#ff6d00",
-      "updatedAt": "18:48",
+      "updatedAt": "18:56",
       "rsi": 43.98,
       "week52Pos": 57.14,
       "volRatio5d": 1.32
@@ -157,7 +157,7 @@
       "confidence": 29,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "18:48",
+      "updatedAt": "18:56",
       "rsi": 48.98,
       "week52Pos": 80.67,
       "volRatio5d": 0.9
@@ -175,7 +175,7 @@
       "confidence": 28,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "18:48",
+      "updatedAt": "18:56",
       "rsi": 60.75,
       "week52Pos": 70.83,
       "volRatio5d": 0.99
@@ -216,73 +216,80 @@
   "news": [
     {
       "title": "精選",
-      "url": "https://news.cnyes.com/news/id/6470836",
+      "url": "https://news.cnyes.com/news/id/6470827",
       "published": "",
       "source": "鉅亨網"
     },
     {
-      "title": "捷敏-KY搭AI電源架構升級潮 散熱需求大成長",
-      "url": "https://news.cnyes.com/news/id/6470836",
+      "title": "正2 ETF也能存？內行股民靠「智能條件單」紀律投資 比融資更抗洗、免斷頭",
+      "url": "https://news.cnyes.com/news/id/6470827",
       "published": "",
       "source": "鉅亨網"
     },
     {
       "title": "1.",
-      "url": "https://news.cnyes.com/news/id/6470524",
+      "url": "https://news.cnyes.com/news/id/6469050",
       "published": "",
       "source": "鉅亨網"
     },
     {
-      "title": "GPU將被取代？高盛：ASIC將成AI資料中心主流  「這兩檔」股票值得關注",
-      "url": "https://news.cnyes.com/news/id/6470524",
+      "title": "別急著減碼出場！美銀：AI泡沫規模大  但崩盤需等「兩大關鍵條件」成真",
+      "url": "https://news.cnyes.com/news/id/6469050",
       "published": "",
       "source": "鉅亨網"
     },
     {
       "title": "2.",
-      "url": "https://news.cnyes.com/news/id/6470773",
+      "url": "https://news.cnyes.com/news/id/6468881",
       "published": "",
       "source": "鉅亨網"
     },
     {
-      "title": "Rubin機櫃售價飆漲95%！零組件大升級，誰是大贏家！？",
-      "url": "https://news.cnyes.com/news/id/6470773",
+      "title": "特斯拉＋SpaceX也比不上！分析師看好「這一股」：獲利碾壓、市值一年內就超越",
+      "url": "https://news.cnyes.com/news/id/6468881",
       "published": "",
       "source": "鉅亨網"
     },
     {
       "title": "3.",
-      "url": "https://news.cnyes.com/news/id/6470767",
+      "url": "https://news.cnyes.com/news/id/6469163",
       "published": "",
       "source": "鉅亨網"
     },
     {
-      "title": "〈台股盤後〉天量天價衝破4萬4 台積電軟腳跌破2300元 翻黑收跌119點",
-      "url": "https://news.cnyes.com/news/id/6470767",
+      "title": "ASML壟斷地位正遇挑戰！荷駐韓大使：各國正瘋狂角逐下一代技術 全球光刻競賽非針對中國",
+      "url": "https://news.cnyes.com/news/id/6469163",
       "published": "",
       "source": "鉅亨網"
     },
     {
       "title": "4.",
-      "url": "https://news.cnyes.com/news/id/6470782",
+      "url": "https://news.cnyes.com/news/id/6469160",
       "published": "",
       "source": "鉅亨網"
     },
     {
-      "title": "整理冬衣翻到6.77億！史上最淡定頭獎得主「塞包包忘鞋櫃」靠台彩協尋救回",
-      "url": "https://news.cnyes.com/news/id/6470782",
+      "title": "退而求其次！無法阻止美伊談判突破 以總理告訴川普：將繼續保留對威脅採取行動的自由",
+      "url": "https://news.cnyes.com/news/id/6469160",
       "published": "",
       "source": "鉅亨網"
     }
   ],
   "themes": [
     {
-      "name": "油電燃氣",
+      "name": "其他電子",
       "icon": "📊",
-      "avgPct": 1.12,
-      "conf": 50,
-      "reason": "強勢上漲",
-      "topStocks": []
+      "avgPct": 0,
+      "conf": 56.0,
+      "reason": "法人買超",
+      "topStocks": [
+        {
+          "s": "2312",
+          "n": "金寶",
+          "conf": 56,
+          "chg": "+9.89%"
+        }
+      ]
     },
     {
       "name": "電子零組件",
@@ -296,43 +303,6 @@
           "n": "康舒",
           "conf": 40,
           "chg": "-1.11%"
-        }
-      ]
-    },
-    {
-      "name": "電子通路",
-      "icon": "📊",
-      "avgPct": 1.24,
-      "conf": 50,
-      "reason": "強勢上漲",
-      "topStocks": []
-    },
-    {
-      "name": "電機",
-      "icon": "📊",
-      "avgPct": 1.25,
-      "conf": 50,
-      "reason": "強勢上漲",
-      "topStocks": []
-    },
-    {
-      "name": "金融保險",
-      "icon": "🏦",
-      "avgPct": 0,
-      "conf": 57.0,
-      "reason": "法人買超",
-      "topStocks": [
-        {
-          "s": "2881",
-          "n": "富邦金",
-          "conf": 69,
-          "chg": "+5.94%"
-        },
-        {
-          "s": "2887",
-          "n": "台新新光金",
-          "conf": 45,
-          "chg": "+1.29%"
         }
       ]
     },
@@ -360,6 +330,37 @@
           "n": "聯電",
           "conf": 68,
           "chg": "+4.4%"
+        }
+      ]
+    },
+    {
+      "name": "電子通路",
+      "icon": "📊",
+      "avgPct": 1.24,
+      "conf": 50,
+      "reason": "強勢上漲",
+      "topStocks": []
+    },
+    {
+      "name": "玻璃陶瓷",
+      "icon": "📊",
+      "avgPct": 0.88,
+      "conf": 50,
+      "reason": "強勢上漲",
+      "topStocks": []
+    },
+    {
+      "name": "塑膠",
+      "icon": "📊",
+      "avgPct": -0.99,
+      "conf": 61.0,
+      "reason": "法人買超",
+      "topStocks": [
+        {
+          "s": "1303",
+          "n": "南亞",
+          "conf": 61,
+          "chg": "+4.25%"
         }
       ]
     }
@@ -475,7 +476,7 @@
       "n": "京元電子",
       "industry": "半導體",
       "foreign": "+24,629張",
-      "trust": "-3,869張",
+      "trust": "+0張",
       "total": "+21,913張",
       "conf": 63,
       "price": "338.5",
@@ -12138,7 +12139,7 @@
       "industry": "鋼鐵"
     }
   },
-  "updatedAt": "2026-05-26T18:48:37.226211+08:00",
+  "updatedAt": "2026-05-26T18:56:26.776110+08:00",
   "marketOpen": false,
   "source": "TWSE"
 }

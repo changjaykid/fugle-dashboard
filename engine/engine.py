@@ -721,13 +721,6 @@ def scan():
           f'漲Top{len(gainers)} / 明日關注{len(tomorrow_watch)} / '
           f'爆量{len(vol_surge)} / 避開{len(avoid_list)} / '
           f'priceMap{len(price_map)} / 情緒{index_data.get("mood","?")}')
-    
-    # 觸發模擬倉更新
-    try:
-        from sim_engine import update_sim_portfolio
-        update_sim_portfolio()
-    except Exception as e:
-        print(f'[WARN] update_sim_portfolio error: {e}')
 
     return payload
 
