@@ -340,6 +340,7 @@ tr:hover td{background:rgba(26,26,38,.8)}
     </div>
   </div>
   <div class="g3" id="thGrid"></div>
+  <div id="thDetail"></div>
 </div>
 
 <!-- ③ 類股 -->
@@ -962,6 +963,109 @@ function renderWatch(stocks){
 function renderHome(){
   // 渲染首頁靜態結構
 }
+
+function renderThemes(){
+  const g = document.getElementById('thGrid');
+  if(!g) return;
+  g.innerHTML = THEMES.map((t,i) => `
+    <div class="card th-card" onclick="showTheme(${i})" style="cursor:pointer">
+      <div class="th-head">
+        <div style="font-size:22px">${t.icon}</div>
+        <div class="cscore" style="color:var(--accent)">${t.conf}</div>
+      </div>
+      <div style="font-weight:700;margin-bottom:6px">${t.name}</div>
+      <div class="th-heat">
+        <span>🌡️ 熱度 ${t.heat}</span>
+        <span class="badge ${t.rec==='buy'?'badge-g':t.rec==='sell'?'badge-r':''}">${t.recText}</span>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px">${t.why.slice(0,60)}…</div>
+      <div class="th-tags">${(t.stocks||[]).slice(0,4).map(s=>`<span class="badge">${s.s} ${s.n}</span>`).join('')}</div>
+    </div>
+  `).join('');
+}
+
+function showTheme(i){
+  const t = THEMES[i];
+  if(!t) return;
+  const detailEl = document.getElementById('thDetail');
+  if(detailEl){
+    detailEl.innerHTML = `
+      <div class="card">
+        <div class="ct">${t.icon} ${t.name}</div>
+        <div style="margin-bottom:12px">${t.why}</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:16px">⚠️ 風險：${t.risk}</div>
+        <div class="g3">${(t.stocks||[]).map(s=>`
+          <div class="scard">
+            <div class="scard-top"><b>${s.s} ${s.n}</b><div class="cscore">${s.conf}</div></div>
+            <div class="scard-role">${s.role}</div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:8px">${s.why}</div>
+            <div class="scard-rec">
+              <span>現價 ${s.price} <span class="${s.chg.startsWith('+')?'up':'dn'}">${s.chg}</span></span>
+              <span class="rec-chip ${s.conf>=65?'rec-buy':s.conf<=40?'rec-avoid':'rec-hold'}">${s.conf>=65?'買入':s.conf<=40?'避開':'觀察'}</span>
+            </div>
+          </div>
+        `).join('')}</div>
+      </div>
+    `;
+  }
+}
+
+function renderSectorBtns(){
+  const sb = document.getElementById('sBtns');
+  if(!sb) return;
+  sb.innerHTML = SECTORS.map((s,i) => `
+    <div class="sbtn" onclick="showSector(${i})">
+      <span class="si">${s.icon}</span>
+      <span class="sn">${s.name}</span>
+      <span class="sc">${s.stocks?s.stocks.length:0}檔</span>
+    </div>
+  `).join('');
+}
+
+function showSector(i){
+  const s = SECTORS[i];
+  if(!s) return;
+  document.querySelectorAll('.sbtn').forEach((b,idx)=>b.classList.toggle('active',idx===i));
+  const res = document.getElementById('sResult');
+  if(!res) return;
+  res.innerHTML = `
+    <div class="card">
+      <div class="ct">${s.icon} ${s.name} (${(s.stocks||[]).length}檔)</div>
+      <div class="g3">${(s.stocks||[]).map(st=>`
+        <div class="scard">
+          <div class="scard-top"><b>${st.s} ${st.n}</b><div class="cscore">${st.conf}</div></div>
+          <div class="scard-role">${st.role}</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:8px">${st.why}</div>
+          <div class="scard-rec">
+            <span>現價 ${st.price} <span class="${st.chg.startsWith('+')?'up':'dn'}">${st.chg}</span></span>
+            <span class="rec-chip ${st.conf>=65?'rec-buy':st.conf<=40?'rec-avoid':'rec-hold'}">${st.conf>=65?'買入':st.conf<=40?'避開':'觀察'}</span>
+          </div>
+        </div>
+      `).join('')}</div>
+    </div>
+  `;
+}
+
+function doSearch(){
+  const q = (document.getElementById('sIn')||{}).value||'';
+  if(!q.trim()) return;
+  const res = document.getElementById('sResult');
+  if(!res) return;
+  const all = SECTORS.flatMap(s=>s.stocks.map(st=>({...st,sector:s.name,icon:s.icon})));
+  const hits = all.filter(st=>st.s.includes(q)||st.n.includes(q)||st.role.includes(q)||(st.sector||'').includes(q));
+  if(!hits.length){ res.innerHTML='<div class="empty"><div class="ei">🔍</div><div>找不到相關股票</div></div>'; return; }
+  res.innerHTML = `<div class="card"><div class="ct">搜尋結果：${hits.length} 筆</div><div class="g3">${hits.map(st=>`
+    <div class="scard">
+      <div class="scard-top"><b>${st.s} ${st.n}</b><div class="cscore">${st.conf}</div></div>
+      <div class="scard-role">${st.icon} ${st.sector} · ${st.role}</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px">${st.why}</div>
+      <div class="scard-rec">
+        <span>現價 ${st.price} <span class="${st.chg.startsWith('+')?'up':'dn'}">${st.chg}</span></span>
+        <span class="rec-chip ${st.conf>=65?'rec-buy':st.conf<=40?'rec-avoid':'rec-hold'}">${st.conf>=65?'買入':st.conf<=40?'避開':'觀察'}</span>
+      </div>
+    </div>
+  `).join('')}</div></div>`;
+}
 function isOpen(){
   const n=new Date(),d=n.getDay();
   if(d===0||d===6)return false;
@@ -970,8 +1074,8 @@ function isOpen(){
 }
 
 renderHome();      // 靜態部分
-renderThemes();
-renderSectorBtns();
+if(typeof renderThemes === 'function') renderThemes();
+if(typeof renderSectorBtns === 'function') renderSectorBtns();
 loadDashboard();   // 非同步載入真實數據（含大盤、法人、新聞、自選股）
 setInterval(loadDashboard, 5 * 60 * 1000);
 </script>
