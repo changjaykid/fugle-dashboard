@@ -274,6 +274,20 @@ tr:hover td{background:rgba(10,132,255,0.06)}
     <div id="techWatchGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:8px"></div>
   </div>
 
+  <!-- 強勢延續型（今日+5%） -->
+  <div class="card" style="margin-top:0">
+    <div class="ct">📈 強勢延續 <span class="badge" style="background:#30d158;color:#000">今日+5%↑ 動能延續</span></div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:12px">今日漲幅 ≥5%、量能支撐、RSI 未過熱 — 明日可能繼續強勢</div>
+    <div id="momentumWatchGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:8px"></div>
+  </div>
+
+  <!-- 漲停板預備隊（今日+10%） -->
+  <div class="card" style="margin-top:0">
+    <div class="ct">🚨 漲停板預備隊 <span class="badge" style="background:#ff3b30;color:#fff">今日漲停 明日二板候選</span></div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:12px">今日漲停（≥9.5%）、籌碼集中、法人有買 — 明日開二板概率評估</div>
+    <div id="limitUpWatchGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:8px"></div>
+  </div>
+
   <div style="height:20px"></div>
 
   <!-- 法人排行 -->
@@ -981,6 +995,50 @@ function renderDynamic(d){
         <div style="font-size:11px;color:#ff9500;margin-top:4px">評分 ${x.score}</div>
       </div>
     `).join('') || '<div style="color:var(--muted);padding:20px;text-align:center">今日無符合技術突破條件的股票</div>';
+  }
+
+  // 共用卡片樣板（強勢+漲停用）
+  const renderMomCard = (x, accentColor) => `
+    <div class="tw-card" style="border-left:3px solid ${accentColor}">
+      <div class="tw-top">
+        <div><div class="tw-sym">${x.s}</div><div class="tw-name">${x.n}</div></div>
+        <div style="text-align:right">
+          <div style="font-size:17px;font-weight:700;color:var(--red)">${x.chg}</div>
+          <div style="font-size:12px;color:var(--muted)">${x.price}</div>
+        </div>
+      </div>
+      <div class="tw-ind">${x.industry}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-top:8px;font-size:12px">
+        <div style="background:var(--surface);border-radius:6px;padding:4px 6px;text-align:center">
+          <div style="color:var(--muted);font-size:10px">RSI</div>
+          <div style="font-weight:700;color:${x.rsi>70?'var(--red)':x.rsi<50?'var(--green)':'var(--yellow)'}">${x.rsi}</div>
+        </div>
+        <div style="background:var(--surface);border-radius:6px;padding:4px 6px;text-align:center">
+          <div style="color:var(--muted);font-size:10px">52週位</div>
+          <div style="font-weight:700;color:${x.week52Pos<60?'var(--green)':'var(--yellow)'}">${x.week52Pos}%</div>
+        </div>
+        <div style="background:var(--surface);border-radius:6px;padding:4px 6px;text-align:center">
+          <div style="color:var(--muted);font-size:10px">量比</div>
+          <div style="font-weight:700;color:var(--yellow)">${x.volRatio}x</div>
+        </div>
+      </div>
+      ${x.foreign ? `<div style="font-size:11px;color:var(--muted);margin-top:6px">外資 ${x.foreign}</div>` : ''}
+      <div style="font-size:11px;margin-top:4px;color:${accentColor}">評分 ${x.score}</div>
+    </div>
+  `;
+
+  // 強勢延續型（+5%）
+  const momentumGrid = document.getElementById('momentumWatchGrid');
+  if(momentumGrid) {
+    momentumGrid.innerHTML = (d.momentumWatch||[]).map(x=>renderMomCard(x,'#30d158')).join('') ||
+      '<div style="color:var(--muted);padding:20px;text-align:center">今日無漲幅≥5%符合條件的股票</div>';
+  }
+
+  // 漲停板預備隊（+10%）
+  const limitGrid = document.getElementById('limitUpWatchGrid');
+  if(limitGrid) {
+    limitGrid.innerHTML = (d.limitUpWatch||[]).map(x=>renderMomCard(x,'#ff3b30')).join('') ||
+      '<div style="color:var(--muted);padding:20px;text-align:center">今日無漲停股票</div>';
   }
 
   // 新聞

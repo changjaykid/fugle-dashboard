@@ -590,6 +590,85 @@ def scan():
     
     tech_watch = sorted(tech_watch, key=lambda x: x['score'], reverse=True)[:8]
 
+    # 強勢延續型（今日漲幅 ≥5%，RSI/量能支撐，明日可能繼續）
+    momentum_watch = []
+    for sym, m in all_map.items():
+        if not (len(sym) == 4 and sym.isdigit()): continue
+        chg_pct = m['changePct']
+        rsi = m.get('rsi', 50)
+        vol_ratio = m.get('volRatio5d', 1)
+        price = m.get('price', 0)
+        ind = industry_cache.get(sym, '')
+        avoid_syms = {x['s'] for x in avoid_list}
+        if (5 <= chg_pct < 9.5 and
+            rsi <= 75 and          # RSI 未過熱
+            vol_ratio >= 1.5 and   # 量能支撐
+            sym not in avoid_syms):
+            score = 0
+            if chg_pct >= 8: score += 30
+            elif chg_pct >= 6: score += 20
+            else: score += 10
+            if rsi <= 65: score += 20   # RSI 有空間繼續漲
+            if vol_ratio >= 3: score += 25
+            elif vol_ratio >= 2: score += 15
+            else: score += 5
+            inst = inst_map.get(sym, {})
+            foreign_net = inst.get('foreign', 0)
+            foreign_str = ''
+            if foreign_net > 0:
+                foreign_str = '+' + format(shares_to_lots(foreign_net), ',') + '張'
+                score += 15  # 法人買超加分（強勢+法人 = 最強訊號）
+            week52pos = m.get('week52Pos', 50)
+            if week52pos < 70: score += 10  # 非高位，有繼續空間
+            momentum_watch.append({
+                's': sym, 'n': m['n'], 'industry': ind,
+                'price': price,
+                'chg': f"+{chg_pct}%",
+                'rsi': round(rsi, 1),
+                'week52Pos': round(week52pos, 1),
+                'volRatio': round(vol_ratio, 1),
+                'foreign': foreign_str,
+                'score': score
+            })
+    momentum_watch = sorted(momentum_watch, key=lambda x: x['score'], reverse=True)[:8]
+
+    # 漲停板預備隊（今日漲停 ≥9.5%，明日二板候選）
+    limit_up_watch = []
+    for sym, m in all_map.items():
+        if not (len(sym) == 4 and sym.isdigit()): continue
+        chg_pct = m['changePct']
+        price = m.get('price', 0)
+        vol_ratio = m.get('volRatio5d', 1)
+        week52pos = m.get('week52Pos', 50)
+        ind = industry_cache.get(sym, '')
+        avoid_syms = {x['s'] for x in avoid_list}
+        if (chg_pct >= 9.5 and sym not in avoid_syms):
+            score = 0
+            if chg_pct >= 9.8: score += 30  # 真漲停（封板）
+            else: score += 15
+            if vol_ratio >= 5: score += 30   # 封板量大，籌碼集中
+            elif vol_ratio >= 3: score += 20
+            else: score += 10
+            if week52pos < 60: score += 20   # 非歷史高位，有繼續空間
+            elif week52pos < 80: score += 10
+            inst = inst_map.get(sym, {})
+            foreign_net = inst.get('foreign', 0)
+            foreign_str = ''
+            if foreign_net > 0:
+                foreign_str = '+' + format(shares_to_lots(foreign_net), ',') + '張'
+                score += 20  # 漲停+法人買 = 強烈二板訊號
+            limit_up_watch.append({
+                's': sym, 'n': m['n'], 'industry': ind,
+                'price': price,
+                'chg': f"+{chg_pct}%",
+                'rsi': round(m.get('rsi', 50), 1),
+                'week52Pos': round(week52pos, 1),
+                'volRatio': round(vol_ratio, 1),
+                'foreign': foreign_str,
+                'score': score
+            })
+    limit_up_watch = sorted(limit_up_watch, key=lambda x: x['score'], reverse=True)[:8]
+
     # priceMap（題材/類股用）
     price_map = {}
     for sym, item in quotes.items():
@@ -776,6 +855,8 @@ def scan():
         'losers':        [fmt_mover(i+1, m) for i, m in enumerate(losers)],
         'tomorrowWatch': tomorrow_watch,
         'techWatch': tech_watch,
+        'momentumWatch': momentum_watch,
+        'limitUpWatch': limit_up_watch,
         'volSurge':      vol_surge,
         'sectorStrength': sector_out,
         'avoidList':     avoid_list,
