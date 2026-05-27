@@ -35,10 +35,10 @@
       "n": "富邦金",
       "entry_date": "2026-05-26",
       "entry_price": 103.5,
-      "current_price": 103.5,
+      "current_price": 107.5,
       "conf": 68,
       "days": 1,
-      "profit_pct": 0.0
+      "profit_pct": 3.86
     },
     {
       "s": "2324",
@@ -72,5 +72,5 @@
     }
   ],
   "history": [],
-  "updatedAt": "2026-05-27T11:00:00.419562+08:00"
+  "updatedAt": "2026-05-27T12:00:00.977753+08:00"
 }
