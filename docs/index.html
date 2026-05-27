@@ -6,34 +6,34 @@
 <title>老闆主控版｜台股智能盯盤</title>
 <style>
 :root{
-  --bg:#0a0a0f;--surface:#12121a;--surface2:#1a1a26;--border:#252535;
-  --text:#e8e8f0;--muted:#6a6a8a;--accent:#7c6fff;
-  --green:#00c853;--red:#ff4d4d;--yellow:#ffd740;--orange:#ff9100;--r:10px;
+  --bg:#0a0a0f;--surface:rgba(18,18,26,0.7);--surface2:rgba(26,26,38,0.7);--border:rgba(255,255,255,0.06);
+  --text:#e8e8f0;--muted:#6a6a8a;--accent:#0a84ff;
+  --green:#00c853;--red:#ff4d4d;--yellow:#ffd740;--orange:#ff9100;--r:16px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,'PingFang TC',sans-serif;min-height:100vh}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,'PingFang TC',sans-serif;min-height:100vh;font-size:17px}
 a{color:inherit;text-decoration:none}
 
 header{
-  background:rgba(18,18,26,.97);backdrop-filter:blur(12px);
+  background:rgba(18,18,26,.7);backdrop-filter:blur(20px) saturate(180%);
   border-bottom:1px solid var(--border);padding:0 24px;height:56px;
   display:flex;align-items:center;justify-content:space-between;
   position:sticky;top:0;z-index:200;
 }
-.logo{font-size:17px;font-weight:800}
+.logo{font-size:19px;font-weight:800}
 .logo em{color:var(--accent);font-style:normal}
 .hdr-r{display:flex;align-items:center;gap:20px}
 .mkt-b{display:flex;align-items:center;gap:6px;font-size:13px}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--red)}
 .dot.open{background:var(--green);animation:blink 1.5s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-.upd{font-size:11px;color:var(--muted)}
+.upd{font-size:13px;color:var(--muted)}
 
 nav{background:var(--surface);border-bottom:1px solid var(--border);
-    display:flex;padding:0 24px;gap:4px;overflow-x:auto}
+    display:flex;padding:0 24px;gap:4px;overflow-x:auto;backdrop-filter:blur(20px) saturate(180%);}
 nav::-webkit-scrollbar{display:none}
-.ntab{padding:14px 18px;font-size:14px;font-weight:500;color:var(--muted);
-      border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;
+.ntab{padding:14px 18px;font-size:16px;font-weight:500;color:var(--muted);
+      border:none;background:none;cursor:pointer;border-bottom:3px solid transparent;
       white-space:nowrap;transition:all .2s}
 .ntab.active{color:var(--text);border-bottom-color:var(--accent)}
 .ntab:hover{color:var(--text)}
@@ -46,56 +46,57 @@ nav::-webkit-scrollbar{display:none}
 @media(max-width:1100px){.g4{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:800px){.g4,.g3,.g2{grid-template-columns:1fr}}
 
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:20px}
-.ct{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:20px;box-shadow: 0 2px 20px rgba(0,0,0,0.3);backdrop-filter:blur(20px)}
+.ct{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;
     letter-spacing:1px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:8px}
-.badge{background:var(--accent);color:#fff;font-size:10px;padding:2px 8px;border-radius:20px}
+.badge{background:var(--accent);color:#fff;font-size:12px;padding:2px 8px;border-radius:20px}
 .badge-y{background:var(--yellow);color:#000}
 .badge-g{background:var(--green);color:#000}
 .badge-r{background:var(--red);color:#fff}
 
 /* index cards */
 .ic{background:linear-gradient(135deg,var(--surface),var(--surface2));
-    border:1px solid var(--border);border-radius:var(--r);padding:20px;position:relative;overflow:hidden}
+    border:1px solid var(--border);border-radius:var(--r);padding:20px;position:relative;overflow:hidden;box-shadow: 0 2px 20px rgba(0,0,0,0.3)}
 .ic::before{content:'';position:absolute;top:-30px;right:-30px;width:100px;height:100px;
-            border-radius:50%;background:rgba(124,111,255,.06)}
-.ic-name{font-size:11px;color:var(--muted);margin-bottom:6px}
-.ic-val{font-size:28px;font-weight:800}
-.ic-chg{font-size:13px;margin-top:4px}
-.ic-sub{font-size:11px;color:var(--muted);margin-top:6px}
+            border-radius:50%;background:rgba(10,132,255,.06)}
+.ic-name{font-size:13px;color:var(--muted);margin-bottom:6px}
+.ic-val{font-size:32px;font-weight:800}
+.ic-chg{font-size:15px;margin-top:4px}
+.ic-sub{font-size:13px;color:var(--muted);margin-top:6px}
 
 .up{color:var(--red)}.dn{color:var(--green)}.flat{color:var(--muted)}
 
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;font-size:11px;font-weight:600;color:var(--muted);
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{text-align:left;font-size:13px;font-weight:600;color:var(--muted);
    padding:8px 12px;border-bottom:1px solid var(--border);text-transform:uppercase}
-td{padding:10px 12px;border-bottom:1px solid rgba(37,37,53,.7)}
+td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.06)}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:rgba(26,26,38,.8)}
-.rn{color:var(--muted);font-size:12px}
+tr:hover td{background:rgba(10,132,255,0.06)}
+.rn{color:var(--muted);font-size:14px}
 
 /* 信心分 */
 .cbar{height:5px;background:var(--surface2);border-radius:3px;overflow:hidden;margin-top:3px}
 .cfill{height:100%;border-radius:3px;transition:width 1s ease}
-.cscore{display:inline-block;font-weight:800;font-size:15px;padding:2px 10px;
-        border-radius:20px;background:rgba(124,111,255,.15)}
+.cscore{display:inline-block;font-weight:800;font-size:17px;padding:2px 10px;
+        border-radius:20px;background:rgba(10,132,255,.15)}
 
 /* 個股卡（熱門題材用） */
 .scard{
-  background:var(--surface2);border:1px solid var(--border);border-radius:8px;
+  background:var(--surface2);border:1px solid var(--border);border-radius:16px;
   padding:14px;transition:all .2s;cursor:pointer;
 }
-.scard:hover{border-color:var(--accent);background:rgba(124,111,255,.06)}
+.scard:hover{border-color:var(--accent);background:rgba(10,132,255,.06)}
 .scard-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
-.scard-sym{font-size:18px;font-weight:800}
-.scard-name{font-size:12px;color:var(--muted)}
+.scard-sym{font-size:20px;font-weight:800}
+.scard-name{font-size:14px;color:var(--muted)}
 .scard-price{text-align:right}
-.scard-pr{font-size:16px;font-weight:700}
-.scard-chg{font-size:12px}
-.scard-role{font-size:11px;padding:2px 8px;border-radius:4px;background:rgba(124,111,255,.15);color:var(--accent);display:inline-block;margin-bottom:6px}
-.scard-why{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:8px}
+.scard-pr{font-size:18px;font-weight:700}
+.scard-chg{font-size:14px}
+.scard-role{font-size:13px;padding:2px 8px;border-radius:4px;background:rgba(10,132,255,.15);color:var(--accent);display:inline-block;margin-bottom:6px}
+.scard-why{font-size:14px;color:var(--muted);line-height:1.5;margin-bottom:8px}
 .scard-rec{display:flex;align-items:center;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
-.rec-chip{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
+.rec-chip{font-size:13px;font-weight:700;padding:3px 10px;border-radius:20px}
 .rec-buy{background:rgba(0,200,83,.15);color:var(--green)}
 .rec-hold{background:rgba(255,215,64,.15);color:var(--yellow)}
 .rec-avoid{background:rgba(255,77,77,.15);color:var(--red)}
@@ -103,65 +104,65 @@ tr:hover td{background:rgba(26,26,38,.8)}
 /* 主題卡 */
 .thcard{
   background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
-  padding:20px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;
+  padding:20px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;box-shadow: 0 2px 20px rgba(0,0,0,0.3);
 }
 .thcard:hover{border-color:var(--accent);transform:translateY(-1px)}
 .thcard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent)}
 .th-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.th-name{font-size:16px;font-weight:800}
-.th-conf-big{font-size:22px;font-weight:800;color:var(--accent)}
-.th-heat{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-bottom:8px}
+.th-name{font-size:18px;font-weight:800}
+.th-conf-big{font-size:24px;font-weight:800;color:var(--accent)}
+.th-heat{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);margin-bottom:8px}
 .hbar{flex:1;height:4px;background:var(--surface2);border-radius:2px;overflow:hidden}
 .hfill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--accent),var(--orange))}
-.th-why{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:10px}
+.th-why{font-size:15px;color:var(--muted);line-height:1.5;margin-bottom:10px}
 .th-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
-.th-tag{font-size:11px;padding:3px 9px;border-radius:20px;background:var(--surface2);color:var(--muted)}
-.th-footer{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted)}
-.th-rec{font-size:12px;font-weight:700;padding:3px 12px;border-radius:20px}
+.th-tag{font-size:13px;padding:3px 9px;border-radius:20px;background:var(--surface2);color:var(--muted)}
+.th-footer{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--muted)}
+.th-rec{font-size:14px;font-weight:700;padding:3px 12px;border-radius:20px}
 
 /* 類股 */
 .sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-bottom:24px}
-.sbtn{background:var(--surface);border:1px solid var(--border);border-radius:8px;
-      padding:10px 14px;cursor:pointer;text-align:left;color:var(--text);transition:all .2s}
-.sbtn:hover,.sbtn.active{border-color:var(--accent);color:var(--accent);background:rgba(124,111,255,.08)}
-.sbtn .si{font-size:18px;display:block;margin-bottom:3px}
-.sbtn .sn{font-weight:600;font-size:12px;display:block}
-.sbtn .sc{font-size:10px;color:var(--muted)}
+.sbtn{background:var(--surface);border:1px solid var(--border);border-radius:16px;
+      padding:10px 14px;cursor:pointer;text-align:left;color:var(--text);transition:all .2s;box-shadow: 0 2px 20px rgba(0,0,0,0.3)}
+.sbtn:hover,.sbtn.active{border-color:var(--accent);color:var(--accent);background:rgba(10,132,255,0.08)}
+.sbtn .si{font-size:20px;display:block;margin-bottom:3px}
+.sbtn .sn{font-weight:600;font-size:14px;display:block}
+.sbtn .sc{font-size:12px;color:var(--muted)}
 
 /* 搜尋 */
 .srow{display:flex;gap:10px;margin-bottom:20px}
-.sinput{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;
-        padding:10px 16px;color:var(--text);font-size:14px}
+.sinput{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:16px;
+        padding:10px 16px;color:var(--text);font-size:16px;backdrop-filter:blur(20px)}
 .sinput:focus{outline:none;border-color:var(--accent)}
-.btn{background:var(--accent);color:#fff;border:none;border-radius:8px;
-     padding:10px 20px;cursor:pointer;font-size:14px;font-weight:600}
-.btn:hover{opacity:.85}
+.btn{background:var(--accent);color:#fff;border:none;border-radius:16px;
+     padding:10px 20px;cursor:pointer;font-size:16px;font-weight:600;transition: transform .15s, opacity .15s}
+.btn:hover{opacity:.85;transform: scale(0.97)}
 .gbtn{background:none;border:1px solid var(--border);color:var(--muted);
-      border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px}
-.gbtn:hover{border-color:var(--accent);color:var(--accent)}
+      border-radius:16px;padding:5px 12px;cursor:pointer;font-size:14px;transition: transform .15s, opacity .15s}
+.gbtn:hover{border-color:var(--accent);color:var(--accent);transform: scale(0.97)}
 
 /* 自選股 */
 .wcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
-       padding:20px;position:relative;overflow:hidden;transition:border-color .2s}
+       padding:20px;position:relative;overflow:hidden;transition:border-color .2s;box-shadow: 0 2px 20px rgba(0,0,0,0.3);backdrop-filter:blur(20px)}
 .wcard:hover{border-color:var(--accent)}
 .wcard-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
-.wcard-n{font-weight:700;font-size:16px}
-.wcard-s{font-size:12px;color:var(--muted);margin-top:2px}
-.wcat{font-size:11px;padding:3px 9px;border-radius:20px;background:var(--surface2);color:var(--muted)}
-.wpr{font-size:28px;font-weight:800}
-.wchg{font-size:13px}
+.wcard-n{font-weight:700;font-size:18px}
+.wcard-s{font-size:14px;color:var(--muted);margin-top:2px}
+.wcat{font-size:13px;padding:3px 9px;border-radius:20px;background:var(--surface2);color:var(--muted)}
+.wpr{font-size:30px;font-weight:800}
+.wchg{font-size:15px}
 .wconf{margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
 .wbk{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:8px}
-.wbi{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+.wbi{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
 
 .watch-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
-.tw-card{background:linear-gradient(135deg,var(--surface),var(--surface2));border:1px solid var(--border);border-radius:var(--r);padding:16px}
+.tw-card{background:linear-gradient(135deg,var(--surface),var(--surface2));border:1px solid var(--border);border-radius:var(--r);padding:16px;box-shadow: 0 2px 20px rgba(0,0,0,0.3)}
 .tw-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
-.tw-sym{font-size:20px;font-weight:800}.tw-name{font-size:12px;color:var(--muted)}
-.tw-ind{display:inline-block;font-size:11px;padding:3px 8px;border-radius:20px;background:rgba(124,111,255,.15);color:var(--accent);margin:6px 0}
+.tw-sym{font-size:22px;font-weight:800}.tw-name{font-size:14px;color:var(--muted)}
+.tw-ind{display:inline-block;font-size:13px;padding:3px 8px;border-radius:20px;background:rgba(10,132,255,0.15);color:var(--accent);margin:6px 0}
 .tw-meta{display:flex;justify-content:space-between;align-items:end;margin-top:8px}
-.tw-num{font-size:22px;font-weight:800}
-.tw-buy{font-size:12px;color:var(--muted)}
+.tw-num{font-size:24px;font-weight:800}
+.tw-buy{font-size:14px;color:var(--muted)}
 @media(max-width:1100px){.watch-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:800px){.watch-grid{grid-template-columns:1fr}}
 
@@ -169,10 +170,10 @@ tr:hover td{background:rgba(26,26,38,.8)}
 .ni{padding:13px 0;border-bottom:1px solid var(--border)}
 .ni:last-child{border-bottom:none}
 .ni-h{display:flex;align-items:center;gap:8px;margin-bottom:4px}
-.ntag{font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(124,111,255,.15);color:var(--accent);white-space:nowrap}
-.ni-t{font-size:14px;font-weight:600;line-height:1.4}
-.ni-m{font-size:11px;color:var(--muted);margin-top:3px;display:flex;gap:10px}
-.ip{font-size:11px;padding:2px 8px;border-radius:4px;display:inline-block;margin-top:3px}
+.ntag{font-size:12px;padding:2px 7px;border-radius:20px;background:rgba(10,132,255,0.15);color:var(--accent);white-space:nowrap}
+.ni-t{font-size:16px;font-weight:600;line-height:1.4}
+.ni-m{font-size:13px;color:var(--muted);margin-top:3px;display:flex;gap:10px}
+.ip{font-size:13px;padding:2px 8px;border-radius:4px;display:inline-block;margin-top:3px}
 .ip-p{background:rgba(0,200,83,.15);color:var(--green)}
 .ip-n{background:rgba(255,77,77,.15);color:var(--red)}
 .ip-e{background:rgba(106,106,138,.15);color:var(--muted)}
@@ -180,13 +181,13 @@ tr:hover td{background:rgba(26,26,38,.8)}
 /* 空 */
 .empty{text-align:center;padding:50px 20px;color:var(--muted)}
 .ei{font-size:40px;margin-bottom:12px}
-.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:4px;background:var(--surface2);color:var(--muted)}
+.tag{display:inline-block;font-size:13px;padding:2px 8px;border-radius:4px;background:var(--surface2);color:var(--muted)}
 
 /* modal */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;display:none;align-items:center;justify-content:center}
 .modal-bg.open{display:flex}
 .modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;
-       width:min(700px,95vw);max-height:88vh;overflow-y:auto;padding:28px}
+       width:min(700px,95vw);max-height:88vh;overflow-y:auto;padding:28px;box-shadow: 0 2px 20px rgba(0,0,0,0.3);backdrop-filter:blur(20px)}
 .modal-close{float:right;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer}
 
 /* Tooltip styles */
@@ -195,24 +196,46 @@ tr:hover td{background:rgba(26,26,38,.8)}
   content: attr(data-tooltip);
   position: absolute; bottom: 125%; left: 50%; transform: translateX(-50%);
   background: var(--surface2); color: var(--text); padding: 5px 10px;
-  border-radius: 4px; font-size: 11px; white-space: nowrap;
+  border-radius: 4px; font-size: 13px; white-space: nowrap;
   opacity: 0; pointer-events: none; transition: opacity .2s; border: 1px solid var(--border);
 }
 [data-tooltip]:hover::after { opacity: 1; }
 
 /* Radar comparison */
 .radar-box { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
-.radar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; font-size: 13px; }
+.radar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; font-size: 15px; }
 .radar-label { width: 60px; font-weight: 600; }
 .radar-bar-bg { flex: 1; height: 12px; background: var(--surface2); border-radius: 6px; overflow: hidden; position: relative; }
 .radar-bar-fill { height: 100%; background: var(--accent); border-radius: 6px; }
-.radar-score { width: 80px; text-align: right; font-size: 12px; }
+.radar-score { width: 80px; text-align: right; font-size: 14px; }
 
 /* Simulation styles */
 .sim-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
 .sim-stat { text-align: center; }
-.sim-stat-val { font-size: 24px; font-weight: 800; color: var(--accent); }
-.sim-stat-lab { font-size: 11px; color: var(--muted); margin-top: 4px; }
+.sim-stat-val { font-size: 26px; font-weight: 800; color: var(--accent); }
+.sim-stat-lab { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+@media(max-width:600px) {
+  header { height: 48px; padding: 0 16px; }
+  .logo { font-size: 16px; }
+  .upd { display: none; }
+  nav { padding: 0 8px; }
+  .ntab { padding: 12px 14px; font-size: 14px; }
+  .page { padding: 16px 12px; }
+  .card { padding: 16px; }
+  .ic-val { font-size: 26px; }
+  .wpr { font-size: 24px; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { min-width: 500px; }
+  .srow { flex-direction: column; }
+  .btn { width: 100%; }
+  .modal { padding: 20px 16px; border-radius: 12px; }
+  .scard-sym { font-size: 18px; }
+  .scard-pr { font-size: 15px; }
+  .tw-num { font-size: 20px; }
+  .tw-sym { font-size: 18px; }
+  .sg { grid-template-columns: repeat(2, 1fr); }
+}
 </style>
 </head>
 <body>
@@ -250,13 +273,17 @@ tr:hover td{background:rgba(26,26,38,.8)}
   <div class="g2">
     <div class="card" style="margin-bottom:0">
       <div class="ct">🏆 今日法人買超 Top 10 <span class="badge">真實數據</span></div>
+      <div class="table-wrap">
       <table><thead><tr><th></th><th>股票</th><th>產業</th><th>現價</th><th>外資(張)</th><th>投信(張)</th><th>漲跌%</th><th>信心分</th></tr></thead>
       <tbody id="buyBody"></tbody></table>
+      </div>
     </div>
     <div class="card" style="margin-bottom:0">
       <div class="ct">📉 今日法人賣超 Top 10 <span class="badge badge-r">真實數據</span></div>
+      <div class="table-wrap">
       <table><thead><tr><th></th><th>股票</th><th>產業</th><th>現價</th><th>外資(張)</th><th>投信(張)</th><th>漲跌%</th><th>信心分</th></tr></thead>
       <tbody id="sellBody"></tbody></table>
+      </div>
     </div>
   </div>
 
@@ -266,13 +293,17 @@ tr:hover td{background:rgba(26,26,38,.8)}
   <div class="g2">
     <div class="card" style="margin-bottom:0">
       <div class="ct">🚀 今日強勢股 Top 10</div>
+      <div class="table-wrap">
       <table><thead><tr><th></th><th>股票</th><th>產業</th><th>現價</th><th>漲幅</th><th>量(萬張)</th><th>信心分</th></tr></thead>
       <tbody id="gainBody"></tbody></table>
+      </div>
     </div>
     <div class="card" style="margin-bottom:0">
       <div class="ct">💣 今日弱勢股 Top 10</div>
+      <div class="table-wrap">
       <table><thead><tr><th></th><th>股票</th><th>產業</th><th>現價</th><th>跌幅</th><th>量(萬張)</th><th>信心分</th></tr></thead>
       <tbody id="loseBody"></tbody></table>
+      </div>
     </div>
   </div>
 
@@ -282,13 +313,17 @@ tr:hover td{background:rgba(26,26,38,.8)}
   <div class="g2">
     <div class="card" style="margin-bottom:0">
       <div class="ct">⚡ 量能異常榜 <span class="badge badge-y">成交量 > 市場平均 3 倍</span></div>
+      <div class="table-wrap">
       <table><thead><tr><th>股票</th><th>產業</th><th>現價</th><th>漲幅</th><th>量能比</th><th>信心分</th></tr></thead>
       <tbody id="volSurgeBody"></tbody></table>
+      </div>
     </div>
     <div class="card" style="margin-bottom:0">
       <div class="ct">🚨 避開清單 <span class="badge badge-r">法人大賣 / 爆量長黑 / 大跌</span></div>
+      <div class="table-wrap">
       <table><thead><tr><th>股票</th><th>原因</th><th>現價</th><th>跌幅</th><th>信心分</th></tr></thead>
       <tbody id="avoidBody"></tbody></table>
+      </div>
     </div>
   </div>
 
@@ -326,18 +361,22 @@ tr:hover td{background:rgba(26,26,38,.8)}
 
   <div class="card">
     <div class="ct">💰 當前持倉</div>
+    <div class="table-wrap">
     <table id="simHoldingsTable">
       <thead><tr><th>代號</th><th>名稱</th><th>進場日期</th><th>進場價</th><th>現價</th><th>損益%</th><th>持有天數</th></tr></thead>
       <tbody id="simHoldingsBody"></tbody>
     </table>
+    </div>
   </div>
 
   <div class="card">
     <div class="ct">📜 歷史出場記錄</div>
+    <div class="table-wrap">
     <table id="simHistoryTable">
       <thead><tr><th>代號</th><th>名稱</th><th>進場價</th><th>出場價</th><th>損益%</th><th>出場原因</th><th>日期</th></tr></thead>
       <tbody id="simHistoryBody"></tbody>
     </table>
+    </div>
   </div>
 </div>
 
@@ -356,7 +395,7 @@ tr:hover td{background:rgba(26,26,38,.8)}
 <!-- ③ 類股 -->
 <div class="page" id="page-sector">
   <div class="srow">
-    <input class="sinput" id="sIn" placeholder="搜尋產業、主題、股票名稱或代號…"/>
+    <input class="sinput" id="sIn" placeholder="搜尋產業、主題、股票名稱 or 代號…"/>
     <button class="btn" onclick="doSearch()">🔍 搜尋</button>
   </div>
   <div class="card">
@@ -419,12 +458,14 @@ tr:hover td{background:rgba(26,26,38,.8)}
   </div>
   <div class="card">
     <div class="ct">📋 自選股完整資料</div>
+    <div class="table-wrap">
     <table><thead><tr>
       <th>代號</th><th>名稱</th><th>類別</th><th>現價</th>
       <th>漲跌%</th><th>RSI</th><th>52週位置</th><th>信心分</th><th>建議</th><th>5日量比</th>
     </tr></thead>
     <tbody id="wTable"><tr><td colspan="10" style="text-align:center;color:var(--muted);padding:30px">尚無資料</td></tr></tbody>
     </table>
+    </div>
   </div>
 </div>
 
@@ -513,7 +554,7 @@ const THEMES = [
      {s:'2455',n:'全新',role:'砷化鎵磊晶',price:'92',chg:'+4.8%',conf:76,rec:'hold',priceRange:'42~108',why:'RF砷化鎵磊晶代工，衛星用量增'},
      {s:'3163',n:'波若威',role:'衛星天線',price:'285',chg:'+8.5%',conf:78,rec:'hold',priceRange:'65~310',why:'Starlink天線組件，漲多注意拉回'},
      {s:'4961',n:'天鈺',role:'電源IC',price:'198',chg:'+4.2%',conf:73,rec:'hold',priceRange:'85~228',why:'地面設備電源管理IC'},
-     {s:'6706',n:'惠特',role:'RF射頻元件',price:'142',chg:'+5.8%',conf:74,rec:'hold',priceRange:'48~165',why:'衛星通訊射頻元件，毛利率高'},
+     {s:'6706',n:'惠特',role:'衛星通訊射頻元件',price:'142',chg:'+5.8%',conf:74,rec:'hold',priceRange:'48~165',why:'衛星通訊射頻元件，毛利率高'},
      {s:'3014',n:'聯陽',role:'連接IC',price:'89',chg:'+2.1%',conf:68,rec:'hold',priceRange:'42~108',why:'衛星通訊介面IC'},
      {s:'3019',n:'亞光',role:'光收發模組',price:'58',chg:'+3.5%',conf:70,rec:'hold',priceRange:'28~72',why:'衛星光通訊模組，800G需求受惠'},
      {s:'5443',n:'均豪',role:'光電模組',price:'52',chg:'+3.8%',conf:66,rec:'hold',priceRange:'25~68',why:'衛星光通訊概念'},
@@ -623,7 +664,7 @@ const SECTORS = [
     {s:'3105',n:'穩懋',role:'光通訊元件',why:'資料中心雷達元件',conf:78,rec:'hold',price:'248',chg:'+3.8%',priceRange:'98~275'},
     {s:'3363',n:'上詮',role:'光纖連接',why:'台積電矽光子合作',conf:82,rec:'buy',price:'215',chg:'+2.5%',priceRange:'85~235'},
     {s:'3081',n:'聯亞',role:'雷射晶片',why:'光通信傳輸晶片',conf:74,rec:'hold',price:'320',chg:'+1.2%',priceRange:'120~380'},
-    {s:'2454',n:'聯發科',role:'雲端ASIC',why:'AI專用ASIC設計',conf:86,rec:'buy',price:'1,320',chg:'+1.5%',priceRange:'850~1,450'}
+    {s:'2454',n:'聯發科',role:'雲端ASIC',why:'AI專用ASIC設計',conf:86,buy:'buy',price:'1,320',chg:'+1.5%',priceRange:'850~1,450'}
   ]},
   {icon:'☀️',name:'綠能/儲能',tag:'綠能',stocks:[
     {s:'1513',n:'中興電',role:'重電/氫能',why:'台灣電網唯一GIS供應',conf:88,rec:'buy',price:'215',chg:'+3.2%',priceRange:'85~235'},
@@ -690,6 +731,7 @@ const SECTORS = [
     {s:'2609',n:'陽明',role:'貨櫃',why:'全球運能受限',conf:52,rec:'avoid',price:'65',chg:'-1.8%',priceRange:'38~82'},
     {s:'2615',n:'萬海',role:'近洋貨櫃',why:'東南亞景氣回升',conf:50,rec:'avoid',price:'68',chg:'-1.5%',priceRange:'38~118'},
     {s:'2606',n:'裕民',role:'散裝航運',why:'鐵礦石需求穩定',conf:72,rec:'hold',price:'58',chg:'+0.8%',priceRange:'45~68'},
+
     {s:'2617',n:'台航',role:'散裝航運',why:'BDI指數連動',conf:68,rec:'hold',price:'32',chg:'+0.5%',priceRange:'25~38'},
     {s:'2618',n:'長榮航',role:'航空客運',why:'旅遊需求持續強勁',conf:78,rec:'hold',price:'35.8',chg:'+1.1%',priceRange:'28~42'},
     {s:'2610',n:'華航',role:'航空貨運',why:'AI晶片空運急單',conf:75,rec:'hold',price:'22.5',chg:'+0.8%',priceRange:'18~28'},
