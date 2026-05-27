@@ -25,10 +25,10 @@
       "n": "聯電",
       "entry_date": "2026-05-26",
       "entry_price": 130.5,
-      "current_price": 130.5,
+      "current_price": 143.5,
       "conf": 80,
       "days": 1,
-      "profit_pct": 0.0
+      "profit_pct": 9.96
     },
     {
       "s": "2881",
@@ -72,5 +72,5 @@
     }
   ],
   "history": [],
-  "updatedAt": "2026-05-27T10:00:00.489181+08:00"
+  "updatedAt": "2026-05-27T11:00:00.419562+08:00"
 }
