@@ -267,6 +267,13 @@ tr:hover td{background:rgba(10,132,255,0.06)}
     </div>
   </div>
 
+  <!-- 技術突破型關注清單 -->
+  <div class="card" style="margin-top:0">
+    <div class="ct">🚀 技術突破型關注 <span class="badge" style="background:#ff9500;color:#000">52週低位+RSI翻轉+爆量</span></div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:12px">策略：低基期蓄勢 × 動能翻轉 × 量能確認 — 主力悄悄建倉訊號</div>
+    <div id="techWatchGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:8px"></div>
+  </div>
+
   <div style="height:20px"></div>
 
   <!-- 法人排行 -->
@@ -333,15 +340,12 @@ tr:hover td{background:rgba(10,132,255,0.06)}
   <div class="card">
     <div class="ct">🏭 最強 / 最弱類股 <span class="badge">產業平均漲跌幅</span></div>
     <div id="sectorStrengthGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:8px"></div>
-  </div>
-
-  <div style="height:20px"></div>
-
-  <!-- 法人買超類股（動態）-->
-  <div class="card">
-    <div class="ct">📊 今日法人買超類股 <span class="badge">真實TWSE日列資料</span></div>
-    <div id="instThemesGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:8px">
-      <div style="color:var(--muted);padding:20px;text-align:center;grid-column:1/-1">資料載入中...</div>
+    <div id="sectorStocksPanel" style="display:none;margin-top:16px;padding:16px;background:var(--surface2);border-radius:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <span id="sectorPanelTitle" style="font-weight:700;font-size:17px"></span>
+        <button onclick="document.getElementById('sectorStocksPanel').style.display='none'" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px">✕</button>
+      </div>
+      <div id="sectorStocksList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px"></div>
     </div>
   </div>
 
@@ -791,6 +795,7 @@ async function loadDashboard(){
   try {
     const r = await fetch('dashboard.json?t=' + Date.now());
     const d = await r.json();
+    window._dashData = d;
     window.dashboardData = d;
     renderDynamic(d);
     if(typeof renderThemes === 'function') renderThemes();
@@ -933,12 +938,49 @@ function renderDynamic(d){
   // 類股強弱
   const strengthGrid = document.getElementById('sectorStrengthGrid');
   if(strengthGrid && d.sectorStrength) {
-    strengthGrid.innerHTML = d.sectorStrength.map(x=>`
-      <div class="sbtn ${x.dir === 'up' ? 'active' : ''}" style="border-left: 4px solid ${x.dir==='up'?'var(--red)':'var(--green)'}">
+    strengthGrid.innerHTML = d.sectorStrength.map((x,i)=>`
+      <div class="sbtn ${x.dir === 'up' ? '' : ''}" 
+           style="border-left: 4px solid ${x.dir==='up'?'var(--red)':'var(--green)'};cursor:pointer"
+           onclick="showSectorStocks(${i})">
+        <span class="si">${x.dir==='up'?'🔴':'🟢'}</span>
         <span class="sn">${x.industry}</span>
-        <span class="sc ${x.dir}">${x.avgPct}% (${x.stocks_count}檔)</span>
+        <span class="sc" style="color:${x.dir==='up'?'var(--red)':'var(--green)'}">${x.dir==='up'?'+':''}${x.avgPct}% (${x.stocks_count}檔)</span>
+        <span style="font-size:10px;color:var(--muted);display:block;margin-top:2px">點開看個股 ›</span>
       </div>
     `).join('');
+  }
+
+  // 技術突破型關注清單
+  const techGrid = document.getElementById('techWatchGrid');
+  if(techGrid && d.techWatch) {
+    techGrid.innerHTML = (d.techWatch||[]).map(x=>`
+      <div class="tw-card" style="border-left:3px solid #ff9500">
+        <div class="tw-top">
+          <div><div class="tw-sym">${x.s}</div><div class="tw-name">${x.n}</div></div>
+          <div style="text-align:right">
+            <div style="font-size:17px;font-weight:700;color:${x.chg.startsWith('+')?'var(--red)':'var(--green)'}">${x.chg}</div>
+            <div style="font-size:12px;color:var(--muted)">${x.price}</div>
+          </div>
+        </div>
+        <div class="tw-ind">${x.industry}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-top:8px;font-size:12px">
+          <div style="background:var(--surface);border-radius:6px;padding:4px 6px;text-align:center">
+            <div style="color:var(--muted);font-size:10px">RSI</div>
+            <div style="font-weight:700;color:${x.rsi<45?'var(--green)':x.rsi>60?'var(--red)':'var(--yellow)'}">${x.rsi}</div>
+          </div>
+          <div style="background:var(--surface);border-radius:6px;padding:4px 6px;text-align:center">
+            <div style="color:var(--muted);font-size:10px">52週位</div>
+            <div style="font-weight:700;color:var(--green)">${x.week52Pos}%</div>
+          </div>
+          <div style="background:var(--surface);border-radius:6px;padding:4px 6px;text-align:center">
+            <div style="color:var(--muted);font-size:10px">量比</div>
+            <div style="font-weight:700;color:var(--yellow)">${x.volRatio}x</div>
+          </div>
+        </div>
+        ${x.foreign ? `<div style="font-size:11px;color:var(--muted);margin-top:6px">外資 ${x.foreign}</div>` : ''}
+        <div style="font-size:11px;color:#ff9500;margin-top:4px">評分 ${x.score}</div>
+      </div>
+    `).join('') || '<div style="color:var(--muted);padding:20px;text-align:center">今日無符合技術突破條件的股票</div>';
   }
 
   // 新聞
@@ -957,23 +999,33 @@ function renderDynamic(d){
     `).join('');
   }
 
-  // 法人買超類股（動態題材）
-  const themesCard = document.getElementById('instThemesGrid');
-  if(themesCard && d.themes && d.themes.length > 0) {
-    themesCard.innerHTML = d.themes.map(t => `
-      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <span style="font-size:16px;font-weight:800">${t.icon} ${t.name}</span>
-          <span class="badge ${t.avgPct>=0?'badge-g':'badge-r'}">${t.avgPct>=0?'+':''}${t.avgPct}%</span>
-        </div>
-        <div style="font-size:11px;color:var(--muted);margin-bottom:8px">${t.reason} | 信心 ${t.conf}</div>
-        ${t.topStocks.map(s=>`<div style="font-size:12px;padding:3px 0"><b>${s.s} ${s.n}</b> <span class="${s.chg.startsWith('+')?'up':'dn'}">${s.chg}</span></div>`).join('')}
-      </div>
-    `).join('');
-  }
+
 
   // 自選股
   renderWatch(d.stocks || []);
+}
+
+function showSectorStocks(idx) {
+  const d = window._dashData;
+  if (!d || !d.sectorStrength) return;
+  const sec = d.sectorStrength[idx];
+  if (!sec) return;
+  const panel = document.getElementById('sectorStocksPanel');
+  const title = document.getElementById('sectorPanelTitle');
+  const list = document.getElementById('sectorStocksList');
+  title.textContent = `${sec.dir==='up'?'🔴':'🟢'} ${sec.industry}　${sec.dir==='up'?'+':''}${sec.avgPct}%　共${sec.stocks_count}檔`;
+  const stocks = sec.topStocks || [];
+  list.innerHTML = stocks.length ? stocks.map(s=>`
+    <div style="background:var(--surface);border-radius:8px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <span style="font-weight:700">${s.s}</span>
+        <span style="color:var(--muted);font-size:13px;margin-left:6px">${s.n}</span>
+      </div>
+      <span style="font-weight:700;color:${s.chg.startsWith('+')?'var(--red)':'var(--green)'}">${s.chg}</span>
+    </div>
+  `).join('') : '<div style="color:var(--muted)">無個股資料</div>';
+  panel.style.display = 'block';
+  panel.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
 function renderSim(d){

@@ -532,6 +532,64 @@ def scan():
 
     tomorrow_watch = sorted(tomorrow_watch, key=lambda x: x['conf'], reverse=True)[:8]
 
+    # 技術突破型關注清單（蓄勢待發）
+    # 邏輯：52週低位 + RSI中低位翻轉 + 今日爆量 + 收紅 → 主力悄悄建倉訊號
+    tech_watch = []
+    for sym, m in all_map.items():
+        if not (len(sym) == 4 and sym.isdigit()): continue
+        rsi = m.get('rsi', 50)
+        week52pos = m.get('week52Pos', 50)
+        vol_ratio = m.get('volRatio5d', 1)
+        chg_pct = m['changePct']
+        price = m.get('price', 0)
+        ind = industry_cache.get(sym, '')
+        
+        # 篩選條件：
+        # 1. 52週位置低於45%（低基期）
+        # 2. RSI 在 35-60（不超買，有動能空間）
+        # 3. 量比 >= 1.8（今日量高於近期均量）
+        # 4. 今日收紅（0 < changePct < 9.5，未漲停）
+        # 5. 不在避開名單
+        avoid_syms = {x['s'] for x in avoid_list}
+        if (week52pos < 45 and
+            35 <= rsi <= 60 and
+            vol_ratio >= 1.8 and
+            0 < chg_pct < 9.5 and
+            sym not in avoid_syms):
+            # 評分：條件越多越高分
+            score = 0
+            if week52pos < 30: score += 30
+            elif week52pos < 40: score += 20
+            else: score += 10
+            if 40 <= rsi <= 55: score += 25  # RSI 黃金區間
+            elif 35 <= rsi < 40: score += 15
+            else: score += 10
+            if vol_ratio >= 3: score += 25
+            elif vol_ratio >= 2: score += 15
+            else: score += 5
+            if chg_pct >= 2: score += 20
+            elif chg_pct >= 1: score += 10
+            
+            inst = inst_map.get(sym, {})
+            foreign_net = inst.get('foreign', 0)
+            foreign_str = ''
+            if foreign_net > 0:
+                foreign_str = '+' + format(shares_to_lots(foreign_net), ',') + '張'
+                score += 10  # 法人也有買，加分
+            
+            tech_watch.append({
+                's': sym, 'n': m['n'], 'industry': ind,
+                'price': price,
+                'chg': ('+' if chg_pct >= 0 else '') + f"{chg_pct}%",
+                'rsi': round(rsi, 1),
+                'week52Pos': round(week52pos, 1),
+                'volRatio': round(vol_ratio, 1),
+                'foreign': foreign_str,
+                'score': score
+            })
+    
+    tech_watch = sorted(tech_watch, key=lambda x: x['score'], reverse=True)[:8]
+
     # priceMap（題材/類股用）
     price_map = {}
     for sym, item in quotes.items():
@@ -628,18 +686,31 @@ def scan():
 
     # 最強/最弱類股
     sector_map = {}
+    sector_stocks_map = {}  # 新增：收集各類股個股
     for sym, m in all_map.items():
         ind = m.get('industry')
         if not ind or ind == '其他': continue
-        if ind not in sector_map: sector_map[ind] = []
+        if ind not in sector_map:
+            sector_map[ind] = []
+            sector_stocks_map[ind] = []
         sector_map[ind].append(m['changePct'])
+        sector_stocks_map[ind].append({
+            's': sym, 'n': m.get('n', ''),
+            'chg': ('+' if m['changePct'] >= 0 else '') + f"{m['changePct']}%",
+            'changePct': m['changePct'],
+            'price': m.get('price', 0)
+        })
     
     sector_strength = []
     for ind, pcts in sector_map.items():
         avg_pct = round(sum(pcts) / len(pcts), 2)
+        # 取該類股漲幅前5支
+        stocks_sorted = sorted(sector_stocks_map.get(ind, []), key=lambda x: x['changePct'], reverse=True)
+        top_stocks = stocks_sorted[:5]
         sector_strength.append({
             'industry': ind, 'avgPct': avg_pct, 'stocks_count': len(pcts),
-            'dir': 'up' if avg_pct >= 0 else 'dn'
+            'dir': 'up' if avg_pct >= 0 else 'dn',
+            'topStocks': top_stocks
         })
     
     sector_strength = sorted(sector_strength, key=lambda x: x['avgPct'], reverse=True)
@@ -704,6 +775,7 @@ def scan():
         'gainers':       [fmt_mover(i+1, m) for i, m in enumerate(gainers)],
         'losers':        [fmt_mover(i+1, m) for i, m in enumerate(losers)],
         'tomorrowWatch': tomorrow_watch,
+        'techWatch': tech_watch,
         'volSurge':      vol_surge,
         'sectorStrength': sector_out,
         'avoidList':     avoid_list,
