@@ -10,13 +10,13 @@
       "change": 30.0,
       "changePct": 1.32,
       "volume": 4452,
-      "confidence": 30,
+      "confidence": 16,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "14:00",
+      "updatedAt": "00:55",
       "rsi": 48.91,
       "week52Pos": 71.88,
-      "volRatio5d": 1.1
+      "volRatio5d": 1.32
     },
     {
       "symbol": "2317",
@@ -28,13 +28,13 @@
       "change": 5.0,
       "changePct": 1.93,
       "volume": 3061,
-      "confidence": 23,
+      "confidence": 29,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "14:00",
+      "updatedAt": "00:55",
       "rsi": 59.46,
       "week52Pos": 89.01,
-      "volRatio5d": 1.05
+      "volRatio5d": 1.07
     },
     {
       "symbol": "2454",
@@ -46,13 +46,13 @@
       "change": 375.0,
       "changePct": 8.79,
       "volume": 814,
-      "confidence": 35,
+      "confidence": 36,
       "confidenceLabel": "📉 偏空",
       "confidenceColor": "#ff6d00",
-      "updatedAt": "14:00",
+      "updatedAt": "00:55",
       "rsi": 70.68,
       "week52Pos": 97.25,
-      "volRatio5d": 1.24
+      "volRatio5d": 1.32
     },
     {
       "symbol": "2382",
@@ -64,13 +64,13 @@
       "change": -4.5,
       "changePct": -1.42,
       "volume": 8049,
-      "confidence": 28,
+      "confidence": 25,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "14:00",
+      "updatedAt": "00:55",
       "rsi": 32.61,
       "week52Pos": 36.72,
-      "volRatio5d": 1.02
+      "volRatio5d": 1.03
     },
     {
       "symbol": "3231",
@@ -82,13 +82,13 @@
       "change": -1.0,
       "changePct": -0.68,
       "volume": 2109,
-      "confidence": 29,
+      "confidence": 12,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "14:00",
+      "updatedAt": "00:55",
       "rsi": 48.75,
       "week52Pos": 70.27,
-      "volRatio5d": 0.69
+      "volRatio5d": 0.7
     },
     {
       "symbol": "2308",
@@ -100,13 +100,13 @@
       "change": 170.0,
       "changePct": 7.23,
       "volume": 795,
-      "confidence": 35,
+      "confidence": 36,
       "confidenceLabel": "📉 偏空",
       "confidenceColor": "#ff6d00",
-      "updatedAt": "14:00",
+      "updatedAt": "00:55",
       "rsi": 61.32,
       "week52Pos": 90.78,
-      "volRatio5d": 1.1
+      "volRatio5d": 1.19
     },
     {
       "symbol": "2303",
@@ -118,13 +118,13 @@
       "change": 13.0,
       "changePct": 9.96,
       "volume": 214,
-      "confidence": 38,
-      "confidenceLabel": "📉 偏空",
-      "confidenceColor": "#ff6d00",
-      "updatedAt": "14:00",
+      "confidence": 34,
+      "confidenceLabel": "🚨 強力看空",
+      "confidenceColor": "#d50000",
+      "updatedAt": "00:55",
       "rsi": 78.11,
       "week52Pos": 100.0,
-      "volRatio5d": 1.06
+      "volRatio5d": 1.07
     },
     {
       "symbol": "2337",
@@ -136,13 +136,13 @@
       "change": -5.0,
       "changePct": -3.12,
       "volume": 6032,
-      "confidence": 17,
+      "confidence": 20,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "14:00",
+      "updatedAt": "00:55",
       "rsi": 45.16,
       "week52Pos": 45.24,
-      "volRatio5d": 1.6
+      "volRatio5d": 1.62
     },
     {
       "symbol": "3706",
@@ -154,13 +154,13 @@
       "change": -3.2,
       "changePct": -3.66,
       "volume": 1646,
-      "confidence": 29,
+      "confidence": 27,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "14:00",
+      "updatedAt": "00:55",
       "rsi": 42.86,
       "week52Pos": 53.78,
-      "volRatio5d": 0.9
+      "volRatio5d": 0.92
     },
     {
       "symbol": "2313",
@@ -175,10 +175,10 @@
       "confidence": 28,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "14:00",
+      "updatedAt": "00:55",
       "rsi": 60.0,
       "week52Pos": 67.36,
-      "volRatio5d": 0.86
+      "volRatio5d": 0.92
     }
   ],
   "sectors": [
@@ -216,136 +216,78 @@
   "news": [
     {
       "title": "精選",
-      "url": "https://news.cnyes.com/news/id/6471452",
+      "url": "https://news.cnyes.com/news/id/6471652",
       "published": "",
       "source": "鉅亨網"
     },
     {
-      "title": "〈可成股東會〉可成伺服器去年Q4已開始出貨 看好今年伺服器營收比重達2成",
-      "url": "https://news.cnyes.com/news/id/6471452",
+      "title": "汽車與航太迎利多！台美MOU大突破：非半導體232關稅優惠 溯自5月1日生效",
+      "url": "https://news.cnyes.com/news/id/6471652",
       "published": "",
       "source": "鉅亨網"
     },
     {
       "title": "1.",
-      "url": "https://news.cnyes.com/news/id/6470028",
+      "url": "https://news.cnyes.com/news/id/6470782",
       "published": "",
       "source": "鉅亨網"
     },
     {
-      "title": "美股依舊強勁 市場重新定價 從預期降息轉向溫和升息",
-      "url": "https://news.cnyes.com/news/id/6470028",
+      "title": "整理冬衣翻到6.77億！史上最淡定頭獎得主「塞包包忘鞋櫃」靠台彩協尋救回",
+      "url": "https://news.cnyes.com/news/id/6470782",
       "published": "",
       "source": "鉅亨網"
     },
     {
       "title": "2.",
-      "url": "https://news.cnyes.com/news/id/6470014",
+      "url": "https://news.cnyes.com/news/id/6470775",
       "published": "",
       "source": "鉅亨網"
     },
     {
-      "title": "國巨衝上台股市值第九 飆太兇遭列處置股明起「被關禁閉」",
-      "url": "https://news.cnyes.com/news/id/6470014",
+      "title": "聯發科攜手元太 搶彩色電子紙閱讀器市場",
+      "url": "https://news.cnyes.com/news/id/6470775",
       "published": "",
       "source": "鉅亨網"
     },
     {
       "title": "3.",
-      "url": "https://news.cnyes.com/news/id/6469960",
+      "url": "https://news.cnyes.com/news/id/6470773",
       "published": "",
       "source": "鉅亨網"
     },
     {
-      "title": "〈環球晶股東會〉12吋方形矽晶圓「磨」刀霍霍 均豪、東台成大贏家",
-      "url": "https://news.cnyes.com/news/id/6469960",
+      "title": "Rubin機櫃售價飆漲95%！零組件大升級，誰是大贏家！？",
+      "url": "https://news.cnyes.com/news/id/6470773",
       "published": "",
       "source": "鉅亨網"
     },
     {
       "title": "4.",
-      "url": "https://news.cnyes.com/news/id/6469981",
+      "url": "https://news.cnyes.com/news/id/6470822",
       "published": "",
       "source": "鉅亨網"
     },
     {
-      "title": "力積電聚焦記憶體與邏輯整合 大秀3D AI Foundry布局",
-      "url": "https://news.cnyes.com/news/id/6469981",
+      "title": "【量大強漲股整理】台股創新高後回檔下，下一波表現的主角是誰?!",
+      "url": "https://news.cnyes.com/news/id/6470822",
       "published": "",
       "source": "鉅亨網"
     }
   ],
   "themes": [
     {
-      "name": "電子零組件",
+      "name": "光電",
       "icon": "📊",
-      "avgPct": 0,
-      "conf": 40.0,
+      "avgPct": -1.12,
+      "conf": 63.0,
       "reason": "法人買超",
       "topStocks": [
         {
-          "s": "6282",
-          "n": "康舒",
-          "conf": 40,
-          "chg": "-4.81%"
-        }
-      ]
-    },
-    {
-      "name": "油電燃氣",
-      "icon": "📊",
-      "avgPct": 0.93,
-      "conf": 50,
-      "reason": "強勢上漲",
-      "topStocks": []
-    },
-    {
-      "name": "化學",
-      "icon": "📊",
-      "avgPct": 0.33,
-      "conf": 50,
-      "reason": "強勢上漲",
-      "topStocks": []
-    },
-    {
-      "name": "其他電子",
-      "icon": "📊",
-      "avgPct": -0.86,
-      "conf": 40.0,
-      "reason": "法人買超",
-      "topStocks": [
-        {
-          "s": "2312",
-          "n": "金寶",
-          "conf": 40,
-          "chg": "-6.62%"
-        }
-      ]
-    },
-    {
-      "name": "半導體",
-      "icon": "⚡",
-      "avgPct": 0,
-      "conf": 63.7,
-      "reason": "法人買超",
-      "topStocks": [
-        {
-          "s": "6770",
-          "n": "力積電",
-          "conf": 69,
-          "chg": "+5.65%"
-        },
-        {
-          "s": "2344",
-          "n": "華邦電",
-          "conf": 59,
-          "chg": "+9.93%"
-        },
-        {
-          "s": "2303",
-          "n": "聯電",
+          "s": "3481",
+          "n": "群創",
           "conf": 63,
-          "chg": "+9.96%"
+          "chg": "+9.85%"
         }
       ]
     },
@@ -353,20 +295,60 @@
       "name": "金融保險",
       "icon": "🏦",
       "avgPct": 1.12,
-      "conf": 53.0,
+      "conf": 77.0,
       "reason": "法人買超",
       "topStocks": [
         {
           "s": "2881",
           "n": "富邦金",
-          "conf": 69,
+          "conf": 77,
           "chg": "+6.28%"
-        },
+        }
+      ]
+    },
+    {
+      "name": "航運",
+      "icon": "🚢",
+      "avgPct": 0,
+      "conf": 43.0,
+      "reason": "法人買超",
+      "topStocks": [
         {
-          "s": "2887",
-          "n": "台新新光金",
-          "conf": 37,
-          "chg": "-1.27%"
+          "s": "2609",
+          "n": "陽明",
+          "conf": 43,
+          "chg": "+1.15%"
+        }
+      ]
+    },
+    {
+      "name": "油電燃氣",
+      "icon": "📊",
+      "avgPct": 0.94,
+      "conf": 50,
+      "reason": "強勢上漲",
+      "topStocks": []
+    },
+    {
+      "name": "貿易百貨",
+      "icon": "📊",
+      "avgPct": 0.32,
+      "conf": 50,
+      "reason": "強勢上漲",
+      "topStocks": []
+    },
+    {
+      "name": "塑膠",
+      "icon": "📊",
+      "avgPct": 0.25,
+      "conf": 77.0,
+      "reason": "法人買超",
+      "topStocks": [
+        {
+          "s": "1303",
+          "n": "南亞",
+          "conf": 77,
+          "chg": "+5.18%"
         }
       ]
     }
@@ -377,261 +359,261 @@
       "s": "6770",
       "n": "力積電",
       "industry": "半導體",
-      "foreign": "+59,833張",
-      "trust": "+302張",
-      "total": "+61,119張",
-      "conf": 69,
+      "foreign": "+74,224張",
+      "trust": "+507張",
+      "total": "+74,351張",
+      "conf": 88,
       "price": "74.8",
       "chg": "+5.65%",
       "dir": "up"
     },
     {
       "r": "2",
-      "s": "2344",
-      "n": "華邦電",
-      "industry": "半導體",
-      "foreign": "+46,873張",
-      "trust": "+4,364張",
-      "total": "+53,874張",
-      "conf": 59,
-      "price": "155.0",
-      "chg": "+9.93%",
-      "dir": "up"
-    },
-    {
-      "r": "3",
-      "s": "2303",
-      "n": "聯電",
-      "industry": "半導體",
-      "foreign": "+71,870張",
-      "trust": "-19,692張",
-      "total": "+52,531張",
-      "conf": 63,
-      "price": "143.5",
-      "chg": "+9.96%",
-      "dir": "up"
-    },
-    {
-      "r": "4",
-      "s": "2881",
-      "n": "富邦金",
-      "industry": "金融保險",
-      "foreign": "+58,964張",
-      "trust": "-15,279張",
-      "total": "+43,773張",
-      "conf": 69,
-      "price": "110.0",
-      "chg": "+6.28%",
-      "dir": "up"
-    },
-    {
-      "r": "5",
       "s": "1303",
       "n": "南亞",
       "industry": "塑膠",
-      "foreign": "+34,098張",
-      "trust": "-1,157張",
-      "total": "+35,336張",
-      "conf": 64,
+      "foreign": "+45,684張",
+      "trust": "+1,301張",
+      "total": "+46,987張",
+      "conf": 77,
       "price": "95.5",
       "chg": "+5.18%",
       "dir": "up"
     },
     {
-      "r": "6",
-      "s": "2337",
-      "n": "旺宏",
+      "r": "3",
+      "s": "3481",
+      "n": "群創",
+      "industry": "光電",
+      "foreign": "+31,656張",
+      "trust": "-5,530張",
+      "total": "+32,439張",
+      "conf": 63,
+      "price": "50.2",
+      "chg": "+9.85%",
+      "dir": "up"
+    },
+    {
+      "r": "4",
+      "s": "2344",
+      "n": "華邦電",
       "industry": "半導體",
-      "foreign": "+29,338張",
-      "trust": "+2,969張",
-      "total": "+32,384張",
-      "conf": 42,
-      "price": "155.5",
-      "chg": "-3.12%",
-      "dir": "dn"
+      "foreign": "+14,774張",
+      "trust": "+10,671張",
+      "total": "+25,924張",
+      "conf": 56,
+      "price": "155.0",
+      "chg": "+9.93%",
+      "dir": "up"
+    },
+    {
+      "r": "5",
+      "s": "0056",
+      "n": "元大高股息",
+      "industry": "其他",
+      "foreign": "+13,624張",
+      "trust": "+2,100張",
+      "total": "+25,424張",
+      "conf": 55,
+      "price": "49.64",
+      "chg": "+2.73%",
+      "dir": "up"
+    },
+    {
+      "r": "6",
+      "s": "2881",
+      "n": "富邦金",
+      "industry": "金融保險",
+      "foreign": "+45,956張",
+      "trust": "-25,524張",
+      "total": "+20,745張",
+      "conf": 77,
+      "price": "110.0",
+      "chg": "+6.28%",
+      "dir": "up"
     },
     {
       "r": "7",
-      "s": "2312",
-      "n": "金寶",
+      "s": "2317",
+      "n": "鴻海",
       "industry": "其他電子",
-      "foreign": "+30,455張",
-      "trust": "-2,772張",
-      "total": "+28,358張",
-      "conf": 40,
-      "price": "37.35",
-      "chg": "-6.62%",
-      "dir": "dn"
+      "foreign": "+19,616張",
+      "trust": "+134張",
+      "total": "+20,126張",
+      "conf": 54,
+      "price": "264.0",
+      "chg": "+1.93%",
+      "dir": "up"
     },
     {
       "r": "8",
-      "s": "2887",
-      "n": "台新新光金",
-      "industry": "金融保險",
-      "foreign": "+5,281張",
-      "trust": "+23,249張",
-      "total": "+28,236張",
-      "conf": 37,
-      "price": "23.3",
-      "chg": "-1.27%",
-      "dir": "dn"
+      "s": "2609",
+      "n": "陽明",
+      "industry": "航運",
+      "foreign": "+14,529張",
+      "trust": "-1,484張",
+      "total": "+13,223張",
+      "conf": 43,
+      "price": "52.6",
+      "chg": "+1.15%",
+      "dir": "up"
     },
     {
       "r": "9",
-      "s": "2449",
-      "n": "京元電子",
-      "industry": "半導體",
-      "foreign": "+24,629張",
-      "trust": "-3,869張",
-      "total": "+21,913張",
-      "conf": 39,
-      "price": "315.5",
-      "chg": "-6.79%",
-      "dir": "dn"
+      "s": "2027",
+      "n": "大成鋼",
+      "industry": "鋼鐵",
+      "foreign": "+8,996張",
+      "trust": "+0張",
+      "total": "+11,835張",
+      "conf": 53,
+      "price": "42.45",
+      "chg": "+2.66%",
+      "dir": "up"
     },
     {
       "r": "10",
-      "s": "6282",
-      "n": "康舒",
-      "industry": "電子零組件",
-      "foreign": "+19,147張",
-      "trust": "-402張",
-      "total": "+17,110張",
-      "conf": 40,
-      "price": "59.4",
-      "chg": "-4.81%",
-      "dir": "dn"
+      "s": "8150",
+      "n": "南茂",
+      "industry": "半導體",
+      "foreign": "+10,508張",
+      "trust": "+301張",
+      "total": "+10,682張",
+      "conf": 55,
+      "price": "93.9",
+      "chg": "+9.95%",
+      "dir": "up"
     }
   ],
   "topSell": [
     {
       "r": "1",
-      "s": "3481",
-      "n": "群創",
-      "industry": "光電",
-      "foreign": "-202,890張",
-      "trust": "-2,713張",
-      "total": "-219,926張",
-      "conf": 51,
-      "price": "50.2",
-      "chg": "+9.85%",
-      "dir": "up"
+      "s": "1402",
+      "n": "遠東新",
+      "industry": "紡織",
+      "foreign": "-78,086張",
+      "trust": "-19,104張",
+      "total": "-96,720張",
+      "conf": 37,
+      "price": "23.45",
+      "chg": "-9.98%",
+      "dir": "dn"
     },
     {
       "r": "2",
       "s": "2409",
       "n": "友達",
       "industry": "光電",
-      "foreign": "-166,130張",
-      "trust": "+122張",
-      "total": "-169,469張",
-      "conf": 40,
+      "foreign": "-88,322張",
+      "trust": "-4張",
+      "total": "-87,659張",
+      "conf": 37,
       "price": "21.8",
       "chg": "-0.91%",
       "dir": "dn"
     },
     {
       "r": "3",
-      "s": "2324",
-      "n": "仁寶",
-      "industry": "電腦周邊",
-      "foreign": "-15,249張",
-      "trust": "-28,022張",
-      "total": "-44,681張",
-      "conf": 53,
-      "price": "33.4",
-      "chg": "-0.6%",
+      "s": "2337",
+      "n": "旺宏",
+      "industry": "半導體",
+      "foreign": "-45,692張",
+      "trust": "-160張",
+      "total": "-47,603張",
+      "conf": 45,
+      "price": "155.5",
+      "chg": "-3.12%",
       "dir": "dn"
     },
     {
       "r": "4",
-      "s": "6116",
-      "n": "彩晶",
-      "industry": "光電",
-      "foreign": "-34,300張",
-      "trust": "+0張",
-      "total": "-38,168張",
-      "conf": 73,
-      "price": "14.5",
-      "chg": "+6.23%",
-      "dir": "up"
+      "s": "2887",
+      "n": "台新新光金",
+      "industry": "金融保險",
+      "foreign": "-81,920張",
+      "trust": "+36,716張",
+      "total": "-43,653張",
+      "conf": 38,
+      "price": "23.3",
+      "chg": "-1.27%",
+      "dir": "dn"
     },
     {
       "r": "5",
       "s": "2002",
       "n": "中鋼",
       "industry": "鋼鐵",
-      "foreign": "-25,412張",
-      "trust": "+10張",
-      "total": "-25,178張",
-      "conf": 52,
+      "foreign": "-26,456張",
+      "trust": "+20張",
+      "total": "-28,205張",
+      "conf": 49,
       "price": "19.1",
       "chg": "-2.05%",
       "dir": "dn"
     },
     {
       "r": "6",
-      "s": "2356",
-      "n": "英業達",
-      "industry": "電腦周邊",
-      "foreign": "-31,655張",
-      "trust": "+8,891張",
-      "total": "-24,497張",
-      "conf": 51,
-      "price": "62.0",
-      "chg": "-0.96%",
+      "s": "2312",
+      "n": "金寶",
+      "industry": "其他電子",
+      "foreign": "-23,537張",
+      "trust": "+0張",
+      "total": "-25,375張",
+      "conf": 47,
+      "price": "37.35",
+      "chg": "-6.62%",
       "dir": "dn"
     },
     {
       "r": "7",
-      "s": "1402",
-      "n": "遠東新",
-      "industry": "紡織",
-      "foreign": "-12,769張",
-      "trust": "-11,065張",
-      "total": "-23,835張",
-      "conf": 51,
-      "price": "23.45",
-      "chg": "-9.98%",
+      "s": "2449",
+      "n": "京元電子",
+      "industry": "半導體",
+      "foreign": "-11,951張",
+      "trust": "-10,894張",
+      "total": "-24,612張",
+      "conf": 50,
+      "price": "315.5",
+      "chg": "-6.79%",
       "dir": "dn"
     },
     {
       "r": "8",
-      "s": "0050",
-      "n": "元大台灣50",
-      "industry": "其他",
-      "foreign": "-14,393張",
-      "trust": "+2,131張",
-      "total": "-21,592張",
-      "conf": 65,
-      "price": "102.55",
-      "chg": "+2.45%",
-      "dir": "up"
-    },
-    {
-      "r": "9",
-      "s": "2610",
-      "n": "華航",
-      "industry": "航運",
-      "foreign": "-17,686張",
-      "trust": "-44張",
-      "total": "-17,847張",
-      "conf": 52,
-      "price": "18.45",
-      "chg": "-1.07%",
+      "s": "6282",
+      "n": "康舒",
+      "industry": "電子零組件",
+      "foreign": "-20,634張",
+      "trust": "-100張",
+      "total": "-21,656張",
+      "conf": 50,
+      "price": "59.4",
+      "chg": "-4.81%",
       "dir": "dn"
     },
     {
+      "r": "9",
+      "s": "6116",
+      "n": "彩晶",
+      "industry": "光電",
+      "foreign": "-20,473張",
+      "trust": "+0張",
+      "total": "-18,371張",
+      "conf": 72,
+      "price": "14.5",
+      "chg": "+6.23%",
+      "dir": "up"
+    },
+    {
       "r": "10",
-      "s": "2313",
-      "n": "華通",
-      "industry": "電子零組件",
-      "foreign": "-13,229張",
-      "trust": "-3,381張",
-      "total": "-17,576張",
-      "conf": 53,
-      "price": "282.0",
-      "chg": "-0.88%",
+      "s": "2618",
+      "n": "長榮航",
+      "industry": "航運",
+      "foreign": "-35,373張",
+      "trust": "+16,883張",
+      "total": "-18,333張",
+      "conf": 47,
+      "price": "34.8",
+      "chg": "-1.14%",
       "dir": "dn"
     }
   ],
@@ -666,7 +648,7 @@
       "price": "9795.0",
       "chg": "+9.99%",
       "vol": "0.0萬",
-      "conf": 26,
+      "conf": 43,
       "dir": "up"
     },
     {
@@ -676,8 +658,8 @@
       "industry": "半導體",
       "price": "60.6",
       "chg": "+9.98%",
-      "vol": "6.8萬",
-      "conf": 52,
+      "vol": "6.9萬",
+      "conf": 67,
       "dir": "up"
     },
     {
@@ -687,8 +669,8 @@
       "industry": "半導體",
       "price": "143.5",
       "chg": "+9.96%",
-      "vol": "27.8萬",
-      "conf": 63,
+      "vol": "28.0萬",
+      "conf": 59,
       "dir": "up"
     },
     {
@@ -699,7 +681,7 @@
       "price": "442.0",
       "chg": "+9.95%",
       "vol": "0.2萬",
-      "conf": 45,
+      "conf": 27,
       "dir": "up"
     },
     {
@@ -709,8 +691,8 @@
       "industry": "半導體",
       "price": "93.9",
       "chg": "+9.95%",
-      "vol": "9.0萬",
-      "conf": 68,
+      "vol": "9.1萬",
+      "conf": 55,
       "dir": "up"
     },
     {
@@ -742,8 +724,8 @@
       "industry": "半導體",
       "price": "155.0",
       "chg": "+9.93%",
-      "vol": "43.5萬",
-      "conf": 59,
+      "vol": "43.9萬",
+      "conf": 56,
       "dir": "up"
     }
   ],
@@ -756,7 +738,7 @@
       "price": "85.5",
       "chg": "-10.0%",
       "vol": "0.4萬",
-      "conf": 14,
+      "conf": 32,
       "dir": "dn"
     },
     {
@@ -767,7 +749,7 @@
       "price": "23.45",
       "chg": "-9.98%",
       "vol": "16.2萬",
-      "conf": 51,
+      "conf": 37,
       "dir": "dn"
     },
     {
@@ -800,7 +782,7 @@
       "price": "44.4",
       "chg": "-9.94%",
       "vol": "1.3萬",
-      "conf": 42,
+      "conf": 41,
       "dir": "dn"
     },
     {
@@ -811,7 +793,7 @@
       "price": "2040.0",
       "chg": "-9.93%",
       "vol": "0.6萬",
-      "conf": 16,
+      "conf": 34,
       "dir": "dn"
     },
     {
@@ -822,7 +804,7 @@
       "price": "39.95",
       "chg": "-9.92%",
       "vol": "2.7萬",
-      "conf": 35,
+      "conf": 51,
       "dir": "dn"
     },
     {
@@ -833,7 +815,7 @@
       "price": "124.0",
       "chg": "-9.82%",
       "vol": "0.2萬",
-      "conf": 12,
+      "conf": 30,
       "dir": "dn"
     },
     {
@@ -861,22 +843,13 @@
   ],
   "tomorrowWatch": [
     {
-      "s": "2881",
-      "n": "富邦金",
-      "industry": "金融保險",
-      "price": 110.0,
-      "chg": "+6.28%",
-      "foreign": "+58,964張",
-      "conf": 69
-    },
-    {
       "s": "6770",
       "n": "力積電",
       "industry": "半導體",
       "price": 74.8,
       "chg": "+5.65%",
-      "foreign": "+59,833張",
-      "conf": 69
+      "foreign": "+74,224張",
+      "conf": 88
     },
     {
       "s": "1303",
@@ -884,44 +857,26 @@
       "industry": "塑膠",
       "price": 95.5,
       "chg": "+5.18%",
-      "foreign": "+34,098張",
-      "conf": 64
+      "foreign": "+45,684張",
+      "conf": 77
     },
     {
-      "s": "2369",
-      "n": "菱生",
-      "industry": "半導體",
-      "price": 40.15,
-      "chg": "+6.5%",
-      "foreign": "+9,792張",
-      "conf": 60
+      "s": "2881",
+      "n": "富邦金",
+      "industry": "金融保險",
+      "price": 110.0,
+      "chg": "+6.28%",
+      "foreign": "+45,956張",
+      "conf": 77
     },
     {
-      "s": "1409",
-      "n": "新纖",
-      "industry": "紡織",
-      "price": 18.9,
-      "chg": "+7.08%",
-      "foreign": "+3,328張",
-      "conf": 59
-    },
-    {
-      "s": "2474",
-      "n": "可成",
-      "industry": "其他電子",
-      "price": 208.5,
-      "chg": "+6.92%",
-      "foreign": "+692張",
-      "conf": 59
-    },
-    {
-      "s": "8926",
-      "n": "台汽電",
-      "industry": "油電燃氣",
-      "price": 72.3,
-      "chg": "+5.24%",
-      "foreign": "+671張",
-      "conf": 59
+      "s": "9105",
+      "n": "泰金寶-DR",
+      "industry": "",
+      "price": 8.56,
+      "chg": "+4.9%",
+      "foreign": "+10,252張",
+      "conf": 62
     },
     {
       "s": "6005",
@@ -929,8 +884,135 @@
       "industry": "金融保險",
       "price": 35.0,
       "chg": "+5.9%",
-      "foreign": "+4,181張",
-      "conf": 58
+      "foreign": "+6,624張",
+      "conf": 60
+    },
+    {
+      "s": "2369",
+      "n": "菱生",
+      "industry": "半導體",
+      "price": 40.15,
+      "chg": "+6.5%",
+      "foreign": "+2,454張",
+      "conf": 59
+    },
+    {
+      "s": "2882",
+      "n": "國泰金",
+      "industry": "金融保險",
+      "price": 85.4,
+      "chg": "+2.77%",
+      "foreign": "+23,092張",
+      "conf": 59
+    },
+    {
+      "s": "2885",
+      "n": "元大金",
+      "industry": "金融保險",
+      "price": 59.5,
+      "chg": "+3.84%",
+      "foreign": "+12,317張",
+      "conf": 59
+    }
+  ],
+  "techWatch": [],
+  "momentumWatch": [],
+  "limitUpWatch": [
+    {
+      "s": "1418",
+      "n": "東華",
+      "industry": "紡織",
+      "price": 18.8,
+      "chg": "+9.94%",
+      "rsi": 50,
+      "week52Pos": 50,
+      "volRatio": 1,
+      "foreign": "+2張",
+      "score": 80
+    },
+    {
+      "s": "2303",
+      "n": "聯電",
+      "industry": "半導體",
+      "price": 143.5,
+      "chg": "+9.96%",
+      "rsi": 50,
+      "week52Pos": 50,
+      "volRatio": 1,
+      "foreign": "+21,530張",
+      "score": 80
+    },
+    {
+      "s": "2305",
+      "n": "全友",
+      "industry": "電腦周邊",
+      "price": 22.85,
+      "chg": "+9.86%",
+      "rsi": 50,
+      "week52Pos": 50,
+      "volRatio": 1,
+      "foreign": "+404張",
+      "score": 80
+    },
+    {
+      "s": "2344",
+      "n": "華邦電",
+      "industry": "半導體",
+      "price": 155.0,
+      "chg": "+9.93%",
+      "rsi": 50,
+      "week52Pos": 50,
+      "volRatio": 1,
+      "foreign": "+14,774張",
+      "score": 80
+    },
+    {
+      "s": "2434",
+      "n": "統懋",
+      "industry": "半導體",
+      "price": 33.2,
+      "chg": "+9.93%",
+      "rsi": 50,
+      "week52Pos": 50,
+      "volRatio": 1,
+      "foreign": "+5張",
+      "score": 80
+    },
+    {
+      "s": "2438",
+      "n": "翔耀",
+      "industry": "光電",
+      "price": 25.3,
+      "chg": "+10.0%",
+      "rsi": 50,
+      "week52Pos": 50,
+      "volRatio": 1,
+      "foreign": "+13張",
+      "score": 80
+    },
+    {
+      "s": "2472",
+      "n": "立隆電",
+      "industry": "電子零組件",
+      "price": 337.5,
+      "chg": "+9.93%",
+      "rsi": 50,
+      "week52Pos": 50,
+      "volRatio": 1,
+      "foreign": "+2,035張",
+      "score": 80
+    },
+    {
+      "s": "2492",
+      "n": "華新科",
+      "industry": "電子零組件",
+      "price": 361.0,
+      "chg": "+9.89%",
+      "rsi": 50,
+      "week52Pos": 50,
+      "volRatio": 1,
+      "foreign": "+2,490張",
+      "score": 80
     }
   ],
   "volSurge": [
@@ -940,8 +1022,8 @@
       "industry": "光電",
       "price": 50.2,
       "changePct": 9.85,
-      "volRatio": 123.5,
-      "conf": 51
+      "volRatio": 122.5,
+      "conf": 63
     },
     {
       "s": "2344",
@@ -949,8 +1031,8 @@
       "industry": "半導體",
       "price": 155.0,
       "changePct": 9.93,
-      "volRatio": 39.4,
-      "conf": 59
+      "volRatio": 39.2,
+      "conf": 56
     },
     {
       "s": "6770",
@@ -958,8 +1040,8 @@
       "industry": "半導體",
       "price": 74.8,
       "changePct": 5.65,
-      "volRatio": 37.3,
-      "conf": 69
+      "volRatio": 37.1,
+      "conf": 88
     },
     {
       "s": "9105",
@@ -967,8 +1049,8 @@
       "industry": "",
       "price": 8.56,
       "changePct": 4.9,
-      "volRatio": 30.6,
-      "conf": 58
+      "volRatio": 30.4,
+      "conf": 62
     },
     {
       "s": "6116",
@@ -976,8 +1058,8 @@
       "industry": "光電",
       "price": 14.5,
       "changePct": 6.23,
-      "volRatio": 26.4,
-      "conf": 73
+      "volRatio": 26.2,
+      "conf": 72
     },
     {
       "s": "2303",
@@ -985,8 +1067,8 @@
       "industry": "半導體",
       "price": 143.5,
       "changePct": 9.96,
-      "volRatio": 25.2,
-      "conf": 63
+      "volRatio": 25.1,
+      "conf": 59
     },
     {
       "s": "2408",
@@ -995,7 +1077,7 @@
       "price": 312.0,
       "changePct": 2.8,
       "volRatio": 18.4,
-      "conf": 51
+      "conf": 52
     },
     {
       "s": "1802",
@@ -1012,61 +1094,431 @@
       "industry": "金融保險",
       "avgPct": 1.12,
       "stocks_count": 32,
-      "dir": "up"
+      "dir": "up",
+      "topStocks": [
+        {
+          "s": "2855",
+          "n": "統一證",
+          "chg": "+6.9%",
+          "changePct": 6.9,
+          "price": 44.9
+        },
+        {
+          "s": "2881",
+          "n": "富邦金",
+          "chg": "+6.28%",
+          "changePct": 6.28,
+          "price": 110.0
+        },
+        {
+          "s": "6005",
+          "n": "群益證",
+          "chg": "+5.9%",
+          "changePct": 5.9,
+          "price": 35.0
+        },
+        {
+          "s": "2885",
+          "n": "元大金",
+          "chg": "+3.84%",
+          "changePct": 3.84,
+          "price": 59.5
+        },
+        {
+          "s": "2883",
+          "n": "凱基金",
+          "chg": "+3.48%",
+          "changePct": 3.48,
+          "price": 22.3
+        }
+      ]
     },
     {
       "industry": "油電燃氣",
-      "avgPct": 0.93,
+      "avgPct": 0.94,
       "stocks_count": 8,
-      "dir": "up"
+      "dir": "up",
+      "topStocks": [
+        {
+          "s": "8926",
+          "n": "台汽電",
+          "chg": "+5.24%",
+          "changePct": 5.24,
+          "price": 72.3
+        },
+        {
+          "s": "6505",
+          "n": "台塑化",
+          "chg": "+1.62%",
+          "changePct": 1.62,
+          "price": 50.1
+        },
+        {
+          "s": "9918",
+          "n": "欣天然",
+          "chg": "+0.93%",
+          "changePct": 0.93,
+          "price": 43.6
+        },
+        {
+          "s": "9937",
+          "n": "全國",
+          "chg": "+0.18%",
+          "changePct": 0.18,
+          "price": 55.4
+        },
+        {
+          "s": "9908",
+          "n": "大台北",
+          "chg": "+0.17%",
+          "changePct": 0.17,
+          "price": 29.15
+        }
+      ]
     },
     {
       "industry": "化學",
       "avgPct": 0.33,
       "stocks_count": 28,
-      "dir": "up"
+      "dir": "up",
+      "topStocks": [
+        {
+          "s": "4720",
+          "n": "德淵",
+          "chg": "+8.47%",
+          "changePct": 8.47,
+          "price": 26.9
+        },
+        {
+          "s": "4755",
+          "n": "三福化",
+          "chg": "+4.5%",
+          "changePct": 4.5,
+          "price": 162.5
+        },
+        {
+          "s": "1773",
+          "n": "勝一",
+          "chg": "+4.0%",
+          "changePct": 4.0,
+          "price": 195.0
+        },
+        {
+          "s": "1721",
+          "n": "三晃",
+          "chg": "+2.38%",
+          "changePct": 2.38,
+          "price": 30.15
+        },
+        {
+          "s": "1710",
+          "n": "東聯",
+          "chg": "+1.97%",
+          "changePct": 1.97,
+          "price": 12.95
+        }
+      ]
     },
     {
       "industry": "貿易百貨",
       "avgPct": 0.32,
       "stocks_count": 18,
-      "dir": "up"
+      "dir": "up",
+      "topStocks": [
+        {
+          "s": "2929",
+          "n": "淘帝-KY",
+          "chg": "+9.92%",
+          "changePct": 9.92,
+          "price": 6.65
+        },
+        {
+          "s": "4807",
+          "n": "日成-KY",
+          "chg": "+7.28%",
+          "changePct": 7.28,
+          "price": 25.05
+        },
+        {
+          "s": "8429",
+          "n": "金麗-KY",
+          "chg": "+1.12%",
+          "changePct": 1.12,
+          "price": 6.31
+        },
+        {
+          "s": "5907",
+          "n": "大洋-KY",
+          "chg": "+0.8%",
+          "changePct": 0.8,
+          "price": 5.02
+        },
+        {
+          "s": "2939",
+          "n": "永邑-KY",
+          "chg": "+0.22%",
+          "changePct": 0.22,
+          "price": 22.65
+        }
+      ]
     },
     {
       "industry": "塑膠",
       "avgPct": 0.25,
       "stocks_count": 21,
-      "dir": "up"
+      "dir": "up",
+      "topStocks": [
+        {
+          "s": "1303",
+          "n": "南亞",
+          "chg": "+5.18%",
+          "changePct": 5.18,
+          "price": 95.5
+        },
+        {
+          "s": "1340",
+          "n": "勝悅-KY",
+          "chg": "+4.15%",
+          "changePct": 4.15,
+          "price": 5.52
+        },
+        {
+          "s": "1315",
+          "n": "達新",
+          "chg": "+2.14%",
+          "changePct": 2.14,
+          "price": 62.0
+        },
+        {
+          "s": "1326",
+          "n": "台化",
+          "chg": "+2.13%",
+          "changePct": 2.13,
+          "price": 45.45
+        },
+        {
+          "s": "1301",
+          "n": "台塑",
+          "chg": "+1.56%",
+          "changePct": 1.56,
+          "price": 45.45
+        }
+      ]
     },
     {
       "industry": "電機",
       "avgPct": -1.15,
       "stocks_count": 49,
-      "dir": "dn"
+      "dir": "dn",
+      "topStocks": [
+        {
+          "s": "1503",
+          "n": "士電",
+          "chg": "+8.87%",
+          "changePct": 8.87,
+          "price": 221.0
+        },
+        {
+          "s": "1583",
+          "n": "程泰",
+          "chg": "+7.92%",
+          "changePct": 7.92,
+          "price": 53.8
+        },
+        {
+          "s": "1529",
+          "n": "樂事綠能",
+          "chg": "+4.18%",
+          "changePct": 4.18,
+          "price": 22.45
+        },
+        {
+          "s": "1519",
+          "n": "華城",
+          "chg": "+3.17%",
+          "changePct": 3.17,
+          "price": 878.0
+        },
+        {
+          "s": "1513",
+          "n": "中興電",
+          "chg": "+2.42%",
+          "changePct": 2.42,
+          "price": 169.0
+        }
+      ]
     },
     {
       "industry": "造紙",
       "avgPct": -1.12,
       "stocks_count": 7,
-      "dir": "dn"
+      "dir": "dn",
+      "topStocks": [
+        {
+          "s": "1904",
+          "n": "正隆",
+          "chg": "+0.0%",
+          "changePct": 0.0,
+          "price": 18.9
+        },
+        {
+          "s": "1909",
+          "n": "榮成",
+          "chg": "-0.11%",
+          "changePct": -0.11,
+          "price": 8.9
+        },
+        {
+          "s": "6790",
+          "n": "永豐實",
+          "chg": "-0.25%",
+          "changePct": -0.25,
+          "price": 39.15
+        },
+        {
+          "s": "1905",
+          "n": "華紙",
+          "chg": "-1.25%",
+          "changePct": -1.25,
+          "price": 11.85
+        },
+        {
+          "s": "1903",
+          "n": "士紙",
+          "chg": "-1.3%",
+          "changePct": -1.3,
+          "price": 49.25
+        }
+      ]
     },
     {
       "industry": "光電",
       "avgPct": -1.12,
       "stocks_count": 68,
-      "dir": "dn"
+      "dir": "dn",
+      "topStocks": [
+        {
+          "s": "2438",
+          "n": "翔耀",
+          "chg": "+10.0%",
+          "changePct": 10.0,
+          "price": 25.3
+        },
+        {
+          "s": "6706",
+          "n": "惠特",
+          "chg": "+9.9%",
+          "changePct": 9.9,
+          "price": 216.5
+        },
+        {
+          "s": "3481",
+          "n": "群創",
+          "chg": "+9.85%",
+          "changePct": 9.85,
+          "price": 50.2
+        },
+        {
+          "s": "6405",
+          "n": "悅城",
+          "chg": "+6.72%",
+          "changePct": 6.72,
+          "price": 81.0
+        },
+        {
+          "s": "8104",
+          "n": "錸寶",
+          "chg": "+6.58%",
+          "changePct": 6.58,
+          "price": 37.25
+        }
+      ]
     },
     {
       "industry": "資訊服務",
       "avgPct": -0.89,
       "stocks_count": 11,
-      "dir": "dn"
+      "dir": "dn",
+      "topStocks": [
+        {
+          "s": "2453",
+          "n": "凌群",
+          "chg": "+1.46%",
+          "changePct": 1.46,
+          "price": 62.5
+        },
+        {
+          "s": "6183",
+          "n": "關貿",
+          "chg": "-0.11%",
+          "changePct": -0.11,
+          "price": 91.3
+        },
+        {
+          "s": "6112",
+          "n": "邁達特",
+          "chg": "-0.24%",
+          "changePct": -0.24,
+          "price": 42.2
+        },
+        {
+          "s": "6214",
+          "n": "精誠",
+          "chg": "-0.39%",
+          "changePct": -0.39,
+          "price": 129.0
+        },
+        {
+          "s": "2471",
+          "n": "資通",
+          "chg": "-0.59%",
+          "changePct": -0.59,
+          "price": 50.6
+        }
+      ]
     },
     {
       "industry": "其他電子",
-      "avgPct": -0.86,
+      "avgPct": -0.85,
       "stocks_count": 46,
-      "dir": "dn"
+      "dir": "dn",
+      "topStocks": [
+        {
+          "s": "2474",
+          "n": "可成",
+          "chg": "+6.92%",
+          "changePct": 6.92,
+          "price": 208.5
+        },
+        {
+          "s": "6698",
+          "n": "旭暉應材",
+          "chg": "+6.1%",
+          "changePct": 6.1,
+          "price": 36.55
+        },
+        {
+          "s": "2360",
+          "n": "致茂",
+          "chg": "+5.0%",
+          "changePct": 5.0,
+          "price": 2625.0
+        },
+        {
+          "s": "3617",
+          "n": "碩天",
+          "chg": "+4.12%",
+          "changePct": 4.12,
+          "price": 215.0
+        },
+        {
+          "s": "6691",
+          "n": "洋基工程",
+          "chg": "+3.69%",
+          "changePct": 3.69,
+          "price": 674.0
+        }
+      ]
     }
   ],
   "avoidList": [
@@ -1076,8 +1528,8 @@
       "industry": "電腦周邊",
       "price": 85.5,
       "changePct": -10.0,
-      "reason": "大跌",
-      "conf": 14
+      "reason": "法人大賣",
+      "conf": 32
     },
     {
       "s": "1402",
@@ -1086,7 +1538,7 @@
       "price": 23.45,
       "changePct": -9.98,
       "reason": "法人大賣",
-      "conf": 51
+      "conf": 37
     },
     {
       "s": "6806",
@@ -1113,7 +1565,7 @@
       "price": 44.4,
       "changePct": -9.94,
       "reason": "法人大賣",
-      "conf": 42
+      "conf": 41
     },
     {
       "s": "6442",
@@ -1121,8 +1573,8 @@
       "industry": "通信網路",
       "price": 2040.0,
       "changePct": -9.93,
-      "reason": "大跌",
-      "conf": 16
+      "reason": "法人大賣",
+      "conf": 34
     },
     {
       "s": "4526",
@@ -1130,8 +1582,8 @@
       "industry": "電機",
       "price": 39.95,
       "changePct": -9.92,
-      "reason": "大跌",
-      "conf": 35
+      "reason": "法人大賣",
+      "conf": 51
     },
     {
       "s": "3004",
@@ -1139,8 +1591,8 @@
       "industry": "鋼鐵",
       "price": 124.0,
       "changePct": -9.82,
-      "reason": "大跌",
-      "conf": 12
+      "reason": "法人大賣",
+      "conf": 30
     }
   ],
   "priceMap": {
@@ -12153,7 +12605,7 @@
       "industry": "鋼鐵"
     }
   },
-  "updatedAt": "2026-05-27T14:00:00.661408+08:00",
+  "updatedAt": "2026-05-28T00:55:37.012672+08:00",
   "marketOpen": false,
   "source": "TWSE"
 }
