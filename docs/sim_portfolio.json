@@ -129,8 +129,38 @@
       "conf": 60,
       "days": 0,
       "profit_pct": 0.0
+    },
+    {
+      "s": "0056",
+      "n": "元大高股息",
+      "entry_date": "2026-05-28",
+      "entry_price": 49.64,
+      "current_price": 49.64,
+      "conf": 55,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "8150",
+      "n": "南茂",
+      "entry_date": "2026-05-28",
+      "entry_price": 93.9,
+      "current_price": 93.9,
+      "conf": 55,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2317",
+      "n": "鴻海",
+      "entry_date": "2026-05-28",
+      "entry_price": 264.0,
+      "current_price": 264.0,
+      "conf": 54,
+      "days": 0,
+      "profit_pct": 0.0
     }
   ],
   "history": [],
-  "updatedAt": "2026-05-28T00:55:37.012672+08:00"
+  "updatedAt": "2026-05-28T09:00:00.470035+08:00"
 }
