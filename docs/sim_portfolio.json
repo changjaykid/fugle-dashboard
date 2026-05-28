@@ -25,20 +25,20 @@
       "n": "聯電",
       "entry_date": "2026-05-26",
       "entry_price": 130.5,
-      "current_price": 143.5,
+      "current_price": 139.5,
       "conf": 80,
       "days": 2,
-      "profit_pct": 9.96
+      "profit_pct": 6.9
     },
     {
       "s": "2881",
       "n": "富邦金",
       "entry_date": "2026-05-26",
       "entry_price": 103.5,
-      "current_price": 110.0,
+      "current_price": 108.5,
       "conf": 68,
       "days": 2,
-      "profit_pct": 6.28
+      "profit_pct": 4.83
     },
     {
       "s": "2324",
@@ -135,10 +135,10 @@
       "n": "元大高股息",
       "entry_date": "2026-05-28",
       "entry_price": 49.64,
-      "current_price": 48.92,
+      "current_price": 49.64,
       "conf": 55,
       "days": 0,
-      "profit_pct": -1.45
+      "profit_pct": 0.0
     },
     {
       "s": "8150",
@@ -162,5 +162,5 @@
     }
   ],
   "history": [],
-  "updatedAt": "2026-05-28T12:00:01.004104+08:00"
+  "updatedAt": "2026-05-28T13:00:01.292054+08:00"
 }
