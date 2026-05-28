@@ -135,10 +135,10 @@
       "n": "元大高股息",
       "entry_date": "2026-05-28",
       "entry_price": 49.64,
-      "current_price": 49.64,
+      "current_price": 48.92,
       "conf": 55,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -1.45
     },
     {
       "s": "8150",
@@ -162,5 +162,5 @@
     }
   ],
   "history": [],
-  "updatedAt": "2026-05-28T11:00:00.974162+08:00"
+  "updatedAt": "2026-05-28T12:00:01.004104+08:00"
 }
