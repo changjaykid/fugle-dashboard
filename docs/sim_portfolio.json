@@ -5,162 +5,162 @@
       "n": "力積電",
       "entry_date": "2026-05-26",
       "entry_price": 70.8,
-      "current_price": 74.8,
+      "current_price": 80.7,
       "conf": 91,
       "days": 2,
-      "profit_pct": 5.65
+      "profit_pct": 13.98
     },
     {
       "s": "2344",
       "n": "華邦電",
       "entry_date": "2026-05-26",
       "entry_price": 141.0,
-      "current_price": 155.0,
+      "current_price": 144.0,
       "conf": 86,
       "days": 2,
-      "profit_pct": 9.93
+      "profit_pct": 2.13
     },
     {
       "s": "2303",
       "n": "聯電",
       "entry_date": "2026-05-26",
       "entry_price": 130.5,
-      "current_price": 139.5,
+      "current_price": 142.0,
       "conf": 80,
       "days": 2,
-      "profit_pct": 6.9
+      "profit_pct": 8.81
     },
     {
       "s": "2881",
       "n": "富邦金",
       "entry_date": "2026-05-26",
       "entry_price": 103.5,
-      "current_price": 108.5,
+      "current_price": 110.0,
       "conf": 68,
       "days": 2,
-      "profit_pct": 4.83
+      "profit_pct": 6.28
     },
     {
       "s": "2324",
       "n": "仁寶",
       "entry_date": "2026-05-26",
       "entry_price": 33.6,
-      "current_price": 33.4,
+      "current_price": 33.5,
       "conf": 65,
       "days": 2,
-      "profit_pct": -0.6
+      "profit_pct": -0.3
     },
     {
       "s": "2337",
       "n": "旺宏",
       "entry_date": "2026-05-27",
       "entry_price": 160.5,
-      "current_price": 155.5,
+      "current_price": 160.0,
       "conf": 64,
       "days": 1,
-      "profit_pct": -3.12
+      "profit_pct": -0.31
     },
     {
       "s": "2449",
       "n": "京元電子",
       "entry_date": "2026-05-27",
       "entry_price": 338.5,
-      "current_price": 315.5,
+      "current_price": 320.0,
       "conf": 63,
       "days": 1,
-      "profit_pct": -6.79
+      "profit_pct": -5.47
     },
     {
       "s": "1303",
       "n": "南亞",
       "entry_date": "2026-05-28",
       "entry_price": 95.5,
-      "current_price": 95.5,
+      "current_price": 90.5,
       "conf": 64,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -5.24
     },
     {
       "s": "6116",
       "n": "彩晶",
       "entry_date": "2026-05-28",
       "entry_price": 14.5,
-      "current_price": 14.5,
+      "current_price": 15.55,
       "conf": 73,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": 7.24
     },
     {
       "s": "9105",
       "n": "泰金寶-DR",
       "entry_date": "2026-05-28",
       "entry_price": 8.56,
-      "current_price": 8.56,
+      "current_price": 8.51,
       "conf": 58,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -0.58
     },
     {
       "s": "6005",
       "n": "群益證",
       "entry_date": "2026-05-28",
       "entry_price": 35.0,
-      "current_price": 35.0,
+      "current_price": 36.0,
       "conf": 58,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": 2.86
     },
     {
       "s": "3481",
       "n": "群創",
       "entry_date": "2026-05-28",
       "entry_price": 50.2,
-      "current_price": 50.2,
+      "current_price": 46.4,
       "conf": 51,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -7.57
     },
     {
       "s": "2369",
       "n": "菱生",
       "entry_date": "2026-05-28",
       "entry_price": 40.15,
-      "current_price": 40.15,
+      "current_price": 39.75,
       "conf": 60,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -1.0
     },
     {
       "s": "0056",
       "n": "元大高股息",
       "entry_date": "2026-05-28",
       "entry_price": 49.64,
-      "current_price": 49.64,
+      "current_price": 48.83,
       "conf": 55,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -1.63
     },
     {
       "s": "8150",
       "n": "南茂",
       "entry_date": "2026-05-28",
       "entry_price": 93.9,
-      "current_price": 93.9,
+      "current_price": 103.0,
       "conf": 55,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": 9.69
     },
     {
       "s": "2317",
       "n": "鴻海",
       "entry_date": "2026-05-28",
       "entry_price": 264.0,
-      "current_price": 264.0,
+      "current_price": 263.0,
       "conf": 54,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -0.38
     }
   ],
   "history": [],
-  "updatedAt": "2026-05-28T13:00:01.292054+08:00"
+  "updatedAt": "2026-05-28T14:00:01.049546+08:00"
 }
