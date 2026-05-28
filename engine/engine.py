@@ -532,104 +532,142 @@ def scan():
 
     tomorrow_watch = sorted(tomorrow_watch, key=lambda x: x['conf'], reverse=True)[:8]
 
-    # 技術突破型關注清單（蓄勢待發）
-    # 邏輯：52週低位 + RSI中低位翻轉 + 今日爆量 + 收紅 → 主力悄悄建倉訊號
-    tech_watch = []
+    # 避開清單（提前建立，供 tech/momentum/limit_up 赎用）
+    avoid_list = []
     for sym, m in all_map.items():
         if not (len(sym) == 4 and sym.isdigit()): continue
-        rsi = m.get('rsi', 50)
-        week52pos = m.get('week52Pos', 50)
-        vol_ratio = m.get('volRatio5d', 1)
+        inst = inst_map.get(sym, {})
+        reason = ""
+        if inst.get('total', 0) < -10000: reason = "法人大賣"
+        elif m['changePct'] < -5: reason = "大跌"
+        elif m['volume'] > avg_vol * 2 and m['changePct'] < 0: reason = "爆量長黑"
+        if reason:
+            avoid_list.append({
+                's': sym, 'n': m['n'], 'industry': industry_cache.get(sym, ''),
+                'price': m['price'], 'changePct': m['changePct'],
+                'reason': reason, 'conf': m.get('conf', 50)
+            })
+    avoid_list = sorted(avoid_list, key=lambda x: x['changePct'])[:8]
+
+    # 技術突破型關注清單（蓄勢待發）
+    # 邏輯（中等修版）：今日量能爆發（量比≥3）+ 溫和收紅（1-6%）+ 非高位（非漲停前候選）
+    # 對於 THEME_STOCKS 有真實 rsi/week52Pos，優先用；其他股票用量能替代
+    tech_watch = []
+    avoid_syms = {x['s'] for x in avoid_list}
+    theme_set = set(THEME_STOCKS)
+    for sym, m in all_map.items():
+        if not (len(sym) == 4 and sym.isdigit()): continue
+        if sym in avoid_syms: continue
         chg_pct = m['changePct']
         price = m.get('price', 0)
+        vol = m['volume']
         ind = industry_cache.get(sym, '')
-        
-        # 篩選條件：
-        # 1. 52週位置低於45%（低基期）
-        # 2. RSI 在 35-60（不超買，有動能空間）
-        # 3. 量比 >= 1.8（今日量高於近期均量）
-        # 4. 今日收紅（0 < changePct < 9.5，未漲停）
-        # 5. 不在避開名單
-        avoid_syms = {x['s'] for x in avoid_list}
-        if (week52pos < 45 and
-            35 <= rsi <= 60 and
-            vol_ratio >= 1.8 and
-            0 < chg_pct < 9.5 and
-            sym not in avoid_syms):
-            # 評分：條件越多越高分
+        inst = inst_map.get(sym, {})
+        foreign_net = inst.get('foreign', 0)
+
+        # 量比：用當日成交量 / 全市場平均
+        vol_ratio_mkt = vol / avg_vol if avg_vol > 0 else 1
+
+        # 對 THEME_STOCKS 有真實 RSI/week52Pos 的股票，用嚴格條件
+        has_indicators = sym in theme_set
+        rsi = m.get('rsi') if has_indicators else None
+        week52pos = m.get('week52Pos') if has_indicators else None
+
+        if has_indicators and rsi is not None and week52pos is not None:
+            # 嚴格條件：52週低位 + RSI 中低位翻轉 + 爆量 + 收紅
+            if not (week52pos < 50 and 30 <= rsi <= 65 and
+                    vol_ratio_mkt >= 2.0 and 0.5 < chg_pct < 9.5):
+                continue
             score = 0
-            if week52pos < 30: score += 30
-            elif week52pos < 40: score += 20
+            if week52pos < 25: score += 35
+            elif week52pos < 35: score += 25
+            elif week52pos < 50: score += 15
+            if 38 <= rsi <= 58: score += 30
+            elif 30 <= rsi < 38: score += 20
             else: score += 10
-            if 40 <= rsi <= 55: score += 25  # RSI 黃金區間
-            elif 35 <= rsi < 40: score += 15
+            if vol_ratio_mkt >= 5: score += 30
+            elif vol_ratio_mkt >= 3: score += 20
             else: score += 10
-            if vol_ratio >= 3: score += 25
-            elif vol_ratio >= 2: score += 15
+            if chg_pct >= 3: score += 20
+            elif chg_pct >= 1.5: score += 12
             else: score += 5
-            if chg_pct >= 2: score += 20
-            elif chg_pct >= 1: score += 10
-            
-            inst = inst_map.get(sym, {})
-            foreign_net = inst.get('foreign', 0)
-            foreign_str = ''
-            if foreign_net > 0:
-                foreign_str = '+' + format(shares_to_lots(foreign_net), ',') + '張'
-                score += 10  # 法人也有買，加分
-            
-            tech_watch.append({
-                's': sym, 'n': m['n'], 'industry': ind,
-                'price': price,
-                'chg': ('+' if chg_pct >= 0 else '') + f"{chg_pct}%",
-                'rsi': round(rsi, 1),
-                'week52Pos': round(week52pos, 1),
-                'volRatio': round(vol_ratio, 1),
-                'foreign': foreign_str,
-                'score': score
-            })
-    
+            if foreign_net > 0: score += 15  # 法人同向加分
+        else:
+            # 一般條件（無 RSI/52週數據）：爆量 + 溫和收紅 + 法人有買
+            if not (vol_ratio_mkt >= 4.0 and 1.0 < chg_pct < 8.0 and foreign_net > 0):
+                continue
+            score = 0
+            if vol_ratio_mkt >= 8: score += 40
+            elif vol_ratio_mkt >= 6: score += 30
+            elif vol_ratio_mkt >= 4: score += 20
+            if chg_pct >= 4: score += 25
+            elif chg_pct >= 2: score += 15
+            else: score += 8
+            score += 20  # 法人買超確認
+
+        foreign_str = ('+' if foreign_net >= 0 else '') + format(shares_to_lots(foreign_net), ',') + '張' if foreign_net != 0 else ''
+        tech_watch.append({
+            's': sym, 'n': m['n'], 'industry': ind,
+            'price': price,
+            'chg': ('+' if chg_pct >= 0 else '') + f"{chg_pct}%",
+            'rsi': round(rsi, 1) if rsi is not None else None,
+            'week52Pos': round(week52pos, 1) if week52pos is not None else None,
+            'volRatio': round(vol_ratio_mkt, 1),
+            'foreign': foreign_str,
+            'score': score
+        })
+
     tech_watch = sorted(tech_watch, key=lambda x: x['score'], reverse=True)[:8]
 
-    # 強勢延續型（今日漲幅 ≥5%，RSI/量能支撐，明日可能繼續）
+    # 強勢延續型（今日漲幅 ≥5%，量能支撐，明日可能繼續）
+    # 邏輯（中等修版）：用當日量比（vs 全市場均量）取代 volRatio5d
     momentum_watch = []
     for sym, m in all_map.items():
         if not (len(sym) == 4 and sym.isdigit()): continue
+        if sym in avoid_syms: continue
         chg_pct = m['changePct']
-        rsi = m.get('rsi', 50)
-        vol_ratio = m.get('volRatio5d', 1)
         price = m.get('price', 0)
+        vol = m['volume']
         ind = industry_cache.get(sym, '')
-        avoid_syms = {x['s'] for x in avoid_list}
-        if (5 <= chg_pct < 9.5 and
-            rsi <= 75 and          # RSI 未過熱
-            vol_ratio >= 1.5 and   # 量能支撐
-            sym not in avoid_syms):
-            score = 0
-            if chg_pct >= 8: score += 30
-            elif chg_pct >= 6: score += 20
-            else: score += 10
-            if rsi <= 65: score += 20   # RSI 有空間繼續漲
-            if vol_ratio >= 3: score += 25
-            elif vol_ratio >= 2: score += 15
-            else: score += 5
-            inst = inst_map.get(sym, {})
-            foreign_net = inst.get('foreign', 0)
-            foreign_str = ''
-            if foreign_net > 0:
-                foreign_str = '+' + format(shares_to_lots(foreign_net), ',') + '張'
-                score += 15  # 法人買超加分（強勢+法人 = 最強訊號）
-            week52pos = m.get('week52Pos', 50)
-            if week52pos < 70: score += 10  # 非高位，有繼續空間
-            momentum_watch.append({
-                's': sym, 'n': m['n'], 'industry': ind,
-                'price': price,
-                'chg': f"+{chg_pct}%",
-                'rsi': round(rsi, 1),
-                'week52Pos': round(week52pos, 1),
-                'volRatio': round(vol_ratio, 1),
-                'foreign': foreign_str,
-                'score': score
-            })
+        vol_ratio_mkt = vol / avg_vol if avg_vol > 0 else 1
+
+        if not (5 <= chg_pct < 9.5 and vol_ratio_mkt >= 1.5):
+            continue
+
+        score = 0
+        if chg_pct >= 8: score += 35
+        elif chg_pct >= 6: score += 22
+        else: score += 12
+
+        if vol_ratio_mkt >= 5: score += 30
+        elif vol_ratio_mkt >= 3: score += 20
+        elif vol_ratio_mkt >= 2: score += 12
+        else: score += 5
+
+        inst = inst_map.get(sym, {})
+        foreign_net = inst.get('foreign', 0)
+        foreign_str = ''
+        if foreign_net > 0:
+            foreign_str = '+' + format(shares_to_lots(foreign_net), ',') + '張'
+            score += 20  # 法人+強勢 = 最強訊號
+
+        # THEME_STOCKS 有真實 RSI/week52Pos，額外評分
+        has_indicators = sym in theme_set
+        rsi = m.get('rsi') if has_indicators else None
+        week52pos = m.get('week52Pos') if has_indicators else None
+        if rsi is not None and rsi <= 70: score += 10   # RSI 未過熱，可繼續
+        if week52pos is not None and week52pos < 75: score += 8  # 非歷史高位
+
+        momentum_watch.append({
+            's': sym, 'n': m['n'], 'industry': ind,
+            'price': price,
+            'chg': f"+{chg_pct}%",
+            'rsi': round(rsi, 1) if rsi is not None else None,
+            'week52Pos': round(week52pos, 1) if week52pos is not None else None,
+            'volRatio': round(vol_ratio_mkt, 1),
+            'foreign': foreign_str,
+            'score': score
+        })
     momentum_watch = sorted(momentum_watch, key=lambda x: x['score'], reverse=True)[:8]
 
     # 漲停板預備隊（今日漲停 ≥9.5%，明日二板候選）
@@ -730,24 +768,6 @@ def scan():
             'confidenceLabel': label, 'confidenceColor': color,
             'updatedAt': now.strftime('%H:%M')
         })
-
-    # 避開清單
-    avoid_list = []
-    for sym, m in all_map.items():
-        if not (len(sym) == 4 and sym.isdigit()): continue
-        inst = inst_map.get(sym, {})
-        reason = ""
-        if inst.get('total', 0) < -10000: reason = "法人大賣"
-        elif m['changePct'] < -5: reason = "大跌"
-        elif m['volume'] > avg_vol * 2 and m['changePct'] < 0: reason = "爆量長黑"
-        
-        if reason:
-            avoid_list.append({
-                's': sym, 'n': m['n'], 'industry': industry_cache.get(sym, ''),
-                'price': m['price'], 'changePct': m['changePct'],
-                'reason': reason, 'conf': m.get('conf', 50)
-            })
-    avoid_list = sorted(avoid_list, key=lambda x: x['changePct'])[:8]
 
     # 量能異常榜
     vol_surge = []
