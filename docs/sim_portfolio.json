@@ -55,10 +55,10 @@
       "n": "旺宏",
       "entry_date": "2026-05-27",
       "entry_price": 160.5,
-      "current_price": 155.5,
+      "current_price": 163.5,
       "conf": 64,
       "days": 1,
-      "profit_pct": -3.12
+      "profit_pct": 1.87
     },
     {
       "s": "2449",
@@ -135,10 +135,10 @@
       "n": "元大高股息",
       "entry_date": "2026-05-28",
       "entry_price": 49.64,
-      "current_price": 49.64,
+      "current_price": 50.05,
       "conf": 55,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": 0.83
     },
     {
       "s": "8150",
@@ -162,5 +162,5 @@
     }
   ],
   "history": [],
-  "updatedAt": "2026-05-28T09:00:00.470035+08:00"
+  "updatedAt": "2026-05-28T10:00:01.243588+08:00"
 }
