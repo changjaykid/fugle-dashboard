@@ -35,10 +35,10 @@
       "n": "富邦金",
       "entry_date": "2026-05-26",
       "entry_price": 103.5,
-      "current_price": 108.5,
+      "current_price": 109.5,
       "conf": 68,
       "days": 3,
-      "profit_pct": 4.83
+      "profit_pct": 5.8
     },
     {
       "s": "2324",
@@ -135,10 +135,10 @@
       "n": "元大高股息",
       "entry_date": "2026-05-28",
       "entry_price": 49.64,
-      "current_price": 50.05,
+      "current_price": 48.83,
       "conf": 55,
       "days": 1,
-      "profit_pct": 0.83
+      "profit_pct": -1.63
     },
     {
       "s": "8150",
@@ -232,5 +232,5 @@
     }
   ],
   "history": [],
-  "updatedAt": "2026-05-29T12:00:00.555203+08:00"
+  "updatedAt": "2026-05-29T13:00:01.342200+08:00"
 }
