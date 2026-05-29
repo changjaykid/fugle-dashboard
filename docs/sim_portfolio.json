@@ -25,20 +25,20 @@
       "n": "聯電",
       "entry_date": "2026-05-26",
       "entry_price": 130.5,
-      "current_price": 142.0,
+      "current_price": 141.5,
       "conf": 80,
       "days": 3,
-      "profit_pct": 8.81
+      "profit_pct": 8.43
     },
     {
       "s": "2881",
       "n": "富邦金",
       "entry_date": "2026-05-26",
       "entry_price": 103.5,
-      "current_price": 109.0,
+      "current_price": 110.0,
       "conf": 68,
       "days": 3,
-      "profit_pct": 5.31
+      "profit_pct": 6.28
     },
     {
       "s": "2324",
@@ -55,10 +55,10 @@
       "n": "旺宏",
       "entry_date": "2026-05-27",
       "entry_price": 160.5,
-      "current_price": 160.0,
+      "current_price": 165.0,
       "conf": 64,
       "days": 2,
-      "profit_pct": -0.31
+      "profit_pct": 2.8
     },
     {
       "s": "2449",
@@ -215,10 +215,10 @@
       "n": "長榮航",
       "entry_date": "2026-05-29",
       "entry_price": 35.95,
-      "current_price": 35.3,
+      "current_price": 36.35,
       "conf": 61,
       "days": 0,
-      "profit_pct": -1.81
+      "profit_pct": 1.11
     },
     {
       "s": "1402",
@@ -232,5 +232,5 @@
     }
   ],
   "history": [],
-  "updatedAt": "2026-05-29T10:00:00.497278+08:00"
+  "updatedAt": "2026-05-29T11:00:01.446184+08:00"
 }
