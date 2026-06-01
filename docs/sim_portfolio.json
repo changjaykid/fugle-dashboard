@@ -5,10 +5,10 @@
       "n": "旺宏",
       "entry_date": "2026-05-27",
       "entry_price": 160.5,
-      "current_price": 166.5,
+      "current_price": 168.5,
       "conf": 64,
       "days": 5,
-      "profit_pct": 3.74
+      "profit_pct": 4.98
     },
     {
       "s": "2449",
@@ -105,10 +105,10 @@
       "n": "英業達",
       "entry_date": "2026-05-29",
       "entry_price": 69.2,
-      "current_price": 77.1,
+      "current_price": 70.2,
       "conf": 54,
       "days": 3,
-      "profit_pct": 11.42
+      "profit_pct": 1.45
     },
     {
       "s": "8110",
@@ -145,10 +145,10 @@
       "n": "長榮航",
       "entry_date": "2026-05-29",
       "entry_price": 35.95,
-      "current_price": 37.8,
+      "current_price": 36.05,
       "conf": 61,
       "days": 3,
-      "profit_pct": 5.15
+      "profit_pct": 0.28
     },
     {
       "s": "1402",
@@ -304,5 +304,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-01T12:00:01.027782+08:00"
+  "updatedAt": "2026-06-01T13:00:00.314898+08:00"
 }
