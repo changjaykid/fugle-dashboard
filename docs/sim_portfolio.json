@@ -75,20 +75,20 @@
       "n": "元大高股息",
       "entry_date": "2026-05-28",
       "entry_price": 49.64,
-      "current_price": 50.2,
+      "current_price": 51.55,
       "conf": 55,
       "days": 4,
-      "profit_pct": 1.13
+      "profit_pct": 3.85
     },
     {
       "s": "2317",
       "n": "鴻海",
       "entry_date": "2026-05-28",
       "entry_price": 264.0,
-      "current_price": 301.0,
+      "current_price": 289.0,
       "conf": 54,
       "days": 4,
-      "profit_pct": 14.02
+      "profit_pct": 9.47
     },
     {
       "s": "2408",
@@ -145,10 +145,10 @@
       "n": "長榮航",
       "entry_date": "2026-05-29",
       "entry_price": 35.95,
-      "current_price": 36.05,
+      "current_price": 37.45,
       "conf": 61,
       "days": 3,
-      "profit_pct": 0.28
+      "profit_pct": 4.17
     },
     {
       "s": "1402",
@@ -304,5 +304,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-01T10:00:00.944305+08:00"
+  "updatedAt": "2026-06-01T11:00:01.247805+08:00"
 }
