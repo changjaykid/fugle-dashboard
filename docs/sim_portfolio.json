@@ -85,10 +85,10 @@
       "n": "鴻海",
       "entry_date": "2026-05-28",
       "entry_price": 264.0,
-      "current_price": 289.0,
+      "current_price": 301.0,
       "conf": 54,
       "days": 4,
-      "profit_pct": 9.47
+      "profit_pct": 14.02
     },
     {
       "s": "2408",
@@ -145,10 +145,10 @@
       "n": "長榮航",
       "entry_date": "2026-05-29",
       "entry_price": 35.95,
-      "current_price": 36.45,
+      "current_price": 36.05,
       "conf": 61,
       "days": 3,
-      "profit_pct": 1.39
+      "profit_pct": 0.28
     },
     {
       "s": "1402",
@@ -197,6 +197,16 @@
       "entry_price": 88.5,
       "current_price": 88.5,
       "conf": 59,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2324",
+      "n": "仁寶",
+      "entry_date": "2026-06-01",
+      "entry_price": 36.7,
+      "current_price": 36.7,
+      "conf": 53,
       "days": 0,
       "profit_pct": 0.0
     }
@@ -294,5 +304,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-01T09:00:00.646616+08:00"
+  "updatedAt": "2026-06-01T10:00:00.944305+08:00"
 }
