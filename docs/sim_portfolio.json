@@ -71,16 +71,6 @@
       "profit_pct": 11.17
     },
     {
-      "s": "2356",
-      "n": "英業達",
-      "entry_date": "2026-05-29",
-      "entry_price": 69.2,
-      "current_price": 77.2,
-      "conf": 54,
-      "days": 4,
-      "profit_pct": 11.56
-    },
-    {
       "s": "8110",
       "n": "華東",
       "entry_date": "2026-05-29",
@@ -145,10 +135,10 @@
       "n": "華航",
       "entry_date": "2026-06-01",
       "entry_price": 19.1,
-      "current_price": 19.35,
+      "current_price": 19.55,
       "conf": 51,
       "days": 1,
-      "profit_pct": 1.31
+      "profit_pct": 2.36
     },
     {
       "s": "2409",
@@ -165,10 +155,10 @@
       "n": "和碩",
       "entry_date": "2026-06-01",
       "entry_price": 88.5,
-      "current_price": 91.2,
+      "current_price": 98.5,
       "conf": 59,
       "days": 1,
-      "profit_pct": 3.05
+      "profit_pct": 11.3
     },
     {
       "s": "2324",
@@ -202,6 +192,19 @@
     }
   ],
   "history": [
+    {
+      "s": "2356",
+      "n": "英業達",
+      "entry_date": "2026-05-29",
+      "entry_price": 69.2,
+      "current_price": 80.6,
+      "conf": 54,
+      "days": 4,
+      "profit_pct": 16.47,
+      "exit_date": "2026-06-02",
+      "exit_price": 80.6,
+      "reason": "止盈 (+15%)"
+    },
     {
       "s": "2449",
       "n": "京元電子",
@@ -333,5 +336,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-02T12:00:01.153167+08:00"
+  "updatedAt": "2026-06-02T13:00:00.639377+08:00"
 }
