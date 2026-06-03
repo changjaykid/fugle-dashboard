@@ -35,10 +35,10 @@
       "n": "長榮航",
       "entry_date": "2026-05-29",
       "entry_price": 35.95,
-      "current_price": 37.25,
+      "current_price": 37.9,
       "conf": 61,
       "days": 5,
-      "profit_pct": 3.62
+      "profit_pct": 5.42
     },
     {
       "s": "1402",
@@ -125,10 +125,10 @@
       "n": "凱基金",
       "entry_date": "2026-06-03",
       "entry_price": 23.4,
-      "current_price": 25.7,
+      "current_price": 23.4,
       "conf": 71,
       "days": 0,
-      "profit_pct": 9.83
+      "profit_pct": 0.0
     },
     {
       "s": "2891",
@@ -155,10 +155,10 @@
       "n": "旺宏",
       "entry_date": "2026-06-03",
       "entry_price": 177.5,
-      "current_price": 166.0,
+      "current_price": 165.5,
       "conf": 64,
       "days": 0,
-      "profit_pct": -6.48
+      "profit_pct": -6.76
     },
     {
       "s": "9105",
@@ -450,5 +450,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-03T11:00:01.145928+08:00"
+  "updatedAt": "2026-06-03T12:00:00.782517+08:00"
 }
