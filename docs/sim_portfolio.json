@@ -65,10 +65,10 @@
       "n": "華航",
       "entry_date": "2026-06-01",
       "entry_price": 19.1,
-      "current_price": 19.5,
+      "current_price": 19.8,
       "conf": 51,
       "days": 2,
-      "profit_pct": 2.09
+      "profit_pct": 3.66
     },
     {
       "s": "2409",
@@ -85,10 +85,10 @@
       "n": "和碩",
       "entry_date": "2026-06-01",
       "entry_price": 88.5,
-      "current_price": 100.0,
+      "current_price": 97.8,
       "conf": 59,
       "days": 2,
-      "profit_pct": 12.99
+      "profit_pct": 10.51
     },
     {
       "s": "2344",
@@ -125,20 +125,20 @@
       "n": "凱基金",
       "entry_date": "2026-06-03",
       "entry_price": 23.4,
-      "current_price": 23.4,
+      "current_price": 25.7,
       "conf": 71,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": 9.83
     },
     {
       "s": "2891",
       "n": "中信金",
       "entry_date": "2026-06-03",
       "entry_price": 64.1,
-      "current_price": 64.1,
+      "current_price": 68.2,
       "conf": 68,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": 6.4
     },
     {
       "s": "1605",
@@ -155,10 +155,10 @@
       "n": "旺宏",
       "entry_date": "2026-06-03",
       "entry_price": 177.5,
-      "current_price": 177.5,
+      "current_price": 166.0,
       "conf": 64,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -6.48
     },
     {
       "s": "9105",
@@ -450,5 +450,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-03T09:00:00.445748+08:00"
+  "updatedAt": "2026-06-03T10:00:00.323211+08:00"
 }
