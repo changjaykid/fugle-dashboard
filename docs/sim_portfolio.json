@@ -25,10 +25,10 @@
       "n": "和碩",
       "entry_date": "2026-06-01",
       "entry_price": 88.5,
-      "current_price": 96.2,
+      "current_price": 98.5,
       "conf": 59,
       "days": 3,
-      "profit_pct": 8.7
+      "profit_pct": 11.3
     },
     {
       "s": "2344",
@@ -55,20 +55,10 @@
       "n": "英業達",
       "entry_date": "2026-06-02",
       "entry_price": 80.6,
-      "current_price": 85.4,
+      "current_price": 79.2,
       "conf": 68,
       "days": 2,
-      "profit_pct": 5.96
-    },
-    {
-      "s": "2883",
-      "n": "凱基金",
-      "entry_date": "2026-06-03",
-      "entry_price": 23.4,
-      "current_price": 25.7,
-      "conf": 71,
-      "days": 1,
-      "profit_pct": 9.83
+      "profit_pct": -1.74
     },
     {
       "s": "2891",
@@ -135,10 +125,10 @@
       "n": "旺宏",
       "entry_date": "2026-06-03",
       "entry_price": 162.0,
-      "current_price": 159.0,
+      "current_price": 158.0,
       "conf": 64,
       "days": 1,
-      "profit_pct": -1.85
+      "profit_pct": -2.47
     },
     {
       "s": "2890",
@@ -202,6 +192,19 @@
     }
   ],
   "history": [
+    {
+      "s": "2883",
+      "n": "凱基金",
+      "entry_date": "2026-06-03",
+      "entry_price": 23.4,
+      "current_price": 27.75,
+      "conf": 71,
+      "days": 1,
+      "profit_pct": 18.59,
+      "exit_date": "2026-06-04",
+      "exit_price": 27.75,
+      "reason": "止盈 (+15%)"
+    },
     {
       "s": "1402",
       "n": "遠東新",
@@ -541,5 +544,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-04T12:00:00.877997+08:00"
+  "updatedAt": "2026-06-04T13:00:00.933820+08:00"
 }
