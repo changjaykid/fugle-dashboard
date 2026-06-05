@@ -145,20 +145,20 @@
       "n": "華南金",
       "entry_date": "2026-06-05",
       "entry_price": 37.7,
-      "current_price": 37.7,
+      "current_price": 35.05,
       "conf": 65,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -7.03
     },
     {
       "s": "2892",
       "n": "第一金",
       "entry_date": "2026-06-05",
       "entry_price": 29.5,
-      "current_price": 29.1,
+      "current_price": 29.55,
       "conf": 61,
       "days": 0,
-      "profit_pct": -1.36
+      "profit_pct": 0.17
     },
     {
       "s": "2834",
@@ -185,10 +185,10 @@
       "n": "康舒",
       "entry_date": "2026-06-05",
       "entry_price": 68.7,
-      "current_price": 70.8,
+      "current_price": 63.8,
       "conf": 66,
       "days": 0,
-      "profit_pct": 3.06
+      "profit_pct": -7.13
     },
     {
       "s": "2884",
@@ -632,5 +632,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-05T11:00:00.830435+08:00"
+  "updatedAt": "2026-06-05T12:00:00.499956+08:00"
 }
