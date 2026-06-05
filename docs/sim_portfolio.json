@@ -55,10 +55,10 @@
       "n": "中信金",
       "entry_date": "2026-06-03",
       "entry_price": 64.1,
-      "current_price": 67.7,
+      "current_price": 68.0,
       "conf": 68,
       "days": 2,
-      "profit_pct": 5.62
+      "profit_pct": 6.08
     },
     {
       "s": "1605",
@@ -155,10 +155,10 @@
       "n": "第一金",
       "entry_date": "2026-06-05",
       "entry_price": 29.5,
-      "current_price": 29.3,
+      "current_price": 29.1,
       "conf": 61,
       "days": 0,
-      "profit_pct": -0.68
+      "profit_pct": -1.36
     },
     {
       "s": "2834",
@@ -185,20 +185,20 @@
       "n": "康舒",
       "entry_date": "2026-06-05",
       "entry_price": 68.7,
-      "current_price": 64.0,
+      "current_price": 70.8,
       "conf": 66,
       "days": 0,
-      "profit_pct": -6.84
+      "profit_pct": 3.06
     },
     {
       "s": "2884",
       "n": "玉山金",
       "entry_date": "2026-06-05",
       "entry_price": 33.45,
-      "current_price": 33.25,
+      "current_price": 33.45,
       "conf": 56,
       "days": 0,
-      "profit_pct": -0.6
+      "profit_pct": 0.0
     }
   ],
   "history": [
@@ -632,5 +632,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-05T10:00:01.223197+08:00"
+  "updatedAt": "2026-06-05T11:00:00.830435+08:00"
 }
