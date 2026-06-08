@@ -61,16 +61,6 @@
       "profit_pct": -3.47
     },
     {
-      "s": "2880",
-      "n": "華南金",
-      "entry_date": "2026-06-05",
-      "entry_price": 37.7,
-      "current_price": 34.8,
-      "conf": 65,
-      "days": 3,
-      "profit_pct": -7.69
-    },
-    {
       "s": "2892",
       "n": "第一金",
       "entry_date": "2026-06-05",
@@ -115,20 +105,20 @@
       "n": "聯電",
       "entry_date": "2026-06-08",
       "entry_price": 131.5,
-      "current_price": 121.5,
+      "current_price": 131.5,
       "conf": 93,
       "days": 0,
-      "profit_pct": -7.6
+      "profit_pct": 0.0
     },
     {
       "s": "2882",
       "n": "國泰金",
       "entry_date": "2026-06-08",
       "entry_price": 97.8,
-      "current_price": 100.0,
+      "current_price": 95.5,
       "conf": 64,
       "days": 0,
-      "profit_pct": 2.25
+      "profit_pct": -2.35
     },
     {
       "s": "2881",
@@ -151,16 +141,6 @@
       "profit_pct": 0.0
     },
     {
-      "s": "2481",
-      "n": "強茂",
-      "entry_date": "2026-06-08",
-      "entry_price": 165.0,
-      "current_price": 165.0,
-      "conf": 70,
-      "days": 0,
-      "profit_pct": 0.0
-    },
-    {
       "s": "1718",
       "n": "中纖",
       "entry_date": "2026-06-08",
@@ -172,6 +152,32 @@
     }
   ],
   "history": [
+    {
+      "s": "2481",
+      "n": "強茂",
+      "entry_date": "2026-06-08",
+      "entry_price": 165.0,
+      "current_price": 149.0,
+      "conf": 70,
+      "days": 0,
+      "profit_pct": -9.7,
+      "exit_date": "2026-06-08",
+      "exit_price": 149.0,
+      "reason": "止損 (-8%)"
+    },
+    {
+      "s": "2880",
+      "n": "華南金",
+      "entry_date": "2026-06-05",
+      "entry_price": 37.7,
+      "current_price": 33.35,
+      "conf": 65,
+      "days": 3,
+      "profit_pct": -11.54,
+      "exit_date": "2026-06-08",
+      "exit_price": 33.35,
+      "reason": "止損 (-8%)"
+    },
     {
       "s": "1605",
       "n": "華新",
@@ -719,5 +725,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-08T11:00:00.820456+08:00"
+  "updatedAt": "2026-06-08T12:00:01.332828+08:00"
 }
