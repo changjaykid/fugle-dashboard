@@ -55,20 +55,20 @@
       "n": "凱基金",
       "entry_date": "2026-06-04",
       "entry_price": 27.4,
-      "current_price": 26.45,
+      "current_price": 27.6,
       "conf": 63,
       "days": 4,
-      "profit_pct": -3.47
+      "profit_pct": 0.73
     },
     {
       "s": "2892",
       "n": "第一金",
       "entry_date": "2026-06-05",
       "entry_price": 29.5,
-      "current_price": 29.3,
+      "current_price": 29.0,
       "conf": 61,
       "days": 3,
-      "profit_pct": -0.68
+      "profit_pct": -1.69
     },
     {
       "s": "2834",
@@ -115,10 +115,10 @@
       "n": "國泰金",
       "entry_date": "2026-06-08",
       "entry_price": 97.8,
-      "current_price": 95.5,
+      "current_price": 100.0,
       "conf": 64,
       "days": 0,
-      "profit_pct": -2.35
+      "profit_pct": 2.25
     },
     {
       "s": "2881",
@@ -147,6 +147,16 @@
       "entry_price": 9.85,
       "current_price": 9.85,
       "conf": 63,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2481",
+      "n": "強茂",
+      "entry_date": "2026-06-08",
+      "entry_price": 165.0,
+      "current_price": 165.0,
+      "conf": 70,
       "days": 0,
       "profit_pct": 0.0
     }
@@ -725,5 +735,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-08T12:00:01.332828+08:00"
+  "updatedAt": "2026-06-08T13:00:00.475680+08:00"
 }
