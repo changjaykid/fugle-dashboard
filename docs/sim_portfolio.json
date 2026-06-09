@@ -35,10 +35,10 @@
       "n": "第一金",
       "entry_date": "2026-06-05",
       "entry_price": 29.5,
-      "current_price": 29.1,
+      "current_price": 30.5,
       "conf": 61,
       "days": 4,
-      "profit_pct": -1.36
+      "profit_pct": 3.39
     },
     {
       "s": "2834",
@@ -800,5 +800,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-09T12:00:00.955843+08:00"
+  "updatedAt": "2026-06-09T13:00:00.791147+08:00"
 }
