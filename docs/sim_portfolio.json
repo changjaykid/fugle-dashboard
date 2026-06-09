@@ -85,20 +85,20 @@
       "n": "富邦金",
       "entry_date": "2026-06-08",
       "entry_price": 118.0,
-      "current_price": 115.0,
+      "current_price": 116.0,
       "conf": 57,
       "days": 1,
-      "profit_pct": -2.54
+      "profit_pct": -1.69
     },
     {
       "s": "2609",
       "n": "陽明",
       "entry_date": "2026-06-08",
       "entry_price": 54.5,
-      "current_price": 52.1,
+      "current_price": 51.7,
       "conf": 53,
       "days": 1,
-      "profit_pct": -4.4
+      "profit_pct": -5.14
     },
     {
       "s": "1718",
@@ -147,6 +147,16 @@
       "entry_price": 20.1,
       "current_price": 20.1,
       "conf": 43,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2887",
+      "n": "台新新光金",
+      "entry_date": "2026-06-09",
+      "entry_price": 27.75,
+      "current_price": 27.75,
+      "conf": 48,
       "days": 0,
       "profit_pct": 0.0
     }
@@ -790,5 +800,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-09T09:00:00.520463+08:00"
+  "updatedAt": "2026-06-09T10:00:00.520541+08:00"
 }
