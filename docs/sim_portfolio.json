@@ -35,10 +35,10 @@
       "n": "聯電",
       "entry_date": "2026-06-08",
       "entry_price": 131.5,
-      "current_price": 126.5,
+      "current_price": 127.5,
       "conf": 93,
       "days": 2,
-      "profit_pct": -3.8
+      "profit_pct": -3.04
     },
     {
       "s": "2882",
@@ -167,6 +167,26 @@
       "entry_price": 8.27,
       "current_price": 8.27,
       "conf": 54,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2890",
+      "n": "永豐金",
+      "entry_date": "2026-06-10",
+      "entry_price": 34.25,
+      "current_price": 34.25,
+      "conf": 61,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2883",
+      "n": "凱基金",
+      "entry_date": "2026-06-10",
+      "entry_price": 29.05,
+      "current_price": 29.05,
+      "conf": 59,
       "days": 0,
       "profit_pct": 0.0
     }
@@ -849,5 +869,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-10T09:00:00.853969+08:00"
+  "updatedAt": "2026-06-10T10:00:01.055195+08:00"
 }
