@@ -35,10 +35,10 @@
       "n": "聯電",
       "entry_date": "2026-06-08",
       "entry_price": 131.5,
-      "current_price": 122.0,
+      "current_price": 127.5,
       "conf": 93,
       "days": 2,
-      "profit_pct": -7.22
+      "profit_pct": -3.04
     },
     {
       "s": "2882",
@@ -869,5 +869,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-10T12:00:00.682936+08:00"
+  "updatedAt": "2026-06-10T13:00:00.511106+08:00"
 }
