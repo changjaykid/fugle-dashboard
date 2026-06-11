@@ -1,43 +1,13 @@
 {
   "holdings": [
     {
-      "s": "2892",
-      "n": "第一金",
-      "entry_date": "2026-06-05",
-      "entry_price": 29.5,
-      "current_price": 30.55,
-      "conf": 61,
-      "days": 5,
-      "profit_pct": 3.56
-    },
-    {
-      "s": "2834",
-      "n": "臺企銀",
-      "entry_date": "2026-06-05",
-      "entry_price": 17.1,
-      "current_price": 16.95,
-      "conf": 66,
-      "days": 5,
-      "profit_pct": -0.88
-    },
-    {
-      "s": "2884",
-      "n": "玉山金",
-      "entry_date": "2026-06-05",
-      "entry_price": 33.45,
-      "current_price": 33.65,
-      "conf": 56,
-      "days": 5,
-      "profit_pct": 0.6
-    },
-    {
       "s": "2882",
       "n": "國泰金",
       "entry_date": "2026-06-08",
       "entry_price": 97.8,
       "current_price": 99.9,
       "conf": 64,
-      "days": 2,
+      "days": 3,
       "profit_pct": 2.15
     },
     {
@@ -47,7 +17,7 @@
       "entry_price": 118.0,
       "current_price": 122.5,
       "conf": 57,
-      "days": 2,
+      "days": 3,
       "profit_pct": 3.81
     },
     {
@@ -57,7 +27,7 @@
       "entry_price": 54.5,
       "current_price": 50.6,
       "conf": 53,
-      "days": 2,
+      "days": 3,
       "profit_pct": -7.16
     },
     {
@@ -67,7 +37,7 @@
       "entry_price": 55.3,
       "current_price": 58.1,
       "conf": 58,
-      "days": 1,
+      "days": 2,
       "profit_pct": 5.06
     },
     {
@@ -77,7 +47,7 @@
       "entry_price": 35.3,
       "current_price": 36.2,
       "conf": 37,
-      "days": 1,
+      "days": 2,
       "profit_pct": 2.55
     },
     {
@@ -87,7 +57,7 @@
       "entry_price": 84.6,
       "current_price": 83.1,
       "conf": 44,
-      "days": 1,
+      "days": 2,
       "profit_pct": -1.77
     },
     {
@@ -97,7 +67,7 @@
       "entry_price": 20.1,
       "current_price": 19.45,
       "conf": 43,
-      "days": 1,
+      "days": 2,
       "profit_pct": -3.23
     },
     {
@@ -107,7 +77,7 @@
       "entry_price": 27.75,
       "current_price": 28.9,
       "conf": 48,
-      "days": 1,
+      "days": 2,
       "profit_pct": 4.14
     },
     {
@@ -117,7 +87,7 @@
       "entry_price": 35.45,
       "current_price": 35.35,
       "conf": 60,
-      "days": 0,
+      "days": 1,
       "profit_pct": -0.28
     },
     {
@@ -127,7 +97,7 @@
       "entry_price": 156.5,
       "current_price": 149.0,
       "conf": 48,
-      "days": 0,
+      "days": 1,
       "profit_pct": -4.79
     },
     {
@@ -137,7 +107,7 @@
       "entry_price": 8.27,
       "current_price": 8.16,
       "conf": 54,
-      "days": 0,
+      "days": 1,
       "profit_pct": -1.33
     },
     {
@@ -147,7 +117,7 @@
       "entry_price": 34.25,
       "current_price": 33.0,
       "conf": 61,
-      "days": 0,
+      "days": 1,
       "profit_pct": -3.65
     },
     {
@@ -157,11 +127,100 @@
       "entry_price": 29.05,
       "current_price": 28.2,
       "conf": 59,
-      "days": 0,
+      "days": 1,
       "profit_pct": -2.93
+    },
+    {
+      "s": "2801",
+      "n": "彰銀",
+      "entry_date": "2026-06-11",
+      "entry_price": 22.35,
+      "current_price": 22.35,
+      "conf": 73,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "8112",
+      "n": "至上",
+      "entry_date": "2026-06-11",
+      "entry_price": 92.6,
+      "current_price": 92.6,
+      "conf": 48,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2542",
+      "n": "興富發",
+      "entry_date": "2026-06-11",
+      "entry_price": 45.45,
+      "current_price": 45.45,
+      "conf": 75,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "3576",
+      "n": "聯合再生",
+      "entry_date": "2026-06-11",
+      "entry_price": 18.25,
+      "current_price": 18.25,
+      "conf": 76,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2886",
+      "n": "兆豐金",
+      "entry_date": "2026-06-11",
+      "entry_price": 43.4,
+      "current_price": 43.4,
+      "conf": 52,
+      "days": 0,
+      "profit_pct": 0.0
     }
   ],
   "history": [
+    {
+      "s": "2884",
+      "n": "玉山金",
+      "entry_date": "2026-06-05",
+      "entry_price": 33.45,
+      "current_price": 33.65,
+      "conf": 56,
+      "days": 6,
+      "profit_pct": 0.6,
+      "exit_date": "2026-06-11",
+      "exit_price": 33.65,
+      "reason": "時間到 (>5日)"
+    },
+    {
+      "s": "2834",
+      "n": "臺企銀",
+      "entry_date": "2026-06-05",
+      "entry_price": 17.1,
+      "current_price": 16.95,
+      "conf": 66,
+      "days": 6,
+      "profit_pct": -0.88,
+      "exit_date": "2026-06-11",
+      "exit_price": 16.95,
+      "reason": "時間到 (>5日)"
+    },
+    {
+      "s": "2892",
+      "n": "第一金",
+      "entry_date": "2026-06-05",
+      "entry_price": 29.5,
+      "current_price": 30.55,
+      "conf": 61,
+      "days": 6,
+      "profit_pct": 3.56,
+      "exit_date": "2026-06-11",
+      "exit_price": 30.55,
+      "reason": "時間到 (>5日)"
+    },
     {
       "s": "2408",
       "n": "南亞科",
@@ -878,5 +937,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-10T14:00:01.109609+08:00"
+  "updatedAt": "2026-06-11T09:00:00.484693+08:00"
 }
