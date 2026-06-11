@@ -179,6 +179,26 @@
       "conf": 52,
       "days": 0,
       "profit_pct": 0.0
+    },
+    {
+      "s": "2892",
+      "n": "第一金",
+      "entry_date": "2026-06-11",
+      "entry_price": 30.55,
+      "current_price": 30.55,
+      "conf": 74,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2834",
+      "n": "臺企銀",
+      "entry_date": "2026-06-11",
+      "entry_price": 16.95,
+      "current_price": 16.95,
+      "conf": 60,
+      "days": 0,
+      "profit_pct": 0.0
     }
   ],
   "history": [
@@ -937,5 +957,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-11T09:00:00.484693+08:00"
+  "updatedAt": "2026-06-11T10:00:01.292657+08:00"
 }
