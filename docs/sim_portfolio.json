@@ -55,10 +55,10 @@
       "n": "萬海",
       "entry_date": "2026-06-09",
       "entry_price": 84.6,
-      "current_price": 83.6,
+      "current_price": 83.1,
       "conf": 44,
       "days": 2,
-      "profit_pct": -1.18
+      "profit_pct": -1.77
     },
     {
       "s": "2461",
@@ -125,10 +125,10 @@
       "n": "凱基金",
       "entry_date": "2026-06-10",
       "entry_price": 29.05,
-      "current_price": 28.2,
+      "current_price": 28.0,
       "conf": 59,
       "days": 1,
-      "profit_pct": -2.93
+      "profit_pct": -3.61
     },
     {
       "s": "2801",
@@ -165,20 +165,20 @@
       "n": "聯合再生",
       "entry_date": "2026-06-11",
       "entry_price": 18.25,
-      "current_price": 17.6,
+      "current_price": 18.25,
       "conf": 76,
       "days": 0,
-      "profit_pct": -3.56
+      "profit_pct": 0.0
     },
     {
       "s": "2886",
       "n": "兆豐金",
       "entry_date": "2026-06-11",
       "entry_price": 43.4,
-      "current_price": 43.4,
+      "current_price": 43.35,
       "conf": 52,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -0.12
     },
     {
       "s": "2892",
@@ -957,5 +957,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-11T12:00:01.194179+08:00"
+  "updatedAt": "2026-06-11T13:00:00.807983+08:00"
 }
