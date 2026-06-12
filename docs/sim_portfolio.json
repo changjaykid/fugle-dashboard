@@ -25,10 +25,10 @@
       "n": "陽明",
       "entry_date": "2026-06-08",
       "entry_price": 54.5,
-      "current_price": 51.1,
+      "current_price": 52.5,
       "conf": 53,
       "days": 4,
-      "profit_pct": -6.24
+      "profit_pct": -3.67
     },
     {
       "s": "2484",
@@ -155,10 +155,10 @@
       "n": "興富發",
       "entry_date": "2026-06-11",
       "entry_price": 45.45,
-      "current_price": 45.35,
+      "current_price": 46.35,
       "conf": 75,
       "days": 1,
-      "profit_pct": -0.22
+      "profit_pct": 1.98
     },
     {
       "s": "3576",
@@ -205,10 +205,10 @@
       "n": "聯電",
       "entry_date": "2026-06-12",
       "entry_price": 133.0,
-      "current_price": 133.0,
+      "current_price": 137.5,
       "conf": 64,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": 3.38
     },
     {
       "s": "9105",
@@ -225,10 +225,10 @@
       "n": "華通",
       "entry_date": "2026-06-12",
       "entry_price": 291.0,
-      "current_price": 291.0,
+      "current_price": 275.0,
       "conf": 75,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -5.5
     },
     {
       "s": "2408",
@@ -245,10 +245,10 @@
       "n": "國巨*",
       "entry_date": "2026-06-12",
       "entry_price": 842.0,
-      "current_price": 842.0,
+      "current_price": 897.0,
       "conf": 66,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": 6.53
     },
     {
       "s": "2367",
@@ -1037,5 +1037,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-12T09:00:00.810544+08:00"
+  "updatedAt": "2026-06-12T10:00:01.341237+08:00"
 }
