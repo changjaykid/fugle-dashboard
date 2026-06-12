@@ -15,10 +15,10 @@
       "n": "富邦金",
       "entry_date": "2026-06-08",
       "entry_price": 118.0,
-      "current_price": 122.0,
+      "current_price": 125.5,
       "conf": 57,
       "days": 4,
-      "profit_pct": 3.39
+      "profit_pct": 6.36
     },
     {
       "s": "2609",
@@ -85,10 +85,10 @@
       "n": "華南金",
       "entry_date": "2026-06-10",
       "entry_price": 35.45,
-      "current_price": 35.65,
+      "current_price": 36.2,
       "conf": 60,
       "days": 2,
-      "profit_pct": 0.56
+      "profit_pct": 2.12
     },
     {
       "s": "2344",
@@ -155,10 +155,10 @@
       "n": "興富發",
       "entry_date": "2026-06-11",
       "entry_price": 45.45,
-      "current_price": 45.65,
+      "current_price": 45.35,
       "conf": 75,
       "days": 1,
-      "profit_pct": 0.44
+      "profit_pct": -0.22
     },
     {
       "s": "3576",
@@ -175,20 +175,20 @@
       "n": "兆豐金",
       "entry_date": "2026-06-11",
       "entry_price": 43.4,
-      "current_price": 43.7,
+      "current_price": 43.4,
       "conf": 52,
       "days": 1,
-      "profit_pct": 0.69
+      "profit_pct": 0.0
     },
     {
       "s": "2892",
       "n": "第一金",
       "entry_date": "2026-06-11",
       "entry_price": 30.55,
-      "current_price": 31.15,
+      "current_price": 31.05,
       "conf": 74,
       "days": 1,
-      "profit_pct": 1.96
+      "profit_pct": 1.64
     },
     {
       "s": "2834",
@@ -225,10 +225,10 @@
       "n": "華通",
       "entry_date": "2026-06-12",
       "entry_price": 291.0,
-      "current_price": 277.5,
+      "current_price": 275.0,
       "conf": 75,
       "days": 0,
-      "profit_pct": -4.64
+      "profit_pct": -5.5
     },
     {
       "s": "2408",
@@ -245,10 +245,10 @@
       "n": "國巨*",
       "entry_date": "2026-06-12",
       "entry_price": 842.0,
-      "current_price": 883.0,
+      "current_price": 842.0,
       "conf": 66,
       "days": 0,
-      "profit_pct": 4.87
+      "profit_pct": 0.0
     },
     {
       "s": "2367",
@@ -1037,5 +1037,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-12T11:00:00.870215+08:00"
+  "updatedAt": "2026-06-12T12:00:00.935295+08:00"
 }
