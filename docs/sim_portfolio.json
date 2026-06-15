@@ -45,10 +45,10 @@
       "n": "凱基金",
       "entry_date": "2026-06-10",
       "entry_price": 29.05,
-      "current_price": 27.45,
+      "current_price": 28.65,
       "conf": 59,
       "days": 5,
-      "profit_pct": -5.51
+      "profit_pct": -1.38
     },
     {
       "s": "2801",
@@ -95,10 +95,10 @@
       "n": "第一金",
       "entry_date": "2026-06-11",
       "entry_price": 30.55,
-      "current_price": 31.25,
+      "current_price": 31.15,
       "conf": 74,
       "days": 4,
-      "profit_pct": 2.29
+      "profit_pct": 1.96
     },
     {
       "s": "2834",
@@ -115,10 +115,10 @@
       "n": "聯電",
       "entry_date": "2026-06-12",
       "entry_price": 133.0,
-      "current_price": 133.5,
+      "current_price": 142.5,
       "conf": 64,
       "days": 3,
-      "profit_pct": 0.38
+      "profit_pct": 7.14
     },
     {
       "s": "9105",
@@ -215,10 +215,10 @@
       "n": "旺宏",
       "entry_date": "2026-06-15",
       "entry_price": 146.5,
-      "current_price": 157.0,
+      "current_price": 158.0,
       "conf": 60,
       "days": 0,
-      "profit_pct": 7.17
+      "profit_pct": 7.85
     },
     {
       "s": "2887",
@@ -1117,5 +1117,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-15T12:00:00.623876+08:00"
+  "updatedAt": "2026-06-15T13:00:00.893422+08:00"
 }
