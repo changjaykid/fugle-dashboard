@@ -25,20 +25,20 @@
       "n": "興富發",
       "entry_date": "2026-06-11",
       "entry_price": 45.45,
-      "current_price": 45.35,
+      "current_price": 45.45,
       "conf": 75,
       "days": 5,
-      "profit_pct": -0.22
+      "profit_pct": 0.0
     },
     {
       "s": "2886",
       "n": "兆豐金",
       "entry_date": "2026-06-11",
       "entry_price": 43.4,
-      "current_price": 44.5,
+      "current_price": 44.0,
       "conf": 52,
       "days": 5,
-      "profit_pct": 2.53
+      "profit_pct": 1.38
     },
     {
       "s": "2892",
@@ -79,16 +79,6 @@
       "conf": 51,
       "days": 4,
       "profit_pct": 7.68
-    },
-    {
-      "s": "2327",
-      "n": "國巨*",
-      "entry_date": "2026-06-12",
-      "entry_price": 842.0,
-      "current_price": 940.0,
-      "conf": 66,
-      "days": 4,
-      "profit_pct": 11.64
     },
     {
       "s": "2367",
@@ -145,10 +135,10 @@
       "n": "旺宏",
       "entry_date": "2026-06-15",
       "entry_price": 146.5,
-      "current_price": 165.0,
+      "current_price": 166.0,
       "conf": 60,
       "days": 1,
-      "profit_pct": 12.63
+      "profit_pct": 13.31
     },
     {
       "s": "2887",
@@ -195,10 +185,10 @@
       "n": "元大台灣50",
       "entry_date": "2026-06-16",
       "entry_price": 106.05,
-      "current_price": 105.25,
+      "current_price": 105.5,
       "conf": 69,
       "days": 0,
-      "profit_pct": -0.75
+      "profit_pct": -0.52
     },
     {
       "s": "2409",
@@ -212,6 +202,19 @@
     }
   ],
   "history": [
+    {
+      "s": "2327",
+      "n": "國巨*",
+      "entry_date": "2026-06-12",
+      "entry_price": 842.0,
+      "current_price": 970.0,
+      "conf": 66,
+      "days": 4,
+      "profit_pct": 15.2,
+      "exit_date": "2026-06-16",
+      "exit_price": 970.0,
+      "reason": "止盈 (+15%)"
+    },
     {
       "s": "2883",
       "n": "凱基金",
@@ -1188,5 +1191,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-16T10:00:00.720361+08:00"
+  "updatedAt": "2026-06-16T11:00:00.858494+08:00"
 }
