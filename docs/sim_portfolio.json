@@ -1,53 +1,13 @@
 {
   "holdings": [
     {
-      "s": "2880",
-      "n": "華南金",
-      "entry_date": "2026-06-10",
-      "entry_price": 35.45,
-      "current_price": 36.7,
-      "conf": 60,
-      "days": 5,
-      "profit_pct": 3.53
-    },
-    {
-      "s": "2867",
-      "n": "三商壽",
-      "entry_date": "2026-06-10",
-      "entry_price": 8.27,
-      "current_price": 8.37,
-      "conf": 54,
-      "days": 5,
-      "profit_pct": 1.21
-    },
-    {
-      "s": "2890",
-      "n": "永豐金",
-      "entry_date": "2026-06-10",
-      "entry_price": 34.25,
-      "current_price": 35.2,
-      "conf": 61,
-      "days": 5,
-      "profit_pct": 2.77
-    },
-    {
-      "s": "2883",
-      "n": "凱基金",
-      "entry_date": "2026-06-10",
-      "entry_price": 29.05,
-      "current_price": 28.8,
-      "conf": 59,
-      "days": 5,
-      "profit_pct": -0.86
-    },
-    {
       "s": "2801",
       "n": "彰銀",
       "entry_date": "2026-06-11",
       "entry_price": 22.35,
       "current_price": 22.65,
       "conf": 73,
-      "days": 4,
+      "days": 5,
       "profit_pct": 1.34
     },
     {
@@ -57,7 +17,7 @@
       "entry_price": 92.6,
       "current_price": 97.3,
       "conf": 48,
-      "days": 4,
+      "days": 5,
       "profit_pct": 5.08
     },
     {
@@ -67,7 +27,7 @@
       "entry_price": 45.45,
       "current_price": 45.45,
       "conf": 75,
-      "days": 4,
+      "days": 5,
       "profit_pct": 0.0
     },
     {
@@ -77,7 +37,7 @@
       "entry_price": 43.4,
       "current_price": 44.0,
       "conf": 52,
-      "days": 4,
+      "days": 5,
       "profit_pct": 1.38
     },
     {
@@ -87,7 +47,7 @@
       "entry_price": 30.55,
       "current_price": 31.3,
       "conf": 74,
-      "days": 4,
+      "days": 5,
       "profit_pct": 2.45
     },
     {
@@ -97,7 +57,7 @@
       "entry_price": 16.95,
       "current_price": 17.3,
       "conf": 60,
-      "days": 4,
+      "days": 5,
       "profit_pct": 2.06
     },
     {
@@ -107,7 +67,7 @@
       "entry_price": 133.0,
       "current_price": 141.5,
       "conf": 64,
-      "days": 3,
+      "days": 4,
       "profit_pct": 6.39
     },
     {
@@ -117,7 +77,7 @@
       "entry_price": 9.24,
       "current_price": 9.95,
       "conf": 51,
-      "days": 3,
+      "days": 4,
       "profit_pct": 7.68
     },
     {
@@ -127,7 +87,7 @@
       "entry_price": 842.0,
       "current_price": 940.0,
       "conf": 66,
-      "days": 3,
+      "days": 4,
       "profit_pct": 11.64
     },
     {
@@ -137,7 +97,7 @@
       "entry_price": 64.6,
       "current_price": 62.8,
       "conf": 51,
-      "days": 3,
+      "days": 4,
       "profit_pct": -2.79
     },
     {
@@ -147,7 +107,7 @@
       "entry_price": 12.85,
       "current_price": 12.85,
       "conf": 50,
-      "days": 3,
+      "days": 4,
       "profit_pct": 0.0
     },
     {
@@ -157,7 +117,7 @@
       "entry_price": 48.55,
       "current_price": 51.4,
       "conf": 65,
-      "days": 0,
+      "days": 1,
       "profit_pct": 5.87
     },
     {
@@ -167,7 +127,7 @@
       "entry_price": 347.5,
       "current_price": 327.0,
       "conf": 57,
-      "days": 0,
+      "days": 1,
       "profit_pct": -5.9
     },
     {
@@ -177,7 +137,7 @@
       "entry_price": 15.6,
       "current_price": 16.5,
       "conf": 53,
-      "days": 0,
+      "days": 1,
       "profit_pct": 5.77
     },
     {
@@ -187,7 +147,7 @@
       "entry_price": 146.5,
       "current_price": 159.0,
       "conf": 60,
-      "days": 0,
+      "days": 1,
       "profit_pct": 8.53
     },
     {
@@ -197,11 +157,113 @@
       "entry_price": 30.2,
       "current_price": 31.6,
       "conf": 75,
-      "days": 0,
+      "days": 1,
       "profit_pct": 4.64
+    },
+    {
+      "s": "2408",
+      "n": "南亞科",
+      "entry_date": "2026-06-16",
+      "entry_price": 395.5,
+      "current_price": 395.5,
+      "conf": 76,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2344",
+      "n": "華邦電",
+      "entry_date": "2026-06-16",
+      "entry_price": 189.0,
+      "current_price": 189.0,
+      "conf": 68,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2484",
+      "n": "希華",
+      "entry_date": "2026-06-16",
+      "entry_price": 73.3,
+      "current_price": 73.3,
+      "conf": 68,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "0050",
+      "n": "元大台灣50",
+      "entry_date": "2026-06-16",
+      "entry_price": 106.05,
+      "current_price": 106.05,
+      "conf": 69,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2409",
+      "n": "友達",
+      "entry_date": "2026-06-16",
+      "entry_price": 24.1,
+      "current_price": 24.1,
+      "conf": 60,
+      "days": 0,
+      "profit_pct": 0.0
     }
   ],
   "history": [
+    {
+      "s": "2883",
+      "n": "凱基金",
+      "entry_date": "2026-06-10",
+      "entry_price": 29.05,
+      "current_price": 28.8,
+      "conf": 59,
+      "days": 6,
+      "profit_pct": -0.86,
+      "exit_date": "2026-06-16",
+      "exit_price": 28.8,
+      "reason": "時間到 (>5日)"
+    },
+    {
+      "s": "2890",
+      "n": "永豐金",
+      "entry_date": "2026-06-10",
+      "entry_price": 34.25,
+      "current_price": 35.2,
+      "conf": 61,
+      "days": 6,
+      "profit_pct": 2.77,
+      "exit_date": "2026-06-16",
+      "exit_price": 35.2,
+      "reason": "時間到 (>5日)"
+    },
+    {
+      "s": "2867",
+      "n": "三商壽",
+      "entry_date": "2026-06-10",
+      "entry_price": 8.27,
+      "current_price": 8.37,
+      "conf": 54,
+      "days": 6,
+      "profit_pct": 1.21,
+      "exit_date": "2026-06-16",
+      "exit_price": 8.37,
+      "reason": "時間到 (>5日)"
+    },
+    {
+      "s": "2880",
+      "n": "華南金",
+      "entry_date": "2026-06-10",
+      "entry_price": 35.45,
+      "current_price": 36.7,
+      "conf": 60,
+      "days": 6,
+      "profit_pct": 3.53,
+      "exit_date": "2026-06-16",
+      "exit_price": 36.7,
+      "reason": "時間到 (>5日)"
+    },
     {
       "s": "1714",
       "n": "和桐",
@@ -1126,5 +1188,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-15T14:00:00.683929+08:00"
+  "updatedAt": "2026-06-16T09:00:01.247023+08:00"
 }
