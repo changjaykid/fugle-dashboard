@@ -125,10 +125,10 @@
       "n": "元大台灣50",
       "entry_date": "2026-06-16",
       "entry_price": 106.05,
-      "current_price": 104.8,
+      "current_price": 105.9,
       "conf": 69,
       "days": 1,
-      "profit_pct": -1.18
+      "profit_pct": -0.14
     },
     {
       "s": "2409",
@@ -175,8 +175,18 @@
       "n": "國泰金",
       "entry_date": "2026-06-17",
       "entry_price": 109.5,
-      "current_price": 109.5,
+      "current_price": 116.0,
       "conf": 71,
+      "days": 0,
+      "profit_pct": 5.94
+    },
+    {
+      "s": "2892",
+      "n": "第一金",
+      "entry_date": "2026-06-17",
+      "entry_price": 32.65,
+      "current_price": 32.65,
+      "conf": 63,
       "days": 0,
       "profit_pct": 0.0
     }
@@ -1249,5 +1259,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-17T09:00:00.561356+08:00"
+  "updatedAt": "2026-06-17T10:00:00.954882+08:00"
 }
