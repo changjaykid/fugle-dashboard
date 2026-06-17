@@ -175,20 +175,20 @@
       "n": "國泰金",
       "entry_date": "2026-06-17",
       "entry_price": 109.5,
-      "current_price": 116.0,
+      "current_price": 109.5,
       "conf": 71,
       "days": 0,
-      "profit_pct": 5.94
+      "profit_pct": 0.0
     },
     {
       "s": "2892",
       "n": "第一金",
       "entry_date": "2026-06-17",
       "entry_price": 32.65,
-      "current_price": 32.65,
+      "current_price": 31.8,
       "conf": 63,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -2.6
     }
   ],
   "history": [
@@ -1259,5 +1259,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-17T10:00:00.954882+08:00"
+  "updatedAt": "2026-06-17T11:00:00.548005+08:00"
 }
