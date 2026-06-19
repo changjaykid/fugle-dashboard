@@ -13,7 +13,7 @@
       "confidence": 13,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "13:00",
+      "updatedAt": "14:00",
       "rsi": null,
       "week52Pos": 86.96,
       "volRatio5d": null
@@ -31,7 +31,7 @@
       "confidence": 28,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "13:00",
+      "updatedAt": "14:00",
       "rsi": null,
       "week52Pos": 27.2,
       "volRatio5d": null
@@ -49,7 +49,7 @@
       "confidence": 12,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "13:00",
+      "updatedAt": "14:00",
       "rsi": null,
       "week52Pos": 46.79,
       "volRatio5d": null
@@ -67,7 +67,7 @@
       "confidence": 16,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "13:00",
+      "updatedAt": "14:00",
       "rsi": null,
       "week52Pos": 23.46,
       "volRatio5d": null
@@ -85,7 +85,7 @@
       "confidence": 28,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "13:00",
+      "updatedAt": "14:00",
       "rsi": null,
       "week52Pos": 21.78,
       "volRatio5d": null
@@ -103,7 +103,7 @@
       "confidence": 12,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "13:00",
+      "updatedAt": "14:00",
       "rsi": null,
       "week52Pos": 15.91,
       "volRatio5d": null
@@ -121,7 +121,7 @@
       "confidence": 37,
       "confidenceLabel": "📉 偏空",
       "confidenceColor": "#ff6d00",
-      "updatedAt": "13:00",
+      "updatedAt": "14:00",
       "rsi": null,
       "week52Pos": 74.36,
       "volRatio5d": null
@@ -139,7 +139,7 @@
       "confidence": 36,
       "confidenceLabel": "📉 偏空",
       "confidenceColor": "#ff6d00",
-      "updatedAt": "13:00",
+      "updatedAt": "14:00",
       "rsi": null,
       "week52Pos": 76.84,
       "volRatio5d": null
@@ -157,7 +157,7 @@
       "confidence": 17,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "13:00",
+      "updatedAt": "14:00",
       "rsi": null,
       "week52Pos": 17.0,
       "volRatio5d": null
@@ -175,7 +175,7 @@
       "confidence": 29,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "13:00",
+      "updatedAt": "14:00",
       "rsi": null,
       "week52Pos": 44.83,
       "volRatio5d": null
@@ -228,61 +228,121 @@
     },
     {
       "title": "1.",
-      "url": "https://news.cnyes.com/news/id/6503546",
+      "url": "https://news.cnyes.com/news/id/6505338",
       "published": "",
       "source": "鉅亨網"
     },
     {
-      "title": "【量大強漲股整理】端午變盤前最後逃命波？還是再噴3倍的起漲點？點進來看主力底牌！",
-      "url": "https://news.cnyes.com/news/id/6503546",
+      "title": "【量大強漲股整理】 台積電震撼結盟艾克爾簽10年大單超大紅包！黑馬股大公開",
+      "url": "https://news.cnyes.com/news/id/6505338",
       "published": "",
       "source": "鉅亨網"
     },
     {
       "title": "2.",
-      "url": "https://news.cnyes.com/news/id/6503092",
+      "url": "https://news.cnyes.com/news/id/6505255",
       "published": "",
       "source": "鉅亨網"
     },
     {
-      "title": "日銀升息一碼也擋不住！日元套利狂潮未歇 市場警戒重演2024踩踏潮",
-      "url": "https://news.cnyes.com/news/id/6503092",
+      "title": "烏克蘭出手！對莫斯科發起開戰以來最大規模無人機攻擊",
+      "url": "https://news.cnyes.com/news/id/6505255",
       "published": "",
       "source": "鉅亨網"
     },
     {
       "title": "3.",
-      "url": "https://news.cnyes.com/news/id/6503654",
+      "url": "https://news.cnyes.com/news/id/6505213",
       "published": "",
       "source": "鉅亨網"
     },
     {
-      "title": "〈美股早盤〉市場靜待Fed利率決策 主要指數小幅走高",
-      "url": "https://news.cnyes.com/news/id/6503654",
+      "title": "〈美股早盤〉美伊和平協議提振風險情緒 主要指數開高、科技股領漲",
+      "url": "https://news.cnyes.com/news/id/6505213",
       "published": "",
       "source": "鉅亨網"
     },
     {
       "title": "4.",
-      "url": "https://news.cnyes.com/news/id/6503662",
+      "url": "https://news.cnyes.com/news/id/6505293",
       "published": "",
       "source": "鉅亨網"
     },
     {
-      "title": "外資轉賣超206億元 調節這3檔電子股共9.3萬張 持續加碼航空雙雄",
-      "url": "https://news.cnyes.com/news/id/6503662",
+      "title": "美上周初領失業金人數降至22.6萬 就業市場韌性依舊",
+      "url": "https://news.cnyes.com/news/id/6505293",
       "published": "",
       "source": "鉅亨網"
     }
   ],
   "themes": [
     {
-      "name": "電子零組件",
+      "name": "鋼鐵",
       "icon": "📊",
-      "avgPct": 1.96,
+      "avgPct": -0.12,
+      "conf": 81.0,
+      "reason": "法人買超",
+      "topStocks": [
+        {
+          "s": "2002",
+          "n": "中鋼",
+          "conf": 81,
+          "chg": "+1.87%"
+        }
+      ]
+    },
+    {
+      "name": "光電",
+      "icon": "📊",
+      "avgPct": 0,
+      "conf": 64.0,
+      "reason": "法人買超",
+      "topStocks": [
+        {
+          "s": "2409",
+          "n": "友達",
+          "conf": 64,
+          "chg": "+7.24%"
+        }
+      ]
+    },
+    {
+      "name": "造紙",
+      "icon": "📊",
+      "avgPct": 2.25,
       "conf": 50,
       "reason": "強勢上漲",
       "topStocks": []
+    },
+    {
+      "name": "玻璃陶瓷",
+      "icon": "📊",
+      "avgPct": 0,
+      "conf": 53.0,
+      "reason": "法人買超",
+      "topStocks": [
+        {
+          "s": "1802",
+          "n": "台玻",
+          "conf": 53,
+          "chg": "+2.89%"
+        }
+      ]
+    },
+    {
+      "name": "航運",
+      "icon": "🚢",
+      "avgPct": -0.34,
+      "conf": 43.0,
+      "reason": "法人買超",
+      "topStocks": [
+        {
+          "s": "2610",
+          "n": "華航",
+          "conf": 43,
+          "chg": "+0.69%"
+        }
+      ]
     },
     {
       "name": "半導體",
@@ -308,59 +368,6 @@
           "n": "南茂",
           "conf": 52,
           "chg": "+9.59%"
-        }
-      ]
-    },
-    {
-      "name": "塑膠",
-      "icon": "📊",
-      "avgPct": 2.23,
-      "conf": 74.0,
-      "reason": "法人買超",
-      "topStocks": [
-        {
-          "s": "1301",
-          "n": "台塑",
-          "conf": 74,
-          "chg": "+7.82%"
-        }
-      ]
-    },
-    {
-      "name": "玻璃陶瓷",
-      "icon": "📊",
-      "avgPct": 0,
-      "conf": 53.0,
-      "reason": "法人買超",
-      "topStocks": [
-        {
-          "s": "1802",
-          "n": "台玻",
-          "conf": 53,
-          "chg": "+2.89%"
-        }
-      ]
-    },
-    {
-      "name": "造紙",
-      "icon": "📊",
-      "avgPct": 2.25,
-      "conf": 50,
-      "reason": "強勢上漲",
-      "topStocks": []
-    },
-    {
-      "name": "金融保險",
-      "icon": "🏦",
-      "avgPct": 0,
-      "conf": 61.0,
-      "reason": "法人買超",
-      "topStocks": [
-        {
-          "s": "2890",
-          "n": "永豐金",
-          "conf": 61,
-          "chg": "+9.49%"
         }
       ]
     }
@@ -19730,7 +19737,7 @@
       "volume": 2599.236
     }
   },
-  "updatedAt": "2026-06-19T13:00:00.387665+08:00",
-  "marketOpen": true,
+  "updatedAt": "2026-06-19T14:00:00.449527+08:00",
+  "marketOpen": false,
   "source": "TWSE"
 }
