@@ -13,7 +13,7 @@
       "confidence": 13,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "11:00",
+      "updatedAt": "12:00",
       "rsi": null,
       "week52Pos": 86.96,
       "volRatio5d": null
@@ -31,7 +31,7 @@
       "confidence": 28,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "11:00",
+      "updatedAt": "12:00",
       "rsi": null,
       "week52Pos": 27.2,
       "volRatio5d": null
@@ -49,9 +49,9 @@
       "confidence": 12,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "11:00",
+      "updatedAt": "12:00",
       "rsi": null,
-      "week52Pos": 89.66,
+      "week52Pos": 46.79,
       "volRatio5d": null
     },
     {
@@ -67,7 +67,7 @@
       "confidence": 16,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "11:00",
+      "updatedAt": "12:00",
       "rsi": null,
       "week52Pos": 23.46,
       "volRatio5d": null
@@ -85,9 +85,9 @@
       "confidence": 28,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "11:00",
+      "updatedAt": "12:00",
       "rsi": null,
-      "week52Pos": null,
+      "week52Pos": 21.78,
       "volRatio5d": null
     },
     {
@@ -103,7 +103,7 @@
       "confidence": 12,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "11:00",
+      "updatedAt": "12:00",
       "rsi": null,
       "week52Pos": 15.91,
       "volRatio5d": null
@@ -121,7 +121,7 @@
       "confidence": 37,
       "confidenceLabel": "📉 偏空",
       "confidenceColor": "#ff6d00",
-      "updatedAt": "11:00",
+      "updatedAt": "12:00",
       "rsi": null,
       "week52Pos": 74.36,
       "volRatio5d": null
@@ -139,7 +139,7 @@
       "confidence": 36,
       "confidenceLabel": "📉 偏空",
       "confidenceColor": "#ff6d00",
-      "updatedAt": "11:00",
+      "updatedAt": "12:00",
       "rsi": null,
       "week52Pos": 76.84,
       "volRatio5d": null
@@ -157,9 +157,9 @@
       "confidence": 17,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "11:00",
+      "updatedAt": "12:00",
       "rsi": null,
-      "week52Pos": null,
+      "week52Pos": 17.0,
       "volRatio5d": null
     },
     {
@@ -175,9 +175,9 @@
       "confidence": 29,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "11:00",
+      "updatedAt": "12:00",
       "rsi": null,
-      "week52Pos": null,
+      "week52Pos": 44.83,
       "volRatio5d": null
     }
   ],
@@ -216,74 +216,66 @@
   "news": [
     {
       "title": "精選",
-      "url": "https://news.cnyes.com/news/id/6499232",
+      "url": "https://news.cnyes.com/news/id/6502486",
       "published": "",
       "source": "鉅亨網"
     },
     {
-      "title": "〈台股開盤〉美伊終戰重開荷姆茲海峽 台股狂飆1269點站回4萬5",
-      "url": "https://news.cnyes.com/news/id/6499232",
+      "title": "央行與聯準會同步維持利率不變、美伊達成和平協議、台股續創高 本周大事回顧",
+      "url": "https://news.cnyes.com/news/id/6502486",
       "published": "",
       "source": "鉅亨網"
     },
     {
       "title": "1.",
-      "url": "https://news.cnyes.com/news/id/6499032",
+      "url": "https://news.cnyes.com/news/id/6505340",
       "published": "",
       "source": "鉅亨網"
     },
     {
-      "title": "端午大變盤！本週不賣股→將後悔莫及？",
-      "url": "https://news.cnyes.com/news/id/6499032",
+      "title": "楊立昆重話警告：xAI已算失敗 整個AI產業恐迎泡沫大爆炸",
+      "url": "https://news.cnyes.com/news/id/6505340",
       "published": "",
       "source": "鉅亨網"
     },
     {
       "title": "2.",
-      "url": "https://news.cnyes.com/news/id/6498812",
+      "url": "https://news.cnyes.com/news/id/6505452",
       "published": "",
       "source": "鉅亨網"
     },
     {
-      "title": "〈台股盤前要聞〉站回4萬4 本周留意這幾大變數、富邦人壽獲配SpaceX 5萬股",
-      "url": "https://news.cnyes.com/news/id/6498812",
+      "title": "〈美股盤後〉美伊和平協議提振 費半飆超6% 英特爾暴漲超10%",
+      "url": "https://news.cnyes.com/news/id/6505452",
       "published": "",
       "source": "鉅亨網"
     },
     {
       "title": "3.",
-      "url": "https://news.cnyes.com/news/id/6498747",
+      "url": "https://news.cnyes.com/news/id/6505465",
       "published": "",
       "source": "鉅亨網"
     },
     {
-      "title": "高盛5萬次模擬預測世界杯冠軍！六成機率落入「這三支」球隊",
-      "url": "https://news.cnyes.com/news/id/6498747",
+      "title": "7月升息要來了？華許首秀震撼市場 利率期貨交易量創新高",
+      "url": "https://news.cnyes.com/news/id/6505465",
       "published": "",
       "source": "鉅亨網"
     },
     {
       "title": "4.",
-      "url": "https://news.cnyes.com/news/id/6498426",
+      "url": "https://news.cnyes.com/news/id/6504853",
       "published": "",
       "source": "鉅亨網"
     },
     {
-      "title": "華爾街看空美光與英特爾？示警仍有44%、60%下跌空間",
-      "url": "https://news.cnyes.com/news/id/6498426",
+      "title": "晶片股觸頂了？華爾街罕見喊話：可續抱、別加碼",
+      "url": "https://news.cnyes.com/news/id/6504853",
       "published": "",
       "source": "鉅亨網"
     }
   ],
   "themes": [
-    {
-      "name": "電子零組件",
-      "icon": "📊",
-      "avgPct": 1.96,
-      "conf": 50,
-      "reason": "強勢上漲",
-      "topStocks": []
-    },
     {
       "name": "造紙",
       "icon": "📊",
@@ -291,6 +283,36 @@
       "conf": 50,
       "reason": "強勢上漲",
       "topStocks": []
+    },
+    {
+      "name": "塑膠",
+      "icon": "📊",
+      "avgPct": 2.23,
+      "conf": 74.0,
+      "reason": "法人買超",
+      "topStocks": [
+        {
+          "s": "1301",
+          "n": "台塑",
+          "conf": 74,
+          "chg": "+7.82%"
+        }
+      ]
+    },
+    {
+      "name": "玻璃陶瓷",
+      "icon": "📊",
+      "avgPct": 0,
+      "conf": 53.0,
+      "reason": "法人買超",
+      "topStocks": [
+        {
+          "s": "1802",
+          "n": "台玻",
+          "conf": 53,
+          "chg": "+2.89%"
+        }
+      ]
     },
     {
       "name": "化學",
@@ -301,61 +323,27 @@
       "topStocks": []
     },
     {
-      "name": "半導體",
-      "icon": "⚡",
-      "avgPct": 4.2,
-      "conf": 57.7,
+      "name": "航運",
+      "icon": "🚢",
+      "avgPct": -0.34,
+      "conf": 43.0,
       "reason": "法人買超",
       "topStocks": [
         {
-          "s": "2337",
-          "n": "旺宏",
-          "conf": 60,
-          "chg": "+4.64%"
-        },
-        {
-          "s": "2303",
-          "n": "聯電",
-          "conf": 61,
-          "chg": "+3.93%"
-        },
-        {
-          "s": "8150",
-          "n": "南茂",
-          "conf": 52,
-          "chg": "+9.59%"
+          "s": "2610",
+          "n": "華航",
+          "conf": 43,
+          "chg": "+0.69%"
         }
       ]
     },
     {
-      "name": "金融保險",
-      "icon": "🏦",
-      "avgPct": 0,
-      "conf": 61.0,
-      "reason": "法人買超",
-      "topStocks": [
-        {
-          "s": "2890",
-          "n": "永豐金",
-          "conf": 61,
-          "chg": "+9.49%"
-        }
-      ]
-    },
-    {
-      "name": "光電",
+      "name": "電子零組件",
       "icon": "📊",
-      "avgPct": 0,
-      "conf": 64.0,
-      "reason": "法人買超",
-      "topStocks": [
-        {
-          "s": "2409",
-          "n": "友達",
-          "conf": 64,
-          "chg": "+7.24%"
-        }
-      ]
+      "avgPct": 1.96,
+      "conf": 50,
+      "reason": "強勢上漲",
+      "topStocks": []
     }
   ],
   "topBuy": [
@@ -19723,7 +19711,7 @@
       "volume": 2599.236
     }
   },
-  "updatedAt": "2026-06-19T11:00:01.454768+08:00",
+  "updatedAt": "2026-06-19T12:00:00.328917+08:00",
   "marketOpen": true,
   "source": "TWSE"
 }
