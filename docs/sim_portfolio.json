@@ -15,10 +15,10 @@
       "n": "中信金",
       "entry_date": "2026-06-17",
       "entry_price": 70.8,
-      "current_price": 70.8,
+      "current_price": 71.9,
       "conf": 70,
       "days": 5,
-      "profit_pct": 0.0
+      "profit_pct": 1.55
     },
     {
       "s": "2890",
@@ -185,10 +185,10 @@
       "n": "旺宏",
       "entry_date": "2026-06-22",
       "entry_price": 169.0,
-      "current_price": 169.0,
+      "current_price": 185.5,
       "conf": 60,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": 9.76
     }
   ],
   "history": [
@@ -1441,5 +1441,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-22T11:00:00.613833+08:00"
+  "updatedAt": "2026-06-22T12:00:01.208732+08:00"
 }
