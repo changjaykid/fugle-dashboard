@@ -25,10 +25,10 @@
       "n": "長榮航",
       "entry_date": "2026-06-18",
       "entry_price": 42.55,
-      "current_price": 41.65,
+      "current_price": 42.7,
       "conf": 61,
       "days": 5,
-      "profit_pct": -2.12
+      "profit_pct": 0.35
     },
     {
       "s": "3481",
@@ -125,10 +125,10 @@
       "n": "旺宏",
       "entry_date": "2026-06-22",
       "entry_price": 169.0,
-      "current_price": 185.5,
+      "current_price": 174.0,
       "conf": 60,
       "days": 1,
-      "profit_pct": 9.76
+      "profit_pct": 2.96
     },
     {
       "s": "1802",
@@ -1489,5 +1489,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-23T10:00:00.688765+08:00"
+  "updatedAt": "2026-06-23T11:00:00.906245+08:00"
 }
