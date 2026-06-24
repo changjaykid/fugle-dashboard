@@ -75,10 +75,10 @@
       "n": "旺宏",
       "entry_date": "2026-06-22",
       "entry_price": 169.0,
-      "current_price": 171.5,
+      "current_price": 172.0,
       "conf": 60,
       "days": 2,
-      "profit_pct": 1.48
+      "profit_pct": 1.78
     },
     {
       "s": "8150",
@@ -135,10 +135,10 @@
       "n": "強茂",
       "entry_date": "2026-06-24",
       "entry_price": 193.5,
-      "current_price": 190.5,
+      "current_price": 195.0,
       "conf": 68,
       "days": 0,
-      "profit_pct": -1.55
+      "profit_pct": 0.78
     },
     {
       "s": "1303",
@@ -185,20 +185,20 @@
       "n": "長榮航",
       "entry_date": "2026-06-24",
       "entry_price": 42.95,
-      "current_price": 44.15,
+      "current_price": 44.0,
       "conf": 68,
       "days": 0,
-      "profit_pct": 2.79
+      "profit_pct": 2.44
     },
     {
       "s": "2610",
       "n": "華航",
       "entry_date": "2026-06-24",
       "entry_price": 22.3,
-      "current_price": 22.3,
+      "current_price": 23.25,
       "conf": 65,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": 4.26
     }
   ],
   "history": [
@@ -1607,5 +1607,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-24T13:00:00.565218+08:00"
+  "updatedAt": "2026-06-24T14:00:00.616435+08:00"
 }
