@@ -7,7 +7,7 @@
       "entry_price": 19.1,
       "current_price": 19.05,
       "conf": 81,
-      "days": 3,
+      "days": 4,
       "profit_pct": -0.26
     },
     {
@@ -15,10 +15,10 @@
       "n": "旺宏",
       "entry_date": "2026-06-22",
       "entry_price": 169.0,
-      "current_price": 161.5,
+      "current_price": 162.0,
       "conf": 60,
-      "days": 3,
-      "profit_pct": -4.44
+      "days": 4,
+      "profit_pct": -4.14
     },
     {
       "s": "2887",
@@ -27,7 +27,7 @@
       "entry_price": 32.15,
       "current_price": 31.85,
       "conf": 50,
-      "days": 1,
+      "days": 2,
       "profit_pct": -0.93
     },
     {
@@ -37,7 +37,7 @@
       "entry_price": 28.55,
       "current_price": 27.05,
       "conf": 45,
-      "days": 1,
+      "days": 2,
       "profit_pct": -5.25
     },
     {
@@ -47,7 +47,7 @@
       "entry_price": 170.0,
       "current_price": 178.5,
       "conf": 74,
-      "days": 1,
+      "days": 2,
       "profit_pct": 5.0
     },
     {
@@ -57,7 +57,7 @@
       "entry_price": 193.5,
       "current_price": 192.0,
       "conf": 68,
-      "days": 1,
+      "days": 2,
       "profit_pct": -0.78
     },
     {
@@ -67,7 +67,7 @@
       "entry_price": 154.5,
       "current_price": 155.0,
       "conf": 60,
-      "days": 1,
+      "days": 2,
       "profit_pct": 0.32
     },
     {
@@ -77,7 +77,7 @@
       "entry_price": 44.55,
       "current_price": 43.4,
       "conf": 53,
-      "days": 1,
+      "days": 2,
       "profit_pct": -2.58
     },
     {
@@ -87,7 +87,7 @@
       "entry_price": 39.8,
       "current_price": 39.95,
       "conf": 62,
-      "days": 1,
+      "days": 2,
       "profit_pct": 0.38
     },
     {
@@ -97,7 +97,7 @@
       "entry_price": 42.95,
       "current_price": 44.5,
       "conf": 68,
-      "days": 1,
+      "days": 2,
       "profit_pct": 3.61
     },
     {
@@ -107,7 +107,7 @@
       "entry_price": 22.3,
       "current_price": 24.2,
       "conf": 65,
-      "days": 1,
+      "days": 2,
       "profit_pct": 8.52
     },
     {
@@ -117,7 +117,7 @@
       "entry_price": 29.85,
       "current_price": 30.5,
       "conf": 50,
-      "days": 0,
+      "days": 1,
       "profit_pct": 2.18
     },
     {
@@ -127,7 +127,7 @@
       "entry_price": 22.9,
       "current_price": 23.5,
       "conf": 50,
-      "days": 0,
+      "days": 1,
       "profit_pct": 2.62
     },
     {
@@ -137,7 +137,7 @@
       "entry_price": 17.8,
       "current_price": 18.0,
       "conf": 50,
-      "days": 0,
+      "days": 1,
       "profit_pct": 1.12
     },
     {
@@ -147,7 +147,7 @@
       "entry_price": 333.5,
       "current_price": 334.5,
       "conf": 50,
-      "days": 0,
+      "days": 1,
       "profit_pct": 0.3
     },
     {
@@ -157,8 +157,58 @@
       "entry_price": 205.0,
       "current_price": 219.5,
       "conf": 50,
-      "days": 0,
+      "days": 1,
       "profit_pct": 7.07
+    },
+    {
+      "s": "1301",
+      "n": "台塑",
+      "entry_date": "2026-06-26",
+      "entry_price": 58.0,
+      "current_price": 58.0,
+      "conf": 76,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2408",
+      "n": "南亞科",
+      "entry_date": "2026-06-26",
+      "entry_price": 477.0,
+      "current_price": 477.0,
+      "conf": 76,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "3481",
+      "n": "群創",
+      "entry_date": "2026-06-26",
+      "entry_price": 70.9,
+      "current_price": 70.9,
+      "conf": 65,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "6116",
+      "n": "彩晶",
+      "entry_date": "2026-06-26",
+      "entry_price": 19.5,
+      "current_price": 19.5,
+      "conf": 64,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "0050",
+      "n": "元大台灣50",
+      "entry_date": "2026-06-26",
+      "entry_price": 105.0,
+      "current_price": 105.0,
+      "conf": 58,
+      "days": 0,
+      "profit_pct": 0.0
     }
   ],
   "history": [
@@ -1684,5 +1734,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-25T14:00:00.428355+08:00"
+  "updatedAt": "2026-06-26T09:00:00.357924+08:00"
 }
