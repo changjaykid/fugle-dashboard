@@ -45,20 +45,10 @@
       "n": "聯電",
       "entry_date": "2026-06-24",
       "entry_price": 170.0,
-      "current_price": 166.5,
+      "current_price": 163.5,
       "conf": 74,
       "days": 2,
-      "profit_pct": -2.06
-    },
-    {
-      "s": "2481",
-      "n": "強茂",
-      "entry_date": "2026-06-24",
-      "entry_price": 193.5,
-      "current_price": 182.0,
-      "conf": 68,
-      "days": 2,
-      "profit_pct": -5.94
+      "profit_pct": -3.82
     },
     {
       "s": "1303",
@@ -105,20 +95,20 @@
       "n": "華航",
       "entry_date": "2026-06-24",
       "entry_price": 22.3,
-      "current_price": 24.2,
+      "current_price": 23.4,
       "conf": 65,
       "days": 2,
-      "profit_pct": 8.52
+      "profit_pct": 4.93
     },
     {
       "s": "2883",
       "n": "2883",
       "entry_date": "2026-06-25",
       "entry_price": 29.85,
-      "current_price": 30.5,
+      "current_price": 30.05,
       "conf": 50,
       "days": 1,
-      "profit_pct": 2.18
+      "profit_pct": 0.67
     },
     {
       "s": "2801",
@@ -212,6 +202,19 @@
     }
   ],
   "history": [
+    {
+      "s": "2481",
+      "n": "強茂",
+      "entry_date": "2026-06-24",
+      "entry_price": 193.5,
+      "current_price": 176.0,
+      "conf": 68,
+      "days": 2,
+      "profit_pct": -9.04,
+      "exit_date": "2026-06-26",
+      "exit_price": 176.0,
+      "reason": "止損 (-8%)"
+    },
     {
       "s": "2426",
       "n": "鼎元",
@@ -1734,5 +1737,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-26T12:00:00.630649+08:00"
+  "updatedAt": "2026-06-26T13:00:01.182203+08:00"
 }
