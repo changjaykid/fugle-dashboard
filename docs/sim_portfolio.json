@@ -65,10 +65,10 @@
       "n": "2883",
       "entry_date": "2026-06-25",
       "entry_price": 29.85,
-      "current_price": 29.9,
+      "current_price": 29.85,
       "conf": 50,
       "days": 4,
-      "profit_pct": 0.17
+      "profit_pct": 0.0
     },
     {
       "s": "2801",
@@ -135,10 +135,10 @@
       "n": "元大台灣50",
       "entry_date": "2026-06-26",
       "entry_price": 105.0,
-      "current_price": 104.75,
+      "current_price": 103.1,
       "conf": 58,
       "days": 3,
-      "profit_pct": -0.24
+      "profit_pct": -1.81
     },
     {
       "s": "8046",
@@ -1825,5 +1825,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-29T12:00:00.479149+08:00"
+  "updatedAt": "2026-06-29T13:00:00.525055+08:00"
 }
