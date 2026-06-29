@@ -135,30 +135,30 @@
       "n": "元大台灣50",
       "entry_date": "2026-06-26",
       "entry_price": 105.0,
-      "current_price": 104.7,
+      "current_price": 104.75,
       "conf": 58,
       "days": 3,
-      "profit_pct": -0.29
+      "profit_pct": -0.24
     },
     {
       "s": "8046",
       "n": "南電",
       "entry_date": "2026-06-29",
       "entry_price": 1125.0,
-      "current_price": 1075.0,
+      "current_price": 1125.0,
       "conf": 60,
       "days": 0,
-      "profit_pct": -4.44
+      "profit_pct": 0.0
     },
     {
       "s": "6213",
       "n": "聯茂",
       "entry_date": "2026-06-29",
       "entry_price": 359.5,
-      "current_price": 341.0,
+      "current_price": 346.5,
       "conf": 48,
       "days": 0,
-      "profit_pct": -5.15
+      "profit_pct": -3.62
     },
     {
       "s": "2484",
@@ -1825,5 +1825,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-29T11:00:00.921210+08:00"
+  "updatedAt": "2026-06-29T12:00:00.479149+08:00"
 }
