@@ -2,10 +2,6 @@
 *.log
 engine/run.log
 
-# ── generated runtime output ──────────────────
-docs/dashboard.json
-docs/sim_portfolio.json
-
 # ── backups / temp ────────────────────────────
 *.bak
 *.bak_*
