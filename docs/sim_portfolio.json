@@ -5,10 +5,10 @@
       "n": "2883",
       "entry_date": "2026-06-25",
       "entry_price": 29.85,
-      "current_price": 28.3,
+      "current_price": 29.65,
       "conf": 50,
       "days": 5,
-      "profit_pct": -5.19
+      "profit_pct": -0.67
     },
     {
       "s": "2801",
@@ -85,10 +85,10 @@
       "n": "南電",
       "entry_date": "2026-06-29",
       "entry_price": 1125.0,
-      "current_price": 1185.0,
+      "current_price": 1080.0,
       "conf": 60,
       "days": 1,
-      "profit_pct": 5.33
+      "profit_pct": -4.0
     },
     {
       "s": "6213",
@@ -1926,5 +1926,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-06-30T11:00:00.618060+08:00"
+  "updatedAt": "2026-06-30T12:00:00.675113+08:00"
 }
