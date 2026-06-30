@@ -286,34 +286,64 @@ def fetch_institutional_raw():
 
 
 # ── 漲跌排行 + 產業（含信心分預備數據）──────────────────────
+def _parse_movers_rows(rows, sym_col, name_col, vol_col, close_col, chg_col):
+    """共用解析邏輯：接受行列表與欄位索引，回傳 (parsed, volumes)"""
+    volumes = []
+    parsed = []
+    for row in rows:
+        try:
+            sym   = str(row[sym_col]).strip()
+            name  = str(row[name_col]).strip()
+            close = safe_float(str(row[close_col]).replace(',', ''))
+            if close <= 0: continue
+            chg_raw = str(row[chg_col]).strip()
+            chg   = safe_float(chg_raw.replace('+', '').replace(',', ''))
+            if chg_raw.startswith('-'): chg = -abs(chg)
+            prev  = close - chg
+            pct   = round(chg / prev * 100, 2) if prev else 0
+            vol   = safe_float(str(row[vol_col]).replace(',', '')) / 1000  # 股→張
+            volumes.append(vol)
+            parsed.append({'s': sym, 'n': name, 'price': close,
+                           'change': chg, 'changePct': pct, 'volume': vol})
+        except: continue
+    return parsed, volumes
+
+
 def fetch_movers():
     """
     STOCK_DAY_ALL: [0]代號 [1]名稱 [2]成交股數 [3]成交金額 [4]開盤 [5]最高 [6]最低 [7]收盤 [8]漲跌 [9]成交筆數
+    TWSE 有時回傳 JSON，有時回傳 CSV（content-type: text/csv），兩者都支援。
     """
+    import io, csv as _csv
     try:
         r = requests.get('https://www.twse.com.tw/exchangeReport/STOCK_DAY_ALL',
                          params={'response': 'json'}, headers=HEADERS, timeout=15)
-        rows = r.json().get('data', [])
-        volumes = []
-        parsed = []
-        for row in rows:
-            try:
-                sym   = str(row[0]).strip()
-                name  = str(row[1]).strip()
-                close = safe_float(str(row[7]).replace(',', ''))
-                if close <= 0: continue
-                chg_raw = str(row[8]).strip()
-                chg   = safe_float(chg_raw.replace('+', '').replace(',', ''))
-                if chg_raw.startswith('-'): chg = -abs(chg)
-                prev  = close - chg
-                pct   = round(chg / prev * 100, 2) if prev else 0
-                vol   = safe_float(str(row[2]).replace(',', '')) / 1000  # 股→張
-                volumes.append(vol)
-                parsed.append({'s': sym, 'n': name, 'price': close,
-                               'change': chg, 'changePct': pct, 'volume': vol})
-            except: continue
+        ct = r.headers.get('content-type', '')
+
+        # ── JSON 格式 ──
+        if 'json' in ct or r.text.strip().startswith('{'):
+            rows = r.json().get('data', [])
+            parsed, volumes = _parse_movers_rows(rows, 0, 1, 2, 7, 8)
+
+        # ── CSV 格式 (TWSE 有時改回傳 CSV) ──
+        elif 'csv' in ct or 'text' in ct:
+            print('[INFO] fetch_movers: 收到 CSV 格式，切換 CSV 解析')
+            reader = _csv.reader(io.StringIO(r.text))
+            header = next(reader, None)  # 跳過標題行
+            # CSV 欄位: 日期[0] 代號[1] 名稱[2] 成交股數[3] 成交金額[4] 開盤[5] 最高[6] 最低[7] 收盤[8] 漲跌[9] 成交筆數[10]
+            rows = [row for row in reader if row]
+            parsed, volumes = _parse_movers_rows(rows, 1, 2, 3, 8, 9)
+
+        else:
+            print(f'[WARN] fetch_movers: 未知 content-type={ct}')
+            return [], 1
+
+        if not parsed:
+            print('[WARN] fetch_movers: 解析後無資料')
+            return [], 1
 
         avg_vol = sum(volumes) / len(volumes) if volumes else 1
+        print(f'[INFO] fetch_movers: 解析 {len(parsed)} 支股票')
         return parsed, avg_vol
 
     except Exception as e:
@@ -720,10 +750,16 @@ def scan():
             chg = round(price - prev, 2) if prev else 0
             pct = round(chg / prev * 100, 2) if prev else 0
         sg = '+' if pct >= 0 else ''
+        open_  = safe_float(item.get('o', 0)) or None
+        high_  = safe_float(item.get('h', 0)) or None
+        low_   = safe_float(item.get('l', 0)) or None
+        vol_   = safe_float(item.get('tv', item.get('v', 0))) or None
         price_map[sym] = {
             'price': price, 'change': chg, 'changePct': pct,
             'chgStr': f'{sg}{pct}%', 'dir': 'up' if pct >= 0 else 'dn',
-            'industry': industry_cache.get(sym, '')
+            'industry': industry_cache.get(sym, ''),
+            'open': open_, 'high': high_, 'low': low_,
+            'close': price, 'volume': vol_
         }
     for sym, m in all_map.items():
         if sym not in price_map:
@@ -731,7 +767,9 @@ def scan():
             price_map[sym] = {
                 'price': m['price'], 'change': m['change'], 'changePct': m['changePct'],
                 'chgStr': f"{sg}{m['changePct']}%", 'dir': 'up' if m['changePct'] >= 0 else 'dn',
-                'industry': industry_cache.get(sym, m.get('industry', ''))
+                'industry': industry_cache.get(sym, m.get('industry', '')),
+                'open': None, 'high': None, 'low': None,
+                'close': m['price'], 'volume': m.get('volume', None)
             }
 
     # 自選股卡
