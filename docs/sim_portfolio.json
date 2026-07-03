@@ -145,10 +145,10 @@
       "n": "聯電",
       "entry_date": "2026-07-02",
       "entry_price": 164.0,
-      "current_price": 166.0,
+      "current_price": 168.0,
       "conf": 64,
       "days": 1,
-      "profit_pct": 1.22
+      "profit_pct": 2.44
     },
     {
       "s": "1314",
@@ -185,10 +185,10 @@
       "n": "神基",
       "entry_date": "2026-07-02",
       "entry_price": 106.5,
-      "current_price": 102.5,
+      "current_price": 107.0,
       "conf": 60,
       "days": 1,
-      "profit_pct": -3.76
+      "profit_pct": 0.47
     },
     {
       "s": "0050",
@@ -2148,5 +2148,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-07-03T11:00:00.560411+08:00"
+  "updatedAt": "2026-07-03T12:00:01.386851+08:00"
 }
