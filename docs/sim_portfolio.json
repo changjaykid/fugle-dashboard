@@ -25,10 +25,10 @@
       "n": "聯電",
       "entry_date": "2026-07-02",
       "entry_price": 164.0,
-      "current_price": 171.5,
+      "current_price": 167.0,
       "conf": 64,
       "days": 4,
-      "profit_pct": 4.57
+      "profit_pct": 1.83
     },
     {
       "s": "3717",
@@ -95,10 +95,10 @@
       "n": "旺宏",
       "entry_date": "2026-07-03",
       "entry_price": 142.0,
-      "current_price": 142.5,
+      "current_price": 147.0,
       "conf": 60,
       "days": 3,
-      "profit_pct": 0.35
+      "profit_pct": 3.52
     },
     {
       "s": "1301",
@@ -157,6 +157,36 @@
       "entry_price": 14.95,
       "current_price": 14.95,
       "conf": 56,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "1314",
+      "n": "中石化",
+      "entry_date": "2026-07-06",
+      "entry_price": 9.88,
+      "current_price": 9.88,
+      "conf": 83,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "6770",
+      "n": "力積電",
+      "entry_date": "2026-07-06",
+      "entry_price": 73.4,
+      "current_price": 73.4,
+      "conf": 63,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "3481",
+      "n": "群創",
+      "entry_date": "2026-07-06",
+      "entry_price": 66.0,
+      "current_price": 66.0,
+      "conf": 63,
       "days": 0,
       "profit_pct": 0.0
     }
@@ -2217,5 +2247,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-07-06T09:00:00.899507+08:00"
+  "updatedAt": "2026-07-06T10:00:00.517741+08:00"
 }
