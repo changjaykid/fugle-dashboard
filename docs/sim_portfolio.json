@@ -205,10 +205,10 @@
       "n": "凱基金",
       "entry_date": "2026-07-07",
       "entry_price": 29.0,
-      "current_price": 30.4,
+      "current_price": 29.0,
       "conf": 61,
       "days": 0,
-      "profit_pct": 4.83
+      "profit_pct": 0.0
     },
     {
       "s": "2409",
@@ -2333,5 +2333,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-07-07T12:00:00.625796+08:00"
+  "updatedAt": "2026-07-07T13:00:01.250013+08:00"
 }
