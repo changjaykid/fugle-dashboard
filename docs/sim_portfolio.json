@@ -5,253 +5,262 @@
       "n": "聯電",
       "entry_date": "2026-07-02",
       "entry_price": 164.0,
-      "current_price": 157.0,
+      "current_price": 155.0,
       "conf": 64,
       "days": 5,
-      "profit_pct": -4.27
+      "profit_pct": -5.49
     },
     {
       "s": "3717",
       "n": "聯嘉投控",
       "entry_date": "2026-07-02",
       "entry_price": 28.95,
-      "current_price": 29.35,
+      "current_price": 27.6,
       "conf": 59,
       "days": 5,
-      "profit_pct": 1.38
+      "profit_pct": -4.66
     },
     {
       "s": "1444",
       "n": "力麗",
       "entry_date": "2026-07-02",
       "entry_price": 9.35,
-      "current_price": 9.15,
+      "current_price": 8.93,
       "conf": 56,
       "days": 5,
-      "profit_pct": -2.14
+      "profit_pct": -4.49
     },
     {
       "s": "3005",
       "n": "神基",
       "entry_date": "2026-07-02",
       "entry_price": 106.5,
-      "current_price": 110.0,
+      "current_price": 107.0,
       "conf": 60,
       "days": 5,
-      "profit_pct": 3.29
+      "profit_pct": 0.47
     },
     {
       "s": "0050",
       "n": "元大台灣50",
       "entry_date": "2026-07-02",
       "entry_price": 109.35,
-      "current_price": 108.25,
+      "current_price": 106.2,
       "conf": 47,
       "days": 5,
-      "profit_pct": -1.01
-    },
-    {
-      "s": "1303",
-      "n": "南亞",
-      "entry_date": "2026-07-03",
-      "entry_price": 197.0,
-      "current_price": 185.0,
-      "conf": 61,
-      "days": 4,
-      "profit_pct": -6.09
+      "profit_pct": -2.88
     },
     {
       "s": "2406",
       "n": "國碩",
       "entry_date": "2026-07-03",
       "entry_price": 41.75,
-      "current_price": 41.45,
+      "current_price": 39.1,
       "conf": 58,
       "days": 4,
-      "profit_pct": -0.72
+      "profit_pct": -6.35
     },
     {
       "s": "2337",
       "n": "旺宏",
       "entry_date": "2026-07-03",
       "entry_price": 142.0,
-      "current_price": 144.5,
+      "current_price": 139.0,
       "conf": 60,
       "days": 4,
-      "profit_pct": 1.76
+      "profit_pct": -2.11
     },
     {
       "s": "1301",
       "n": "台塑",
       "entry_date": "2026-07-03",
       "entry_price": 59.7,
-      "current_price": 60.4,
+      "current_price": 57.3,
       "conf": 51,
       "days": 4,
-      "profit_pct": 1.17
-    },
-    {
-      "s": "2449",
-      "n": "京元電子",
-      "entry_date": "2026-07-03",
-      "entry_price": 347.5,
-      "current_price": 351.0,
-      "conf": 60,
-      "days": 4,
-      "profit_pct": 1.01
+      "profit_pct": -4.02
     },
     {
       "s": "1313",
       "n": "聯成",
       "entry_date": "2026-07-03",
       "entry_price": 13.0,
-      "current_price": 13.55,
+      "current_price": 13.05,
       "conf": 59,
       "days": 4,
-      "profit_pct": 4.23
+      "profit_pct": 0.38
     },
     {
       "s": "1312",
       "n": "國喬",
       "entry_date": "2026-07-06",
       "entry_price": 15.1,
-      "current_price": 14.15,
+      "current_price": 13.9,
       "conf": 70,
       "days": 1,
-      "profit_pct": -6.29
+      "profit_pct": -7.95
     },
     {
       "s": "2105",
       "n": "正新",
       "entry_date": "2026-07-06",
       "entry_price": 32.15,
-      "current_price": 32.55,
+      "current_price": 32.45,
       "conf": 70,
       "days": 1,
-      "profit_pct": 1.24
+      "profit_pct": 0.93
     },
     {
       "s": "1718",
       "n": "中纖",
       "entry_date": "2026-07-06",
       "entry_price": 14.95,
-      "current_price": 15.2,
+      "current_price": 14.95,
       "conf": 56,
       "days": 1,
-      "profit_pct": 1.67
+      "profit_pct": 0.0
     },
     {
       "s": "1314",
       "n": "中石化",
       "entry_date": "2026-07-06",
       "entry_price": 9.88,
-      "current_price": 10.4,
+      "current_price": 9.77,
       "conf": 83,
       "days": 1,
-      "profit_pct": 5.26
+      "profit_pct": -1.11
     },
     {
       "s": "6770",
       "n": "力積電",
       "entry_date": "2026-07-06",
       "entry_price": 73.4,
-      "current_price": 72.6,
+      "current_price": 70.1,
       "conf": 63,
       "days": 1,
-      "profit_pct": -1.09
+      "profit_pct": -4.5
     },
     {
       "s": "3481",
       "n": "群創",
       "entry_date": "2026-07-06",
       "entry_price": 66.0,
-      "current_price": 69.2,
+      "current_price": 64.2,
       "conf": 63,
       "days": 1,
-      "profit_pct": 4.85
-    },
-    {
-      "s": "1717",
-      "n": "長興",
-      "entry_date": "2026-07-07",
-      "entry_price": 85.4,
-      "current_price": 85.4,
-      "conf": 66,
-      "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -2.73
     },
     {
       "s": "2887",
       "n": "台新新光金",
       "entry_date": "2026-07-07",
       "entry_price": 34.3,
-      "current_price": 34.3,
+      "current_price": 34.9,
       "conf": 75,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": 1.75
     },
     {
       "s": "2834",
       "n": "臺企銀",
       "entry_date": "2026-07-07",
       "entry_price": 18.0,
-      "current_price": 18.0,
+      "current_price": 18.1,
       "conf": 59,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": 0.56
     },
     {
       "s": "2883",
       "n": "凱基金",
       "entry_date": "2026-07-07",
       "entry_price": 29.0,
-      "current_price": 29.0,
+      "current_price": 30.1,
       "conf": 61,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": 3.79
     },
     {
       "s": "2409",
       "n": "友達",
       "entry_date": "2026-07-07",
       "entry_price": 31.7,
-      "current_price": 31.7,
+      "current_price": 29.35,
       "conf": 69,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -7.41
     },
     {
       "s": "2002",
       "n": "中鋼",
       "entry_date": "2026-07-07",
       "entry_price": 19.0,
-      "current_price": 19.0,
+      "current_price": 18.6,
       "conf": 55,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -2.11
     },
     {
       "s": "2408",
       "n": "南亞科",
       "entry_date": "2026-07-07",
       "entry_price": 420.5,
-      "current_price": 420.5,
+      "current_price": 403.0,
       "conf": 65,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -4.16
     },
     {
       "s": "2812",
       "n": "台中銀",
       "entry_date": "2026-07-07",
       "entry_price": 20.55,
-      "current_price": 20.55,
+      "current_price": 20.65,
       "conf": 47,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": 0.49
     }
   ],
   "history": [
+    {
+      "s": "1717",
+      "n": "長興",
+      "entry_date": "2026-07-07",
+      "entry_price": 85.4,
+      "current_price": 77.1,
+      "conf": 66,
+      "days": 0,
+      "profit_pct": -9.72,
+      "exit_date": "2026-07-07",
+      "exit_price": 77.1,
+      "reason": "止損 (-8%)"
+    },
+    {
+      "s": "2449",
+      "n": "京元電子",
+      "entry_date": "2026-07-03",
+      "entry_price": 347.5,
+      "current_price": 317.0,
+      "conf": 60,
+      "days": 4,
+      "profit_pct": -8.78,
+      "exit_date": "2026-07-07",
+      "exit_price": 317.0,
+      "reason": "止損 (-8%)"
+    },
+    {
+      "s": "1303",
+      "n": "南亞",
+      "entry_date": "2026-07-03",
+      "entry_price": 197.0,
+      "current_price": 166.5,
+      "conf": 61,
+      "days": 4,
+      "profit_pct": -15.48,
+      "exit_date": "2026-07-07",
+      "exit_price": 166.5,
+      "reason": "止損 (-8%)"
+    },
     {
       "s": "6239",
       "n": "力成",
@@ -2333,5 +2342,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-07-07T13:00:01.250013+08:00"
+  "updatedAt": "2026-07-07T14:00:00.393987+08:00"
 }
