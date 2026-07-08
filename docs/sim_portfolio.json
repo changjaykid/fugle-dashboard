@@ -215,10 +215,10 @@
       "n": "玉山金",
       "entry_date": "2026-07-08",
       "entry_price": 34.6,
-      "current_price": 34.6,
+      "current_price": 34.5,
       "conf": 51,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -0.29
     },
     {
       "s": "2885",
@@ -2417,5 +2417,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-07-08T09:00:00.707743+08:00"
+  "updatedAt": "2026-07-08T10:00:00.623228+08:00"
 }
