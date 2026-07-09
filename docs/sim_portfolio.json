@@ -75,10 +75,10 @@
       "n": "凱基金",
       "entry_date": "2026-07-07",
       "entry_price": 29.0,
-      "current_price": 30.7,
+      "current_price": 30.05,
       "conf": 61,
       "days": 2,
-      "profit_pct": 5.86
+      "profit_pct": 3.62
     },
     {
       "s": "2409",
@@ -165,10 +165,10 @@
       "n": "玉山金",
       "entry_date": "2026-07-08",
       "entry_price": 34.6,
-      "current_price": 34.95,
+      "current_price": 34.75,
       "conf": 51,
       "days": 1,
-      "profit_pct": 1.01
+      "profit_pct": 0.43
     },
     {
       "s": "2885",
@@ -2492,5 +2492,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-07-09T09:00:00.655859+08:00"
+  "updatedAt": "2026-07-09T10:00:01.294156+08:00"
 }
