@@ -6,14 +6,14 @@
       "category": "半導體",
       "price": 0.0,
       "high": 2460.0,
-      "low": 2430.0,
+      "low": 2425.0,
       "change": 0,
       "changePct": 0.0,
       "volume": 0,
-      "confidence": 36,
-      "confidenceLabel": "📉 偏空",
-      "confidenceColor": "#ff6d00",
-      "updatedAt": "11:00",
+      "confidence": 30,
+      "confidenceLabel": "🚨 強力看空",
+      "confidenceColor": "#d50000",
+      "updatedAt": "12:00",
       "rsi": null,
       "week52Pos": 55.56,
       "volRatio5d": null
@@ -22,16 +22,16 @@
       "symbol": "2317",
       "name": "鴻海",
       "category": "其他電子",
-      "price": 0.0,
+      "price": 238.0,
       "high": 240.0,
-      "low": 235.0,
-      "change": 0,
-      "changePct": 0.0,
-      "volume": 0,
-      "confidence": 37,
+      "low": 234.5,
+      "change": 0.5,
+      "changePct": 0.21,
+      "volume": 2,
+      "confidence": 39,
       "confidenceLabel": "📉 偏空",
       "confidenceColor": "#ff6d00",
-      "updatedAt": "11:00",
+      "updatedAt": "12:00",
       "rsi": null,
       "week52Pos": 16.28,
       "volRatio5d": null
@@ -42,14 +42,14 @@
       "category": "半導體",
       "price": 0.0,
       "high": 4050.0,
-      "low": 3950.0,
+      "low": 3930.0,
       "change": 0,
       "changePct": 0.0,
       "volume": 0,
-      "confidence": 37,
-      "confidenceLabel": "📉 偏空",
-      "confidenceColor": "#ff6d00",
-      "updatedAt": "11:00",
+      "confidence": 31,
+      "confidenceLabel": "🚨 強力看空",
+      "confidenceColor": "#d50000",
+      "updatedAt": "12:00",
       "rsi": null,
       "week52Pos": 9.41,
       "volRatio5d": null
@@ -58,16 +58,16 @@
       "symbol": "2382",
       "name": "廣達",
       "category": "電腦周邊",
-      "price": 0.0,
+      "price": 376.5,
       "high": 380.5,
-      "low": 374.5,
-      "change": 0,
-      "changePct": 0.0,
-      "volume": 0,
-      "confidence": 36,
-      "confidenceLabel": "📉 偏空",
-      "confidenceColor": "#ff6d00",
-      "updatedAt": "11:00",
+      "low": 373.5,
+      "change": -0.5,
+      "changePct": -0.13,
+      "volume": 1,
+      "confidence": 28,
+      "confidenceLabel": "🚨 強力看空",
+      "confidenceColor": "#d50000",
+      "updatedAt": "12:00",
       "rsi": null,
       "week52Pos": 41.82,
       "volRatio5d": null
@@ -78,14 +78,14 @@
       "category": "電腦周邊",
       "price": 0.0,
       "high": 148.0,
-      "low": 145.0,
+      "low": 144.5,
       "change": 0,
       "changePct": 0.0,
       "volume": 0,
-      "confidence": 20,
+      "confidence": 14,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "11:00",
+      "updatedAt": "12:00",
       "rsi": null,
       "week52Pos": 8.82,
       "volRatio5d": null
@@ -100,10 +100,10 @@
       "change": 0,
       "changePct": 0.0,
       "volume": 0,
-      "confidence": 37,
-      "confidenceLabel": "📉 偏空",
-      "confidenceColor": "#ff6d00",
-      "updatedAt": "11:00",
+      "confidence": 31,
+      "confidenceLabel": "🚨 強力看空",
+      "confidenceColor": "#d50000",
+      "updatedAt": "12:00",
       "rsi": null,
       "week52Pos": 15.25,
       "volRatio5d": null
@@ -112,16 +112,16 @@
       "symbol": "2303",
       "name": "聯電",
       "category": "半導體",
-      "price": 156.5,
+      "price": 157.5,
       "high": 161.0,
-      "low": 156.5,
-      "change": -6.5,
-      "changePct": -3.99,
-      "volume": 1059,
-      "confidence": 25,
+      "low": 154.0,
+      "change": -5.5,
+      "changePct": -3.37,
+      "volume": 532,
+      "confidence": 26,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "11:00",
+      "updatedAt": "12:00",
       "rsi": null,
       "week52Pos": 58.33,
       "volRatio5d": null
@@ -136,10 +136,10 @@
       "change": 0,
       "changePct": 0.0,
       "volume": 0,
-      "confidence": 36,
-      "confidenceLabel": "📉 偏空",
-      "confidenceColor": "#ff6d00",
-      "updatedAt": "11:00",
+      "confidence": 30,
+      "confidenceLabel": "🚨 強力看空",
+      "confidenceColor": "#d50000",
+      "updatedAt": "12:00",
       "rsi": null,
       "week52Pos": 20.0,
       "volRatio5d": null
@@ -148,16 +148,16 @@
       "symbol": "3706",
       "name": "神達",
       "category": "電腦周邊",
-      "price": 0.0,
+      "price": 89.0,
       "high": 91.0,
-      "low": 88.6,
-      "change": 0,
-      "changePct": 0.0,
-      "volume": 0,
-      "confidence": 37,
+      "low": 88.3,
+      "change": 0.8,
+      "changePct": 0.91,
+      "volume": 1,
+      "confidence": 39,
       "confidenceLabel": "📉 偏空",
       "confidenceColor": "#ff6d00",
-      "updatedAt": "11:00",
+      "updatedAt": "12:00",
       "rsi": null,
       "week52Pos": 21.05,
       "volRatio5d": null
@@ -166,16 +166,16 @@
       "symbol": "2313",
       "name": "華通",
       "category": "電子零組件",
-      "price": 225.0,
+      "price": 0.0,
       "high": 237.0,
-      "low": 225.0,
-      "change": 1.0,
-      "changePct": 0.45,
-      "volume": 1,
-      "confidence": 22,
+      "low": 224.0,
+      "change": 0,
+      "changePct": 0.0,
+      "volume": 0,
+      "confidence": 14,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "11:00",
+      "updatedAt": "12:00",
       "rsi": null,
       "week52Pos": 36.36,
       "volRatio5d": null
@@ -199,118 +199,95 @@
     }
   ],
   "index": {
-    "taiex": "45599.84",
+    "taiex": "45747.56",
     "taiexPrev": "45734.41",
-    "change": "-134.57",
-    "changePct": "-0.29%",
-    "changePctNum": -0.29,
+    "change": "+13.15",
+    "changePct": "+0.03%",
+    "changePctNum": 0.03,
     "volume": "0張",
     "upCount": 3658,
     "dnCount": 7269,
     "flatCount": 746,
     "limitUp": 63,
     "limitDn": 306,
-    "mood": 56,
+    "mood": 57,
     "moodLabel": "⏸️ 中性觀望"
   },
   "news": [
     {
       "title": "精選",
-      "url": "https://news.cnyes.com/news/id/6528363",
+      "url": "https://news.cnyes.com/news/id/6526716",
       "published": "",
       "source": "鉅亨網"
     },
     {
-      "title": "料件短缺拖累可成6月營收 隨AI產品出貨看好7月起營收逐月改善",
-      "url": "https://news.cnyes.com/news/id/6528363",
+      "title": "〈焦點股〉日本半導體族群逆勢突圍 00954、00951盤中強彈近4%",
+      "url": "https://news.cnyes.com/news/id/6526716",
       "published": "",
       "source": "鉅亨網"
     },
     {
       "title": "1.",
-      "url": "https://news.cnyes.com/news/id/6527704",
+      "url": "https://news.cnyes.com/news/id/6525437",
       "published": "",
       "source": "鉅亨網"
     },
     {
-      "title": "〈美股盤後〉川普稱伊朗協議「已結束」標普收低  輝達、博通領軍費半漲超2%",
-      "url": "https://news.cnyes.com/news/id/6527704",
+      "title": "〈美股盤後〉晶片股重挫、油價攀升 費半跌逾4%那指挫1%",
+      "url": "https://news.cnyes.com/news/id/6525437",
       "published": "",
       "source": "鉅亨網"
     },
     {
       "title": "2.",
-      "url": "https://news.cnyes.com/news/id/6528023",
+      "url": "https://news.cnyes.com/news/id/6526249",
       "published": "",
       "source": "鉅亨網"
     },
     {
-      "title": "中國態度變了？傳將放行輝達H200晶片 阿里巴巴、字節跳動、DeepSeek受惠",
-      "url": "https://news.cnyes.com/news/id/6528023",
+      "title": "荷姆茲海峽商船遇襲 美軍恢復對伊朗「強力空襲」",
+      "url": "https://news.cnyes.com/news/id/6526249",
       "published": "",
       "source": "鉅亨網"
     },
     {
       "title": "3.",
-      "url": "https://news.cnyes.com/news/id/6527957",
+      "url": "https://news.cnyes.com/news/id/6525017",
       "published": "",
       "source": "鉅亨網"
     },
     {
-      "title": "AI股王跌落神壇？輝達市值蒸發1兆美元 估值竟比標普500便宜",
-      "url": "https://news.cnyes.com/news/id/6527957",
+      "title": "華爾街示警：「金髮姑娘」市場時代終結！建議「這樣」佈局",
+      "url": "https://news.cnyes.com/news/id/6525017",
       "published": "",
       "source": "鉅亨網"
     },
     {
       "title": "4.",
-      "url": "https://news.cnyes.com/news/id/6526276",
+      "url": "https://news.cnyes.com/news/id/6526177",
       "published": "",
       "source": "鉅亨網"
     },
     {
-      "title": "馬斯克斥資千億打造晶片廠 瑞銀看好半導體設備市場規模翻倍",
-      "url": "https://news.cnyes.com/news/id/6526276",
+      "title": "〈能源盤後〉商船連番遇襲、美撤銷伊朗售油許可 原油收漲3% 盤後擴大逾5%",
+      "url": "https://news.cnyes.com/news/id/6526177",
       "published": "",
       "source": "鉅亨網"
     }
   ],
   "themes": [
     {
-      "name": "航運",
-      "icon": "🚢",
-      "avgPct": 2.02,
-      "conf": 80.0,
+      "name": "半導體",
+      "icon": "⚡",
+      "avgPct": 0,
+      "conf": 52.0,
       "reason": "法人買超",
       "topStocks": [
         {
-          "s": "2618",
-          "n": "長榮航",
-          "conf": 80,
+          "s": "2303",
+          "n": "聯電",
+          "conf": 52,
           "chg": "+0.0%"
-        }
-      ]
-    },
-    {
-      "name": "通信網路",
-      "icon": "📊",
-      "avgPct": 1.09,
-      "conf": 50,
-      "reason": "強勢上漲",
-      "topStocks": []
-    },
-    {
-      "name": "電腦周邊",
-      "icon": "📊",
-      "avgPct": 0.5,
-      "conf": 56.0,
-      "reason": "法人買超",
-      "topStocks": [
-        {
-          "s": "2353",
-          "n": "宏碁",
-          "conf": 56,
-          "chg": "+0.94%"
         }
       ]
     },
@@ -330,12 +307,19 @@
       ]
     },
     {
-      "name": "玻璃陶瓷",
+      "name": "電腦周邊",
       "icon": "📊",
-      "avgPct": 1.0,
-      "conf": 50,
-      "reason": "強勢上漲",
-      "topStocks": []
+      "avgPct": 0.5,
+      "conf": 56.0,
+      "reason": "法人買超",
+      "topStocks": [
+        {
+          "s": "2353",
+          "n": "宏碁",
+          "conf": 56,
+          "chg": "+0.94%"
+        }
+      ]
     },
     {
       "name": "金融保險",
@@ -363,6 +347,29 @@
           "chg": "+0.72%"
         }
       ]
+    },
+    {
+      "name": "通信網路",
+      "icon": "📊",
+      "avgPct": 1.09,
+      "conf": 50,
+      "reason": "強勢上漲",
+      "topStocks": []
+    },
+    {
+      "name": "航運",
+      "icon": "🚢",
+      "avgPct": 2.02,
+      "conf": 74.0,
+      "reason": "法人買超",
+      "topStocks": [
+        {
+          "s": "2618",
+          "n": "長榮航",
+          "conf": 74,
+          "chg": "+0.0%"
+        }
+      ]
     }
   ],
   "topBuy": [
@@ -374,7 +381,7 @@
       "foreign": "+61,858張",
       "trust": "-12,171張",
       "total": "+43,193張",
-      "conf": 80,
+      "conf": 74,
       "price": "39.85",
       "chg": "+0.0%",
       "dir": "up"
@@ -426,7 +433,7 @@
       "foreign": "+23,076張",
       "trust": "+1,929張",
       "total": "+15,461張",
-      "conf": 58,
+      "conf": 52,
       "price": "163.0",
       "chg": "+0.0%",
       "dir": "up"
@@ -519,7 +526,7 @@
       "foreign": "-28,291張",
       "trust": "+7,420張",
       "total": "-40,646張",
-      "conf": 52,
+      "conf": 46,
       "price": "106.05",
       "chg": "-0.14%",
       "dir": "dn"
@@ -571,7 +578,7 @@
       "foreign": "-13,735張",
       "trust": "+0張",
       "total": "-13,834張",
-      "conf": 56,
+      "conf": 50,
       "price": "34.4",
       "chg": "-0.15%",
       "dir": "dn"
@@ -1739,12 +1746,12 @@
       "industry": "半導體",
       "open": 2450.0,
       "high": 2460.0,
-      "low": 2430.0,
+      "low": 2425.0,
       "close": 2465.0,
       "volume": null
     },
     "2317": {
-      "price": 237.5,
+      "price": 238.0,
       "change": 0.5,
       "changePct": 0.21,
       "chgStr": "+0.21%",
@@ -1752,9 +1759,9 @@
       "industry": "其他電子",
       "open": 238.0,
       "high": 240.0,
-      "low": 235.0,
-      "close": 237.5,
-      "volume": null
+      "low": 234.5,
+      "close": 238.0,
+      "volume": 2.0
     },
     "2454": {
       "price": 3995.0,
@@ -1765,22 +1772,22 @@
       "industry": "半導體",
       "open": 3970.0,
       "high": 4050.0,
-      "low": 3950.0,
+      "low": 3930.0,
       "close": 3995.0,
       "volume": null
     },
     "2382": {
-      "price": 377.0,
-      "change": 4.0,
-      "changePct": 1.07,
-      "chgStr": "+1.07%",
-      "dir": "up",
+      "price": 376.5,
+      "change": -0.5,
+      "changePct": -0.13,
+      "chgStr": "-0.13%",
+      "dir": "dn",
       "industry": "電腦周邊",
       "open": 379.5,
       "high": 380.5,
-      "low": 374.5,
-      "close": 377.0,
-      "volume": null
+      "low": 373.5,
+      "close": 376.5,
+      "volume": 1.0
     },
     "3231": {
       "price": 146.5,
@@ -1791,7 +1798,7 @@
       "industry": "電腦周邊",
       "open": 147.0,
       "high": 148.0,
-      "low": 145.0,
+      "low": 144.5,
       "close": 146.5,
       "volume": null
     },
@@ -1809,17 +1816,17 @@
       "volume": null
     },
     "2303": {
-      "price": 156.5,
-      "change": -6.5,
-      "changePct": -3.99,
-      "chgStr": "-3.99%",
+      "price": 157.5,
+      "change": -5.5,
+      "changePct": -3.37,
+      "chgStr": "-3.37%",
       "dir": "dn",
       "industry": "半導體",
       "open": 161.0,
       "high": 161.0,
-      "low": 156.5,
-      "close": 156.5,
-      "volume": 1059.0
+      "low": 154.0,
+      "close": 157.5,
+      "volume": 532.0
     },
     "2337": {
       "price": 138.5,
@@ -1835,30 +1842,30 @@
       "volume": null
     },
     "3706": {
-      "price": 88.2,
-      "change": 0.2,
-      "changePct": 0.23,
-      "chgStr": "+0.23%",
+      "price": 89.0,
+      "change": 0.8,
+      "changePct": 0.91,
+      "chgStr": "+0.91%",
       "dir": "up",
       "industry": "電腦周邊",
       "open": 90.0,
       "high": 91.0,
-      "low": 88.6,
-      "close": 88.2,
-      "volume": null
+      "low": 88.3,
+      "close": 89.0,
+      "volume": 1.0
     },
     "2313": {
-      "price": 225.0,
-      "change": 1.0,
-      "changePct": 0.45,
-      "chgStr": "+0.45%",
+      "price": 224.0,
+      "change": 6.0,
+      "changePct": 2.75,
+      "chgStr": "+2.75%",
       "dir": "up",
       "industry": "電子零組件",
       "open": 232.0,
       "high": 237.0,
-      "low": 225.0,
-      "close": 225.0,
-      "volume": 1.0
+      "low": 224.0,
+      "close": 224.0,
+      "volume": null
     },
     "0050": {
       "price": 106.05,
@@ -1869,7 +1876,7 @@
       "industry": "",
       "open": 106.35,
       "high": 107.0,
-      "low": 105.7,
+      "low": 105.45,
       "close": 106.05,
       "volume": null
     },
@@ -1882,22 +1889,22 @@
       "industry": "",
       "open": 52.55,
       "high": 53.05,
-      "low": 52.45,
+      "low": 52.3,
       "close": 52.35,
       "volume": null
     },
     "1101": {
-      "price": 22.85,
-      "change": -0.25,
-      "changePct": -1.08,
-      "chgStr": "-1.08%",
+      "price": 23.1,
+      "change": -0.3,
+      "changePct": -1.28,
+      "chgStr": "-1.28%",
       "dir": "dn",
       "industry": "水泥",
       "open": 23.15,
       "high": 23.2,
-      "low": 22.8,
-      "close": 22.85,
-      "volume": 2.0
+      "low": 22.7,
+      "close": 23.1,
+      "volume": null
     },
     "1503": {
       "price": 225.5,
@@ -1908,7 +1915,7 @@
       "industry": "電機",
       "open": 227.0,
       "high": 228.0,
-      "low": 223.5,
+      "low": 220.0,
       "close": 225.5,
       "volume": null
     },
@@ -1921,7 +1928,7 @@
       "industry": "電機",
       "open": 69.0,
       "high": 69.0,
-      "low": 67.3,
+      "low": 67.2,
       "close": 68.6,
       "volume": null
     },
@@ -1947,22 +1954,22 @@
       "industry": "電機",
       "open": 123.5,
       "high": 123.5,
-      "low": 121.5,
+      "low": 120.5,
       "close": 121.5,
       "volume": null
     },
     "1516": {
-      "price": 18.15,
-      "change": -0.15,
-      "changePct": -0.82,
-      "chgStr": "-0.82%",
+      "price": 18.25,
+      "change": -0.05,
+      "changePct": -0.27,
+      "chgStr": "-0.27%",
       "dir": "dn",
       "industry": "其他",
       "open": 18.1,
-      "high": 18.2,
+      "high": 18.25,
       "low": 18.1,
-      "close": 18.15,
-      "volume": 5.0
+      "close": 18.25,
+      "volume": 1.0
     },
     "1519": {
       "price": 740.0,
@@ -2030,7 +2037,7 @@
       "volume": null
     },
     "1605": {
-      "price": 34.65,
+      "price": 34.85,
       "change": -0.2,
       "changePct": -0.57,
       "chgStr": "-0.57%",
@@ -2038,9 +2045,9 @@
       "industry": "電器電纜",
       "open": 35.15,
       "high": 35.15,
-      "low": 34.6,
-      "close": 34.65,
-      "volume": 1.0
+      "low": 34.3,
+      "close": 34.85,
+      "volume": null
     },
     "1760": {
       "price": 63.9,
@@ -2051,7 +2058,7 @@
       "industry": "生技醫療",
       "open": 63.3,
       "high": 63.6,
-      "low": 62.4,
+      "low": 62.3,
       "close": 63.9,
       "volume": null
     },
@@ -2064,7 +2071,7 @@
       "industry": "生技醫療",
       "open": 211.0,
       "high": 211.0,
-      "low": 205.0,
+      "low": 204.5,
       "close": 209.5,
       "volume": null
     },
@@ -2077,7 +2084,7 @@
       "industry": "鋼鐵",
       "open": 17.1,
       "high": 17.25,
-      "low": 17.1,
+      "low": 17.05,
       "close": 17.2,
       "volume": null
     },
@@ -2090,7 +2097,7 @@
       "industry": "電機",
       "open": 345.0,
       "high": 348.0,
-      "low": 337.0,
+      "low": 330.5,
       "close": 340.0,
       "volume": null
     },
@@ -2129,22 +2136,22 @@
       "industry": "電腦周邊",
       "open": 216.5,
       "high": 220.0,
-      "low": 214.5,
+      "low": 212.5,
       "close": 214.0,
       "volume": null
     },
     "2314": {
-      "price": 13.75,
-      "change": 0.15,
-      "changePct": 1.1,
-      "chgStr": "+1.1%",
+      "price": 13.8,
+      "change": 0.2,
+      "changePct": 1.47,
+      "chgStr": "+1.47%",
       "dir": "up",
       "industry": "通信網路",
       "open": 13.3,
-      "high": 13.75,
+      "high": 13.8,
       "low": 13.3,
-      "close": 13.75,
-      "volume": 15.0
+      "close": 13.8,
+      "volume": 6.0
     },
     "2327": {
       "price": 891.0,
@@ -2173,17 +2180,17 @@
       "volume": null
     },
     "2354": {
-      "price": 57.9,
-      "change": 1.0,
-      "changePct": 1.76,
-      "chgStr": "+1.76%",
-      "dir": "up",
+      "price": 57.2,
+      "change": -0.7,
+      "changePct": -1.21,
+      "chgStr": "-1.21%",
+      "dir": "dn",
       "industry": "其他電子",
       "open": 57.2,
       "high": 57.8,
-      "low": 56.7,
-      "close": 57.9,
-      "volume": null
+      "low": 56.5,
+      "close": 57.2,
+      "volume": 1.0
     },
     "2355": {
       "price": 51.2,
@@ -2194,7 +2201,7 @@
       "industry": "電子零組件",
       "open": 51.5,
       "high": 52.2,
-      "low": 50.7,
+      "low": 50.6,
       "close": 51.2,
       "volume": null
     },
@@ -2207,7 +2214,7 @@
       "industry": "電腦周邊",
       "open": 69.0,
       "high": 72.8,
-      "low": 68.1,
+      "low": 67.9,
       "close": 66.2,
       "volume": null
     },
@@ -2220,7 +2227,7 @@
       "industry": "電子零組件",
       "open": 52.9,
       "high": 54.2,
-      "low": 51.7,
+      "low": 51.0,
       "close": 52.4,
       "volume": null
     },
@@ -2233,7 +2240,7 @@
       "industry": "電子零組件",
       "open": 1125.0,
       "high": 1140.0,
-      "low": 1085.0,
+      "low": 1070.0,
       "close": 1150.0,
       "volume": null
     },
@@ -2246,7 +2253,7 @@
       "industry": "電子零組件",
       "open": 196.5,
       "high": 199.5,
-      "low": 192.5,
+      "low": 190.5,
       "close": 192.0,
       "volume": null
     },
@@ -2285,7 +2292,7 @@
       "industry": "電子零組件",
       "open": 38.0,
       "high": 38.0,
-      "low": 37.0,
+      "low": 36.95,
       "close": 37.6,
       "volume": null
     },
@@ -2324,7 +2331,7 @@
       "industry": "通信網路",
       "open": 28.45,
       "high": 28.9,
-      "low": 28.05,
+      "low": 27.9,
       "close": 28.1,
       "volume": null
     },
@@ -2350,7 +2357,7 @@
       "industry": "通信網路",
       "open": 342.0,
       "high": 350.0,
-      "low": 333.0,
+      "low": 331.0,
       "close": 335.0,
       "volume": null
     },
@@ -2368,17 +2375,17 @@
       "volume": null
     },
     "2481": {
-      "price": 215.0,
-      "change": 3.5,
-      "changePct": 1.65,
-      "chgStr": "+1.65%",
+      "price": 216.5,
+      "change": 5.0,
+      "changePct": 2.36,
+      "chgStr": "+2.36%",
       "dir": "up",
       "industry": "半導體",
       "open": 214.5,
       "high": 225.0,
-      "low": 212.5,
-      "close": 215.0,
-      "volume": 106.0
+      "low": 209.5,
+      "close": 216.5,
+      "volume": 26.0
     },
     "2485": {
       "price": 50.2,
@@ -2389,7 +2396,7 @@
       "industry": "通信網路",
       "open": 51.0,
       "high": 52.2,
-      "low": 50.1,
+      "low": 49.9,
       "close": 50.2,
       "volume": null
     },
@@ -2402,7 +2409,7 @@
       "industry": "電子零組件",
       "open": 481.0,
       "high": 505.0,
-      "low": 470.0,
+      "low": 468.0,
       "close": 474.0,
       "volume": null
     },
@@ -2420,17 +2427,17 @@
       "volume": null
     },
     "2504": {
-      "price": 32.15,
-      "change": -0.1,
-      "changePct": -0.31,
-      "chgStr": "-0.31%",
-      "dir": "dn",
+      "price": 32.25,
+      "change": 0.1,
+      "changePct": 0.31,
+      "chgStr": "+0.31%",
+      "dir": "up",
       "industry": "建材營造",
       "open": 32.3,
       "high": 32.3,
-      "low": 32.1,
-      "close": 32.15,
-      "volume": 1.0
+      "low": 32.05,
+      "close": 32.25,
+      "volume": null
     },
     "2511": {
       "price": 8.51,
@@ -2492,7 +2499,7 @@
       "dir": "dn",
       "industry": "建材營造",
       "open": 101.0,
-      "high": 101.5,
+      "high": 102.0,
       "low": 100.5,
       "close": 100.5,
       "volume": null
@@ -2532,7 +2539,7 @@
       "industry": "航運",
       "open": 52.5,
       "high": 52.5,
-      "low": 51.6,
+      "low": 51.5,
       "close": 52.3,
       "volume": null
     },
@@ -2571,7 +2578,7 @@
       "industry": "航運",
       "open": 30.5,
       "high": 30.6,
-      "low": 30.35,
+      "low": 30.3,
       "close": 30.45,
       "volume": null
     },
@@ -2602,17 +2609,17 @@
       "volume": null
     },
     "2637": {
-      "price": 80.0,
-      "change": 1.0,
-      "changePct": 1.27,
-      "chgStr": "+1.27%",
+      "price": 82.8,
+      "change": 2.8,
+      "changePct": 3.5,
+      "chgStr": "+3.5%",
       "dir": "up",
       "industry": "航運",
       "open": 80.0,
       "high": 82.8,
       "low": 79.4,
-      "close": 80.0,
-      "volume": null
+      "close": 82.8,
+      "volume": 3.0
     },
     "2880": {
       "price": 39.7,
@@ -2628,17 +2635,17 @@
       "volume": null
     },
     "2881": {
-      "price": 126.0,
-      "change": 3.0,
-      "changePct": 2.44,
-      "chgStr": "+2.44%",
-      "dir": "up",
+      "price": 124.5,
+      "change": -1.5,
+      "changePct": -1.19,
+      "chgStr": "-1.19%",
+      "dir": "dn",
       "industry": "金融保險",
       "open": 129.0,
       "high": 129.0,
       "low": 122.5,
-      "close": 126.0,
-      "volume": null
+      "close": 124.5,
+      "volume": 1.0
     },
     "2882": {
       "price": 98.0,
@@ -2649,7 +2656,7 @@
       "industry": "金融保險",
       "open": 98.0,
       "high": 98.3,
-      "low": 94.5,
+      "low": 94.4,
       "close": 98.0,
       "volume": null
     },
@@ -2662,7 +2669,7 @@
       "industry": "金融保險",
       "open": 30.7,
       "high": 30.95,
-      "low": 29.8,
+      "low": 29.75,
       "close": 30.7,
       "volume": null
     },
@@ -2675,35 +2682,35 @@
       "industry": "金融保險",
       "open": 34.95,
       "high": 35.35,
-      "low": 34.4,
+      "low": 34.35,
       "close": 34.75,
       "volume": null
     },
     "2885": {
-      "price": 71.5,
-      "change": 1.7,
-      "changePct": 2.44,
-      "chgStr": "+2.44%",
-      "dir": "up",
+      "price": 68.7,
+      "change": -2.8,
+      "changePct": -3.92,
+      "chgStr": "-3.92%",
+      "dir": "dn",
       "industry": "金融保險",
       "open": 71.9,
       "high": 72.3,
-      "low": 69.3,
-      "close": 71.5,
-      "volume": null
+      "low": 68.6,
+      "close": 68.7,
+      "volume": 1.0
     },
     "2886": {
-      "price": 46.8,
-      "change": 0.0,
-      "changePct": 0.0,
-      "chgStr": "+0.0%",
+      "price": 46.9,
+      "change": 0.1,
+      "changePct": 0.21,
+      "chgStr": "+0.21%",
       "dir": "up",
       "industry": "金融保險",
       "open": 46.85,
       "high": 47.15,
-      "low": 46.45,
-      "close": 46.8,
-      "volume": null
+      "low": 46.4,
+      "close": 46.9,
+      "volume": 2.0
     },
     "2891": {
       "price": 71.3,
@@ -2714,7 +2721,7 @@
       "industry": "金融保險",
       "open": 71.7,
       "high": 71.7,
-      "low": 70.1,
+      "low": 69.9,
       "close": 71.3,
       "volume": null
     },
@@ -2753,7 +2760,7 @@
       "industry": "光電",
       "open": 4025.0,
       "high": 4140.0,
-      "low": 3990.0,
+      "low": 3970.0,
       "close": 3950.0,
       "volume": null
     },
@@ -2766,7 +2773,7 @@
       "industry": "半導體",
       "open": 145.0,
       "high": 145.0,
-      "low": 140.0,
+      "low": 139.0,
       "close": 153.5,
       "volume": null
     },
@@ -2804,7 +2811,7 @@
       "dir": "up",
       "industry": "電子零組件",
       "open": 966.0,
-      "high": 1040.0,
+      "high": 1045.0,
       "low": 948.0,
       "close": 953.0,
       "volume": null
@@ -2818,7 +2825,7 @@
       "industry": "其他電子",
       "open": 305.0,
       "high": 305.5,
-      "low": 300.5,
+      "low": 299.5,
       "close": 304.5,
       "volume": null
     },
@@ -2831,7 +2838,7 @@
       "industry": "半導體",
       "open": 549.0,
       "high": 549.0,
-      "low": 536.0,
+      "low": 535.0,
       "close": 544.0,
       "volume": null
     },
@@ -2849,17 +2856,17 @@
       "volume": null
     },
     "3042": {
-      "price": 206.0,
-      "change": -4.0,
-      "changePct": -1.9,
-      "chgStr": "-1.9%",
+      "price": 202.5,
+      "change": -3.5,
+      "changePct": -1.7,
+      "chgStr": "-1.7%",
       "dir": "dn",
       "industry": "電子零組件",
       "open": 207.5,
       "high": 210.5,
       "low": 198.0,
-      "close": 206.0,
-      "volume": null
+      "close": 202.5,
+      "volume": 1.0
     },
     "3044": {
       "price": 472.0,
@@ -2870,7 +2877,7 @@
       "industry": "電子零組件",
       "open": 459.0,
       "high": 464.5,
-      "low": 450.5,
+      "low": 447.5,
       "close": 472.0,
       "volume": null
     },
@@ -2888,17 +2895,17 @@
       "volume": null
     },
     "3189": {
-      "price": 811.0,
-      "change": 56.0,
-      "changePct": 7.42,
-      "chgStr": "+7.42%",
+      "price": 805.0,
+      "change": 50.0,
+      "changePct": 6.62,
+      "chgStr": "+6.62%",
       "dir": "up",
       "industry": "半導體",
       "open": 770.0,
       "high": 829.0,
       "low": 770.0,
-      "close": 811.0,
-      "volume": 92.0
+      "close": 805.0,
+      "volume": 134.0
     },
     "3380": {
       "price": 34.25,
@@ -2909,7 +2916,7 @@
       "industry": "通信網路",
       "open": 34.7,
       "high": 35.6,
-      "low": 34.3,
+      "low": 34.0,
       "close": 34.25,
       "volume": null
     },
@@ -2948,9 +2955,9 @@
       "industry": "半導體",
       "open": 519.0,
       "high": 519.0,
-      "low": 503.0,
+      "low": 501.0,
       "close": 511.0,
-      "volume": 8.0
+      "volume": 10.0
     },
     "3557": {
       "price": 26.0,
@@ -2961,7 +2968,7 @@
       "industry": "",
       "open": 25.65,
       "high": 25.8,
-      "low": 25.5,
+      "low": 25.2,
       "close": 26.0,
       "volume": null
     },
@@ -2979,17 +2986,17 @@
       "volume": null
     },
     "3653": {
-      "price": 3200.0,
-      "change": 5.0,
-      "changePct": 0.16,
-      "chgStr": "+0.16%",
+      "price": 3215.0,
+      "change": 15.0,
+      "changePct": 0.47,
+      "chgStr": "+0.47%",
       "dir": "up",
       "industry": "電子零組件",
       "open": 3280.0,
       "high": 3290.0,
-      "low": 3210.0,
-      "close": 3200.0,
-      "volume": null
+      "low": 3180.0,
+      "close": 3215.0,
+      "volume": 1.0
     },
     "3661": {
       "price": 4065.0,
@@ -3012,8 +3019,8 @@
       "dir": "up",
       "industry": "光電",
       "open": 78.5,
-      "high": 79.0,
-      "low": 77.1,
+      "high": 79.3,
+      "low": 76.6,
       "close": 78.1,
       "volume": null
     },
@@ -3077,7 +3084,7 @@
       "dir": "up",
       "industry": "通信網路",
       "open": 93.6,
-      "high": 94.5,
+      "high": 94.8,
       "low": 92.5,
       "close": 93.2,
       "volume": null
@@ -3096,30 +3103,30 @@
       "volume": null
     },
     "4938": {
-      "price": 82.9,
-      "change": -0.9,
-      "changePct": -1.07,
-      "chgStr": "-1.07%",
-      "dir": "dn",
+      "price": 83.8,
+      "change": 1.5,
+      "changePct": 1.82,
+      "chgStr": "+1.82%",
+      "dir": "up",
       "industry": "電腦周邊",
       "open": 84.2,
       "high": 84.5,
-      "low": 82.8,
-      "close": 82.9,
-      "volume": 1.0
+      "low": 82.7,
+      "close": 83.8,
+      "volume": null
     },
     "4958": {
-      "price": 565.0,
-      "change": 17.0,
-      "changePct": 3.1,
-      "chgStr": "+3.1%",
+      "price": 590.0,
+      "change": 25.0,
+      "changePct": 4.42,
+      "chgStr": "+4.42%",
       "dir": "up",
       "industry": "電子零組件",
       "open": 576.0,
       "high": 604.0,
       "low": 567.0,
-      "close": 565.0,
-      "volume": null
+      "close": 590.0,
+      "volume": 4.0
     },
     "4961": {
       "price": 175.0,
@@ -3148,17 +3155,17 @@
       "volume": null
     },
     "5533": {
-      "price": 13.5,
-      "change": 0.0,
-      "changePct": 0.0,
-      "chgStr": "+0.0%",
+      "price": 13.55,
+      "change": 0.05,
+      "changePct": 0.37,
+      "chgStr": "+0.37%",
       "dir": "up",
       "industry": "建材營造",
       "open": 13.6,
       "high": 13.6,
       "low": 13.5,
-      "close": 13.5,
-      "volume": 1.0
+      "close": 13.55,
+      "volume": 8.0
     },
     "5534": {
       "price": 79.2,
@@ -3182,35 +3189,35 @@
       "industry": "航運",
       "open": 14.9,
       "high": 14.9,
-      "low": 14.6,
+      "low": 14.55,
       "close": 14.75,
       "volume": null
     },
     "5876": {
-      "price": 42.55,
-      "change": 0.15,
-      "changePct": 0.35,
-      "chgStr": "+0.35%",
+      "price": 42.75,
+      "change": 0.2,
+      "changePct": 0.47,
+      "chgStr": "+0.47%",
       "dir": "up",
       "industry": "金融保險",
       "open": 42.5,
       "high": 42.9,
       "low": 42.3,
-      "close": 42.55,
-      "volume": null
+      "close": 42.75,
+      "volume": 2.0
     },
     "6213": {
-      "price": 390.0,
-      "change": -3.5,
-      "changePct": -0.89,
-      "chgStr": "-0.89%",
-      "dir": "dn",
+      "price": 393.5,
+      "change": 14.5,
+      "changePct": 3.83,
+      "chgStr": "+3.83%",
+      "dir": "up",
       "industry": "電子零組件",
       "open": 395.0,
       "high": 404.5,
-      "low": 384.0,
-      "close": 390.0,
-      "volume": 1.0
+      "low": 381.5,
+      "close": 393.5,
+      "volume": null
     },
     "6278": {
       "price": 200.0,
@@ -3221,7 +3228,7 @@
       "industry": "光電",
       "open": 204.5,
       "high": 212.0,
-      "low": 202.5,
+      "low": 202.0,
       "close": 200.0,
       "volume": null
     },
@@ -3234,7 +3241,7 @@
       "industry": "電子零組件",
       "open": 59.6,
       "high": 60.2,
-      "low": 58.1,
+      "low": 57.7,
       "close": 59.0,
       "volume": null
     },
@@ -3247,7 +3254,7 @@
       "industry": "通信網路",
       "open": 271.5,
       "high": 276.5,
-      "low": 264.0,
+      "low": 263.5,
       "close": 251.5,
       "volume": null
     },
@@ -3265,17 +3272,17 @@
       "volume": null
     },
     "6414": {
-      "price": 399.0,
-      "change": -5.0,
-      "changePct": -1.24,
-      "chgStr": "-1.24%",
-      "dir": "dn",
+      "price": 404.0,
+      "change": 4.0,
+      "changePct": 1.0,
+      "chgStr": "+1.0%",
+      "dir": "up",
       "industry": "電腦周邊",
       "open": 405.0,
       "high": 412.5,
-      "low": 399.0,
-      "close": 399.0,
-      "volume": 2.0
+      "low": 395.0,
+      "close": 404.0,
+      "volume": null
     },
     "6415": {
       "price": 551.0,
@@ -3291,17 +3298,17 @@
       "volume": null
     },
     "6443": {
-      "price": 31.65,
-      "change": 0.15,
-      "changePct": 0.48,
-      "chgStr": "+0.48%",
-      "dir": "up",
+      "price": 31.5,
+      "change": -0.25,
+      "changePct": -0.79,
+      "chgStr": "-0.79%",
+      "dir": "dn",
       "industry": "光電",
       "open": 32.1,
       "high": 32.45,
-      "low": 31.6,
-      "close": 31.65,
-      "volume": 3.0
+      "low": 31.3,
+      "close": 31.5,
+      "volume": null
     },
     "6472": {
       "price": 422.0,
@@ -3343,17 +3350,17 @@
       "volume": null
     },
     "6706": {
-      "price": 142.0,
-      "change": 3.5,
-      "changePct": 2.53,
-      "chgStr": "+2.53%",
-      "dir": "up",
+      "price": 141.0,
+      "change": -1.0,
+      "changePct": -0.7,
+      "chgStr": "-0.7%",
+      "dir": "dn",
       "industry": "光電",
       "open": 142.0,
       "high": 144.0,
-      "low": 140.5,
-      "close": 142.0,
-      "volume": null
+      "low": 139.5,
+      "close": 141.0,
+      "volume": 1.0
     },
     "6781": {
       "price": 1165.0,
@@ -3377,60 +3384,34 @@
       "industry": "",
       "open": 72.5,
       "high": 74.3,
-      "low": 71.7,
+      "low": 71.0,
       "close": 71.7,
       "volume": null
     },
     "8046": {
-      "price": 1205.0,
-      "change": 100.0,
-      "changePct": 9.05,
-      "chgStr": "+9.05%",
+      "price": 1105.0,
+      "change": 75.0,
+      "changePct": 7.28,
+      "chgStr": "+7.28%",
       "dir": "up",
       "industry": "電子零組件",
       "open": 1110.0,
       "high": 1215.0,
       "low": 1090.0,
-      "close": 1205.0,
-      "volume": 2.0
+      "close": 1105.0,
+      "volume": null
     },
-    "3672": {
-      "price": 14.0,
-      "change": 0.2,
-      "changePct": 1.45,
-      "chgStr": "+1.45%",
+    "4162": {
+      "price": 64.7,
+      "change": 1.1,
+      "changePct": 1.73,
+      "chgStr": "+1.73%",
       "dir": "up",
-      "industry": "通信網路",
-      "open": 13.8,
-      "high": 14.15,
-      "low": 13.7,
-      "close": 14.0,
-      "volume": 1.0
-    },
-    "4541": {
-      "price": 66.4,
-      "change": 6.0,
-      "changePct": 9.93,
-      "chgStr": "+9.93%",
-      "dir": "up",
-      "industry": "其他",
-      "open": 62.0,
-      "high": 66.4,
-      "low": 61.6,
-      "close": 66.4,
-      "volume": 1.0
-    },
-    "6274": {
-      "price": 1610.0,
-      "change": -35.0,
-      "changePct": -2.13,
-      "chgStr": "-2.13%",
-      "dir": "dn",
-      "industry": "電子零組件",
-      "open": 1635.0,
-      "high": 1680.0,
-      "low": 1610.0,
-      "close": 1610.0,
+      "industry": "生技醫療",
+      "open": 64.1,
+      "high": 64.8,
+      "low": 62.5,
+      "close": 64.7,
       "volume": 1.0
     },
     "00400A": {
@@ -19463,7 +19444,7 @@
       "volume": 1699.095
     }
   },
-  "updatedAt": "2026-07-09T11:00:00.464254+08:00",
+  "updatedAt": "2026-07-09T12:00:01.059977+08:00",
   "marketOpen": true,
   "source": "TWSE"
 }

@@ -175,10 +175,10 @@
       "n": "元大金",
       "entry_date": "2026-07-08",
       "entry_price": 69.8,
-      "current_price": 71.5,
+      "current_price": 68.7,
       "conf": 48,
       "days": 1,
-      "profit_pct": 2.44
+      "profit_pct": -1.58
     },
     {
       "s": "2484",
@@ -225,10 +225,10 @@
       "n": "南電",
       "entry_date": "2026-07-09",
       "entry_price": 1105.0,
-      "current_price": 1205.0,
+      "current_price": 1105.0,
       "conf": 59,
       "days": 0,
-      "profit_pct": 9.05
+      "profit_pct": 0.0
     },
     {
       "s": "2630",
@@ -2492,5 +2492,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-07-09T11:00:00.464254+08:00"
+  "updatedAt": "2026-07-09T12:00:01.059977+08:00"
 }
