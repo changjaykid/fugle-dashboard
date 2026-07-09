@@ -75,10 +75,10 @@
       "n": "凱基金",
       "entry_date": "2026-07-07",
       "entry_price": 29.0,
-      "current_price": 30.05,
+      "current_price": 30.7,
       "conf": 61,
       "days": 2,
-      "profit_pct": 3.62
+      "profit_pct": 5.86
     },
     {
       "s": "2409",
@@ -225,10 +225,10 @@
       "n": "南電",
       "entry_date": "2026-07-09",
       "entry_price": 1105.0,
-      "current_price": 1105.0,
+      "current_price": 1205.0,
       "conf": 59,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": 9.05
     },
     {
       "s": "2630",
@@ -2492,5 +2492,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-07-09T10:00:01.294156+08:00"
+  "updatedAt": "2026-07-09T11:00:00.464254+08:00"
 }
