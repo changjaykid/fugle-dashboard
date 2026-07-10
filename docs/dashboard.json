@@ -13,7 +13,7 @@
       "confidence": 28,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "11:00",
+      "updatedAt": "12:00",
       "rsi": null,
       "week52Pos": 0.0,
       "volRatio5d": null
@@ -31,7 +31,7 @@
       "confidence": 21,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "11:00",
+      "updatedAt": "12:00",
       "rsi": null,
       "week52Pos": 16.28,
       "volRatio5d": null
@@ -49,7 +49,7 @@
       "confidence": 30,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "11:00",
+      "updatedAt": "12:00",
       "rsi": null,
       "week52Pos": 0.0,
       "volRatio5d": null
@@ -67,7 +67,7 @@
       "confidence": 29,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "11:00",
+      "updatedAt": "12:00",
       "rsi": null,
       "week52Pos": 29.09,
       "volRatio5d": null
@@ -85,7 +85,7 @@
       "confidence": 29,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "11:00",
+      "updatedAt": "12:00",
       "rsi": null,
       "week52Pos": 0.0,
       "volRatio5d": null
@@ -103,7 +103,7 @@
       "confidence": 36,
       "confidenceLabel": "📉 偏空",
       "confidenceColor": "#ff6d00",
-      "updatedAt": "11:00",
+      "updatedAt": "12:00",
       "rsi": null,
       "week52Pos": 13.56,
       "volRatio5d": null
@@ -121,7 +121,7 @@
       "confidence": 28,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "11:00",
+      "updatedAt": "12:00",
       "rsi": null,
       "week52Pos": 29.17,
       "volRatio5d": null
@@ -139,7 +139,7 @@
       "confidence": 28,
       "confidenceLabel": "🚨 強力看空",
       "confidenceColor": "#d50000",
-      "updatedAt": "11:00",
+      "updatedAt": "12:00",
       "rsi": null,
       "week52Pos": 42.22,
       "volRatio5d": null
@@ -157,7 +157,7 @@
       "confidence": 41,
       "confidenceLabel": "📉 偏空",
       "confidenceColor": "#ff6d00",
-      "updatedAt": "11:00",
+      "updatedAt": "12:00",
       "rsi": null,
       "week52Pos": 27.63,
       "volRatio5d": null
@@ -175,7 +175,7 @@
       "confidence": 35,
       "confidenceLabel": "📉 偏空",
       "confidenceColor": "#ff6d00",
-      "updatedAt": "11:00",
+      "updatedAt": "12:00",
       "rsi": null,
       "week52Pos": 32.73,
       "volRatio5d": null
@@ -228,74 +228,87 @@
     },
     {
       "title": "1.",
-      "url": "https://news.cnyes.com/news/id/6529743",
+      "url": "https://news.cnyes.com/news/id/6529921",
       "published": "",
       "source": "鉅亨網"
     },
     {
-      "title": "〈美股盤後〉AI熱潮蓋過中東戰火 費半彈升超3% SK海力士赴美IPO受矚",
-      "url": "https://news.cnyes.com/news/id/6529743",
+      "title": "衝刺AI記憶體！美光投資加碼至2500億美元 美國史上最大晶圓基地加速成形",
+      "url": "https://news.cnyes.com/news/id/6529921",
       "published": "",
       "source": "鉅亨網"
     },
     {
       "title": "2.",
-      "url": "https://news.cnyes.com/news/id/6530093",
+      "url": "https://news.cnyes.com/news/id/6529771",
       "published": "",
       "source": "鉅亨網"
     },
     {
-      "title": "長債重定價才剛開始！PGIM估30年期美債殖利率上看5.5%",
-      "url": "https://news.cnyes.com/news/id/6530093",
+      "title": "〈美股早盤〉晶片股撐場！主要指數開高 美伊緊張局勢仍壓抑市場情緒",
+      "url": "https://news.cnyes.com/news/id/6529771",
       "published": "",
       "source": "鉅亨網"
     },
     {
       "title": "3.",
-      "url": "https://news.cnyes.com/news/id/6530296",
+      "url": "https://news.cnyes.com/news/id/6530050",
       "published": "",
       "source": "鉅亨網"
     },
     {
-      "title": "馬斯克罕見認輸？稱Anthropic當前AI領先者",
-      "url": "https://news.cnyes.com/news/id/6530296",
+      "title": "徐秀蘭：德州廠啟動第二期規劃 勢必增加美國資本支出",
+      "url": "https://news.cnyes.com/news/id/6530050",
       "published": "",
       "source": "鉅亨網"
     },
     {
       "title": "4.",
-      "url": "https://news.cnyes.com/news/id/6526302",
+      "url": "https://news.cnyes.com/news/id/6530056",
       "published": "",
       "source": "鉅亨網"
     },
     {
-      "title": "人力荒成美晶片復興絆腳石 台積電、英特爾受衝擊",
-      "url": "https://news.cnyes.com/news/id/6526302",
+      "title": "鎧俠最大股東清倉！貝恩8年賺20倍落袋 市場嗅到AI估值警訊",
+      "url": "https://news.cnyes.com/news/id/6530056",
       "published": "",
       "source": "鉅亨網"
     }
   ],
   "themes": [
     {
-      "name": "資訊服務",
+      "name": "通信網路",
       "icon": "📊",
-      "avgPct": 0.25,
-      "conf": 50,
-      "reason": "強勢上漲",
-      "topStocks": []
-    },
-    {
-      "name": "航運",
-      "icon": "🚢",
-      "avgPct": 0,
+      "avgPct": 0.6,
       "conf": 49.0,
       "reason": "法人買超",
       "topStocks": [
         {
-          "s": "2618",
-          "n": "長榮航",
+          "s": "3045",
+          "n": "台灣大",
           "conf": 49,
-          "chg": "-0.63%"
+          "chg": "+0.0%"
+        }
+      ]
+    },
+    {
+      "name": "電腦周邊",
+      "icon": "📊",
+      "avgPct": 0,
+      "conf": 51.0,
+      "reason": "法人買超",
+      "topStocks": [
+        {
+          "s": "2353",
+          "n": "宏碁",
+          "conf": 49,
+          "chg": "+0.62%"
+        },
+        {
+          "s": "2324",
+          "n": "仁寶",
+          "conf": 53,
+          "chg": "+3.1%"
         }
       ]
     },
@@ -321,59 +334,33 @@
       ]
     },
     {
-      "name": "光電",
+      "name": "貿易百貨",
       "icon": "📊",
-      "avgPct": 0.66,
-      "conf": 94.0,
-      "reason": "法人買超",
-      "topStocks": [
-        {
-          "s": "2409",
-          "n": "友達",
-          "conf": 94,
-          "chg": "+6.43%"
-        }
-      ]
+      "avgPct": 0.33,
+      "conf": 50,
+      "reason": "強勢上漲",
+      "topStocks": []
     },
     {
-      "name": "通信網路",
+      "name": "資訊服務",
       "icon": "📊",
-      "avgPct": 0.6,
+      "avgPct": 0.25,
+      "conf": 50,
+      "reason": "強勢上漲",
+      "topStocks": []
+    },
+    {
+      "name": "航運",
+      "icon": "🚢",
+      "avgPct": 0,
       "conf": 49.0,
       "reason": "法人買超",
       "topStocks": [
         {
-          "s": "3045",
-          "n": "台灣大",
+          "s": "2618",
+          "n": "長榮航",
           "conf": 49,
-          "chg": "+0.0%"
-        }
-      ]
-    },
-    {
-      "name": "半導體",
-      "icon": "⚡",
-      "avgPct": 0.3,
-      "conf": 52.3,
-      "reason": "法人買超",
-      "topStocks": [
-        {
-          "s": "2408",
-          "n": "南亞科",
-          "conf": 53,
-          "chg": "+9.97%"
-        },
-        {
-          "s": "8150",
-          "n": "南茂",
-          "conf": 52,
-          "chg": "+9.86%"
-        },
-        {
-          "s": "3006",
-          "n": "晶豪科",
-          "conf": 52,
-          "chg": "+9.98%"
+          "chg": "-0.63%"
         }
       ]
     }
@@ -19834,7 +19821,7 @@
       "volume": 1510.403
     }
   },
-  "updatedAt": "2026-07-10T11:00:00.432632+08:00",
+  "updatedAt": "2026-07-10T12:00:00.773123+08:00",
   "marketOpen": true,
   "source": "TWSE"
 }
