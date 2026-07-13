@@ -91,16 +91,6 @@
       "profit_pct": 0.44
     },
     {
-      "s": "8046",
-      "n": "南電",
-      "entry_date": "2026-07-09",
-      "entry_price": 1105.0,
-      "current_price": 1215.0,
-      "conf": 59,
-      "days": 4,
-      "profit_pct": 9.95
-    },
-    {
       "s": "2630",
       "n": "亞航",
       "entry_date": "2026-07-09",
@@ -189,9 +179,52 @@
       "conf": 59,
       "days": 0,
       "profit_pct": 0.0
+    },
+    {
+      "s": "2409",
+      "n": "友達",
+      "entry_date": "2026-07-13",
+      "entry_price": 31.45,
+      "current_price": 31.45,
+      "conf": 94,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2408",
+      "n": "南亞科",
+      "entry_date": "2026-07-13",
+      "entry_price": 435.5,
+      "current_price": 435.5,
+      "conf": 53,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2887",
+      "n": "台新新光金",
+      "entry_date": "2026-07-13",
+      "entry_price": 36.85,
+      "current_price": 36.85,
+      "conf": 51,
+      "days": 0,
+      "profit_pct": 0.0
     }
   ],
   "history": [
+    {
+      "s": "8046",
+      "n": "南電",
+      "entry_date": "2026-07-09",
+      "entry_price": 1105.0,
+      "current_price": 1310.0,
+      "conf": 59,
+      "days": 4,
+      "profit_pct": 18.55,
+      "exit_date": "2026-07-13",
+      "exit_price": 1310.0,
+      "reason": "止盈 (+15%)"
+    },
     {
       "s": "2812",
       "n": "台中銀",
@@ -2611,5 +2644,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-07-13T09:00:00.441059+08:00"
+  "updatedAt": "2026-07-13T10:00:00.748298+08:00"
 }
