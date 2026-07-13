@@ -45,10 +45,10 @@
       "n": "元大金",
       "entry_date": "2026-07-08",
       "entry_price": 69.8,
-      "current_price": 68.3,
+      "current_price": 69.3,
       "conf": 48,
       "days": 5,
-      "profit_pct": -2.15
+      "profit_pct": -0.72
     },
     {
       "s": "2484",
@@ -2644,5 +2644,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-07-13T10:00:00.748298+08:00"
+  "updatedAt": "2026-07-13T11:00:01.349959+08:00"
 }
