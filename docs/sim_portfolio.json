@@ -61,16 +61,6 @@
       "profit_pct": -1.69
     },
     {
-      "s": "2356",
-      "n": "英業達",
-      "entry_date": "2026-07-10",
-      "entry_price": 69.8,
-      "current_price": 64.7,
-      "conf": 74,
-      "days": 4,
-      "profit_pct": -7.31
-    },
-    {
       "s": "8150",
       "n": "南茂",
       "entry_date": "2026-07-10",
@@ -155,10 +145,10 @@
       "n": "台灣大",
       "entry_date": "2026-07-14",
       "entry_price": 109.5,
-      "current_price": 109.5,
+      "current_price": 108.5,
       "conf": 51,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -0.91
     },
     {
       "s": "2332",
@@ -185,10 +175,10 @@
       "n": "元大台灣50",
       "entry_date": "2026-07-14",
       "entry_price": 106.0,
-      "current_price": 106.0,
+      "current_price": 104.05,
       "conf": 63,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -1.84
     },
     {
       "s": "4958",
@@ -212,6 +202,19 @@
     }
   ],
   "history": [
+    {
+      "s": "2356",
+      "n": "英業達",
+      "entry_date": "2026-07-10",
+      "entry_price": 69.8,
+      "current_price": 63.9,
+      "conf": 74,
+      "days": 4,
+      "profit_pct": -8.45,
+      "exit_date": "2026-07-14",
+      "exit_price": 63.9,
+      "reason": "止損 (-8%)"
+    },
     {
       "s": "2885",
       "n": "元大金",
@@ -2722,5 +2725,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-07-14T12:00:00.627496+08:00"
+  "updatedAt": "2026-07-14T13:00:01.133374+08:00"
 }
