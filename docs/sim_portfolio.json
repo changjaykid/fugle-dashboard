@@ -165,10 +165,10 @@
       "n": "中信金",
       "entry_date": "2026-07-15",
       "entry_price": 65.0,
-      "current_price": 65.0,
+      "current_price": 63.7,
       "conf": 50,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -2.0
     },
     {
       "s": "2337",
@@ -185,10 +185,10 @@
       "n": "長榮航",
       "entry_date": "2026-07-15",
       "entry_price": 41.5,
-      "current_price": 40.8,
+      "current_price": 42.2,
       "conf": 65,
       "days": 0,
-      "profit_pct": -1.69
+      "profit_pct": 1.69
     },
     {
       "s": "1326",
@@ -2816,5 +2816,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-07-15T11:00:01.337117+08:00"
+  "updatedAt": "2026-07-15T12:00:01.205810+08:00"
 }
