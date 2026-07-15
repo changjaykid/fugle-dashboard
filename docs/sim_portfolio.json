@@ -105,20 +105,20 @@
       "n": "元大台灣50",
       "entry_date": "2026-07-14",
       "entry_price": 106.0,
-      "current_price": 106.1,
+      "current_price": 106.3,
       "conf": 63,
       "days": 1,
-      "profit_pct": 0.09
+      "profit_pct": 0.28
     },
     {
       "s": "4958",
       "n": "臻鼎-KY",
       "entry_date": "2026-07-14",
       "entry_price": 646.0,
-      "current_price": 629.0,
+      "current_price": 618.0,
       "conf": 51,
       "days": 1,
-      "profit_pct": -2.63
+      "profit_pct": -4.33
     },
     {
       "s": "2634",
@@ -165,30 +165,30 @@
       "n": "中信金",
       "entry_date": "2026-07-15",
       "entry_price": 65.0,
-      "current_price": 65.0,
+      "current_price": 63.5,
       "conf": 50,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -2.31
     },
     {
       "s": "2337",
       "n": "旺宏",
       "entry_date": "2026-07-15",
       "entry_price": 144.5,
-      "current_price": 139.5,
+      "current_price": 148.5,
       "conf": 60,
       "days": 0,
-      "profit_pct": -3.46
+      "profit_pct": 2.77
     },
     {
       "s": "2618",
       "n": "長榮航",
       "entry_date": "2026-07-15",
       "entry_price": 41.5,
-      "current_price": 40.8,
+      "current_price": 42.15,
       "conf": 65,
       "days": 0,
-      "profit_pct": -1.69
+      "profit_pct": 1.57
     },
     {
       "s": "1326",
@@ -2816,5 +2816,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-07-15T13:00:00.524495+08:00"
+  "updatedAt": "2026-07-15T14:00:00.823405+08:00"
 }
