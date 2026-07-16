@@ -71,16 +71,6 @@
       "profit_pct": 0.28
     },
     {
-      "s": "4958",
-      "n": "臻鼎-KY",
-      "entry_date": "2026-07-14",
-      "entry_price": 646.0,
-      "current_price": 618.0,
-      "conf": 51,
-      "days": 2,
-      "profit_pct": -4.33
-    },
-    {
       "s": "2634",
       "n": "漢翔",
       "entry_date": "2026-07-14",
@@ -125,10 +115,10 @@
       "n": "中信金",
       "entry_date": "2026-07-15",
       "entry_price": 65.0,
-      "current_price": 63.5,
+      "current_price": 62.6,
       "conf": 50,
       "days": 1,
-      "profit_pct": -2.31
+      "profit_pct": -3.69
     },
     {
       "s": "2337",
@@ -202,6 +192,19 @@
     }
   ],
   "history": [
+    {
+      "s": "4958",
+      "n": "臻鼎-KY",
+      "entry_date": "2026-07-14",
+      "entry_price": 646.0,
+      "current_price": 590.0,
+      "conf": 51,
+      "days": 2,
+      "profit_pct": -8.67,
+      "exit_date": "2026-07-16",
+      "exit_price": 590.0,
+      "reason": "止損 (-8%)"
+    },
     {
       "s": "2332",
       "n": "友訊",
@@ -2868,5 +2871,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-07-16T10:00:00.826973+08:00"
+  "updatedAt": "2026-07-16T11:00:01.028175+08:00"
 }
