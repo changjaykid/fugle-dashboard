@@ -55,10 +55,10 @@
       "n": "元大台灣50",
       "entry_date": "2026-07-14",
       "entry_price": 106.0,
-      "current_price": 106.4,
+      "current_price": 100.35,
       "conf": 63,
       "days": 3,
-      "profit_pct": 0.38
+      "profit_pct": -5.33
     },
     {
       "s": "2634",
@@ -95,10 +95,10 @@
       "n": "中信金",
       "entry_date": "2026-07-15",
       "entry_price": 65.0,
-      "current_price": 61.9,
+      "current_price": 61.6,
       "conf": 50,
       "days": 2,
-      "profit_pct": -4.77
+      "profit_pct": -5.23
     },
     {
       "s": "2337",
@@ -155,10 +155,10 @@
       "n": "聯合再生",
       "entry_date": "2026-07-16",
       "entry_price": 17.7,
-      "current_price": 17.7,
+      "current_price": 17.1,
       "conf": 50,
       "days": 1,
-      "profit_pct": 0.0
+      "profit_pct": -3.39
     },
     {
       "s": "3481",
@@ -2950,5 +2950,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-07-17T12:00:01.064775+08:00"
+  "updatedAt": "2026-07-17T13:00:01.099004+08:00"
 }
