@@ -125,10 +125,10 @@
       "n": "中華電",
       "entry_date": "2026-07-20",
       "entry_price": 138.0,
-      "current_price": 138.0,
+      "current_price": 137.5,
       "conf": 53,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -0.36
     },
     {
       "s": "2834",
@@ -145,10 +145,10 @@
       "n": "玉山金",
       "entry_date": "2026-07-20",
       "entry_price": 35.1,
-      "current_price": 35.75,
+      "current_price": 35.1,
       "conf": 51,
       "days": 0,
-      "profit_pct": 1.85
+      "profit_pct": 0.0
     },
     {
       "s": "2324",
@@ -3049,5 +3049,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-07-20T11:00:00.779282+08:00"
+  "updatedAt": "2026-07-20T12:00:00.451501+08:00"
 }
