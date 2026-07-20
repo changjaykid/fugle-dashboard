@@ -95,20 +95,20 @@
       "n": "第一金",
       "entry_date": "2026-07-17",
       "entry_price": 33.95,
-      "current_price": 34.1,
+      "current_price": 33.9,
       "conf": 61,
       "days": 3,
-      "profit_pct": 0.44
+      "profit_pct": -0.15
     },
     {
       "s": "2886",
       "n": "兆豐金",
       "entry_date": "2026-07-20",
       "entry_price": 47.6,
-      "current_price": 47.6,
+      "current_price": 48.05,
       "conf": 53,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": 0.95
     },
     {
       "s": "2880",
@@ -125,10 +125,10 @@
       "n": "中華電",
       "entry_date": "2026-07-20",
       "entry_price": 138.0,
-      "current_price": 137.5,
+      "current_price": 138.0,
       "conf": 53,
       "days": 0,
-      "profit_pct": -0.36
+      "profit_pct": 0.0
     },
     {
       "s": "2834",
@@ -3049,5 +3049,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-07-20T12:00:00.451501+08:00"
+  "updatedAt": "2026-07-20T13:00:01.417768+08:00"
 }
