@@ -15,20 +15,20 @@
       "n": "凱基金",
       "entry_date": "2026-07-16",
       "entry_price": 30.15,
-      "current_price": 29.55,
+      "current_price": 29.7,
       "conf": 50,
       "days": 5,
-      "profit_pct": -1.99
+      "profit_pct": -1.49
     },
     {
       "s": "3576",
       "n": "聯合再生",
       "entry_date": "2026-07-16",
       "entry_price": 17.7,
-      "current_price": 18.45,
+      "current_price": 19.1,
       "conf": 50,
       "days": 5,
-      "profit_pct": 4.24
+      "profit_pct": 7.91
     },
     {
       "s": "6505",
@@ -45,30 +45,30 @@
       "n": "第一金",
       "entry_date": "2026-07-17",
       "entry_price": 33.95,
-      "current_price": 33.95,
+      "current_price": 34.45,
       "conf": 61,
       "days": 4,
-      "profit_pct": 0.0
+      "profit_pct": 1.47
     },
     {
       "s": "2886",
       "n": "兆豐金",
       "entry_date": "2026-07-20",
       "entry_price": 47.6,
-      "current_price": 48.2,
+      "current_price": 48.6,
       "conf": 53,
       "days": 1,
-      "profit_pct": 1.26
+      "profit_pct": 2.1
     },
     {
       "s": "2880",
       "n": "華南金",
       "entry_date": "2026-07-20",
       "entry_price": 40.15,
-      "current_price": 40.35,
+      "current_price": 40.8,
       "conf": 51,
       "days": 1,
-      "profit_pct": 0.5
+      "profit_pct": 1.62
     },
     {
       "s": "2412",
@@ -95,10 +95,10 @@
       "n": "玉山金",
       "entry_date": "2026-07-20",
       "entry_price": 35.1,
-      "current_price": 35.85,
+      "current_price": 36.95,
       "conf": 51,
       "days": 1,
-      "profit_pct": 2.14
+      "profit_pct": 5.27
     },
     {
       "s": "2324",
@@ -135,10 +135,10 @@
       "n": "緯創",
       "entry_date": "2026-07-21",
       "entry_price": 143.5,
-      "current_price": 150.0,
+      "current_price": 149.5,
       "conf": 69,
       "days": 0,
-      "profit_pct": 4.53
+      "profit_pct": 4.18
     },
     {
       "s": "8039",
@@ -155,20 +155,20 @@
       "n": "鴻海",
       "entry_date": "2026-07-21",
       "entry_price": 234.5,
-      "current_price": 234.5,
+      "current_price": 246.0,
       "conf": 64,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": 4.9
     },
     {
       "s": "2330",
       "n": "台積電",
       "entry_date": "2026-07-21",
       "entry_price": 2350.0,
-      "current_price": 2320.0,
+      "current_price": 2410.0,
       "conf": 58,
       "days": 0,
-      "profit_pct": -1.28
+      "profit_pct": 2.55
     },
     {
       "s": "2002",
@@ -3144,5 +3144,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-07-21T13:00:01.086205+08:00"
+  "updatedAt": "2026-07-21T14:00:01.423335+08:00"
 }
