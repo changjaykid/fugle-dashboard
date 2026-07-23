@@ -81,16 +81,6 @@
       "profit_pct": 0.54
     },
     {
-      "s": "3231",
-      "n": "緯創",
-      "entry_date": "2026-07-21",
-      "entry_price": 143.5,
-      "current_price": 164.0,
-      "conf": 69,
-      "days": 2,
-      "profit_pct": 14.29
-    },
-    {
       "s": "2317",
       "n": "鴻海",
       "entry_date": "2026-07-21",
@@ -145,10 +135,10 @@
       "n": "元大金",
       "entry_date": "2026-07-23",
       "entry_price": 63.1,
-      "current_price": 62.4,
+      "current_price": 63.1,
       "conf": 63,
       "days": 0,
-      "profit_pct": -1.11
+      "profit_pct": 0.0
     },
     {
       "s": "6770",
@@ -212,6 +202,19 @@
     }
   ],
   "history": [
+    {
+      "s": "3231",
+      "n": "緯創",
+      "entry_date": "2026-07-21",
+      "entry_price": 143.5,
+      "current_price": 176.0,
+      "conf": 69,
+      "days": 2,
+      "profit_pct": 22.65,
+      "exit_date": "2026-07-23",
+      "exit_price": 176.0,
+      "reason": "止盈 (+15%)"
+    },
     {
       "s": "2892",
       "n": "第一金",
@@ -3242,5 +3245,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-07-23T10:00:00.593354+08:00"
+  "updatedAt": "2026-07-23T11:00:01.207099+08:00"
 }
