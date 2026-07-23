@@ -5,10 +5,10 @@
       "n": "兆豐金",
       "entry_date": "2026-07-20",
       "entry_price": 47.6,
-      "current_price": 48.2,
+      "current_price": 48.15,
       "conf": 53,
       "days": 3,
-      "profit_pct": 1.26
+      "profit_pct": 1.16
     },
     {
       "s": "2880",
@@ -25,10 +25,10 @@
       "n": "中華電",
       "entry_date": "2026-07-20",
       "entry_price": 138.0,
-      "current_price": 138.5,
+      "current_price": 138.0,
       "conf": 53,
       "days": 3,
-      "profit_pct": 0.36
+      "profit_pct": 0.0
     },
     {
       "s": "2834",
@@ -45,10 +45,10 @@
       "n": "玉山金",
       "entry_date": "2026-07-20",
       "entry_price": 35.1,
-      "current_price": 36.05,
+      "current_price": 35.65,
       "conf": 51,
       "days": 3,
-      "profit_pct": 2.71
+      "profit_pct": 1.57
     },
     {
       "s": "2324",
@@ -85,20 +85,20 @@
       "n": "鴻海",
       "entry_date": "2026-07-21",
       "entry_price": 234.5,
-      "current_price": 251.5,
+      "current_price": 257.5,
       "conf": 64,
       "days": 2,
-      "profit_pct": 7.25
+      "profit_pct": 9.81
     },
     {
       "s": "2330",
       "n": "台積電",
       "entry_date": "2026-07-21",
       "entry_price": 2350.0,
-      "current_price": 2400.0,
+      "current_price": 2405.0,
       "conf": 58,
       "days": 2,
-      "profit_pct": 2.13
+      "profit_pct": 2.34
     },
     {
       "s": "2002",
@@ -135,10 +135,10 @@
       "n": "元大金",
       "entry_date": "2026-07-23",
       "entry_price": 63.1,
-      "current_price": 63.1,
+      "current_price": 63.3,
       "conf": 63,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": 0.32
     },
     {
       "s": "6770",
@@ -155,10 +155,10 @@
       "n": "聯電",
       "entry_date": "2026-07-23",
       "entry_price": 139.0,
-      "current_price": 139.0,
+      "current_price": 138.5,
       "conf": 66,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -0.36
     },
     {
       "s": "2344",
@@ -3245,5 +3245,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-07-23T13:00:00.612199+08:00"
+  "updatedAt": "2026-07-23T14:00:01.016489+08:00"
 }
