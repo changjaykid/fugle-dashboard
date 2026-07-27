@@ -21,16 +21,6 @@
       "profit_pct": 0.0
     },
     {
-      "s": "2303",
-      "n": "聯電",
-      "entry_date": "2026-07-23",
-      "entry_price": 139.0,
-      "current_price": 128.0,
-      "conf": 66,
-      "days": 4,
-      "profit_pct": -7.91
-    },
-    {
       "s": "1326",
       "n": "台化",
       "entry_date": "2026-07-23",
@@ -55,10 +45,10 @@
       "n": "元大台灣50",
       "entry_date": "2026-07-24",
       "entry_price": 103.9,
-      "current_price": 100.85,
+      "current_price": 101.7,
       "conf": 66,
       "days": 3,
-      "profit_pct": -2.94
+      "profit_pct": -2.12
     },
     {
       "s": "2883",
@@ -85,10 +75,10 @@
       "n": "元大高股息",
       "entry_date": "2026-07-24",
       "entry_price": 50.65,
-      "current_price": 50.2,
+      "current_price": 49.43,
       "conf": 73,
       "days": 3,
-      "profit_pct": -0.89
+      "profit_pct": -2.41
     },
     {
       "s": "3231",
@@ -115,10 +105,10 @@
       "n": "英業達",
       "entry_date": "2026-07-27",
       "entry_price": 64.2,
-      "current_price": 62.1,
+      "current_price": 64.5,
       "conf": 52,
       "days": 0,
-      "profit_pct": -3.27
+      "profit_pct": 0.47
     },
     {
       "s": "2890",
@@ -135,10 +125,10 @@
       "n": "第一金",
       "entry_date": "2026-07-27",
       "entry_price": 34.5,
-      "current_price": 34.9,
+      "current_price": 34.3,
       "conf": 60,
       "days": 0,
-      "profit_pct": 1.16
+      "profit_pct": -0.58
     },
     {
       "s": "2634",
@@ -192,6 +182,19 @@
     }
   ],
   "history": [
+    {
+      "s": "2303",
+      "n": "聯電",
+      "entry_date": "2026-07-23",
+      "entry_price": 139.0,
+      "current_price": 120.5,
+      "conf": 66,
+      "days": 4,
+      "profit_pct": -13.31,
+      "exit_date": "2026-07-27",
+      "exit_price": 120.5,
+      "reason": "止損 (-8%)"
+    },
     {
       "s": "2812",
       "n": "台中銀",
@@ -3430,5 +3433,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-07-27T11:00:01.356152+08:00"
+  "updatedAt": "2026-07-27T12:00:00.433580+08:00"
 }
