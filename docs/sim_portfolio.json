@@ -45,10 +45,10 @@
       "n": "光寶科",
       "entry_date": "2026-07-23",
       "entry_price": 218.0,
-      "current_price": 215.5,
+      "current_price": 214.5,
       "conf": 59,
       "days": 4,
-      "profit_pct": -1.15
+      "profit_pct": -1.61
     },
     {
       "s": "0050",
@@ -65,10 +65,10 @@
       "n": "凱基金",
       "entry_date": "2026-07-24",
       "entry_price": 30.85,
-      "current_price": 30.95,
+      "current_price": 30.65,
       "conf": 84,
       "days": 3,
-      "profit_pct": 0.32
+      "profit_pct": -0.65
     },
     {
       "s": "2027",
@@ -115,10 +115,10 @@
       "n": "英業達",
       "entry_date": "2026-07-27",
       "entry_price": 64.2,
-      "current_price": 64.2,
+      "current_price": 62.7,
       "conf": 52,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -2.34
     },
     {
       "s": "2890",
@@ -135,8 +135,58 @@
       "n": "第一金",
       "entry_date": "2026-07-27",
       "entry_price": 34.5,
-      "current_price": 34.5,
+      "current_price": 34.6,
       "conf": 60,
+      "days": 0,
+      "profit_pct": 0.29
+    },
+    {
+      "s": "2634",
+      "n": "漢翔",
+      "entry_date": "2026-07-27",
+      "entry_price": 65.4,
+      "current_price": 65.4,
+      "conf": 61,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2324",
+      "n": "仁寶",
+      "entry_date": "2026-07-27",
+      "entry_price": 37.2,
+      "current_price": 37.2,
+      "conf": 48,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2317",
+      "n": "鴻海",
+      "entry_date": "2026-07-27",
+      "entry_price": 252.5,
+      "current_price": 252.5,
+      "conf": 53,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2834",
+      "n": "臺企銀",
+      "entry_date": "2026-07-27",
+      "entry_price": 18.0,
+      "current_price": 18.0,
+      "conf": 59,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2002",
+      "n": "中鋼",
+      "entry_date": "2026-07-27",
+      "entry_price": 19.15,
+      "current_price": 19.15,
+      "conf": 63,
       "days": 0,
       "profit_pct": 0.0
     }
@@ -3380,5 +3430,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-07-27T09:00:00.440613+08:00"
+  "updatedAt": "2026-07-27T10:00:00.583554+08:00"
 }
