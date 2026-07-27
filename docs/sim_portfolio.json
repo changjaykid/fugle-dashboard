@@ -85,10 +85,10 @@
       "n": "緯創",
       "entry_date": "2026-07-24",
       "entry_price": 173.5,
-      "current_price": 179.0,
+      "current_price": 174.0,
       "conf": 73,
       "days": 3,
-      "profit_pct": 3.17
+      "profit_pct": 0.29
     },
     {
       "s": "2484",
@@ -3433,5 +3433,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-07-27T12:00:00.433580+08:00"
+  "updatedAt": "2026-07-27T13:00:01.349412+08:00"
 }
