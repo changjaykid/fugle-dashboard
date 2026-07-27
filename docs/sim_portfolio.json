@@ -55,10 +55,10 @@
       "n": "元大台灣50",
       "entry_date": "2026-07-24",
       "entry_price": 103.9,
-      "current_price": 101.7,
+      "current_price": 100.85,
       "conf": 66,
       "days": 3,
-      "profit_pct": -2.12
+      "profit_pct": -2.94
     },
     {
       "s": "2883",
@@ -115,10 +115,10 @@
       "n": "英業達",
       "entry_date": "2026-07-27",
       "entry_price": 64.2,
-      "current_price": 62.7,
+      "current_price": 62.1,
       "conf": 52,
       "days": 0,
-      "profit_pct": -2.34
+      "profit_pct": -3.27
     },
     {
       "s": "2890",
@@ -135,10 +135,10 @@
       "n": "第一金",
       "entry_date": "2026-07-27",
       "entry_price": 34.5,
-      "current_price": 34.6,
+      "current_price": 34.9,
       "conf": 60,
       "days": 0,
-      "profit_pct": 0.29
+      "profit_pct": 1.16
     },
     {
       "s": "2634",
@@ -3430,5 +3430,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-07-27T10:00:00.583554+08:00"
+  "updatedAt": "2026-07-27T11:00:01.356152+08:00"
 }
