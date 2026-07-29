@@ -15,10 +15,10 @@
       "n": "凱基金",
       "entry_date": "2026-07-24",
       "entry_price": 30.85,
-      "current_price": 29.2,
+      "current_price": 29.6,
       "conf": 84,
       "days": 5,
-      "profit_pct": -5.35
+      "profit_pct": -4.05
     },
     {
       "s": "2027",
@@ -35,20 +35,20 @@
       "n": "元大高股息",
       "entry_date": "2026-07-24",
       "entry_price": 50.65,
-      "current_price": 48.19,
+      "current_price": 46.69,
       "conf": 73,
       "days": 5,
-      "profit_pct": -4.86
+      "profit_pct": -7.82
     },
     {
       "s": "3231",
       "n": "緯創",
       "entry_date": "2026-07-24",
       "entry_price": 173.5,
-      "current_price": 172.0,
+      "current_price": 170.0,
       "conf": 73,
       "days": 5,
-      "profit_pct": -0.86
+      "profit_pct": -2.02
     },
     {
       "s": "2890",
@@ -95,10 +95,10 @@
       "n": "鴻海",
       "entry_date": "2026-07-27",
       "entry_price": 252.5,
-      "current_price": 239.5,
+      "current_price": 238.0,
       "conf": 53,
       "days": 2,
-      "profit_pct": -5.15
+      "profit_pct": -5.74
     },
     {
       "s": "2834",
@@ -3567,5 +3567,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-07-29T10:00:01.169945+08:00"
+  "updatedAt": "2026-07-29T11:00:00.589218+08:00"
 }
