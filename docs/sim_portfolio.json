@@ -15,10 +15,10 @@
       "n": "凱基金",
       "entry_date": "2026-07-24",
       "entry_price": 30.85,
-      "current_price": 29.6,
+      "current_price": 29.2,
       "conf": 84,
       "days": 5,
-      "profit_pct": -4.05
+      "profit_pct": -5.35
     },
     {
       "s": "2027",
@@ -45,10 +45,10 @@
       "n": "緯創",
       "entry_date": "2026-07-24",
       "entry_price": 173.5,
-      "current_price": 173.0,
+      "current_price": 172.0,
       "conf": 73,
       "days": 5,
-      "profit_pct": -0.29
+      "profit_pct": -0.86
     },
     {
       "s": "2890",
@@ -95,10 +95,10 @@
       "n": "鴻海",
       "entry_date": "2026-07-27",
       "entry_price": 252.5,
-      "current_price": 240.0,
+      "current_price": 239.5,
       "conf": 53,
       "days": 2,
-      "profit_pct": -4.95
+      "profit_pct": -5.15
     },
     {
       "s": "2834",
@@ -187,6 +187,26 @@
       "entry_price": 45.0,
       "current_price": 45.0,
       "conf": 78,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2408",
+      "n": "南亞科",
+      "entry_date": "2026-07-29",
+      "entry_price": 392.5,
+      "current_price": 392.5,
+      "conf": 59,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2344",
+      "n": "華邦電",
+      "entry_date": "2026-07-29",
+      "entry_price": 144.0,
+      "current_price": 144.0,
+      "conf": 67,
       "days": 0,
       "profit_pct": 0.0
     }
@@ -3547,5 +3567,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-07-29T09:00:00.633309+08:00"
+  "updatedAt": "2026-07-29T10:00:01.169945+08:00"
 }
