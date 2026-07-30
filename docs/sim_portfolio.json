@@ -15,10 +15,10 @@
       "n": "第一金",
       "entry_date": "2026-07-27",
       "entry_price": 34.5,
-      "current_price": 35.25,
+      "current_price": 34.8,
       "conf": 60,
       "days": 3,
-      "profit_pct": 2.17
+      "profit_pct": 0.87
     },
     {
       "s": "2634",
@@ -75,10 +75,10 @@
       "n": "長榮航",
       "entry_date": "2026-07-28",
       "entry_price": 41.95,
-      "current_price": 41.45,
+      "current_price": 41.4,
       "conf": 64,
       "days": 2,
-      "profit_pct": -1.19
+      "profit_pct": -1.31
     },
     {
       "s": "1402",
@@ -3668,5 +3668,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-07-30T11:00:01.296583+08:00"
+  "updatedAt": "2026-07-30T12:00:00.350450+08:00"
 }
