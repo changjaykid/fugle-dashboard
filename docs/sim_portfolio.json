@@ -85,20 +85,20 @@
       "n": "華航",
       "entry_date": "2026-07-29",
       "entry_price": 21.75,
-      "current_price": 22.1,
+      "current_price": 22.6,
       "conf": 60,
       "days": 2,
-      "profit_pct": 1.61
+      "profit_pct": 3.91
     },
     {
       "s": "1101",
       "n": "台泥",
       "entry_date": "2026-07-29",
       "entry_price": 24.8,
-      "current_price": 24.05,
+      "current_price": 24.4,
       "conf": 59,
       "days": 2,
-      "profit_pct": -3.02
+      "profit_pct": -1.61
     },
     {
       "s": "2884",
@@ -3703,5 +3703,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-07-31T09:00:00.893534+08:00"
+  "updatedAt": "2026-07-31T10:00:00.664768+08:00"
 }
