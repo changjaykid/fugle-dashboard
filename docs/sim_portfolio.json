@@ -85,10 +85,10 @@
       "n": "兆豐金",
       "entry_date": "2026-07-30",
       "entry_price": 49.9,
-      "current_price": 53.1,
+      "current_price": 51.2,
       "conf": 64,
       "days": 4,
-      "profit_pct": 6.41
+      "profit_pct": 2.61
     },
     {
       "s": "2409",
@@ -105,10 +105,10 @@
       "n": "聯電",
       "entry_date": "2026-07-31",
       "entry_price": 110.0,
-      "current_price": 125.5,
+      "current_price": 121.0,
       "conf": 72,
       "days": 3,
-      "profit_pct": 14.09
+      "profit_pct": 10.0
     },
     {
       "s": "1303",
@@ -3724,5 +3724,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-03T09:00:01.273554+08:00"
+  "updatedAt": "2026-08-03T10:00:00.574309+08:00"
 }
