@@ -35,10 +35,10 @@
       "n": "玉山金",
       "entry_date": "2026-07-30",
       "entry_price": 36.85,
-      "current_price": 38.65,
+      "current_price": 38.8,
       "conf": 47,
       "days": 4,
-      "profit_pct": 4.88
+      "profit_pct": 5.29
     },
     {
       "s": "2356",
@@ -85,10 +85,10 @@
       "n": "兆豐金",
       "entry_date": "2026-07-30",
       "entry_price": 49.9,
-      "current_price": 51.7,
+      "current_price": 53.1,
       "conf": 64,
       "days": 4,
-      "profit_pct": 3.61
+      "profit_pct": 6.41
     },
     {
       "s": "2409",
@@ -105,10 +105,10 @@
       "n": "聯電",
       "entry_date": "2026-07-31",
       "entry_price": 110.0,
-      "current_price": 121.0,
+      "current_price": 118.5,
       "conf": 72,
       "days": 3,
-      "profit_pct": 10.0
+      "profit_pct": 7.73
     },
     {
       "s": "1303",
@@ -135,10 +135,10 @@
       "n": "長榮航",
       "entry_date": "2026-08-03",
       "entry_price": 43.2,
-      "current_price": 43.2,
+      "current_price": 43.1,
       "conf": 58,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -0.23
     },
     {
       "s": "2892",
@@ -3764,5 +3764,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-03T11:00:00.574907+08:00"
+  "updatedAt": "2026-08-03T12:00:01.060131+08:00"
 }
