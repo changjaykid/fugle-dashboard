@@ -12,6 +12,7 @@ from pathlib import Path
 BASE_DIR       = Path(__file__).parent
 CONFIG_FILE    = BASE_DIR / "config.json"
 DASHBOARD_FILE = BASE_DIR.parent / "docs" / "dashboard.json"
+TAIEX_HISTORY_FILE = BASE_DIR.parent / "docs" / "taiex_history.json"
 HEADERS        = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'}
 TW_TZ          = datetime.timezone(datetime.timedelta(hours=8))
 
@@ -255,6 +256,55 @@ def fetch_index():
     return result
 
 
+# ── 大盤趨勢濾網（regime）──────────────────────────────────
+# 用近5日大盤收盤價算 MA5，今日收盤價相對 MA5 的偏離幅度判斷多空。
+# regime: 'bull'（偏多，可正常/積極操作）/ 'neutral'（中性）/ 'bear'（偏空，降低倉位或停止進場）
+# 這是「跌勢時別逆勢做多」的濾網，不是預測大盤方向。
+def load_taiex_history():
+    try:
+        if TAIEX_HISTORY_FILE.exists():
+            with open(TAIEX_HISTORY_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+    except Exception as e:
+        print(f'[WARN] load_taiex_history: {e}')
+    return []
+
+def save_taiex_history(records):
+    try:
+        with open(TAIEX_HISTORY_FILE, 'w', encoding='utf-8') as f:
+            json.dump(records, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f'[WARN] save_taiex_history: {e}')
+
+def update_taiex_history(today_str, close, chg_pct):
+    """每日收盤後（或當前即時價）記一筆，同一天覆蓋，最多保留 60 筆"""
+    records = load_taiex_history()
+    records = [r for r in records if r.get('date') != today_str]
+    records.append({'date': today_str, 'close': close, 'changePct': chg_pct})
+    records.sort(key=lambda r: r['date'])
+    records = records[-60:]
+    save_taiex_history(records)
+    return records
+
+def calc_market_regime(records, today_str, today_close, today_chg_pct):
+    """回傳 (regime, ma5_ratio)。用『今天以前』最近5個交易日收盤算 MA5。"""
+    history = [r for r in records if r.get('date') < today_str]
+    if len(history) < 5:
+        return 'neutral', 0.0
+    window = history[-5:]
+    ma5 = sum(r['close'] for r in window) / 5
+    if ma5 <= 0:
+        return 'neutral', 0.0
+    ratio = (today_close - ma5) / ma5 * 100
+    if ratio <= -2:
+        regime = 'bear'
+    elif ratio >= 2:
+        regime = 'bull'
+    else:
+        regime = 'neutral'
+    return regime, round(ratio, 2)
+
+
 # ── 法人買賣超（回傳 raw inst_map 供信心分用）──────────────
 def fetch_institutional_raw():
     """回傳 {sym: {foreign, trust, total}} 供計算用"""
@@ -391,13 +441,21 @@ def fetch_quotes_batch(symbols):
 
 
 # ── 升級版信心分（多維度）────────────────────────────────
-def calc_confidence(changePct, volume, avg_vol, foreign_net, max_foreign, taiex_pct):
+# 2026-08-03 校正：回測 278 筆模擬倉交易 + 912 筆 prediction_history 發現：
+#   1. 原本信心分分組對勝率沒有鑑別度（60-70分那組反而最差）
+#   2. 真正有效的是「量能爆發」單獨出現時勝率 63.7%，比「法人買超」單獨出現(54.5%)高
+#   3. 最關鍵的是「大盤方向」：bull regime 勝率 73.4%，bear regime 勝率只剩 31.5%
+#      舊公式完全沒有考慮大盤趨勢，只比較單日相對強弱，導致 7 月大盤重挫期依然照常做多
+# 改動：新增 regime 參數，大盤 bear 時整體信心分乘上懲罰係數，避免逆勢硬做多；
+#       並把量能權重略微上調、法人權重略微下調，與回測結果一致。
+def calc_confidence(changePct, volume, avg_vol, foreign_net, max_foreign, taiex_pct, regime='neutral'):
     """
     信心分 0-100（純算法，無 LLM）
-    法人籌碼  35%：外資淨買占市場最大值比例
-    量能放大  25%：今日量 / 市場平均量（最多2倍）
+    法人籌碼  30%：外資淨買占市場最大值比例
+    量能放大  30%：今日量 / 市場平均量（最多2倍）
     漲幅合理  20%：1-9%最佳，漲跌停/平盤扣分
     相對強弱  20%：跑贏大盤加分
+    大盤 regime 濾網：bear 時整體乘 0.6，neutral 乘 1.0，bull 乘 1.05
     """
     # 法人分
     if max_foreign > 0 and foreign_net > 0:
@@ -428,8 +486,13 @@ def calc_confidence(changePct, volume, avg_vol, foreign_net, max_foreign, taiex_
     # 相對強弱
     rel_score = 70 if changePct > taiex_pct else 40
 
-    conf = int(inst_score * 0.35 + vol_score * 0.25 + pct_score * 0.20 + rel_score * 0.20)
-    return max(0, min(100, conf))
+    conf = inst_score * 0.30 + vol_score * 0.30 + pct_score * 0.20 + rel_score * 0.20
+
+    # 大盤 regime 濾網（跌勢時降低整體信心分，不是直接禁止進場，保留就位判斷空間）
+    regime_mult = {'bear': 0.6, 'neutral': 1.0, 'bull': 1.05}.get(regime, 1.0)
+    conf = conf * regime_mult
+
+    return max(0, min(100, int(conf)))
 
 def conf_label(score):
     if score >= 80: return '🚀 強力看多', '#00c853'
@@ -451,6 +514,15 @@ def scan():
     print('  📈 大盤指數 + 市場情緒...')
     index_data = fetch_index()
     taiex_pct  = index_data.get('changePctNum', 0)
+    taiex_close = safe_float(index_data.get('taiex', 0))
+
+    # 大盤 regime 濾網：用歷史收盤價算 MA5，判斷偏多/中性/偏空
+    today_str = now.strftime('%Y-%m-%d')
+    taiex_history = update_taiex_history(today_str, taiex_close, taiex_pct) if taiex_close else load_taiex_history()
+    market_regime, ma5_ratio = calc_market_regime(taiex_history, today_str, taiex_close, taiex_pct)
+    index_data['regime'] = market_regime
+    index_data['ma5Ratio'] = ma5_ratio
+    print(f'  📐 大盤 regime: {market_regime} (MA5 偏離 {ma5_ratio:+.2f}%)')
 
     print('  📊 漲跌排行...')
     all_stocks, avg_vol = fetch_movers()
@@ -467,12 +539,12 @@ def scan():
     # 計算最大外資淨買（用於正規化）
     max_foreign = max((abs(v['foreign']) for v in inst_map.values()), default=1)
 
-    # 為 all_map 裡每支股票計算升級信心分
+    # 為 all_map 裡每支股票計算升級信心分（套用大盤 regime 濾網）
     for sym, m in all_map.items():
         inst = inst_map.get(sym, {})
         m['conf'] = calc_confidence(
             m['changePct'], m['volume'], avg_vol,
-            inst.get('foreign', 0), max_foreign, taiex_pct
+            inst.get('foreign', 0), max_foreign, taiex_pct, market_regime
         )
         m['foreign'] = inst.get('foreign', 0)
 
@@ -796,7 +868,7 @@ def scan():
             continue
         inst = inst_map.get(sym, {})
         conf = calc_confidence(pct, vol/1000 if vol > 1000 else vol, avg_vol,
-                               inst.get('foreign', 0), max_foreign, taiex_pct)
+                               inst.get('foreign', 0), max_foreign, taiex_pct, market_regime)
         label, color = conf_label(conf)
         stocks.append({
             'symbol': sym, 'name': name, 'category': ind,
