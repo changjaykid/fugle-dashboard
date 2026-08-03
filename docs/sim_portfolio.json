@@ -85,10 +85,10 @@
       "n": "兆豐金",
       "entry_date": "2026-07-30",
       "entry_price": 49.9,
-      "current_price": 51.2,
+      "current_price": 51.7,
       "conf": 64,
       "days": 4,
-      "profit_pct": 2.61
+      "profit_pct": 3.61
     },
     {
       "s": "2409",
@@ -119,6 +119,46 @@
       "conf": 57,
       "days": 3,
       "profit_pct": 10.0
+    },
+    {
+      "s": "2834",
+      "n": "臺企銀",
+      "entry_date": "2026-08-03",
+      "entry_price": 18.2,
+      "current_price": 18.2,
+      "conf": 56,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2618",
+      "n": "長榮航",
+      "entry_date": "2026-08-03",
+      "entry_price": 43.2,
+      "current_price": 43.2,
+      "conf": 58,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2892",
+      "n": "第一金",
+      "entry_date": "2026-08-03",
+      "entry_price": 36.75,
+      "current_price": 36.75,
+      "conf": 49,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2887",
+      "n": "台新新光金",
+      "entry_date": "2026-08-03",
+      "entry_price": 35.95,
+      "current_price": 35.95,
+      "conf": 45,
+      "days": 0,
+      "profit_pct": 0.0
     }
   ],
   "history": [
@@ -3724,5 +3764,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-03T10:00:00.574309+08:00"
+  "updatedAt": "2026-08-03T11:00:00.574907+08:00"
 }
