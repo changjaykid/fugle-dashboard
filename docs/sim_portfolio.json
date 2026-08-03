@@ -5,40 +5,40 @@
       "n": "台中銀",
       "entry_date": "2026-07-29",
       "entry_price": 20.75,
-      "current_price": 20.5,
+      "current_price": 20.65,
       "conf": 60,
       "days": 5,
-      "profit_pct": -1.2
+      "profit_pct": -0.48
     },
     {
       "s": "2610",
       "n": "華航",
       "entry_date": "2026-07-29",
       "entry_price": 21.75,
-      "current_price": 22.4,
+      "current_price": 22.45,
       "conf": 60,
       "days": 5,
-      "profit_pct": 2.99
+      "profit_pct": 3.22
     },
     {
       "s": "1101",
       "n": "台泥",
       "entry_date": "2026-07-29",
       "entry_price": 24.8,
-      "current_price": 24.3,
+      "current_price": 23.8,
       "conf": 59,
       "days": 5,
-      "profit_pct": -2.02
+      "profit_pct": -4.03
     },
     {
       "s": "2884",
       "n": "玉山金",
       "entry_date": "2026-07-30",
       "entry_price": 36.85,
-      "current_price": 38.65,
+      "current_price": 38.45,
       "conf": 47,
       "days": 4,
-      "profit_pct": 4.88
+      "profit_pct": 4.34
     },
     {
       "s": "2356",
@@ -51,74 +51,64 @@
       "profit_pct": 8.86
     },
     {
-      "s": "6505",
-      "n": "台塑化",
-      "entry_date": "2026-07-30",
-      "entry_price": 74.8,
-      "current_price": 70.8,
-      "conf": 48,
-      "days": 4,
-      "profit_pct": -5.35
-    },
-    {
       "s": "5880",
       "n": "合庫金",
       "entry_date": "2026-07-30",
       "entry_price": 26.1,
-      "current_price": 27.6,
+      "current_price": 26.9,
       "conf": 47,
       "days": 4,
-      "profit_pct": 5.75
+      "profit_pct": 3.07
     },
     {
       "s": "2867",
       "n": "三商壽",
       "entry_date": "2026-07-30",
       "entry_price": 9.37,
-      "current_price": 9.9,
+      "current_price": 9.82,
       "conf": 47,
       "days": 4,
-      "profit_pct": 5.66
+      "profit_pct": 4.8
     },
     {
       "s": "2886",
       "n": "兆豐金",
       "entry_date": "2026-07-30",
       "entry_price": 49.9,
-      "current_price": 53.1,
+      "current_price": 51.6,
       "conf": 64,
       "days": 4,
-      "profit_pct": 6.41
+      "profit_pct": 3.41
     },
     {
       "s": "2409",
       "n": "友達",
       "entry_date": "2026-07-30",
       "entry_price": 23.65,
-      "current_price": 24.2,
+      "current_price": 23.9,
       "conf": 52,
       "days": 4,
-      "profit_pct": 2.33
+      "profit_pct": 1.06
     },
     {
       "s": "2303",
       "n": "聯電",
       "entry_date": "2026-07-31",
       "entry_price": 110.0,
-      "current_price": 121.0,
+      "current_price": 118.0,
       "conf": 72,
       "days": 3,
-      "profit_pct": 10.0
+      "profit_pct": 7.27
     },
     {
       "s": "1303",
       "n": "南亞",
       "entry_date": "2026-07-31",
       "entry_price": 145.0,
-      "current_price": 159.5,
+      "current_price": 165.0,
       "conf": 57,
       "days": 3,
-      "profit_pct": 10.0
+      "profit_pct": 13.79
     },
     {
       "s": "2834",
@@ -135,33 +125,46 @@
       "n": "長榮航",
       "entry_date": "2026-08-03",
       "entry_price": 43.2,
-      "current_price": 43.3,
+      "current_price": 43.7,
       "conf": 58,
       "days": 0,
-      "profit_pct": 0.23
+      "profit_pct": 1.16
     },
     {
       "s": "2892",
       "n": "第一金",
       "entry_date": "2026-08-03",
       "entry_price": 36.75,
-      "current_price": 36.15,
+      "current_price": 35.95,
       "conf": 49,
       "days": 0,
-      "profit_pct": -1.63
+      "profit_pct": -2.18
     },
     {
       "s": "2887",
       "n": "台新新光金",
       "entry_date": "2026-08-03",
       "entry_price": 35.95,
-      "current_price": 35.95,
+      "current_price": 35.3,
       "conf": 45,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -1.81
     }
   ],
   "history": [
+    {
+      "s": "6505",
+      "n": "台塑化",
+      "entry_date": "2026-07-30",
+      "entry_price": 74.8,
+      "current_price": 67.7,
+      "conf": 48,
+      "days": 4,
+      "profit_pct": -9.49,
+      "exit_date": "2026-08-03",
+      "exit_price": 67.7,
+      "reason": "止損 (-8%)"
+    },
     {
       "s": "2887",
       "n": "台新新光金",
@@ -3764,5 +3767,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-03T13:00:00.858790+08:00"
+  "updatedAt": "2026-08-03T14:00:01.327342+08:00"
 }
