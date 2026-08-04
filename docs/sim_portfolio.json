@@ -45,10 +45,10 @@
       "n": "兆豐金",
       "entry_date": "2026-07-30",
       "entry_price": 49.9,
-      "current_price": 51.6,
+      "current_price": 51.3,
       "conf": 64,
       "days": 5,
-      "profit_pct": 3.41
+      "profit_pct": 2.81
     },
     {
       "s": "2409",
@@ -105,10 +105,10 @@
       "n": "第一金",
       "entry_date": "2026-08-03",
       "entry_price": 36.75,
-      "current_price": 35.6,
+      "current_price": 35.95,
       "conf": 49,
       "days": 1,
-      "profit_pct": -3.13
+      "profit_pct": -2.18
     },
     {
       "s": "2887",
@@ -165,10 +165,10 @@
       "n": "鴻海",
       "entry_date": "2026-08-04",
       "entry_price": 253.0,
-      "current_price": 251.0,
+      "current_price": 253.0,
       "conf": 53,
       "days": 0,
-      "profit_pct": -0.79
+      "profit_pct": 0.0
     },
     {
       "s": "2324",
@@ -3866,5 +3866,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-04T11:00:01.383710+08:00"
+  "updatedAt": "2026-08-04T12:00:00.272897+08:00"
 }
