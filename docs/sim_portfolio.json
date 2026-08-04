@@ -5,10 +5,10 @@
       "n": "玉山金",
       "entry_date": "2026-07-30",
       "entry_price": 36.85,
-      "current_price": 38.45,
+      "current_price": 38.15,
       "conf": 47,
       "days": 5,
-      "profit_pct": 4.34
+      "profit_pct": 3.53
     },
     {
       "s": "2356",
@@ -65,10 +65,10 @@
       "n": "聯電",
       "entry_date": "2026-07-31",
       "entry_price": 110.0,
-      "current_price": 118.5,
+      "current_price": 118.0,
       "conf": 72,
       "days": 4,
-      "profit_pct": 7.73
+      "profit_pct": 7.27
     },
     {
       "s": "1303",
@@ -105,10 +105,10 @@
       "n": "第一金",
       "entry_date": "2026-08-03",
       "entry_price": 36.75,
-      "current_price": 35.95,
+      "current_price": 35.85,
       "conf": 49,
       "days": 1,
-      "profit_pct": -2.18
+      "profit_pct": -2.45
     },
     {
       "s": "2887",
@@ -125,10 +125,10 @@
       "n": "緯創",
       "entry_date": "2026-08-04",
       "entry_price": 186.5,
-      "current_price": 186.5,
+      "current_price": 197.0,
       "conf": 72,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": 5.63
     },
     {
       "s": "2312",
@@ -185,10 +185,10 @@
       "n": "臻鼎-KY",
       "entry_date": "2026-08-04",
       "entry_price": 418.0,
-      "current_price": 418.0,
+      "current_price": 452.0,
       "conf": 68,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": 8.13
     },
     {
       "s": "0056",
@@ -3866,5 +3866,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-04T09:00:01.217391+08:00"
+  "updatedAt": "2026-08-04T10:00:00.922568+08:00"
 }
