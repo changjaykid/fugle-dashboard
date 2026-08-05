@@ -25,10 +25,10 @@
       "n": "第一金",
       "entry_date": "2026-08-03",
       "entry_price": 36.75,
-      "current_price": 35.3,
+      "current_price": 35.85,
       "conf": 49,
       "days": 2,
-      "profit_pct": -3.95
+      "profit_pct": -2.45
     },
     {
       "s": "2887",
@@ -101,16 +101,6 @@
       "profit_pct": 1.79
     },
     {
-      "s": "4958",
-      "n": "臻鼎-KY",
-      "entry_date": "2026-08-04",
-      "entry_price": 418.0,
-      "current_price": 444.0,
-      "conf": 68,
-      "days": 1,
-      "profit_pct": 6.22
-    },
-    {
       "s": "0056",
       "n": "元大高股息",
       "entry_date": "2026-08-04",
@@ -135,10 +125,10 @@
       "n": "旺宏",
       "entry_date": "2026-08-05",
       "entry_price": 123.0,
-      "current_price": 123.5,
+      "current_price": 120.0,
       "conf": 69,
       "days": 0,
-      "profit_pct": 0.41
+      "profit_pct": -2.44
     },
     {
       "s": "6770",
@@ -182,6 +172,19 @@
     }
   ],
   "history": [
+    {
+      "s": "4958",
+      "n": "臻鼎-KY",
+      "entry_date": "2026-08-04",
+      "entry_price": 418.0,
+      "current_price": 488.0,
+      "conf": 68,
+      "days": 1,
+      "profit_pct": 16.75,
+      "exit_date": "2026-08-05",
+      "exit_price": 488.0,
+      "reason": "止盈 (+15%)"
+    },
     {
       "s": "2303",
       "n": "聯電",
@@ -3940,5 +3943,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-05T11:00:00.920521+08:00"
+  "updatedAt": "2026-08-05T12:00:01.309026+08:00"
 }
