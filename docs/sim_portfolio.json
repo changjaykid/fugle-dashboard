@@ -15,10 +15,10 @@
       "n": "第一金",
       "entry_date": "2026-08-03",
       "entry_price": 36.75,
-      "current_price": 35.5,
+      "current_price": 35.6,
       "conf": 49,
       "days": 4,
-      "profit_pct": -3.4
+      "profit_pct": -3.13
     },
     {
       "s": "2887",
@@ -95,10 +95,10 @@
       "n": "旺宏",
       "entry_date": "2026-08-05",
       "entry_price": 123.0,
-      "current_price": 129.0,
+      "current_price": 123.0,
       "conf": 69,
       "days": 2,
-      "profit_pct": 4.88
+      "profit_pct": 0.0
     },
     {
       "s": "6770",
@@ -4032,5 +4032,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-07T10:00:01.166077+08:00"
+  "updatedAt": "2026-08-07T11:00:00.834989+08:00"
 }
