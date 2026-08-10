@@ -65,20 +65,20 @@
       "n": "凱基金",
       "entry_date": "2026-08-06",
       "entry_price": 31.6,
-      "current_price": 30.85,
+      "current_price": 31.0,
       "conf": 70,
       "days": 4,
-      "profit_pct": -2.37
+      "profit_pct": -1.9
     },
     {
       "s": "0050",
       "n": "元大台灣50",
       "entry_date": "2026-08-06",
       "entry_price": 103.8,
-      "current_price": 102.85,
+      "current_price": 103.8,
       "conf": 66,
       "days": 4,
-      "profit_pct": -0.92
+      "profit_pct": 0.0
     },
     {
       "s": "2301",
@@ -95,10 +95,10 @@
       "n": "聯電",
       "entry_date": "2026-08-06",
       "entry_price": 122.0,
-      "current_price": 116.0,
+      "current_price": 122.0,
       "conf": 73,
       "days": 4,
-      "profit_pct": -4.92
+      "profit_pct": 0.0
     },
     {
       "s": "1303",
@@ -4139,5 +4139,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-10T12:00:01.313961+08:00"
+  "updatedAt": "2026-08-10T13:00:00.490052+08:00"
 }
