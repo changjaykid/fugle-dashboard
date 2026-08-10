@@ -165,10 +165,10 @@
       "n": "台泥",
       "entry_date": "2026-08-10",
       "entry_price": 24.5,
-      "current_price": 24.5,
+      "current_price": 24.35,
       "conf": 60,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -0.61
     },
     {
       "s": "1402",
@@ -186,6 +186,26 @@
       "entry_date": "2026-08-10",
       "entry_price": 256.5,
       "current_price": 256.5,
+      "conf": 70,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "3481",
+      "n": "群創",
+      "entry_date": "2026-08-10",
+      "entry_price": 47.55,
+      "current_price": 47.55,
+      "conf": 91,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2317",
+      "n": "鴻海",
+      "entry_date": "2026-08-10",
+      "entry_price": 260.0,
+      "current_price": 260.0,
       "conf": 70,
       "days": 0,
       "profit_pct": 0.0
@@ -4119,5 +4139,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-10T09:00:00.947088+08:00"
+  "updatedAt": "2026-08-10T10:00:00.864792+08:00"
 }
