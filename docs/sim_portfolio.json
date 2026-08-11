@@ -25,10 +25,10 @@
       "n": "元大台灣50",
       "entry_date": "2026-08-06",
       "entry_price": 103.8,
-      "current_price": 104.05,
+      "current_price": 104.25,
       "conf": 66,
       "days": 5,
-      "profit_pct": 0.24
+      "profit_pct": 0.43
     },
     {
       "s": "2301",
@@ -115,10 +115,10 @@
       "n": "台泥",
       "entry_date": "2026-08-10",
       "entry_price": 24.5,
-      "current_price": 24.7,
+      "current_price": 24.6,
       "conf": 60,
       "days": 1,
-      "profit_pct": 0.82
+      "profit_pct": 0.41
     },
     {
       "s": "1402",
@@ -159,6 +159,36 @@
       "conf": 70,
       "days": 1,
       "profit_pct": 1.73
+    },
+    {
+      "s": "6770",
+      "n": "力積電",
+      "entry_date": "2026-08-11",
+      "entry_price": 67.6,
+      "current_price": 67.6,
+      "conf": 75,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2409",
+      "n": "友達",
+      "entry_date": "2026-08-11",
+      "entry_price": 27.0,
+      "current_price": 27.0,
+      "conf": 74,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2337",
+      "n": "旺宏",
+      "entry_date": "2026-08-11",
+      "entry_price": 129.5,
+      "current_price": 129.5,
+      "conf": 74,
+      "days": 0,
+      "profit_pct": 0.0
     }
   ],
   "history": [
@@ -4154,5 +4184,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-11T09:00:00.626362+08:00"
+  "updatedAt": "2026-08-11T10:00:00.631094+08:00"
 }
