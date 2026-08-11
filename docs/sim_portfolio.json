@@ -5,10 +5,10 @@
       "n": "華邦電",
       "entry_date": "2026-08-06",
       "entry_price": 169.0,
-      "current_price": 179.5,
+      "current_price": 178.0,
       "conf": 71,
       "days": 5,
-      "profit_pct": 6.21
+      "profit_pct": 5.33
     },
     {
       "s": "2883",
@@ -25,20 +25,20 @@
       "n": "元大台灣50",
       "entry_date": "2026-08-06",
       "entry_price": 103.8,
-      "current_price": 104.25,
+      "current_price": 104.6,
       "conf": 66,
       "days": 5,
-      "profit_pct": 0.43
+      "profit_pct": 0.77
     },
     {
       "s": "2301",
       "n": "光寶科",
       "entry_date": "2026-08-06",
       "entry_price": 249.0,
-      "current_price": 271.5,
+      "current_price": 268.5,
       "conf": 68,
       "days": 5,
-      "profit_pct": 9.04
+      "profit_pct": 7.83
     },
     {
       "s": "2303",
@@ -55,60 +55,60 @@
       "n": "南亞",
       "entry_date": "2026-08-06",
       "entry_price": 177.0,
-      "current_price": 185.0,
+      "current_price": 190.0,
       "conf": 73,
       "days": 5,
-      "profit_pct": 4.52
+      "profit_pct": 7.34
     },
     {
       "s": "1718",
       "n": "中纖",
       "entry_date": "2026-08-07",
       "entry_price": 10.2,
-      "current_price": 10.25,
+      "current_price": 10.2,
       "conf": 69,
       "days": 4,
-      "profit_pct": 0.49
+      "profit_pct": 0.0
     },
     {
       "s": "3605",
       "n": "宏致",
       "entry_date": "2026-08-07",
       "entry_price": 108.0,
-      "current_price": 109.0,
+      "current_price": 111.0,
       "conf": 69,
       "days": 4,
-      "profit_pct": 0.93
+      "profit_pct": 2.78
     },
     {
       "s": "2027",
       "n": "大成鋼",
       "entry_date": "2026-08-10",
       "entry_price": 46.6,
-      "current_price": 47.3,
+      "current_price": 46.45,
       "conf": 71,
       "days": 1,
-      "profit_pct": 1.5
+      "profit_pct": -0.32
     },
     {
       "s": "2408",
       "n": "南亞科",
       "entry_date": "2026-08-10",
       "entry_price": 457.0,
-      "current_price": 502.0,
+      "current_price": 489.0,
       "conf": 63,
       "days": 1,
-      "profit_pct": 9.85
+      "profit_pct": 7.0
     },
     {
       "s": "2002",
       "n": "中鋼",
       "entry_date": "2026-08-10",
       "entry_price": 19.05,
-      "current_price": 19.65,
+      "current_price": 19.75,
       "conf": 64,
       "days": 1,
-      "profit_pct": 3.15
+      "profit_pct": 3.67
     },
     {
       "s": "1101",
@@ -125,70 +125,70 @@
       "n": "遠東新",
       "entry_date": "2026-08-10",
       "entry_price": 27.5,
-      "current_price": 27.25,
+      "current_price": 27.3,
       "conf": 59,
       "days": 1,
-      "profit_pct": -0.91
+      "profit_pct": -0.73
     },
     {
       "s": "3006",
       "n": "晶豪科",
       "entry_date": "2026-08-10",
       "entry_price": 256.5,
-      "current_price": 275.5,
+      "current_price": 267.5,
       "conf": 70,
       "days": 1,
-      "profit_pct": 7.41
+      "profit_pct": 4.29
     },
     {
       "s": "3481",
       "n": "群創",
       "entry_date": "2026-08-10",
       "entry_price": 47.55,
-      "current_price": 52.3,
+      "current_price": 50.1,
       "conf": 91,
       "days": 1,
-      "profit_pct": 9.99
+      "profit_pct": 5.36
     },
     {
       "s": "2317",
       "n": "鴻海",
       "entry_date": "2026-08-10",
       "entry_price": 260.0,
-      "current_price": 264.5,
+      "current_price": 263.0,
       "conf": 70,
       "days": 1,
-      "profit_pct": 1.73
+      "profit_pct": 1.15
     },
     {
       "s": "6770",
       "n": "力積電",
       "entry_date": "2026-08-11",
       "entry_price": 67.6,
-      "current_price": 67.6,
+      "current_price": 67.0,
       "conf": 75,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -0.89
     },
     {
       "s": "2409",
       "n": "友達",
       "entry_date": "2026-08-11",
       "entry_price": 27.0,
-      "current_price": 27.0,
+      "current_price": 26.1,
       "conf": 74,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -3.33
     },
     {
       "s": "2337",
       "n": "旺宏",
       "entry_date": "2026-08-11",
       "entry_price": 129.5,
-      "current_price": 133.5,
+      "current_price": 132.5,
       "conf": 74,
       "days": 0,
-      "profit_pct": 3.09
+      "profit_pct": 2.32
     }
   ],
   "history": [
@@ -4184,5 +4184,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-11T13:00:00.544218+08:00"
+  "updatedAt": "2026-08-11T14:00:00.521306+08:00"
 }
