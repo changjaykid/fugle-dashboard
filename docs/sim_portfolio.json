@@ -55,10 +55,10 @@
       "n": "台泥",
       "entry_date": "2026-08-10",
       "entry_price": 24.5,
-      "current_price": 24.65,
+      "current_price": 24.55,
       "conf": 60,
       "days": 2,
-      "profit_pct": 0.61
+      "profit_pct": 0.2
     },
     {
       "s": "1402",
@@ -187,6 +187,36 @@
       "entry_price": 52.0,
       "current_price": 52.0,
       "conf": 56,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "0050",
+      "n": "元大台灣50",
+      "entry_date": "2026-08-12",
+      "entry_price": 104.6,
+      "current_price": 104.6,
+      "conf": 49,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "1303",
+      "n": "南亞",
+      "entry_date": "2026-08-12",
+      "entry_price": 190.0,
+      "current_price": 190.0,
+      "conf": 65,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2303",
+      "n": "聯電",
+      "entry_date": "2026-08-12",
+      "entry_price": 123.0,
+      "current_price": 123.0,
+      "conf": 54,
       "days": 0,
       "profit_pct": 0.0
     }
@@ -4262,5 +4292,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-12T09:00:00.515012+08:00"
+  "updatedAt": "2026-08-12T10:00:00.872738+08:00"
 }
