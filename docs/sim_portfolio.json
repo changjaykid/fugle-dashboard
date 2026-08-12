@@ -55,10 +55,10 @@
       "n": "台泥",
       "entry_date": "2026-08-10",
       "entry_price": 24.5,
-      "current_price": 24.55,
+      "current_price": 24.65,
       "conf": 60,
       "days": 2,
-      "profit_pct": 0.2
+      "profit_pct": 0.61
     },
     {
       "s": "1402",
@@ -4292,5 +4292,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-12T10:00:00.872738+08:00"
+  "updatedAt": "2026-08-12T11:00:00.602828+08:00"
 }
