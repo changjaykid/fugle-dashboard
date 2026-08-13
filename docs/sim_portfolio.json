@@ -135,10 +135,10 @@
       "n": "國巨*",
       "entry_date": "2026-08-12",
       "entry_price": 617.0,
-      "current_price": 602.0,
+      "current_price": 662.0,
       "conf": 65,
       "days": 1,
-      "profit_pct": -2.43
+      "profit_pct": 7.29
     },
     {
       "s": "8112",
@@ -205,10 +205,10 @@
       "n": "第一金",
       "entry_date": "2026-08-13",
       "entry_price": 33.15,
-      "current_price": 33.15,
+      "current_price": 33.0,
       "conf": 62,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -0.45
     },
     {
       "s": "2356",
@@ -4358,5 +4358,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-13T11:00:00.667940+08:00"
+  "updatedAt": "2026-08-13T12:00:00.388124+08:00"
 }
