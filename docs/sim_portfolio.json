@@ -35,10 +35,10 @@
       "n": "台泥",
       "entry_date": "2026-08-10",
       "entry_price": 24.5,
-      "current_price": 24.05,
+      "current_price": 24.15,
       "conf": 60,
       "days": 4,
-      "profit_pct": -1.84
+      "profit_pct": -1.43
     },
     {
       "s": "1402",
@@ -115,10 +115,10 @@
       "n": "華新",
       "entry_date": "2026-08-12",
       "entry_price": 38.3,
-      "current_price": 39.3,
+      "current_price": 38.8,
       "conf": 64,
       "days": 2,
-      "profit_pct": 2.61
+      "profit_pct": 1.31
     },
     {
       "s": "8150",
@@ -135,10 +135,10 @@
       "n": "國巨*",
       "entry_date": "2026-08-12",
       "entry_price": 617.0,
-      "current_price": 662.0,
+      "current_price": 626.0,
       "conf": 65,
       "days": 2,
-      "profit_pct": 7.29
+      "profit_pct": 1.46
     },
     {
       "s": "8112",
@@ -155,10 +155,10 @@
       "n": "華新科",
       "entry_date": "2026-08-12",
       "entry_price": 300.5,
-      "current_price": 305.5,
+      "current_price": 316.5,
       "conf": 70,
       "days": 2,
-      "profit_pct": 1.66
+      "profit_pct": 5.32
     },
     {
       "s": "2609",
@@ -195,10 +195,10 @@
       "n": "聯電",
       "entry_date": "2026-08-12",
       "entry_price": 123.0,
-      "current_price": 121.0,
+      "current_price": 124.5,
       "conf": 54,
       "days": 2,
-      "profit_pct": -1.63
+      "profit_pct": 1.22
     },
     {
       "s": "2892",
@@ -4358,5 +4358,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-14T11:00:00.943365+08:00"
+  "updatedAt": "2026-08-14T12:00:01.038197+08:00"
 }
