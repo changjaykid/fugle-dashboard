@@ -55,10 +55,10 @@
       "n": "陽明",
       "entry_date": "2026-08-12",
       "entry_price": 52.0,
-      "current_price": 54.2,
+      "current_price": 51.6,
       "conf": 56,
       "days": 5,
-      "profit_pct": 4.23
+      "profit_pct": -0.77
     },
     {
       "s": "0050",
@@ -175,10 +175,10 @@
       "n": "元大高股息",
       "entry_date": "2026-08-17",
       "entry_price": 53.4,
-      "current_price": 53.4,
+      "current_price": 53.1,
       "conf": 50,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -0.56
     },
     {
       "s": "4938",
@@ -4474,5 +4474,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-17T10:00:00.731661+08:00"
+  "updatedAt": "2026-08-17T11:00:00.526781+08:00"
 }
