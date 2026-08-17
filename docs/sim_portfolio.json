@@ -55,10 +55,10 @@
       "n": "陽明",
       "entry_date": "2026-08-12",
       "entry_price": 52.0,
-      "current_price": 51.6,
+      "current_price": 54.2,
       "conf": 56,
       "days": 5,
-      "profit_pct": -0.77
+      "profit_pct": 4.23
     },
     {
       "s": "0050",
@@ -186,6 +186,36 @@
       "entry_date": "2026-08-17",
       "entry_price": 94.8,
       "current_price": 94.8,
+      "conf": 50,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "6770",
+      "n": "力積電",
+      "entry_date": "2026-08-17",
+      "entry_price": 78.4,
+      "current_price": 78.4,
+      "conf": 50,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2408",
+      "n": "南亞科",
+      "entry_date": "2026-08-17",
+      "entry_price": 512.0,
+      "current_price": 512.0,
+      "conf": 50,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2027",
+      "n": "大成鋼",
+      "entry_date": "2026-08-17",
+      "entry_price": 47.6,
+      "current_price": 47.6,
       "conf": 50,
       "days": 0,
       "profit_pct": 0.0
@@ -4444,5 +4474,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-17T09:00:00.540451+08:00"
+  "updatedAt": "2026-08-17T10:00:00.731661+08:00"
 }
