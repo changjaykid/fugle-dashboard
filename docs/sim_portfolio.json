@@ -5,10 +5,10 @@
       "n": "華新",
       "entry_date": "2026-08-12",
       "entry_price": 38.3,
-      "current_price": 39.05,
+      "current_price": 38.25,
       "conf": 64,
       "days": 5,
-      "profit_pct": 1.96
+      "profit_pct": -0.13
     },
     {
       "s": "8150",
@@ -55,10 +55,10 @@
       "n": "陽明",
       "entry_date": "2026-08-12",
       "entry_price": 52.0,
-      "current_price": 51.6,
+      "current_price": 54.6,
       "conf": 56,
       "days": 5,
-      "profit_pct": -0.77
+      "profit_pct": 5.0
     },
     {
       "s": "0050",
@@ -185,10 +185,10 @@
       "n": "和碩",
       "entry_date": "2026-08-17",
       "entry_price": 94.8,
-      "current_price": 94.8,
+      "current_price": 90.2,
       "conf": 50,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -4.85
     },
     {
       "s": "6770",
@@ -4474,5 +4474,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-17T12:00:01.243601+08:00"
+  "updatedAt": "2026-08-17T13:00:00.485973+08:00"
 }
