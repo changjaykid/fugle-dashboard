@@ -85,10 +85,10 @@
       "n": "元大高股息",
       "entry_date": "2026-08-17",
       "entry_price": 53.4,
-      "current_price": 53.0,
+      "current_price": 52.55,
       "conf": 50,
       "days": 1,
-      "profit_pct": -0.75
+      "profit_pct": -1.59
     },
     {
       "s": "4938",
@@ -175,10 +175,10 @@
       "n": "元大台灣50",
       "entry_date": "2026-08-18",
       "entry_price": 106.45,
-      "current_price": 106.45,
+      "current_price": 105.1,
       "conf": 50,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -1.27
     }
   ],
   "history": [
@@ -4551,5 +4551,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-18T11:00:00.571914+08:00"
+  "updatedAt": "2026-08-18T12:00:01.208702+08:00"
 }
