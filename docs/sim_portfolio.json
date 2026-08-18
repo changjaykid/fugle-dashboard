@@ -145,10 +145,10 @@
       "n": "兆豐金",
       "entry_date": "2026-08-18",
       "entry_price": 46.6,
-      "current_price": 46.55,
+      "current_price": 46.6,
       "conf": 50,
       "days": 0,
-      "profit_pct": -0.11
+      "profit_pct": 0.0
     },
     {
       "s": "9904",
@@ -4551,5 +4551,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-18T10:00:00.331355+08:00"
+  "updatedAt": "2026-08-18T11:00:00.571914+08:00"
 }
