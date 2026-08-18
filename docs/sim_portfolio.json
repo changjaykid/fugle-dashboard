@@ -145,10 +145,10 @@
       "n": "兆豐金",
       "entry_date": "2026-08-18",
       "entry_price": 46.6,
-      "current_price": 46.6,
+      "current_price": 46.55,
       "conf": 50,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -0.11
     },
     {
       "s": "9904",
@@ -166,6 +166,16 @@
       "entry_date": "2026-08-18",
       "entry_price": 51.2,
       "current_price": 51.2,
+      "conf": 50,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "0050",
+      "n": "元大台灣50",
+      "entry_date": "2026-08-18",
+      "entry_price": 106.45,
+      "current_price": 106.45,
       "conf": 50,
       "days": 0,
       "profit_pct": 0.0
@@ -4541,5 +4551,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-18T09:00:00.731288+08:00"
+  "updatedAt": "2026-08-18T10:00:00.331355+08:00"
 }
