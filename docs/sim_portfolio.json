@@ -125,10 +125,10 @@
       "n": "陽明",
       "entry_date": "2026-08-19",
       "entry_price": 56.2,
-      "current_price": 56.2,
+      "current_price": 58.2,
       "conf": 50,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": 3.56
     },
     {
       "s": "2603",
@@ -4659,5 +4659,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-19T11:00:01.015038+08:00"
+  "updatedAt": "2026-08-19T12:00:01.177450+08:00"
 }
