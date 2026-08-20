@@ -15,10 +15,10 @@
       "n": "緯創",
       "entry_date": "2026-08-17",
       "entry_price": 193.5,
-      "current_price": 179.5,
+      "current_price": 182.0,
       "conf": 50,
       "days": 3,
-      "profit_pct": -7.24
+      "profit_pct": -5.94
     },
     {
       "s": "2883",
@@ -85,10 +85,10 @@
       "n": "兆豐金",
       "entry_date": "2026-08-18",
       "entry_price": 46.6,
-      "current_price": 47.05,
+      "current_price": 46.15,
       "conf": 50,
       "days": 2,
-      "profit_pct": 0.97
+      "profit_pct": -0.97
     },
     {
       "s": "9904",
@@ -105,10 +105,10 @@
       "n": "元大台灣50",
       "entry_date": "2026-08-18",
       "entry_price": 106.45,
-      "current_price": 103.35,
+      "current_price": 103.1,
       "conf": 50,
       "days": 2,
-      "profit_pct": -2.91
+      "profit_pct": -3.15
     },
     {
       "s": "2609",
@@ -125,10 +125,10 @@
       "n": "長榮",
       "entry_date": "2026-08-19",
       "entry_price": 238.0,
-      "current_price": 244.0,
+      "current_price": 240.5,
       "conf": 50,
       "days": 1,
-      "profit_pct": 2.52
+      "profit_pct": 1.05
     },
     {
       "s": "3037",
@@ -165,10 +165,10 @@
       "n": "長榮航",
       "entry_date": "2026-08-19",
       "entry_price": 41.9,
-      "current_price": 41.6,
+      "current_price": 41.95,
       "conf": 50,
       "days": 1,
-      "profit_pct": -0.72
+      "profit_pct": 0.12
     },
     {
       "s": "2615",
@@ -195,10 +195,10 @@
       "n": "第一金",
       "entry_date": "2026-08-19",
       "entry_price": 33.7,
-      "current_price": 33.6,
+      "current_price": 33.2,
       "conf": 50,
       "days": 1,
-      "profit_pct": -0.3
+      "profit_pct": -1.48
     },
     {
       "s": "2542",
@@ -4672,5 +4672,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-20T12:00:00.900908+08:00"
+  "updatedAt": "2026-08-20T13:00:00.333195+08:00"
 }
