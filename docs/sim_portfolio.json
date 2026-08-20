@@ -15,10 +15,10 @@
       "n": "緯創",
       "entry_date": "2026-08-17",
       "entry_price": 193.5,
-      "current_price": 180.5,
+      "current_price": 179.5,
       "conf": 50,
       "days": 3,
-      "profit_pct": -6.72
+      "profit_pct": -7.24
     },
     {
       "s": "2883",
@@ -125,10 +125,10 @@
       "n": "長榮",
       "entry_date": "2026-08-19",
       "entry_price": 238.0,
-      "current_price": 240.5,
+      "current_price": 244.0,
       "conf": 50,
       "days": 1,
-      "profit_pct": 1.05
+      "profit_pct": 2.52
     },
     {
       "s": "3037",
@@ -4672,5 +4672,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-20T11:00:00.767618+08:00"
+  "updatedAt": "2026-08-20T12:00:00.900908+08:00"
 }
