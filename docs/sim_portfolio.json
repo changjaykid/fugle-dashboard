@@ -45,10 +45,10 @@
       "n": "長榮航",
       "entry_date": "2026-08-19",
       "entry_price": 41.9,
-      "current_price": 42.95,
+      "current_price": 42.6,
       "conf": 50,
       "days": 5,
-      "profit_pct": 2.51
+      "profit_pct": 1.67
     },
     {
       "s": "2845",
@@ -105,10 +105,10 @@
       "n": "四維航",
       "entry_date": "2026-08-21",
       "entry_price": 17.05,
-      "current_price": 18.35,
+      "current_price": 18.75,
       "conf": 71,
       "days": 3,
-      "profit_pct": 7.62
+      "profit_pct": 9.97
     },
     {
       "s": "6116",
@@ -165,10 +165,10 @@
       "n": "聯電",
       "entry_date": "2026-08-24",
       "entry_price": 116.5,
-      "current_price": 125.5,
+      "current_price": 116.5,
       "conf": 66,
       "days": 0,
-      "profit_pct": 7.73
+      "profit_pct": 0.0
     },
     {
       "s": "2609",
@@ -4841,5 +4841,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-24T11:00:01.298321+08:00"
+  "updatedAt": "2026-08-24T12:00:00.641513+08:00"
 }
