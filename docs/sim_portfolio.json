@@ -5,10 +5,10 @@
       "n": "長榮",
       "entry_date": "2026-08-19",
       "entry_price": 238.0,
-      "current_price": 251.5,
+      "current_price": 250.0,
       "conf": 50,
       "days": 5,
-      "profit_pct": 5.67
+      "profit_pct": 5.04
     },
     {
       "s": "3037",
@@ -155,10 +155,10 @@
       "n": "萬海",
       "entry_date": "2026-08-24",
       "entry_price": 124.5,
-      "current_price": 124.5,
+      "current_price": 124.0,
       "conf": 65,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -0.4
     },
     {
       "s": "2303",
@@ -175,10 +175,10 @@
       "n": "陽明",
       "entry_date": "2026-08-24",
       "entry_price": 64.0,
-      "current_price": 64.0,
+      "current_price": 64.1,
       "conf": 94,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": 0.16
     },
     {
       "s": "2408",
@@ -4841,5 +4841,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-24T12:00:00.641513+08:00"
+  "updatedAt": "2026-08-24T13:00:01.209932+08:00"
 }
