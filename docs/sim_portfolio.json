@@ -75,20 +75,10 @@
       "n": "聯電",
       "entry_date": "2026-08-24",
       "entry_price": 116.5,
-      "current_price": 125.0,
+      "current_price": 122.5,
       "conf": 66,
       "days": 2,
-      "profit_pct": 7.3
-    },
-    {
-      "s": "2609",
-      "n": "陽明",
-      "entry_date": "2026-08-24",
-      "entry_price": 64.0,
-      "current_price": 63.6,
-      "conf": 94,
-      "days": 2,
-      "profit_pct": -0.62
+      "profit_pct": 5.15
     },
     {
       "s": "2408",
@@ -135,10 +125,10 @@
       "n": "富邦金",
       "entry_date": "2026-08-25",
       "entry_price": 132.0,
-      "current_price": 141.5,
+      "current_price": 139.0,
       "conf": 78,
       "days": 1,
-      "profit_pct": 7.2
+      "profit_pct": 5.3
     },
     {
       "s": "1314",
@@ -232,6 +222,19 @@
     }
   ],
   "history": [
+    {
+      "s": "2609",
+      "n": "陽明",
+      "entry_date": "2026-08-24",
+      "entry_price": 64.0,
+      "current_price": 58.2,
+      "conf": 94,
+      "days": 2,
+      "profit_pct": -9.06,
+      "exit_date": "2026-08-26",
+      "exit_price": 58.2,
+      "reason": "止損 (-8%)"
+    },
     {
       "s": "2542",
       "n": "興富發",
@@ -4978,5 +4981,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-26T11:00:01.154395+08:00"
+  "updatedAt": "2026-08-26T12:00:00.495769+08:00"
 }
