@@ -255,10 +255,10 @@
       "n": "元大台灣50",
       "entry_date": "2026-08-28",
       "entry_price": 106.05,
-      "current_price": 107.15,
+      "current_price": 106.05,
       "conf": 68,
       "days": 0,
-      "profit_pct": 1.04
+      "profit_pct": 0.0
     },
     {
       "s": "2610",
@@ -275,10 +275,10 @@
       "n": "華通",
       "entry_date": "2026-08-28",
       "entry_price": 244.0,
-      "current_price": 244.0,
+      "current_price": 243.0,
       "conf": 61,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -0.41
     },
     {
       "s": "0056",
@@ -5142,5 +5142,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-28T11:00:01.279972+08:00"
+  "updatedAt": "2026-08-28T12:00:00.547664+08:00"
 }
