@@ -25,10 +25,10 @@
       "n": "聯電",
       "entry_date": "2026-08-24",
       "entry_price": 116.5,
-      "current_price": 120.5,
+      "current_price": 118.5,
       "conf": 66,
       "days": 4,
-      "profit_pct": 3.43
+      "profit_pct": 1.72
     },
     {
       "s": "2408",
@@ -255,20 +255,20 @@
       "n": "元大台灣50",
       "entry_date": "2026-08-28",
       "entry_price": 106.05,
-      "current_price": 106.05,
+      "current_price": 106.75,
       "conf": 68,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": 0.66
     },
     {
       "s": "2610",
       "n": "華航",
       "entry_date": "2026-08-28",
       "entry_price": 20.65,
-      "current_price": 20.65,
+      "current_price": 20.8,
       "conf": 61,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": 0.73
     },
     {
       "s": "2313",
@@ -5142,5 +5142,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-08-28T09:00:00.637033+08:00"
+  "updatedAt": "2026-08-28T10:00:01.053876+08:00"
 }
