@@ -155,10 +155,10 @@
       "n": "鴻海",
       "entry_date": "2026-09-03",
       "entry_price": 253.5,
-      "current_price": 254.0,
+      "current_price": 254.5,
       "conf": 47,
       "days": 1,
-      "profit_pct": 0.2
+      "profit_pct": 0.39
     },
     {
       "s": "0050",
@@ -5482,5 +5482,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-09-04T10:00:00.652087+08:00"
+  "updatedAt": "2026-09-04T11:00:01.167998+08:00"
 }
