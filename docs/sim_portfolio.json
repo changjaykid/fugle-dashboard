@@ -7,7 +7,7 @@
       "entry_price": 49.85,
       "current_price": 48.1,
       "conf": 62,
-      "days": 2,
+      "days": 3,
       "profit_pct": -3.51
     },
     {
@@ -17,7 +17,7 @@
       "entry_price": 16.95,
       "current_price": 17.1,
       "conf": 60,
-      "days": 2,
+      "days": 3,
       "profit_pct": 0.88
     },
     {
@@ -27,7 +27,7 @@
       "entry_price": 129.0,
       "current_price": 125.0,
       "conf": 72,
-      "days": 2,
+      "days": 3,
       "profit_pct": -3.1
     },
     {
@@ -37,7 +37,7 @@
       "entry_price": 59.5,
       "current_price": 57.8,
       "conf": 76,
-      "days": 2,
+      "days": 3,
       "profit_pct": -2.86
     },
     {
@@ -47,7 +47,7 @@
       "entry_price": 38.55,
       "current_price": 41.45,
       "conf": 69,
-      "days": 2,
+      "days": 3,
       "profit_pct": 7.52
     },
     {
@@ -57,7 +57,7 @@
       "entry_price": 48.55,
       "current_price": 50.4,
       "conf": 66,
-      "days": 2,
+      "days": 3,
       "profit_pct": 3.81
     },
     {
@@ -67,7 +67,7 @@
       "entry_price": 73.0,
       "current_price": 67.8,
       "conf": 61,
-      "days": 2,
+      "days": 3,
       "profit_pct": -7.12
     },
     {
@@ -77,7 +77,7 @@
       "entry_price": 26.4,
       "current_price": 26.55,
       "conf": 76,
-      "days": 1,
+      "days": 2,
       "profit_pct": 0.57
     },
     {
@@ -87,7 +87,7 @@
       "entry_price": 34.95,
       "current_price": 35.9,
       "conf": 73,
-      "days": 1,
+      "days": 2,
       "profit_pct": 2.72
     },
     {
@@ -97,7 +97,7 @@
       "entry_price": 41.5,
       "current_price": 42.6,
       "conf": 69,
-      "days": 1,
+      "days": 2,
       "profit_pct": 2.65
     },
     {
@@ -107,7 +107,7 @@
       "entry_price": 35.9,
       "current_price": 36.85,
       "conf": 69,
-      "days": 1,
+      "days": 2,
       "profit_pct": 2.65
     },
     {
@@ -115,10 +115,10 @@
       "n": "光寶科",
       "entry_date": "2026-09-03",
       "entry_price": 315.0,
-      "current_price": 299.0,
+      "current_price": 310.0,
       "conf": 77,
-      "days": 0,
-      "profit_pct": -5.08
+      "days": 1,
+      "profit_pct": -1.59
     },
     {
       "s": "1326",
@@ -127,7 +127,7 @@
       "entry_price": 72.8,
       "current_price": 69.7,
       "conf": 59,
-      "days": 0,
+      "days": 1,
       "profit_pct": -4.26
     },
     {
@@ -137,7 +137,7 @@
       "entry_price": 40.5,
       "current_price": 43.2,
       "conf": 63,
-      "days": 0,
+      "days": 1,
       "profit_pct": 6.67
     },
     {
@@ -147,7 +147,7 @@
       "entry_price": 62.05,
       "current_price": 61.6,
       "conf": 52,
-      "days": 0,
+      "days": 1,
       "profit_pct": -0.73
     },
     {
@@ -157,7 +157,7 @@
       "entry_price": 253.5,
       "current_price": 247.5,
       "conf": 47,
-      "days": 0,
+      "days": 1,
       "profit_pct": -2.37
     },
     {
@@ -167,8 +167,78 @@
       "entry_price": 106.8,
       "current_price": 106.2,
       "conf": 63,
-      "days": 0,
+      "days": 1,
       "profit_pct": -0.56
+    },
+    {
+      "s": "2845",
+      "n": "遠東銀",
+      "entry_date": "2026-09-04",
+      "entry_price": 13.65,
+      "current_price": 13.65,
+      "conf": 73,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2812",
+      "n": "台中銀",
+      "entry_date": "2026-09-04",
+      "entry_price": 19.45,
+      "current_price": 19.45,
+      "conf": 71,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "5880",
+      "n": "合庫金",
+      "entry_date": "2026-09-04",
+      "entry_price": 26.7,
+      "current_price": 26.7,
+      "conf": 68,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2801",
+      "n": "彰銀",
+      "entry_date": "2026-09-04",
+      "entry_price": 26.6,
+      "current_price": 26.6,
+      "conf": 63,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2889",
+      "n": "國票金",
+      "entry_date": "2026-09-04",
+      "entry_price": 16.45,
+      "current_price": 16.45,
+      "conf": 62,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "3231",
+      "n": "緯創",
+      "entry_date": "2026-09-04",
+      "entry_price": 195.5,
+      "current_price": 195.5,
+      "conf": 55,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "2481",
+      "n": "強茂",
+      "entry_date": "2026-09-04",
+      "entry_price": 159.5,
+      "current_price": 159.5,
+      "conf": 76,
+      "days": 0,
+      "profit_pct": 0.0
     }
   ],
   "history": [
@@ -5412,5 +5482,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-09-03T14:00:00.604948+08:00"
+  "updatedAt": "2026-09-04T09:00:01.342953+08:00"
 }
