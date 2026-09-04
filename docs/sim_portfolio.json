@@ -135,10 +135,10 @@
       "n": "玉山金",
       "entry_date": "2026-09-03",
       "entry_price": 40.5,
-      "current_price": 43.2,
+      "current_price": 43.0,
       "conf": 63,
       "days": 1,
-      "profit_pct": 6.67
+      "profit_pct": 6.17
     },
     {
       "s": "0052",
@@ -155,10 +155,10 @@
       "n": "鴻海",
       "entry_date": "2026-09-03",
       "entry_price": 253.5,
-      "current_price": 254.5,
+      "current_price": 247.5,
       "conf": 47,
       "days": 1,
-      "profit_pct": 0.39
+      "profit_pct": -2.37
     },
     {
       "s": "0050",
@@ -225,10 +225,10 @@
       "n": "緯創",
       "entry_date": "2026-09-04",
       "entry_price": 195.5,
-      "current_price": 188.5,
+      "current_price": 194.5,
       "conf": 55,
       "days": 0,
-      "profit_pct": -3.58
+      "profit_pct": -0.51
     },
     {
       "s": "2481",
@@ -5482,5 +5482,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-09-04T11:00:01.167998+08:00"
+  "updatedAt": "2026-09-04T12:00:01.171762+08:00"
 }
