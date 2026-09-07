@@ -45,10 +45,10 @@
       "n": "光寶科",
       "entry_date": "2026-09-03",
       "entry_price": 315.0,
-      "current_price": 308.0,
+      "current_price": 297.0,
       "conf": 77,
       "days": 4,
-      "profit_pct": -2.22
+      "profit_pct": -5.71
     },
     {
       "s": "1326",
@@ -85,10 +85,10 @@
       "n": "鴻海",
       "entry_date": "2026-09-03",
       "entry_price": 253.5,
-      "current_price": 255.5,
+      "current_price": 256.0,
       "conf": 47,
       "days": 4,
-      "profit_pct": 0.79
+      "profit_pct": 0.99
     },
     {
       "s": "0050",
@@ -175,10 +175,10 @@
       "n": "元大金",
       "entry_date": "2026-09-07",
       "entry_price": 70.5,
-      "current_price": 69.5,
+      "current_price": 69.8,
       "conf": 61,
       "days": 0,
-      "profit_pct": -1.42
+      "profit_pct": -0.99
     },
     {
       "s": "2324",
@@ -211,16 +211,6 @@
       "profit_pct": 0.0
     },
     {
-      "s": "2303",
-      "n": "聯電",
-      "entry_date": "2026-09-07",
-      "entry_price": 142.0,
-      "current_price": 143.0,
-      "conf": 71,
-      "days": 0,
-      "profit_pct": 0.7
-    },
-    {
       "s": "3481",
       "n": "群創",
       "entry_date": "2026-09-07",
@@ -232,6 +222,19 @@
     }
   ],
   "history": [
+    {
+      "s": "2303",
+      "n": "聯電",
+      "entry_date": "2026-09-07",
+      "entry_price": 142.0,
+      "current_price": 130.0,
+      "conf": 71,
+      "days": 0,
+      "profit_pct": -8.45,
+      "exit_date": "2026-09-07",
+      "exit_price": 130.0,
+      "reason": "止損 (-8%)"
+    },
     {
       "s": "6770",
       "n": "力積電",
@@ -5563,5 +5566,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-09-07T11:00:00.904465+08:00"
+  "updatedAt": "2026-09-07T12:00:00.513873+08:00"
 }
