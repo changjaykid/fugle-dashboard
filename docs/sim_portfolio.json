@@ -115,10 +115,10 @@
       "n": "緯創",
       "entry_date": "2026-09-04",
       "entry_price": 195.5,
-      "current_price": 186.5,
+      "current_price": 197.0,
       "conf": 55,
       "days": 4,
-      "profit_pct": -4.6
+      "profit_pct": 0.77
     },
     {
       "s": "2481",
@@ -185,10 +185,10 @@
       "n": "聯電",
       "entry_date": "2026-09-07",
       "entry_price": 143.0,
-      "current_price": 138.0,
+      "current_price": 143.0,
       "conf": 71,
       "days": 1,
-      "profit_pct": -3.5
+      "profit_pct": 0.0
     },
     {
       "s": "2327",
@@ -5628,5 +5628,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-09-08T11:00:01.105418+08:00"
+  "updatedAt": "2026-09-08T12:00:01.137348+08:00"
 }
