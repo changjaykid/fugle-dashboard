@@ -65,10 +65,10 @@
       "n": "強茂",
       "entry_date": "2026-09-04",
       "entry_price": 159.5,
-      "current_price": 152.5,
+      "current_price": 151.5,
       "conf": 76,
       "days": 5,
-      "profit_pct": -4.39
+      "profit_pct": -5.02
     },
     {
       "s": "2885",
@@ -215,10 +215,10 @@
       "n": "元大台灣50",
       "entry_date": "2026-09-09",
       "entry_price": 109.65,
-      "current_price": 110.5,
+      "current_price": 109.65,
       "conf": 56,
       "days": 0,
-      "profit_pct": 0.78
+      "profit_pct": 0.0
     }
   ],
   "history": [
@@ -5696,5 +5696,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-09-09T11:00:01.281416+08:00"
+  "updatedAt": "2026-09-09T12:00:01.163908+08:00"
 }
