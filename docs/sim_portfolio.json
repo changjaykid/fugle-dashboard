@@ -215,10 +215,10 @@
       "n": "元大台灣50",
       "entry_date": "2026-09-09",
       "entry_price": 109.65,
-      "current_price": 109.65,
+      "current_price": 110.5,
       "conf": 56,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": 0.78
     }
   ],
   "history": [
@@ -5696,5 +5696,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-09-09T10:00:00.849509+08:00"
+  "updatedAt": "2026-09-09T11:00:01.281416+08:00"
 }
