@@ -199,6 +199,26 @@
       "conf": 73,
       "days": 0,
       "profit_pct": 0.0
+    },
+    {
+      "s": "2884",
+      "n": "玉山金",
+      "entry_date": "2026-09-09",
+      "entry_price": 45.55,
+      "current_price": 45.55,
+      "conf": 76,
+      "days": 0,
+      "profit_pct": 0.0
+    },
+    {
+      "s": "0050",
+      "n": "元大台灣50",
+      "entry_date": "2026-09-09",
+      "entry_price": 109.65,
+      "current_price": 109.65,
+      "conf": 56,
+      "days": 0,
+      "profit_pct": 0.0
     }
   ],
   "history": [
@@ -5676,5 +5696,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-09-09T09:00:00.887401+08:00"
+  "updatedAt": "2026-09-09T10:00:00.849509+08:00"
 }
