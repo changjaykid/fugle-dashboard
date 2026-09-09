@@ -55,20 +55,20 @@
       "n": "緯創",
       "entry_date": "2026-09-04",
       "entry_price": 195.5,
-      "current_price": 186.5,
+      "current_price": 189.5,
       "conf": 55,
       "days": 5,
-      "profit_pct": -4.6
+      "profit_pct": -3.07
     },
     {
       "s": "2481",
       "n": "強茂",
       "entry_date": "2026-09-04",
       "entry_price": 159.5,
-      "current_price": 151.5,
+      "current_price": 152.5,
       "conf": 76,
       "days": 5,
-      "profit_pct": -5.02
+      "profit_pct": -4.39
     },
     {
       "s": "2885",
@@ -125,10 +125,10 @@
       "n": "聯電",
       "entry_date": "2026-09-07",
       "entry_price": 143.0,
-      "current_price": 137.0,
+      "current_price": 141.5,
       "conf": 71,
       "days": 2,
-      "profit_pct": -4.2
+      "profit_pct": -1.05
     },
     {
       "s": "2327",
@@ -185,10 +185,10 @@
       "n": "台積電",
       "entry_date": "2026-09-09",
       "entry_price": 2470.0,
-      "current_price": 2470.0,
+      "current_price": 2465.0,
       "conf": 55,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -0.2
     },
     {
       "s": "2887",
@@ -205,10 +205,10 @@
       "n": "玉山金",
       "entry_date": "2026-09-09",
       "entry_price": 45.55,
-      "current_price": 45.55,
+      "current_price": 44.0,
       "conf": 76,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -3.4
     },
     {
       "s": "0050",
@@ -5696,5 +5696,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-09-09T12:00:01.163908+08:00"
+  "updatedAt": "2026-09-09T13:00:00.582334+08:00"
 }
