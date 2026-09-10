@@ -54,6 +54,20 @@ class TestQuarterlyIncome(unittest.TestCase):
     def test_missing_symbol_absent_not_zero(self):
         self.assertNotIn('9999', self.result)
 
+    def test_source_url_present(self):
+        self.assertTrue(self.result['3661']['source_url'].startswith('https://'))
+
+    def test_report_period_kept_separate_from_publish_date(self):
+        """Regression (Codex review 2026-09-10): year_roc/quarter are the
+        actual financial reporting period; report_date (出表日期) is only
+        when TWSE published/refreshed the file and must never be treated
+        as the period the numbers describe."""
+        row = self.result['3661']
+        self.assertIn('year_roc', row)
+        self.assertIn('quarter', row)
+        self.assertIn('report_date', row)
+        self.assertNotEqual(row['year_roc'], row['report_date'])
+
 
 class TestMonthlyRevenue(unittest.TestCase):
     def setUp(self):
@@ -64,6 +78,17 @@ class TestMonthlyRevenue(unittest.TestCase):
         row = self.result['3661']
         self.assertIsInstance(row['yoy_pct'], float)
         self.assertGreater(row['yoy_pct'], 0)  # verified real growth in fixture
+
+    def test_source_url_present(self):
+        self.assertTrue(self.result['3661']['source_url'].startswith('https://'))
+
+    def test_period_roc_ym_is_the_only_as_of_field(self):
+        """This endpoint has no separate publish-date field -- period_roc_ym
+        IS the report period and must not be confused with a fetch/publish
+        timestamp elsewhere in the payload."""
+        row = self.result['3661']
+        self.assertIn('period_roc_ym', row)
+        self.assertNotIn('report_date', row)
 
     def test_note_field_empty_dash_becomes_none(self):
         row = self.result['1101']
@@ -85,6 +110,9 @@ class TestPeYieldPb(unittest.TestCase):
     def test_as_of_date_present(self):
         row = self.result['3661']
         self.assertIsNotNone(row['as_of_roc_date'])
+
+    def test_source_url_present(self):
+        self.assertTrue(self.result['3661']['source_url'].startswith('https://'))
 
     def test_etf_not_present_no_fake_pe(self):
         """ETFs are not in TSE's per-share P/E report; must be absent, not

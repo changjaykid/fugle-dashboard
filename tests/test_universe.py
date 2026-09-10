@@ -4,7 +4,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import unittest
-from stock_radar.universe import parse_isin_html, equity_universe, SECTION_KIND
+from stock_radar.universe import (
+    parse_isin_html, equity_universe, SECTION_KIND,
+    classify_etf_kinds, fetch_twse_fund_types, PLAIN_EQUITY_FUND_TYPES,
+)
 
 FIXTURES = Path(__file__).parent / 'fixtures'
 
@@ -27,6 +30,14 @@ class TestParseIsinHtml(unittest.TestCase):
     def test_etf_section_present(self):
         kinds = {i['kind'] for i in self.tse}
         self.assertIn('etf_equity', kinds)
+
+    def test_etn_section_gets_its_own_kind_not_etf_other(self):
+        """Regression (Codex review 2026-09-10): ETN must be kind='etn',
+        distinct from etf_equity/etf_other, and must not count as an ETF
+        at all -- it's a debt-like note structure, not a fund."""
+        by_kind = {i['kind'] for i in self.tse + self.otc}
+        if 'ETN' in {i['section'] for i in self.tse + self.otc}:
+            self.assertIn('etn', by_kind)
 
     def test_no_warrants_leak_through_section_filter(self):
         for i in self.tse + self.otc:
@@ -65,6 +76,104 @@ class TestParseIsinHtml(unittest.TestCase):
         short_html = b"<html><body><table><tr><td>a</td><td>b</td></tr></table></body></html>"
         result = parse_isin_html(short_html, 'TSE')
         self.assertEqual(result, [])
+
+
+class FakeResponse:
+    def __init__(self, payload):
+        self._payload = payload
+
+    def raise_for_status(self):
+        pass
+
+    def json(self):
+        return self._payload
+
+
+class FakeSession:
+    def __init__(self, payload):
+        self.payload = payload
+
+    def get(self, url, headers=None, timeout=None):
+        return FakeResponse(self.payload)
+
+
+class TestFetchTwseFundTypes(unittest.TestCase):
+    def test_parses_real_sample_into_symbol_to_type_dict(self):
+        import json
+        payload = json.loads((FIXTURES / 'twse_fund_types_sample.json').read_text())
+        session = FakeSession(payload)
+        result = fetch_twse_fund_types(session=session)
+        self.assertEqual(result['0050'], '國內成分證券指數股票型基金')
+        self.assertEqual(result['00631L'], '槓桿/反向指數股票型基金')
+        self.assertNotIn('00679B', result)  # OTC bond ETF, correctly absent from TSE-only feed
+
+    def test_plain_equity_types_constant_matches_fixture_labels(self):
+        self.assertIn('國內成分證券指數股票型基金', PLAIN_EQUITY_FUND_TYPES)
+        self.assertNotIn('槓桿/反向指數股票型基金', PLAIN_EQUITY_FUND_TYPES)
+
+
+class TestClassifyEtfKinds(unittest.TestCase):
+    """Regression suite for the 2026-09-10 Codex-reported misclassification:
+    00631L/00632R (leveraged/inverse) and 00679B/00795B (bond ETF) were
+    being labelled 'etf_equity' by CFI-only logic. classify_etf_kinds()
+    must downgrade both to 'etf_other' unless TWSE's own fund-type text
+    confirms plain passive equity."""
+
+    def make_item(self, symbol, kind='etf_equity'):
+        return {'symbol': symbol, 'name': symbol, 'kind': kind, 'cfi': 'CEOGEU',
+                'isin': 'x', 'listed_date': 'x', 'market': 'TSE', 'section': 'ETF',
+                'industry_code': None}
+
+    def test_confirmed_plain_equity_stays_etf_equity(self):
+        items = [self.make_item('0050')]
+        classify_etf_kinds(items, {'0050': '國內成分證券指數股票型基金'})
+        self.assertEqual(items[0]['kind'], 'etf_equity')
+
+    def test_leveraged_inverse_downgraded_to_etf_other(self):
+        """Real repro: 00631L/00632R, CFI=CEOGDU, previously misclassified."""
+        items = [self.make_item('00631L'), self.make_item('00632R')]
+        classify_etf_kinds(items, {
+            '00631L': '槓桿/反向指數股票型基金',
+            '00632R': '槓桿/反向指數股票型基金',
+        })
+        self.assertEqual(items[0]['kind'], 'etf_other')
+        self.assertEqual(items[1]['kind'], 'etf_other')
+
+    def test_bond_etf_not_in_twse_fund_master_downgraded(self):
+        """Real repro: 00679B/00795B (OTC bond ETFs) are not even present
+        in TWSE's TSE-only fund master -- absence must mean 'unclassified',
+        not 'assume plain equity'."""
+        items = [self.make_item('00679B'), self.make_item('00795B')]
+        classify_etf_kinds(items, {})  # neither symbol present
+        self.assertEqual(items[0]['kind'], 'etf_other')
+        self.assertEqual(items[1]['kind'], 'etf_other')
+
+    def test_active_etf_downgraded(self):
+        items = [self.make_item('00400A')]
+        classify_etf_kinds(items, {'00400A': '國內成分證券主動式交易所交易基金(股票)'})
+        self.assertEqual(items[0]['kind'], 'etf_other')
+
+    def test_futures_tracking_etf_downgraded(self):
+        items = [self.make_item('00635U')]
+        classify_etf_kinds(items, {'00635U': '指數股票型期貨信託基金'})
+        self.assertEqual(items[0]['kind'], 'etf_other')
+
+    def test_unrecognized_future_fund_type_string_defaults_safe(self):
+        """Allow-list, not deny-list: an unseen fund-type string must not
+        be silently treated as plain equity."""
+        items = [self.make_item('99999X')]
+        classify_etf_kinds(items, {'99999X': '某種尚未見過的基金類型'})
+        self.assertEqual(items[0]['kind'], 'etf_other')
+
+    def test_non_etf_kind_untouched(self):
+        items = [{'symbol': '2330', 'kind': 'stock'}]
+        classify_etf_kinds(items, {})
+        self.assertEqual(items[0]['kind'], 'stock')
+
+    def test_fund_type_text_preserved_on_item_for_debugging(self):
+        items = [self.make_item('0050')]
+        classify_etf_kinds(items, {'0050': '國內成分證券指數股票型基金'})
+        self.assertEqual(items[0]['fund_type'], '國內成分證券指數股票型基金')
 
 
 class TestEquityUniverse(unittest.TestCase):

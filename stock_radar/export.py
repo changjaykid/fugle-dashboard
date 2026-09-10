@@ -31,6 +31,12 @@ def build_radar_json(*, instruments, quotes, decisions, valuations, research,
             n_stock += 1
         elif kind in ('etf_equity', 'etf_other'):
             n_etf += 1
+        # kind == 'etn' is intentionally NOT counted toward n_etf: an ETN
+        # (Exchange Traded Note) is a debt-like note issued against the
+        # bank's own credit, not a fund/collective investment vehicle, per
+        # Kid's explicit 2026-09-10 correction. It still appears in items
+        # (kept in coverage.universe) so it's searchable, just not counted
+        # as an ETF.
         q = quotes.get(symbol)
         if q and q.get('as_of'):
             n_quotes += 1

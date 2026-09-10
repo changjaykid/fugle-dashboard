@@ -181,13 +181,19 @@ def cmd_export(args):
     try:
         instruments = store.instruments()
         # Per RADAR_DATA_CONTRACT.md, radar.json items carry kind in
-        # (stock, etf_equity, etf_other) -- etf_other (ETN etc.) has no
-        # valuation model yet but must still appear and count toward
-        # coverage.etfs, shown as '待研究' (decide() returns 'pending' for
-        # any kind outside stock/etf_equity), not silently dropped.
-        # preferred/tdr/reit/abs stay in the universe DB for `lookup` but
-        # are not part of the radar.json contract's supported kinds.
-        target = [i for i in instruments if i['kind'] in ('stock', 'etf_equity', 'etf_other')]
+        # (stock, etf_equity, etf_other, etn). etf_other (leveraged/
+        # inverse/bond/active/balanced/futures-tracking ETFs -- anything
+        # TWSE's own fund-type disclosure doesn't confirm as plain passive
+        # equity, see universe.classify_etf_kinds) has no valuation model
+        # yet but must still appear and count toward coverage.etfs, shown
+        # as '待研究' (decide() returns 'pending' for any kind outside
+        # stock/etf_equity), not silently dropped. etn (Exchange Traded
+        # Note -- a bank debt instrument, not a fund) also appears and gets
+        # 'pending' from decide(), but export.py does NOT count it toward
+        # coverage.etfs since it isn't one. preferred/tdr/reit/abs stay in
+        # the universe DB for `lookup` but are not part of the radar.json
+        # contract's supported kinds.
+        target = [i for i in instruments if i['kind'] in ('stock', 'etf_equity', 'etf_other', 'etn')]
         quotes, decisions, valuations = {}, {}, {}
         health = [{
             'name': '試撮', 'status': 'blocked',
