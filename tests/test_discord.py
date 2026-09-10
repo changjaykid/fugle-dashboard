@@ -1,0 +1,139 @@
+"""Unit tests for stock_radar.discord — formatting/chunking logic, pure
+functions, no network (send/fetch tested separately against live channel
+by the operational script, not in this offline suite)."""
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+import unittest
+from stock_radar.discord import chunk_text, format_status_line, format_daily_summary, lookup_reply, MESSAGE_CHAR_LIMIT
+
+
+class TestChunkText(unittest.TestCase):
+    def test_short_text_single_chunk(self):
+        self.assertEqual(chunk_text('hello'), ['hello'])
+
+    def test_long_text_splits_on_lines(self):
+        text = '\n'.join(f'line{i}' * 50 for i in range(200))
+        chunks = chunk_text(text, limit=500)
+        self.assertGreater(len(chunks), 1)
+        for c in chunks:
+            self.assertLessEqual(len(c), 500)
+
+    def test_never_splits_mid_line(self):
+        lines = [f'row-{i}' for i in range(100)]
+        text = '\n'.join(lines)
+        chunks = chunk_text(text, limit=50)
+        rejoined = '\n'.join(chunks)
+        self.assertEqual(rejoined.split('\n'), lines)
+
+    def test_default_limit_under_discord_cap(self):
+        self.assertLess(MESSAGE_CHAR_LIMIT, 2000)
+
+
+class TestFormatStatusLine(unittest.TestCase):
+    def test_pending_item_no_valuation(self):
+        item = {
+            'symbol': '3661', 'name': '世芯-KY',
+            'quote': {'previous_close': 3905.0, 'trial_price': None},
+            'valuation': None,
+            'signal': {'status': 'pending', 'status_label': '待估值', 'suggested': None, 'action': '等待研究'},
+        }
+        line = format_status_line(item)
+        self.assertIn('世芯-KY', line)
+        self.assertIn('3661', line)
+        self.assertIn('尚無估值', line)
+        self.assertIn('待估值', line)
+
+    def test_valued_item_shows_sab(self):
+        item = {
+            'symbol': '3661', 'name': '世芯-KY',
+            'quote': {'previous_close': 3905.0, 'trial_price': 4000.0},
+            'valuation': {'sweet': 3180.0, 'add': 3590.0, 'buy': 4080.0},
+            'signal': {'status': 'sweet', 'status_label': '甜甜價', 'suggested': 3175.0, 'action': '可考慮掛3175'},
+        }
+        line = format_status_line(item)
+        self.assertIn('甜3180', line)
+        self.assertIn('加3590', line)
+        self.assertIn('買4080', line)
+        self.assertIn('3175', line)
+
+    def test_missing_numbers_show_dash_not_zero(self):
+        item = {
+            'symbol': '9999', 'name': 'X',
+            'quote': {'previous_close': None, 'trial_price': None},
+            'valuation': None,
+            'signal': {'status': 'stale', 'status_label': '資料不足', 'suggested': None, 'action': ''},
+        }
+        line = format_status_line(item)
+        self.assertIn('—', line)
+        self.assertNotIn('昨收0', line)
+
+
+class TestFormatDailySummary(unittest.TestCase):
+    def make_radar(self, items, health=None):
+        return {
+            'generated_at': '2026-09-10T08:50:00+08:00', 'market_date': '2026-09-10',
+            'coverage': {'universe': 2, 'stocks': 1, 'etfs': 1, 'quotes': 2, 'valued': 1},
+            'health': health or [], 'items': items,
+        }
+
+    def test_test_marker_prepended(self):
+        radar = self.make_radar([])
+        out = format_daily_summary(radar, test_marker=True)
+        self.assertTrue(out.startswith('🧪'))
+        self.assertIn('測試', out)
+
+    def test_no_actionable_shows_message(self):
+        radar = self.make_radar([{
+            'symbol': '3661', 'name': '世芯-KY', 'quote': {}, 'valuation': None,
+            'signal': {'status': 'pending', 'status_label': '待估值', 'suggested': None, 'action': ''},
+        }])
+        out = format_daily_summary(radar)
+        self.assertIn('無符合且資料有效的可行動標的', out)
+        self.assertIn('待估值1', out)
+
+    def test_actionable_listed(self):
+        radar = self.make_radar([{
+            'symbol': '3661', 'name': '世芯-KY', 'quote': {'previous_close': 3905.0, 'trial_price': 4000.0},
+            'valuation': {'sweet': 3180.0, 'add': 3590.0, 'buy': 4080.0},
+            'signal': {'status': 'sweet', 'status_label': '甜甜價', 'suggested': 3175.0, 'action': '可掛'},
+        }])
+        out = format_daily_summary(radar)
+        self.assertIn('可行動標的', out)
+        self.assertIn('世芯-KY', out)
+
+    def test_health_blocked_surfaced(self):
+        radar = self.make_radar([], health=[{'name': '試撮', 'status': 'blocked', 'detail': '無試撮', 'as_of': None}])
+        out = format_daily_summary(radar)
+        self.assertIn('⚠️', out)
+        self.assertIn('試撮', out)
+
+
+class TestLookupReply(unittest.TestCase):
+    def test_no_match(self):
+        self.assertIn('查無', lookup_reply([]))
+
+    def test_single_match_returns_status_line(self):
+        item = {
+            'symbol': '3661', 'name': '世芯-KY',
+            'quote': {'previous_close': 3905.0, 'trial_price': None},
+            'valuation': None,
+            'signal': {'status': 'pending', 'status_label': '待估值', 'suggested': None, 'action': ''},
+        }
+        out = lookup_reply([item])
+        self.assertIn('3661', out)
+
+    def test_ambiguous_match_lists_options_not_guess(self):
+        items = [
+            {'symbol': '2330', 'name': '台積電A', 'kind': 'stock'},
+            {'symbol': '2330A', 'name': '台積電B', 'kind': 'stock'},
+        ]
+        out = lookup_reply(items)
+        self.assertIn('找到多筆', out)
+        self.assertIn('2330', out)
+        self.assertIn('2330A', out)
+
+
+if __name__ == '__main__':
+    unittest.main()
