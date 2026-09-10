@@ -125,6 +125,59 @@ class TestSyncQuotes(CliTestBase):
         fake_mis.assert_called_once()
         fake_fugle.assert_not_called()
 
+    def _fugle_lock_path(self):
+        return Path(self.tmpdir) / 'fugle_sync.lock'
+
+    def test_fugle_above_candidate_cap_refused_without_override(self):
+        """Regression (Codex review 2026-09-10): --source fugle against more
+        than FUGLE_CANDIDATE_CAP symbols must refuse loudly (undocumented
+        free-tier quota), not silently fetch a partial/truncated result."""
+        fake_items = [{'symbol': str(1000 + i), 'kind': 'stock', 'watched': True}
+                     for i in range(cli.FUGLE_CANDIDATE_CAP + 1)]
+        with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
+            self.run_cli('sync-universe')
+        keyfile = Path(self.tmpdir) / 'key.txt'
+        keyfile.write_text('fake-fugle-key')
+        with mock.patch('stock_radar.cli.fetch_fugle_quotes') as fake_fugle, \
+             mock.patch('stock_radar.cli.FUGLE_LOCK_PATH', self._fugle_lock_path()):
+            with self.assertRaises(SystemExit):
+                self.run_cli('sync-quotes', '--source', 'fugle', '--fugle-key-file', str(keyfile))
+        fake_fugle.assert_not_called()
+
+    def test_fugle_above_cap_allowed_with_explicit_override(self):
+        fake_items = [{'symbol': str(1000 + i), 'kind': 'stock', 'watched': True}
+                     for i in range(cli.FUGLE_CANDIDATE_CAP + 1)]
+        with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
+            self.run_cli('sync-universe')
+        keyfile = Path(self.tmpdir) / 'key.txt'
+        keyfile.write_text('fake-fugle-key')
+        with mock.patch('stock_radar.cli.fetch_fugle_quotes', return_value={}) as fake_fugle, \
+             mock.patch('stock_radar.cli.FUGLE_LOCK_PATH', self._fugle_lock_path()):
+            self.run_cli('sync-quotes', '--source', 'fugle', '--fugle-key-file', str(keyfile), '--allow-full-market-fugle')
+        fake_fugle.assert_called_once()
+
+    def test_fugle_within_cap_uses_single_flight_lock(self):
+        """Verifies the lock is actually exercised (not silently skipped)
+        by asserting a second concurrent call to the same lock path is
+        rejected while the first is 'in progress' (simulated by holding
+        the lock manually before calling sync-quotes)."""
+        fake_items = [{'symbol': '2330', 'kind': 'stock', 'watched': True}]
+        with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
+            self.run_cli('sync-universe')
+        keyfile = Path(self.tmpdir) / 'key.txt'
+        keyfile.write_text('fake-fugle-key')
+        lock_path = self._fugle_lock_path()
+        from stock_radar.runtime import single_flight_lock
+        with single_flight_lock(lock_path):
+            with mock.patch('stock_radar.cli.fetch_fugle_quotes') as fake_fugle, \
+                 mock.patch('stock_radar.cli.fetch_quotes', return_value={'2330': {
+                    'symbol': '2330', 'as_of': datetime.now(TW).isoformat(), 'price': 100.0,
+                 }}) as fake_mis, \
+                 mock.patch('stock_radar.cli.FUGLE_LOCK_PATH', lock_path):
+                self.run_cli('sync-quotes', '--source', 'fugle', '--fugle-key-file', str(keyfile))
+        fake_fugle.assert_not_called()  # lock was busy -> never even attempted the HTTP calls
+        fake_mis.assert_called_once()   # fell back cleanly
+
 
 class TestProposeApply(CliTestBase):
     def setUp(self):

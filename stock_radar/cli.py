@@ -39,6 +39,7 @@ from .financials import fetch_quarterly_income_general, fetch_monthly_revenue, f
 from .tpex import fetch_otc_daily_close
 from .calendar import fetch_holiday_schedule, is_trading_day
 from .risk import build_risk_facts
+from .runtime import single_flight_lock, ThrottledSession, LockBusyError
 from .export import build_radar_json
 from .discord import (send_message, chunk_text, format_daily_summary, lookup_reply,
                       is_test_mode, TEST_MARKER_PREFIX,
@@ -59,6 +60,24 @@ from .discord import (send_message, chunk_text, format_daily_summary, lookup_rep
 # file (or, worse, a live export silently READ stale demo-mode state).
 DEMO_DB = Path(__file__).parent.parent / 'stock_radar.db'
 DEFAULT_DB = DEMO_DB  # kept as the argparse default so existing dev/test invocations are unaffected
+# Free-tier Fugle usage has no documented numeric rate/quota limit found
+# as of 2026-09-10 (checked developer.fugle.tw docs) -- rather than
+# silently assuming "whatever we ask for is fine" and potentially burning
+# through an undocumented quota against the FULL market (2,000+ symbols,
+# each needing 2 HTTP calls per fugle.py's one-ticker+one-quote-per-symbol
+# design), Fugle real-time quotes are scoped to a bounded CANDIDATE list
+# (--watchlist-only, i.e. symbols an operator has explicitly flagged
+# 'watched' -- typically ones with an approved/proposed valuation) unless
+# --allow-full-market-fugle is explicitly passed. Full-market coverage
+# uses the free, unthrottled mis.twse.com.tw source (default) on whatever
+# cadence the caller's cron schedule runs it at (documented as a DAILY
+# update in openclaw/schedule.md, not real-time) -- this project does not
+# claim full-market real-time coverage anywhere, and this cap is what
+# keeps that claim honest in code, not just in a doc comment someone could
+# drift away from.
+FUGLE_CANDIDATE_CAP = 50
+FUGLE_LOCK_PATH = Path(__file__).parent.parent / '_state' / 'fugle_sync.lock'
+FUGLE_MIN_INTERVAL_SECONDS = 0.34  # ~3 req/s conservative default; see runtime.ThrottledSession
 # Recommended production runtime path: outside any git worktree, inside
 # the durable OpenClaw workspace root (survives worktree add/remove and is
 # covered by the workspace's own backup skill, unlike a path inside a
@@ -120,10 +139,35 @@ def cmd_sync_quotes(args):
             key = _fugle_api_key(args.fugle_key_file)
             if not key:
                 raise SystemExit('--source fugle requested but no API key found (pass --fugle-key-file or set fugle-dashboard/engine/config.json api_key)')
+            if len(instruments) > FUGLE_CANDIDATE_CAP and not args.allow_full_market_fugle:
+                # See FUGLE_CANDIDATE_CAP's module-level comment: Fugle's
+                # free-tier quota is undocumented, so real-time Fugle usage
+                # stays scoped to a bounded candidate list (--watchlist-only)
+                # unless the operator explicitly overrides. This must NOT be
+                # silently downgraded to a partial fetch -- fail loudly so a
+                # cron job misconfiguration is visible in its run log, not
+                # discovered later as "why did we only get some quotes".
+                raise SystemExit(
+                    f'--source fugle requested for {len(instruments)} instruments, above the '
+                    f'{FUGLE_CANDIDATE_CAP}-symbol candidate cap (Fugle free-tier quota is '
+                    f'undocumented; see FUGLE_CANDIDATE_CAP comment in cli.py). Use '
+                    f'--watchlist-only to scope to your candidate list, or pass '
+                    f'--allow-full-market-fugle if you have confirmed your plan can handle this.'
+                )
             try:
-                quotes = fetch_fugle_quotes(instruments, key)
+                # single_flight_lock: non-blocking -- if another sync-quotes
+                # --source fugle process is already running (e.g. an
+                # overlapping cron tick), this run skips cleanly rather than
+                # queuing up a second concurrent burst against the same
+                # rate-limited quota.
+                with single_flight_lock(FUGLE_LOCK_PATH):
+                    throttled = ThrottledSession(FUGLE_MIN_INTERVAL_SECONDS)
+                    quotes = fetch_fugle_quotes(instruments, key, session=throttled)
                 source_used = 'fugle'
                 print(f'quotes source: Fugle marketdata v1.0 ({len(quotes)} symbols)')
+            except LockBusyError as exc:
+                fugle_error = repr(exc)
+                print(f'Fugle sync already in progress elsewhere, skipping this tick ({exc}); falling back to mis.twse.com.tw')
             except Exception as exc:
                 fugle_error = repr(exc)
                 print(f'Fugle source failed ({fugle_error}); falling back to mis.twse.com.tw')
@@ -502,6 +546,8 @@ def main(argv=None):
                    help='mis.twse.com.tw (default, no key, no reliable trial flag) or fugle (real lastTrial/lastTrade split, needs a working API key)')
     p.add_argument('--fugle-key-file', type=Path, default=None,
                    help='path to a local file containing the Fugle API key; defaults to fugle-dashboard/engine/config.json api_key')
+    p.add_argument('--allow-full-market-fugle', action='store_true',
+                   help=f'Override the {FUGLE_CANDIDATE_CAP}-symbol Fugle candidate cap (undocumented free-tier quota; use only with a confirmed plan)')
     p.set_defaults(func=cmd_sync_quotes)
 
     sub.add_parser('sync-financials').set_defaults(func=cmd_sync_financials)

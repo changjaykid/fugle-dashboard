@@ -29,7 +29,10 @@ Codex 審查；啟用前需要：
 - `--assume-market-open` 仍保留，作為手動測試/研究時繞過日曆檢查用，正式排程不應該依賴這個 flag。
 - 已知限制：這支 API 目前只回傳「當下」的 ROC 年度資料（測試過帶 `?year=` 參數無效），代表每年跨年後都需要重新 `sync-calendar` 才能拿到新年度的休市清單；建議排程加一個每日或每週跑一次 `sync-calendar` 的頻率，成本很低（單次呼叫，27 筆資料）。
 
-## 已知未實作（誠實列出，不假裝完成）
+## Fugle vs 全市場涵蓋範圍（2026-09-10 已實作，誠實分離两種要求）
+- **不宣稱全市場即時**：Fugle 免費額度未見到文件化的歸限次數，因此 `sync-quotes --source fugle` 預設只允許 50 檔以內（`FUGLE_CANDIDATE_CAP`），超過直接 SystemExit 拒絕，不會静默只拓部分。实務上建議只對 `--watchlist-only`（已核准估值提案的候選標的）走 Fugle；若真的確認方案涵蓋全市場，才加 `--allow-full-market-fugle` 手動覆蓋。
+- **全市場改用日更新，不是即時**：全市場（2,335 檔）用免費、無需key的 mis.twse.com.tw（預設來源），來源本身無限制，但本專案排程設計為每日一次而非即時推送；不得在任何文件或訊息中宣稱全市場即時行情。
+- **單飛行鎖+節流**：`stock_radar/runtime.py` 提供 `single_flight_lock`（基於 `fcntl.flock` 的跨進程鎖，非阻塞，定位在 `_state/fugle_sync.lock`）與 `ThrottledSession`（預設每次請求間隔0.34秒，約 3 req/s），確保兩個重疊的 cron tick 不會同時扒壻 Fugle 額度；鎖忙碌時直接干淨 fallback 回 mis.twse，不排隊不重試。
 - 全市場（2,335 檔）sync-quotes 尚未做批次/節流測試，V1 只驗證過 51 檔 watchlist 版本。mis.twse.com.tw 對單次請求的網址長度/symbol 數量上限未知，全市場需要先做分批測試。
 - 08:55「只有重大變化才通知」需要保存上一輪 radar.json 快照做 diff，尚未寫。
 - 重啟後排程恢復、失敗重試、通知去重：尚未設計，需等接上真正的 cron 執行器後才能測。
