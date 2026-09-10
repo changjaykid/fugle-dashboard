@@ -114,9 +114,11 @@ class Store:
 
     def propose(self, symbol, valuation, now=None):
         now = now or datetime.now(TW)
-        validate_valuation(valuation, now)
-        if not self.db.execute('SELECT 1 FROM instruments WHERE symbol=?', (symbol,)).fetchone():
+        row = self.db.execute('SELECT payload FROM instruments WHERE symbol=?', (symbol,)).fetchone()
+        if not row:
             raise ValueError('請先建立標的母表')
+        kind = json.loads(row[0]).get('kind')
+        validate_valuation(valuation, now, kind=kind)
         proposal_id = uuid.uuid4().hex
         with self.transaction():
             old = self.active(symbol)
@@ -133,7 +135,9 @@ class Store:
             r = self.db.execute('SELECT * FROM valuations WHERE id=?', (proposal_id,)).fetchone()
             if not r or r['status'] != 'proposed':
                 raise ValueError('提案不存在或已處理')
-            validate_valuation(json.loads(r['payload']), now)
+            inst_row = self.db.execute('SELECT payload FROM instruments WHERE symbol=?', (r['symbol'],)).fetchone()
+            inst_kind = json.loads(inst_row[0]).get('kind') if inst_row else None
+            validate_valuation(json.loads(r['payload']), now, kind=inst_kind)
             old = self.active(r['symbol'])
             if (old['id'] if old else None) != r['parent_id']:
                 raise ValueError('基準版本已改變，需重新產生提案')

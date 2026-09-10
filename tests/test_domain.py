@@ -90,6 +90,41 @@ class TestValidateValuation(unittest.TestCase):
         v = make_valuation(self.now)
         validate_valuation(v, self.now)  # should not raise
 
+    def test_string_prices_are_coerced_to_float_in_place(self):
+        """Regression: a valuation with numeric-looking strings must pass validation
+        AND come out with real floats, so a later `price > v['buy']` comparison in
+        decide() cannot crash on str/float comparison."""
+        v = make_valuation(self.now, sweet='100.0', add='110.0', buy='120.0')
+        validate_valuation(v, self.now)
+        self.assertIsInstance(v['sweet'], float)
+        self.assertIsInstance(v['add'], float)
+        self.assertIsInstance(v['buy'], float)
+        self.assertEqual(v['buy'], 120.0)
+
+    def test_optional_extra_price_fields_coerced_or_rejected(self):
+        v = make_valuation(self.now, fair='125.5', avoid='garbage')
+        with self.assertRaises(ValueError):
+            validate_valuation(v, self.now)
+
+    def test_method_kind_mismatch_rejected_when_kind_given(self):
+        """A stock-only method (forward_pe) must be rejected for an ETF instrument,
+        and vice versa, when the caller supplies the instrument kind."""
+        v = make_valuation(self.now, method='forward_pe')
+        with self.assertRaises(ValueError):
+            validate_valuation(v, self.now, kind='etf_equity')
+        v2 = make_valuation(self.now, method='etf_nav')
+        with self.assertRaises(ValueError):
+            validate_valuation(v2, self.now, kind='stock')
+
+    def test_method_kind_match_passes(self):
+        v = make_valuation(self.now, method='forward_pe')
+        validate_valuation(v, self.now, kind='stock')  # should not raise
+
+    def test_no_kind_given_skips_method_check(self):
+        """Backward compatible: omitting kind= keeps old behavior (no method/kind check)."""
+        v = make_valuation(self.now, method='forward_pe')
+        validate_valuation(v, self.now)  # no kind passed, should not raise
+
     def test_order_must_hold(self):
         v = make_valuation(self.now, sweet=130.0)  # sweet > add > buy violates order
         with self.assertRaises(ValueError):
@@ -203,6 +238,21 @@ class TestDecide(unittest.TestCase):
     def test_no_valuation_is_pending(self):
         r = decide(self.instrument, self._quote(), None, now=self.now, market_open=True, risk=self.risk_ok)
         self.assertEqual(r['status'], 'pending')
+
+    def test_decide_never_crashes_on_string_valuation_prices(self):
+        """Regression: valuation dict arriving with string prices (e.g. round-tripped
+        through JSON storage inconsistently) must not raise inside decide()'s later
+        `p > valuation['buy']` float comparisons -- validate_valuation coerces in place."""
+        v = make_valuation(self.now, sweet='100.0', add='110.0', buy='120.0')
+        q = self._quote_low(price=125.0, reference_price=120.0, previous_close=120.0,
+                            limit_down=108.0, limit_up=132.0)
+        r = decide(self.instrument, q, v, now=self.now, market_open=True, risk=self.risk_ok)
+        self.assertEqual(r['status'], 'avoid')  # no TypeError, correct comparison result
+
+    def test_decide_rejects_etf_only_method_for_stock_instrument(self):
+        v = make_valuation(self.now, method='etf_nav')
+        r = decide(self.instrument, self._quote(), v, now=self.now, market_open=True, risk=self.risk_ok)
+        self.assertEqual(r['status'], 'blocked')
 
     def test_missing_risk_check_blocked(self):
         r = decide(self.instrument, self._quote(), self.valuation, now=self.now, market_open=True, risk=None)

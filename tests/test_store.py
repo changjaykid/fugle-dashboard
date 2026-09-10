@@ -88,6 +88,20 @@ class TestValuationLifecycle(StoreTestBase):
         with self.assertRaises(ValueError):
             self.store.propose('2330', bad, now=self.now)
 
+    def test_propose_rejects_method_kind_mismatch(self):
+        """Regression: an ETF-only method (etf_nav) proposed against a stock instrument
+        must be rejected by Store.propose (which looks up the instrument's stored kind)."""
+        self.store.upsert_instruments([{'symbol': '2330', 'kind': 'stock'}])
+        bad = make_valuation(self.now, method='etf_nav')
+        with self.assertRaises(ValueError):
+            self.store.propose('2330', bad, now=self.now)
+
+    def test_propose_accepts_matching_method_kind(self):
+        self.store.upsert_instruments([{'symbol': '0050', 'kind': 'etf_equity'}])
+        v = make_valuation(self.now, method='etf_nav')
+        pid = self.store.propose('0050', v, now=self.now)
+        self.assertTrue(pid)
+
     def test_propose_then_apply(self):
         self.store.upsert_instruments([{'symbol': '2330', 'kind': 'stock'}])
         v = make_valuation(self.now)

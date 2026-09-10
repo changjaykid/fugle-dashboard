@@ -47,12 +47,40 @@ def floor_tick(value, kind):
     return float((p / step).to_integral_value(rounding=ROUND_FLOOR) * step)
 
 
-def validate_valuation(v, now):
+# Method -> required instrument kind, shared by validate_valuation() and model_prices()
+# so a stock method (e.g. forward_pe) can never be applied to an ETF instrument or
+# vice versa. Methods not listed here are narrative/manual (e.g. biotech risk-adjusted)
+# and are not kind-restricted at this layer; they still require evidence/thesis like any
+# other valuation.
+METHOD_KIND = {
+    'forward_pe': 'stock', 'financial_pb': 'stock', 'normalized_pe': 'stock',
+    'etf_nav': 'etf_equity',
+}
+METHOD_INPUTS = {
+    'forward_pe': ('forward_eps', 'fair_pe'),
+    'financial_pb': ('book_value_per_share', 'fair_pb'),
+    'normalized_pe': ('normalized_eps', 'fair_pe'),
+    'etf_nav': ('nav', 'fair_nav_ratio'),
+}
+
+
+def validate_valuation(v, now, kind=None):
+    """Validate a valuation payload. If `kind` (instrument kind) is given, reject any
+    known stock-only method applied to an ETF instrument or vice versa. On success,
+    numeric fields are coerced to float **in place** on `v` so that callers (decide(),
+    Store.propose/apply, JSON export) never hold a valuation dict where sweet/add/buy
+    passed validation as numeric-looking strings but would crash on a later `p > v['buy']`
+    float/str comparison.
+    """
     prices = [positive(v.get(k)) for k in ('sweet', 'add', 'buy')]
     if None in prices or prices != sorted(prices):
         raise ValueError('估值必須為正數且甜甜 <= 加碼 <= 買進')
     if not v.get('reason') or not v.get('method') or not v.get('thesis'):
         raise ValueError('缺少估值方法、修改原因或投資論述')
+    method = v.get('method')
+    expected_kind = METHOD_KIND.get(method)
+    if kind is not None and expected_kind is not None and expected_kind != kind:
+        raise ValueError(f'估值方法「{method}」不適用於 {kind} 類型標的')
     expires, asof = stamp(v.get('valid_until')), stamp(v.get('as_of'))
     if not expires or not asof or not asof <= now < expires:
         raise ValueError('估值日期或效期不合法')
@@ -62,19 +90,25 @@ def validate_valuation(v, now):
         raise ValueError('估值需要有資料日期的 HTTPS 來源')
     if v.get('evidence_reviewed') is not True:
         raise ValueError('證據尚未複核')
+    # Normalize in place: sweet/add/buy are required and already validated positive above.
+    for key, val in zip(('sweet', 'add', 'buy'), prices):
+        v[key] = val
+    # Optional extra thresholds: coerce if present, reject if present-but-unparseable
+    # (silently keeping a bad string here is worse than failing validation loudly).
+    for key in ('fair', 'avoid', 'sell', 'reduce'):
+        if key in v and v[key] is not None:
+            n = positive(v[key])
+            if n is None:
+                raise ValueError(f'{key} 必須為正數')
+            v[key] = n
 
 
 def model_prices(method, inputs, kind):
     """Parameters come from sourced research, not a price-derived automatic PE."""
-    models = {
-        'forward_pe': ('forward_eps', 'fair_pe', 'stock'),
-        'financial_pb': ('book_value_per_share', 'fair_pb', 'stock'),
-        'normalized_pe': ('normalized_eps', 'fair_pe', 'stock'),
-        'etf_nav': ('nav', 'fair_nav_ratio', 'etf_equity'),
-    }
-    if method not in models:
+    if method not in METHOD_KIND:
         raise ValueError('此產業模型需要人工研究，尚不支援自動計算')
-    a, b, expected = models[method]
+    a, b = METHOD_INPUTS[method]
+    expected = METHOD_KIND[method]
     if kind != expected or not positive(inputs.get(a)) or not positive(inputs.get(b)):
         raise ValueError('估值模型與標的類型不符或缺必要輸入')
     factors = [positive(inputs.get(k)) for k in ('sweet_factor', 'add_factor', 'buy_factor')]
@@ -107,12 +141,12 @@ def decide(instrument, quote, valuation, now=None, *, market_open=False, risk=No
 
     if not valuation:
         return stop('pending', '尚無經複核及套用的估值')
-    try:
-        validate_valuation(valuation, now)
-    except ValueError as exc:
-        return stop('blocked', str(exc))
     if instrument.get('kind') not in ('stock', 'etf_equity'):
         return stop('blocked', '此證券類型尚無適用模型')
+    try:
+        validate_valuation(valuation, now, kind=instrument.get('kind'))
+    except ValueError as exc:
+        return stop('blocked', str(exc))
     if not risk or risk.get('cleared') is not True or not fresh(risk.get('checked_at'), now, 86400):
         return stop('blocked', '基本面、交易限制與流動性尚未完成當日檢查')
     if risk.get('events'):
