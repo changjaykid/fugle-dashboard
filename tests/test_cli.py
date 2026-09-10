@@ -505,6 +505,30 @@ class TestBackup(CliTestBase):
         self.run_cli('backup', '--out', str(out_path))
         self.assertTrue(out_path.exists())
 
+    def test_restore_roundtrip_via_cli(self):
+        fake_items = [{'symbol': '2330', 'kind': 'stock', 'name': '台積電'}]
+        with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
+            self.run_cli('sync-universe')
+        backup_path = Path(self.tmpdir) / 'backup.db'
+        self.run_cli('backup', '--out', str(backup_path))
+        target_path = Path(self.tmpdir) / 'restored.db'
+        self.run_cli('restore', '--backup', str(backup_path), '--target', str(target_path))
+        store = Store(target_path)
+        try:
+            self.assertEqual(len(store.instruments()), 1)
+        finally:
+            store.close()
+
+    def test_restore_without_force_on_nonempty_target_raises(self):
+        fake_items = [{'symbol': '2330', 'kind': 'stock', 'name': '台積電'}]
+        with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
+            self.run_cli('sync-universe')
+        backup_path = Path(self.tmpdir) / 'backup.db'
+        self.run_cli('backup', '--out', str(backup_path))
+        # self.db_path already exists and is non-empty from sync-universe above
+        with self.assertRaises(FileExistsError):
+            self.run_cli('restore', '--backup', str(backup_path), '--target', str(self.db_path))
+
 
 class TestNotifySummary(CliTestBase):
     def make_radar(self, mode='simulation'):
@@ -538,6 +562,112 @@ class TestNotifySummary(CliTestBase):
             self.run_cli('notify-summary', '--radar-json', str(p), '--test')
         fake_send.assert_called_once()
         self.assertEqual(fake_send.call_args[0][0], 'fake-token')
+
+    def test_duplicate_send_within_same_day_is_skipped_via_outbox(self):
+        """Regression (item 6): a second identical notify-summary run on
+        the same day (e.g. an overlapping cron tick, a restart-recovery
+        re-run) must not double-post -- the outbox dedup by content_hash
+        must catch it, even across two separate CLI invocations sharing
+        the same DB."""
+        p = self.make_radar()
+        with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \
+             mock.patch('stock_radar.cli.send_message', return_value={'id': '123'}) as fake_send:
+            self.run_cli('notify-summary', '--radar-json', str(p), '--test')
+            self.run_cli('notify-summary', '--radar-json', str(p), '--test')
+        fake_send.assert_called_once()  # second run skipped as a duplicate
+
+    def test_send_failure_retries_up_to_max_attempts_then_raises(self):
+        p = self.make_radar()
+        with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \
+             mock.patch('stock_radar.cli.send_message', side_effect=RuntimeError('503')) as fake_send, \
+             mock.patch('stock_radar.cli._time.sleep'):
+            with self.assertRaises(RuntimeError):
+                self.run_cli('notify-summary', '--radar-json', str(p), '--test')
+        self.assertEqual(fake_send.call_count, 3)  # default max_attempts
+
+    def test_send_succeeds_after_transient_failure(self):
+        p = self.make_radar()
+        with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \
+             mock.patch('stock_radar.cli.send_message',
+                       side_effect=[RuntimeError('503'), {'id': 'ok'}]) as fake_send, \
+             mock.patch('stock_radar.cli._time.sleep'):
+            self.run_cli('notify-summary', '--radar-json', str(p), '--test')
+        self.assertEqual(fake_send.call_count, 2)
+        store = Store(self.db_path)
+        try:
+            rows = store.db.execute('SELECT state FROM deliveries ORDER BY at').fetchall()
+            self.assertEqual([r['state'] for r in rows], ['failed', 'sent'])
+        finally:
+            store.close()
+
+
+class TestNotifyChanges(CliTestBase):
+    _radar_counter = 0
+
+    def make_radar(self, items, mode='simulation'):
+        TestNotifyChanges._radar_counter += 1
+        p = Path(self.tmpdir) / f'radar_changes_{TestNotifyChanges._radar_counter}.json'
+        p.write_text(json.dumps({
+            'generated_at': '2026-09-10T08:55:00+08:00', 'market_date': '2026-09-10',
+            'mode': mode, 'coverage': {'universe': len(items), 'stocks': len(items), 'etfs': 0,
+                                       'quotes': 0, 'valued': 0},
+            'health': [], 'items': items,
+        }))
+        return p
+
+    def make_item(self, symbol, status, suggested=None):
+        return {
+            'symbol': symbol, 'name': symbol,
+            'quote': {'previous_close': 100.0, 'trial_price': None},
+            'valuation': None,
+            'signal': {'status': status, 'status_label': status, 'suggested': suggested,
+                      'conservative': None, 'extreme': None,
+                      'valid_until': '2099-01-01T00:00:00+08:00',  # far future so
+                      # _revalidate_signal in discord.format_status_line does not
+                      # downgrade every item to 'stale' regardless of status
+                      # (which would make the two test runs' rendered text
+                      # identical and mask the diff-detection under test).
+                      # calculated_at must also be TODAY (not a hardcoded
+                      # past date) for the same reason.
+                      'calculated_at': datetime.now(TW).isoformat(), 'action': ''},
+        }
+
+    def test_first_run_with_no_actionable_items_sends_nothing(self):
+        p = self.make_radar([self.make_item('2330', 'pending')])
+        with mock.patch('stock_radar.cli.send_message') as fake_send:
+            self.run_cli('notify-changes', '--radar-json', str(p), '--test')
+        fake_send.assert_not_called()
+
+    def test_new_actionable_item_triggers_send(self):
+        p = self.make_radar([self.make_item('2330', 'sweet', suggested=100.0)])
+        with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \
+             mock.patch('stock_radar.cli.send_message', return_value={'id': '1'}) as fake_send:
+            self.run_cli('notify-changes', '--radar-json', str(p), '--test')
+        fake_send.assert_called_once()
+
+    def test_unchanged_signal_on_second_run_sends_nothing(self):
+        item = self.make_item('2330', 'sweet', suggested=100.0)
+        p = self.make_radar([item])
+        with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \
+             mock.patch('stock_radar.cli.send_message', return_value={'id': '1'}) as fake_send:
+            self.run_cli('notify-changes', '--radar-json', str(p), '--test')
+            self.run_cli('notify-changes', '--radar-json', str(p), '--test')
+        fake_send.assert_called_once()  # second run: no change -> no send
+
+    def test_status_change_on_second_run_triggers_send_again(self):
+        p1 = self.make_radar([self.make_item('2330', 'sweet', suggested=100.0)])
+        p2 = self.make_radar([self.make_item('2330', 'buy', suggested=95.0)])
+        with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \
+             mock.patch('stock_radar.cli.send_message', return_value={'id': '1'}) as fake_send:
+            self.run_cli('notify-changes', '--radar-json', str(p1), '--test')
+            self.run_cli('notify-changes', '--radar-json', str(p2), '--test')
+        self.assertEqual(fake_send.call_count, 2)
+
+    def test_dry_run_does_not_call_discord(self):
+        p = self.make_radar([self.make_item('2330', 'sweet', suggested=100.0)])
+        with mock.patch('stock_radar.cli.send_message') as fake_send:
+            self.run_cli('notify-changes', '--radar-json', str(p), '--test', '--dry-run')
+        fake_send.assert_not_called()
 
 
 class TestDiscordLookup(CliTestBase):
@@ -592,6 +722,71 @@ class TestDiscordLookup(CliTestBase):
         with contextlib.redirect_stdout(buf):
             self.run_cli('discord-lookup', '3661', '--radar-json', str(live_path))
         self.assertNotIn('🧪', buf.getvalue())
+
+
+class TestDiscordPoll(CliTestBase):
+    def setUp(self):
+        super().setUp()
+        fake_items = [{'symbol': '3661', 'kind': 'stock', 'name': '世芯-KY', 'market': 'TSE'}]
+        with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
+            self.run_cli('sync-universe')
+        self.radar_path = Path(self.tmpdir) / 'radar_poll.json'
+        self.radar_path.write_text(json.dumps({
+            'mode': 'simulation',
+            'items': [{
+                'symbol': '3661', 'name': '世芯-KY',
+                'quote': {'previous_close': 3905.0, 'trial_price': None},
+                'valuation': None,
+                'signal': {'status': 'pending', 'status_label': '待估值', 'suggested': None, 'action': ''},
+            }],
+        }))
+
+    def test_triggered_query_gets_a_threaded_reply(self):
+        messages = [{'id': '100', 'content': '$3661', 'author': {'bot': False}}]
+        with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \
+             mock.patch('stock_radar.cli.fetch_new_messages', return_value=messages), \
+             mock.patch('stock_radar.cli.send_message', return_value={'id': '101'}) as fake_send:
+            self.run_cli('discord-poll', '--radar-json', str(self.radar_path), '--test')
+        fake_send.assert_called_once()
+        _, kwargs = fake_send.call_args
+        self.assertEqual(kwargs.get('reply_to_message_id'), '100')
+
+    def test_non_triggered_message_is_ignored(self):
+        messages = [{'id': '100', 'content': 'just chatting about 3661 today', 'author': {'bot': False}}]
+        with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \
+             mock.patch('stock_radar.cli.fetch_new_messages', return_value=messages), \
+             mock.patch('stock_radar.cli.send_message') as fake_send:
+            self.run_cli('discord-poll', '--radar-json', str(self.radar_path), '--test')
+        fake_send.assert_not_called()
+
+    def test_bot_own_message_is_ignored(self):
+        messages = [{'id': '100', 'content': '$3661', 'author': {'bot': True}}]
+        with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \
+             mock.patch('stock_radar.cli.fetch_new_messages', return_value=messages), \
+             mock.patch('stock_radar.cli.send_message') as fake_send:
+            self.run_cli('discord-poll', '--radar-json', str(self.radar_path), '--test')
+        fake_send.assert_not_called()
+
+    def test_cursor_advances_and_is_passed_to_next_poll(self):
+        messages = [{'id': '100', 'content': '$3661', 'author': {'bot': False}}]
+        with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \
+             mock.patch('stock_radar.cli.fetch_new_messages', return_value=messages) as fake_fetch, \
+             mock.patch('stock_radar.cli.send_message', return_value={'id': '101'}):
+            self.run_cli('discord-poll', '--radar-json', str(self.radar_path), '--test')
+            self.run_cli('discord-poll', '--radar-json', str(self.radar_path), '--test')
+        second_call_kwargs = fake_fetch.call_args_list[1].kwargs
+        self.assertEqual(second_call_kwargs.get('after_id'), '100')
+
+    def test_dry_run_does_not_send_or_advance_cursor(self):
+        messages = [{'id': '100', 'content': '$3661', 'author': {'bot': False}}]
+        with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \
+             mock.patch('stock_radar.cli.fetch_new_messages', return_value=messages) as fake_fetch, \
+             mock.patch('stock_radar.cli.send_message') as fake_send:
+            self.run_cli('discord-poll', '--radar-json', str(self.radar_path), '--test', '--dry-run')
+            self.run_cli('discord-poll', '--radar-json', str(self.radar_path), '--test', '--dry-run')
+        fake_send.assert_not_called()
+        second_call_kwargs = fake_fetch.call_args_list[1].kwargs
+        self.assertIsNone(second_call_kwargs.get('after_id'))  # cursor never advanced
 
 
 class TestLookup(CliTestBase):

@@ -12,7 +12,7 @@ from unittest import mock
 from stock_radar.domain import TW
 from stock_radar.discord import (
     chunk_text, format_status_line, format_daily_summary, lookup_reply,
-    send_message, MESSAGE_CHAR_LIMIT, NO_PING,
+    send_message, fetch_new_messages, extract_query, MESSAGE_CHAR_LIMIT, NO_PING,
 )
 
 NOW = datetime(2026, 9, 10, 10, 0, 0, tzinfo=TW)
@@ -81,6 +81,87 @@ class TestSendMessageAllowedMentions(unittest.TestCase):
         _, kwargs = session.post.call_args
         self.assertEqual(kwargs['json']['allowed_mentions'], NO_PING)
         self.assertEqual(kwargs['json']['allowed_mentions']['parse'], [])
+
+
+class TestSendMessageReplyThreading(unittest.TestCase):
+    def test_reply_to_message_id_sets_message_reference(self):
+        session = mock.Mock()
+        session.post.return_value = mock.Mock(json=lambda: {'id': '2'}, raise_for_status=lambda: None)
+        send_message('tok', 'reply text', channel_id='123', reply_to_message_id='999', session=session)
+        _, kwargs = session.post.call_args
+        self.assertEqual(kwargs['json']['message_reference'], {'message_id': '999', 'channel_id': '123'})
+
+    def test_no_reply_id_omits_message_reference(self):
+        session = mock.Mock()
+        session.post.return_value = mock.Mock(json=lambda: {'id': '2'}, raise_for_status=lambda: None)
+        send_message('tok', 'standalone text', channel_id='123', session=session)
+        _, kwargs = session.post.call_args
+        self.assertNotIn('message_reference', kwargs['json'])
+
+
+class TestFetchNewMessages(unittest.TestCase):
+    def test_uses_after_cursor_when_given(self):
+        session = mock.Mock()
+        session.get.return_value = mock.Mock(json=lambda: [], raise_for_status=lambda: None)
+        fetch_new_messages('tok', channel_id='123', after_id='555', session=session)
+        _, kwargs = session.get.call_args
+        self.assertEqual(kwargs['params']['after'], '555')
+
+    def test_omits_after_when_none(self):
+        session = mock.Mock()
+        session.get.return_value = mock.Mock(json=lambda: [], raise_for_status=lambda: None)
+        fetch_new_messages('tok', channel_id='123', session=session)
+        _, kwargs = session.get.call_args
+        self.assertNotIn('after', kwargs['params'])
+
+    def test_returns_messages_oldest_first(self):
+        """Discord returns newest-first even for `after` queries; this
+        must be reversed so callers process/reply in real chronological
+        order and can safely track 'last seen id' as the final item."""
+        session = mock.Mock()
+        session.get.return_value = mock.Mock(
+            json=lambda: [{'id': '3'}, {'id': '2'}, {'id': '1'}], raise_for_status=lambda: None)
+        result = fetch_new_messages('tok', channel_id='123', session=session)
+        self.assertEqual([m['id'] for m in result], ['1', '2', '3'])
+
+
+class TestExtractQuery(unittest.TestCase):
+    def test_dollar_prefix_triggers(self):
+        self.assertEqual(extract_query('$3661'), '3661')
+
+    def test_fullwidth_dollar_prefix_triggers(self):
+        self.assertEqual(extract_query('＄3661'), '3661')
+
+    def test_chinese_cha_prefix_triggers(self):
+        self.assertEqual(extract_query('查 3661'), '3661')
+
+    def test_chinese_chaxun_prefix_with_colon_triggers(self):
+        self.assertEqual(extract_query('查詢：0050'), '0050')
+
+    def test_lookup_prefix_case_insensitive(self):
+        self.assertEqual(extract_query('LOOKUP 0050'), '0050')
+
+    def test_bare_symbol_without_trigger_does_not_match(self):
+        """Regression: item 7 must not turn every bare ticker-looking
+        message into a query -- only explicitly-triggered messages route
+        to the CLI, or normal chat mentioning a stock number would spam
+        replies."""
+        self.assertIsNone(extract_query('3661'))
+
+    def test_conversational_text_mentioning_a_ticker_does_not_match(self):
+        self.assertIsNone(extract_query('今天大盤好像不錯，3661怎麼看？'))
+
+    def test_trigger_word_alone_does_not_match(self):
+        self.assertIsNone(extract_query('查'))
+
+    def test_empty_string_does_not_match(self):
+        self.assertIsNone(extract_query(''))
+
+    def test_overlong_message_does_not_match(self):
+        self.assertIsNone(extract_query('$' + 'a' * 100))
+
+    def test_query_with_trailing_whitespace_trimmed(self):
+        self.assertEqual(extract_query('$3661  '), '3661')
 
 
 class TestFormatStatusLine(unittest.TestCase):

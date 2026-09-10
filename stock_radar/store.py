@@ -178,6 +178,55 @@ class Store:
         with self.transaction():
             self.db.execute('INSERT OR REPLACE INTO metadata VALUES(?,?)', (key, dumps(value)))
 
+    def record_delivery(self, content_hash, state, payload, now=None):
+        """Outbox record for a Discord send attempt. `content_hash` is the
+        caller's own dedup key (e.g. a hash of the message text) -- this
+        table does not compute it, so callers control exactly what counts
+        as "the same notification" (see cli.py's notify commands). Every
+        attempt (success or failure) gets its own row; nothing is
+        overwritten, so a full retry/audit history survives."""
+        now = now or datetime.now(TW)
+        delivery_id = uuid.uuid4().hex
+        with self.transaction():
+            self.db.execute('INSERT INTO deliveries VALUES(?,?,?,?)',
+                            (delivery_id, now.isoformat(), state,
+                             dumps({**payload, 'content_hash': content_hash})))
+        return delivery_id
+
+    def find_sent_delivery(self, content_hash, *, since):
+        """Returns the most recent delivery row with state='sent' and a
+        matching content_hash, whose `at` is >= `since` (an ISO string or
+        datetime), or None. Used by the outbox-dedup check: if a given
+        notification content already has a successful delivery today,
+        callers must skip re-sending it, even if a duplicate cron tick
+        (e.g. a restart-recovery re-run) tries to notify again."""
+        since_iso = since.isoformat() if hasattr(since, 'isoformat') else since
+        rows = self.db.execute(
+            "SELECT id, at, payload FROM deliveries WHERE state='sent' AND at>=? ORDER BY at DESC",
+            (since_iso,)).fetchall()
+        for r in rows:
+            payload = json.loads(r['payload'])
+            if payload.get('content_hash') == content_hash:
+                return {'id': r['id'], 'at': r['at'], 'payload': payload}
+        return None
+
+    def recent_delivery_failures(self, *, since, content_hash=None):
+        """Count of failed delivery attempts since a given time, optionally
+        scoped to one content_hash. Used to decide whether a retry budget
+        has been exhausted across separate process invocations (not just
+        within one send_with_retry() call), so a cron schedule that fires
+        again a few minutes later doesn't restart the retry counter from
+        zero and hammer Discord indefinitely on a persistent failure."""
+        since_iso = since.isoformat() if hasattr(since, 'isoformat') else since
+        rows = self.db.execute(
+            "SELECT payload FROM deliveries WHERE state='failed' AND at>=?", (since_iso,)).fetchall()
+        n = 0
+        for r in rows:
+            payload = json.loads(r['payload'])
+            if content_hash is None or payload.get('content_hash') == content_hash:
+                n += 1
+        return n
+
     def backup(self, target):
         target = Path(target)
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -186,3 +235,36 @@ class Store:
             if dest.execute('PRAGMA integrity_check').fetchone()[0] != 'ok':
                 raise RuntimeError('備份完整性檢查失敗')
         return str(target)
+
+    @staticmethod
+    def restore(backup_path, target_db_path, *, force=False):
+        """Restore a backup file (produced by Store.backup()) onto
+        target_db_path. Refuses to overwrite an existing, non-empty target
+        DB unless force=True -- restore is a destructive operation and
+        must not be a silent one-liner that clobbers a live production DB
+        by accident. Verifies the BACKUP's own integrity before touching
+        the target (not the target's, since the target is about to be
+        replaced anyway), and verifies the restored copy's integrity
+        again after writing, so a corrupt/truncated backup file is caught
+        loudly rather than silently installed.
+
+        Returns the target path on success; raises on any integrity
+        failure or on an unforced overwrite attempt.
+        """
+        backup_path = Path(backup_path)
+        target_db_path = Path(target_db_path)
+        if not backup_path.exists():
+            raise FileNotFoundError(f'backup file not found: {backup_path}')
+        with sqlite3.connect(backup_path) as src_check:
+            if src_check.execute('PRAGMA integrity_check').fetchone()[0] != 'ok':
+                raise RuntimeError(f'備份檔案完整性檢查失敗，拒絕還原: {backup_path}')
+        if target_db_path.exists() and target_db_path.stat().st_size > 0 and not force:
+            raise FileExistsError(
+                f'target DB already exists and is non-empty ({target_db_path}); '
+                f'pass force=True (CLI: --force) to overwrite it deliberately')
+        target_db_path.parent.mkdir(parents=True, exist_ok=True)
+        with sqlite3.connect(backup_path) as src, sqlite3.connect(target_db_path) as dest:
+            src.backup(dest)
+            if dest.execute('PRAGMA integrity_check').fetchone()[0] != 'ok':
+                raise RuntimeError(f'還原後完整性檢查失敗: {target_db_path}')
+        return str(target_db_path)

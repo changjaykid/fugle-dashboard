@@ -40,19 +40,49 @@ def fetch_recent_messages(bot_token: str, *, channel_id: str = DISCORD_CHANNEL,
     return resp.json()
 
 
+def fetch_new_messages(bot_token: str, *, channel_id: str = DISCORD_CHANNEL,
+                       after_id: str | None = None, limit: int = 50,
+                       session=None, timeout=15) -> list[dict]:
+    """Like fetch_recent_messages but uses Discord's own `after` cursor
+    (message-id based, not time-based) so polling never re-fetches
+    already-seen messages just because two poll ticks happen to land in
+    the same second. Returns messages OLDEST-FIRST (Discord's API itself
+    returns newest-first for `after` queries too, so this reverses it) so
+    callers can process+reply in the order they were actually posted, and
+    can safely track "last processed id" as the last item's id."""
+    import requests
+    http = session or requests
+    params = {'limit': limit}
+    if after_id:
+        params['after'] = after_id
+    resp = http.get(f'{API_BASE}/channels/{channel_id}/messages',
+                     params=params, headers=_headers(bot_token), timeout=timeout)
+    resp.raise_for_status()
+    return list(reversed(resp.json()))
+
+
 def send_message(bot_token: str, text: str, *, channel_id: str = DISCORD_CHANNEL,
+                 reply_to_message_id: str | None = None,
                  session=None, timeout=15) -> dict:
     """Sends one message. Caller must pre-chunk text <= MESSAGE_CHAR_LIMIT
     using chunk_text(); this function does not chunk itself, so a caller
     forgetting to chunk gets a loud Discord 400 rather than silent
     truncation. allowed_mentions is always locked to no-ping (NO_PING) --
     a research thesis or symbol name must never be able to @mention
-    anyone, and callers cannot opt out of this."""
+    anyone, and callers cannot opt out of this.
+
+    reply_to_message_id, when given, sets Discord's message_reference so
+    the reply visibly threads under the user's original query (real
+    interactive routing, per item 7's requirement, rather than an
+    unrelated standalone message the user has to guess is a reply).
+    """
     import requests
     http = session or requests
+    payload = {'content': text, 'allowed_mentions': NO_PING}
+    if reply_to_message_id:
+        payload['message_reference'] = {'message_id': reply_to_message_id, 'channel_id': channel_id}
     resp = http.post(f'{API_BASE}/channels/{channel_id}/messages',
-                     json={'content': text, 'allowed_mentions': NO_PING},
-                     headers=_headers(bot_token), timeout=timeout)
+                     json=payload, headers=_headers(bot_token), timeout=timeout)
     resp.raise_for_status()
     return resp.json()
 
@@ -199,6 +229,36 @@ def lookup_reply(matches: list[dict], *, now: datetime | None = None) -> str:
         options = '\n'.join(f"- {m['symbol']} {m.get('name')} [{m['kind']}]" for m in matches)
         return f'找到多筆符合，請用代號指定：\n{options}'
     return format_status_line(matches[0], now=now)
+
+
+import re
+
+QUERY_TRIGGER_RE = re.compile(r'^\s*(?:[$＄]|查詢|查|lookup)\s*[:：]?\s*(\S{1,20})\s*$', re.IGNORECASE)
+# Single-stock query trigger: matches ONLY messages that explicitly start
+# with one of '$', '＄', '查詢', '查', or 'lookup' followed by a bare
+# symbol/name and nothing else. The trigger is deliberately MANDATORY (not
+# optional) -- a bare message like "3661" or ordinary conversational text
+# that happens to mention a ticker in passing ("今天大盤好像不錯，3661怎麼
+# 看？") must NOT be treated as a query, or the bot would spam replies into
+# every unrelated chat message. '查詢' is listed before '查' in the
+# alternation so the longer trigger word wins the match.
+
+
+def extract_query(text: str) -> str | None:
+    """Returns the symbol/name to look up if `text` is (and only is) an
+    explicitly-triggered single-stock query per QUERY_TRIGGER_RE, else
+    None. This is the CLI routing entry point for item 7: a real Discord
+    message posted by a human must be able to trigger discord.py's own
+    lookup_reply() via this parser, not just cli.py's --post flag (which
+    only covers a human manually invoking the CLI, not an actual
+    interactive Discord query).
+    """
+    if not text or len(text) > 40:
+        return None
+    m = QUERY_TRIGGER_RE.match(text)
+    if not m:
+        return None
+    return m.group(1)
 
 
 def is_test_mode(radar_json: dict | None, *, explicit_test: bool = False) -> bool:

@@ -245,6 +245,58 @@ class TestBackup(StoreTestBase):
         self.store.backup(target)
 
 
+class TestBackupRestore(StoreTestBase):
+    def test_restore_roundtrip_preserves_data(self):
+        self.store.upsert_instruments([{'symbol': '2330', 'kind': 'stock', 'name': '台積電'}])
+        backup_path = Path(self.tmpdir) / 'backup.db'
+        self.store.backup(backup_path)
+        restored_path = Path(self.tmpdir) / 'restored.db'
+        Store.restore(backup_path, restored_path)
+        restored = Store(restored_path)
+        try:
+            self.assertEqual(len(restored.instruments()), 1)
+            self.assertEqual(restored.instruments()[0]['symbol'], '2330')
+        finally:
+            restored.close()
+
+    def test_restore_refuses_missing_backup_file(self):
+        with self.assertRaises(FileNotFoundError):
+            Store.restore(Path(self.tmpdir) / 'nope.db', Path(self.tmpdir) / 'target.db')
+
+    def test_restore_refuses_nonempty_target_without_force(self):
+        backup_path = Path(self.tmpdir) / 'backup.db'
+        self.store.backup(backup_path)
+        target_path = Path(self.tmpdir) / 'existing.db'
+        other = Store(target_path)
+        other.upsert_instruments([{'symbol': '9999', 'kind': 'stock'}])
+        other.close()
+        with self.assertRaises(FileExistsError):
+            Store.restore(backup_path, target_path)
+
+    def test_restore_allows_nonempty_target_with_force(self):
+        self.store.upsert_instruments([{'symbol': '2330', 'kind': 'stock'}])
+        backup_path = Path(self.tmpdir) / 'backup.db'
+        self.store.backup(backup_path)
+        target_path = Path(self.tmpdir) / 'existing.db'
+        other = Store(target_path)
+        other.upsert_instruments([{'symbol': '9999', 'kind': 'stock'}])
+        other.close()
+        Store.restore(backup_path, target_path, force=True)
+        restored = Store(target_path)
+        try:
+            symbols = {i['symbol'] for i in restored.instruments()}
+            self.assertEqual(symbols, {'2330'})  # 9999 replaced, not merged
+        finally:
+            restored.close()
+
+    def test_restore_to_empty_existing_file_does_not_need_force(self):
+        backup_path = Path(self.tmpdir) / 'backup.db'
+        self.store.backup(backup_path)
+        target_path = Path(self.tmpdir) / 'empty.db'
+        target_path.touch()  # exists but 0 bytes
+        Store.restore(backup_path, target_path)  # must not raise
+
+
 class TestAuditTrail(StoreTestBase):
     def test_propose_and_apply_write_audit(self):
         self.store.upsert_instruments([{'symbol': '2330', 'kind': 'stock'}])
@@ -253,6 +305,61 @@ class TestAuditTrail(StoreTestBase):
         actions = [r['action'] for r in self.store.db.execute('SELECT action FROM audit')]
         self.assertIn('propose', actions)
         self.assertIn('apply', actions)
+
+
+class TestDeliveryOutbox(StoreTestBase):
+    """Regression suite for the notification outbox/dedup/retry-count
+    support added 2026-09-10 (Codex review item 6)."""
+
+    def test_record_delivery_creates_a_row(self):
+        did = self.store.record_delivery('hash1', 'sent', {'text': 'hello'}, now=self.now)
+        self.assertIsNotNone(did)
+        row = self.store.db.execute('SELECT state FROM deliveries WHERE id=?', (did,)).fetchone()
+        self.assertEqual(row['state'], 'sent')
+
+    def test_find_sent_delivery_matches_by_content_hash(self):
+        self.store.record_delivery('hash-a', 'sent', {'text': 'x'}, now=self.now)
+        found = self.store.find_sent_delivery('hash-a', since=self.now - timedelta(hours=1))
+        self.assertIsNotNone(found)
+        self.assertEqual(found['payload']['content_hash'], 'hash-a')
+
+    def test_find_sent_delivery_returns_none_for_unknown_hash(self):
+        self.store.record_delivery('hash-a', 'sent', {'text': 'x'}, now=self.now)
+        found = self.store.find_sent_delivery('hash-b', since=self.now - timedelta(hours=1))
+        self.assertIsNone(found)
+
+    def test_find_sent_delivery_ignores_failed_state(self):
+        """A failed attempt must not count as 'already sent' -- a retry
+        must still be allowed to actually send."""
+        self.store.record_delivery('hash-a', 'failed', {'text': 'x', 'error': 'timeout'}, now=self.now)
+        found = self.store.find_sent_delivery('hash-a', since=self.now - timedelta(hours=1))
+        self.assertIsNone(found)
+
+    def test_find_sent_delivery_respects_since_cutoff(self):
+        old = self.now - timedelta(days=2)
+        self.store.record_delivery('hash-a', 'sent', {'text': 'x'}, now=old)
+        found = self.store.find_sent_delivery('hash-a', since=self.now - timedelta(hours=1))
+        self.assertIsNone(found)  # too old, outside the since window
+
+    def test_recent_delivery_failures_counts_only_failed_state(self):
+        self.store.record_delivery('hash-a', 'sent', {'text': 'x'}, now=self.now)
+        self.store.record_delivery('hash-a', 'failed', {'text': 'x'}, now=self.now)
+        self.store.record_delivery('hash-a', 'failed', {'text': 'x'}, now=self.now)
+        n = self.store.recent_delivery_failures(since=self.now - timedelta(hours=1))
+        self.assertEqual(n, 2)
+
+    def test_recent_delivery_failures_scoped_to_content_hash_when_given(self):
+        self.store.record_delivery('hash-a', 'failed', {'text': 'x'}, now=self.now)
+        self.store.record_delivery('hash-b', 'failed', {'text': 'y'}, now=self.now)
+        n = self.store.recent_delivery_failures(since=self.now - timedelta(hours=1), content_hash='hash-a')
+        self.assertEqual(n, 1)
+
+    def test_multiple_attempts_all_preserved_not_overwritten(self):
+        self.store.record_delivery('hash-a', 'failed', {'text': 'x', 'attempt': 1}, now=self.now)
+        self.store.record_delivery('hash-a', 'failed', {'text': 'x', 'attempt': 2}, now=self.now)
+        self.store.record_delivery('hash-a', 'sent', {'text': 'x', 'attempt': 3}, now=self.now)
+        rows = self.store.db.execute('SELECT COUNT(*) as n FROM deliveries').fetchone()
+        self.assertEqual(rows['n'], 3)
 
 
 if __name__ == '__main__':

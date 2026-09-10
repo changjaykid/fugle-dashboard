@@ -40,9 +40,12 @@ from .tpex import fetch_otc_daily_close
 from .calendar import fetch_holiday_schedule, is_trading_day
 from .risk import build_risk_facts
 from .runtime import single_flight_lock, ThrottledSession, LockBusyError
+from .diff import significant_changes_against_snapshot, snapshot_signals
+import hashlib
+import time as _time
 from .export import build_radar_json
-from .discord import (send_message, chunk_text, format_daily_summary, lookup_reply,
-                      is_test_mode, TEST_MARKER_PREFIX,
+from .discord import (send_message, chunk_text, format_daily_summary, format_status_line, lookup_reply,
+                      is_test_mode, TEST_MARKER_PREFIX, extract_query, fetch_new_messages,
                       DISCORD_CHANNEL as DISCORD_CHANNEL_DEFAULT)
 
 # DEMO_DB: the default SQLite path used when --db is omitted. This lives
@@ -458,6 +461,17 @@ def cmd_backup(args):
         store.close()
 
 
+def cmd_restore(args):
+    """Deliberately does NOT open a Store on args.db first -- Store.restore
+    is a staticmethod precisely so a corrupt/unreadable target DB can never
+    block a restore attempt (that would defeat the whole point of having a
+    restore path). --force is required to overwrite a non-empty existing
+    target DB; this mirrors the destructive-operation caution used
+    elsewhere in this CLI (e.g. --allow-full-market-fugle)."""
+    path = Store.restore(args.backup, args.target, force=args.force)
+    print(f'restored: {path}')
+
+
 def _bot_token():
     """Read the Discord bot token from OpenClaw's own config at call time --
     never hardcoded, never logged. Kept as a thin local helper (not a
@@ -468,50 +482,199 @@ def _bot_token():
     return cfg['channels']['discord']['token']
 
 
+def _content_hash(text: str) -> str:
+    """Dedup key for the outbox: same exact text sent to the same channel
+    on the same day counts as "already delivered", so a duplicate cron
+    tick (overlapping schedules, a restart-recovery re-run, a manual
+    re-trigger) cannot double-post the identical message."""
+    return hashlib.sha256(text.encode('utf-8')).hexdigest()
+
+
+def _send_with_outbox(store, token, text, *, channel, now, max_attempts=3,
+                      backoff_seconds=2, dry_run=False, sleep=_time.sleep):
+    """Single chunk send with outbox dedup + limited retry. Every attempt
+    (success or failure) is recorded via Store.record_delivery so a retry
+    budget is enforceable across SEPARATE process invocations too (see
+    Store.recent_delivery_failures), not just within this one call.
+
+    Dedup window is "since local midnight of `now`" -- the same daily
+    summary text legitimately recurs on different days (e.g. "目前無符合且
+    資料有效的可行動標的。" on two quiet days), so dedup must not span
+    days or it would permanently suppress a legitimately-repeating message.
+    """
+    chash = _content_hash(f'{channel}:{text}')
+    since = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    existing = store.find_sent_delivery(chash, since=since)
+    if existing:
+        return {'status': 'skipped_duplicate', 'delivery_id': existing['id']}
+    if dry_run:
+        return {'status': 'dry_run'}
+    last_exc = None
+    for attempt in range(1, max_attempts + 1):
+        try:
+            result = send_message(token, text, channel_id=channel)
+            store.record_delivery(chash, 'sent',
+                                  {'text_len': len(text), 'channel': channel,
+                                   'attempt': attempt, 'message_id': result.get('id')}, now=now)
+            return {'status': 'sent', 'message_id': result.get('id'), 'attempts': attempt}
+        except Exception as exc:
+            last_exc = exc
+            store.record_delivery(chash, 'failed',
+                                  {'text_len': len(text), 'channel': channel,
+                                   'attempt': attempt, 'error': repr(exc)}, now=now)
+            if attempt < max_attempts:
+                sleep(backoff_seconds)
+    raise last_exc
+
+
 def cmd_notify_summary(args):
-    radar = json.loads(Path(args.radar_json).read_text())
-    # format_daily_summary forces the 🧪 test marker itself whenever
-    # radar['mode'] == 'simulation', regardless of --test -- the data's own
-    # mode field decides, not this CLI flag, so it can't be bypassed by a
-    # future caller forgetting --test.
-    text = format_daily_summary(radar, test_marker=args.test)
-    chunks = chunk_text(text)
-    if args.dry_run:
-        print(f'--- would send {len(chunks)} message(s) to channel {args.channel} ---')
-        for c in chunks:
-            print(c)
-            print('---')
-        return
-    token = _bot_token()
-    ids = []
-    for c in chunks:
-        result = send_message(token, c, channel_id=args.channel)
-        ids.append(result.get('id'))
-    print(f'sent {len(ids)} message(s): {ids}')
+    store = Store(args.db)
+    try:
+        radar = json.loads(Path(args.radar_json).read_text())
+        # format_daily_summary forces the 🧪 test marker itself whenever
+        # radar['mode'] == 'simulation', regardless of --test -- the data's own
+        # mode field decides, not this CLI flag, so it can't be bypassed by a
+        # future caller forgetting --test.
+        text = format_daily_summary(radar, test_marker=args.test)
+        chunks = chunk_text(text)
+        now = datetime.now(TW)
+        if args.dry_run:
+            print(f'--- would send {len(chunks)} message(s) to channel {args.channel} ---')
+            for c in chunks:
+                print(c)
+                print('---')
+            return
+        token = _bot_token()
+        results = [_send_with_outbox(store, token, c, channel=args.channel, now=now) for c in chunks]
+        sent = [r for r in results if r['status'] == 'sent']
+        skipped = [r for r in results if r['status'] == 'skipped_duplicate']
+        print(f'sent {len(sent)} message(s), skipped {len(skipped)} duplicate(s): '
+             f'{[r.get("message_id") for r in sent]}')
+    finally:
+        store.close()
+
+
+def cmd_notify_changes(args):
+    """The 08:55 step per STOCK_RADAR_SPEC.md: '只有狀態／掛價重大改變、失效
+    才通知'. Compares the current radar.json's signals against the LAST
+    NOTIFIED snapshot (Store.meta('last_notified_signals'), a compact
+    {symbol: signal-subset} map, not a second full radar.json on disk) via
+    stock_radar.diff.significant_changes_against_snapshot(). Only sends a
+    message when something actually changed; the snapshot is updated to
+    the full current state on EVERY run (whether or not a notification was
+    sent) so the next run's diff is always against the truly-latest state,
+    not a stale one from whenever the last notification happened to fire.
+    """
+    store = Store(args.db)
+    try:
+        radar = json.loads(Path(args.radar_json).read_text())
+        now = datetime.now(TW)
+        previous_snapshot = store.meta('last_notified_signals')
+        changed = significant_changes_against_snapshot(previous_snapshot, radar['items'])
+        # Always refresh the snapshot to the CURRENT full state, regardless
+        # of whether anything changed -- otherwise a quiet run would leave
+        # the next comparison pointed at an older, possibly stale baseline.
+        store.set_meta('last_notified_signals', snapshot_signals(radar['items']))
+        if not changed:
+            print('no significant signal changes since last notification; nothing sent')
+            return
+        is_test = is_test_mode(radar, explicit_test=args.test)
+        header = TEST_MARKER_PREFIX if is_test else ''
+        lines = [f'{header}雷達變化通知 {radar.get("market_date")} {radar.get("generated_at", "")[11:16]}',
+                '', f'{len(changed)} 檔狀態/掛價有重大變化：']
+        for item in changed:
+            lines.append(format_status_line(item, now=now))
+        text = '\n'.join(lines)
+        chunks = chunk_text(text)
+        if args.dry_run:
+            print(f'--- would send {len(chunks)} message(s) to channel {args.channel} ({len(changed)} changed symbols) ---')
+            for c in chunks:
+                print(c)
+                print('---')
+            return
+        token = _bot_token()
+        results = [_send_with_outbox(store, token, c, channel=args.channel, now=now) for c in chunks]
+        sent = [r for r in results if r['status'] == 'sent']
+        skipped = [r for r in results if r['status'] == 'skipped_duplicate']
+        print(f'{len(changed)} symbols changed; sent {len(sent)} message(s), skipped {len(skipped)} duplicate(s)')
+    finally:
+        store.close()
+
+
+def _lookup_text(store, radar, query, *, explicit_test):
+    """Shared lookup-reply-text logic used by both cmd_discord_lookup
+    (manual/scripted --post) and cmd_discord_poll (real inbound message
+    routing, item 7) -- one code path for both so they cannot silently
+    diverge in behavior (e.g. one honoring is_test_mode and the other
+    forgetting it)."""
+    q = query.strip()
+    matches = [i for i in store.instruments()
+              if q == i['symbol'] or q in (i.get('name') or '')]
+    items = []
+    if radar:
+        by_symbol = {i['symbol']: i for i in radar['items']}
+        items = [by_symbol[m['symbol']] for m in matches if m['symbol'] in by_symbol]
+    reply = lookup_reply(items) if items else ('查無此標的。' if not matches else '找到標的但尚無雷達資料，請先執行 export。')
+    # is_test_mode() forces the marker whenever radar_json['mode'] ==
+    # 'simulation', regardless of --test -- a lookup against a
+    # simulation-mode radar.json must never render as if it were a
+    # live query just because a caller forgot --test (mirrors
+    # format_daily_summary's own auto-marking contract).
+    return (TEST_MARKER_PREFIX + reply) if is_test_mode(radar, explicit_test=explicit_test) else reply
 
 
 def cmd_discord_lookup(args):
     store = Store(args.db)
     try:
-        q = args.query.strip()
-        matches = [i for i in store.instruments()
-                  if q == i['symbol'] or q in (i.get('name') or '')]
         radar = json.loads(Path(args.radar_json).read_text()) if args.radar_json and Path(args.radar_json).exists() else None
-        items = []
-        if radar:
-            by_symbol = {i['symbol']: i for i in radar['items']}
-            items = [by_symbol[m['symbol']] for m in matches if m['symbol'] in by_symbol]
-        reply = lookup_reply(items) if items else ('查無此標的。' if not matches else '找到標的但尚無雷達資料，請先執行 export。')
-        # is_test_mode() forces the marker whenever radar_json['mode'] ==
-        # 'simulation', regardless of --test -- a lookup against a
-        # simulation-mode radar.json must never render as if it were a
-        # live query just because a caller forgot --test (mirrors
-        # format_daily_summary's own auto-marking contract).
-        text = (TEST_MARKER_PREFIX + reply) if is_test_mode(radar, explicit_test=args.test) else reply
+        text = _lookup_text(store, radar, args.query, explicit_test=args.test)
         print(text)
         if args.post:
             token = _bot_token()
             send_message(token, text, channel_id=args.channel)
+    finally:
+        store.close()
+
+
+def cmd_discord_poll(args):
+    """Item 7: routes REAL inbound Discord messages (not just an operator
+    manually running --post) to the CLI's own lookup logic. Polls once per
+    invocation (intended to be called repeatedly by a scheduler, e.g. every
+    minute) using Discord's `after` message-id cursor (Store.meta
+    'last_discord_poll_id') so it never re-processes an already-answered
+    message across separate process invocations. Only messages matching
+    discord.extract_query() (an explicit trigger like '$3661' / '查 0050')
+    are treated as queries; anything else in the channel is ignored so this
+    does not spam replies into ordinary conversation. Every reply THREADS
+    under the triggering message via reply_to_message_id, so item 7's
+    'real message routing' requirement is visibly satisfied in the UI, not
+    just internally."""
+    store = Store(args.db)
+    try:
+        token = _bot_token()
+        radar = json.loads(Path(args.radar_json).read_text()) if args.radar_json and Path(args.radar_json).exists() else None
+        cursor = store.meta('last_discord_poll_id').get('id')
+        messages = fetch_new_messages(token, channel_id=args.channel, after_id=cursor, limit=args.limit)
+        answered = 0
+        for msg in messages:
+            # Never answer the bot's own messages -- otherwise a bot reply
+            # that happens to look like a query (unlikely given our own
+            # format_status_line output, but not impossible) could trigger
+            # an infinite reply loop.
+            if msg.get('author', {}).get('bot'):
+                continue
+            query = extract_query(msg.get('content', ''))
+            if query is None:
+                continue
+            text = _lookup_text(store, radar, query, explicit_test=args.test)
+            if args.dry_run:
+                print(f'--- would reply to message {msg["id"]} ---\n{text}\n---')
+            else:
+                send_message(token, text, channel_id=args.channel, reply_to_message_id=msg['id'])
+            answered += 1
+        if messages and not args.dry_run:
+            store.set_meta('last_discord_poll_id', {'id': messages[-1]['id']})
+        print(f'polled {len(messages)} new message(s), answered {answered} quer{"y" if answered == 1 else "ies"}')
     finally:
         store.close()
 
@@ -583,6 +746,12 @@ def main(argv=None):
     p.add_argument('--out', type=Path, required=True)
     p.set_defaults(func=cmd_backup)
 
+    p = sub.add_parser('restore', help='Restore a backup .db onto a target path (refuses to overwrite a non-empty target without --force)')
+    p.add_argument('--backup', type=Path, required=True)
+    p.add_argument('--target', type=Path, required=True)
+    p.add_argument('--force', action='store_true', help='Overwrite a non-empty existing target DB')
+    p.set_defaults(func=cmd_restore)
+
     p = sub.add_parser('lookup')
     p.add_argument('query')
     p.set_defaults(func=cmd_lookup)
@@ -594,6 +763,13 @@ def main(argv=None):
     p.add_argument('--dry-run', action='store_true', help='Print instead of sending')
     p.set_defaults(func=cmd_notify_summary)
 
+    p = sub.add_parser('notify-changes', help='08:55 step: only post when status/quote signals significantly changed since last notification (outbox-deduped, limited-retry)')
+    p.add_argument('--radar-json', type=Path, required=True)
+    p.add_argument('--channel', default=DISCORD_CHANNEL_DEFAULT)
+    p.add_argument('--test', action='store_true')
+    p.add_argument('--dry-run', action='store_true', help='Print instead of sending')
+    p.set_defaults(func=cmd_notify_changes)
+
     p = sub.add_parser('discord-lookup', help='Answer a symbol/name query, optionally posting the reply to Discord')
     p.add_argument('query')
     p.add_argument('--radar-json', type=Path, default=None)
@@ -601,6 +777,14 @@ def main(argv=None):
     p.add_argument('--test', action='store_true')
     p.add_argument('--post', action='store_true', help='Actually send to Discord instead of just printing')
     p.set_defaults(func=cmd_discord_lookup)
+
+    p = sub.add_parser('discord-poll', help='Item 7: poll the channel for real inbound single-stock queries and reply threaded (run repeatedly on a schedule)')
+    p.add_argument('--radar-json', type=Path, default=None)
+    p.add_argument('--channel', default=DISCORD_CHANNEL_DEFAULT)
+    p.add_argument('--test', action='store_true')
+    p.add_argument('--limit', type=int, default=50)
+    p.add_argument('--dry-run', action='store_true', help='Print replies instead of sending them, and do not advance the poll cursor')
+    p.set_defaults(func=cmd_discord_poll)
 
     args = parser.parse_args(argv)
     return args.func(args)
