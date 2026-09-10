@@ -9,6 +9,18 @@ import tempfile
 import uuid
 from .domain import TW, validate_valuation
 
+
+def normalize_iso(value):
+    """Parse any valid ISO-8601 timestamp (incl. 'Z' suffix) and re-render it
+    in a single canonical +08:00-offset form, so string ordering (used for
+    observations.as_of PRIMARY KEY / ORDER BY) matches real chronological
+    order regardless of which offset format the upstream source used."""
+    v = value.replace('Z', '+00:00') if isinstance(value, str) and value.endswith('Z') else value
+    dt = datetime.fromisoformat(v)
+    if dt.tzinfo is None:
+        raise ValueError(f'as_of/book_as_of must be timezone-aware: {value!r}')
+    return dt.astimezone(TW).isoformat()
+
 SCHEMA = '''
 PRAGMA journal_mode=WAL;
 PRAGMA foreign_keys=ON;
@@ -87,6 +99,19 @@ class Store:
         return json.loads(r[0]) if r else None
 
     def observe(self, quote):
+        # Normalize as_of/book_as_of to a single ISO-8601 representation (fixed
+        # +08:00 offset, not 'Z' or any other offset) before it becomes the
+        # sort/primary-key value. observations.as_of is compared with a plain
+        # SQL string ORDER BY / PRIMARY KEY, not parsed per-row -- mixing 'Z'
+        # and '+08:00' suffixed strings for the same real time sorts wrong
+        # (e.g. '...T00:30:00Z' vs '...T08:00:00+08:00' are the same instant
+        # but compare in the opposite order as raw strings). Any upstream
+        # fetcher that ever returns UTC/'Z' timestamps must not corrupt
+        # ordering here.
+        quote = dict(quote)
+        quote['as_of'] = normalize_iso(quote['as_of'])
+        if quote.get('book_as_of'):
+            quote['book_as_of'] = normalize_iso(quote['book_as_of'])
         with self.transaction():
             self.db.execute('INSERT OR REPLACE INTO observations VALUES(?,?,?)',
                             (quote['symbol'], quote['as_of'], dumps(quote)))

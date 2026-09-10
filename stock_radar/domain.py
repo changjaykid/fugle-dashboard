@@ -179,8 +179,16 @@ def decide(instrument, quote, valuation, now=None, *, market_open=False, risk=No
         return stop('avoid', '高於基本面買進價，不追')
     if not fresh(quote.get('book_as_of'), now, max_age):
         return stop('stale', '五檔資料未取得或已過期')
-    bids = [b for b in quote.get('bids', []) if positive(b.get('price')) and positive(b.get('size'))]
-    asks = [a for a in quote.get('asks', []) if positive(a.get('price')) and positive(a.get('size'))]
+    # Coerce price/size to real floats here (not just truthiness-check the raw
+    # value) -- some feeds hand back bid/ask levels as strings, and comparing
+    # a string to a float later (lo <= b['price'] <= cap) raises TypeError
+    # instead of failing safe. Any level with a non-numeric or non-positive
+    # price/size is dropped rather than compared as-is.
+    def _numeric_level(level):
+        pr, sz = positive(level.get('price')), positive(level.get('size'))
+        return {'price': pr, 'size': sz} if pr is not None and sz is not None else None
+    bids = [lvl for lvl in (_numeric_level(b) for b in quote.get('bids', [])) if lvl]
+    asks = [lvl for lvl in (_numeric_level(a) for a in quote.get('asks', [])) if lvl]
     if not bids or not asks:
         return stop('stale', '買賣委託簿不完整')
     status = next(k for k in ('sweet', 'add', 'buy') if p <= valuation[k])

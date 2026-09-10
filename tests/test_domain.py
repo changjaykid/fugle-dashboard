@@ -316,6 +316,25 @@ class TestDecide(unittest.TestCase):
         r = decide(self.instrument, q, self.valuation, now=self.now, market_open=True, risk=self.risk_ok)
         self.assertEqual(r['status'], 'stale')
 
+    def test_decide_never_crashes_on_string_bid_ask_prices(self):
+        """Regression (flagged in review): bids/asks price/size arriving as
+        strings from some feed must not raise inside the later `lo <= b['price']
+        <= cap` float comparisons; non-numeric levels are dropped instead."""
+        q = self._quote_low(price=104.0, bids=[
+            {'price': '103.5', 'size': '20'},
+            {'price': 'not-a-number', 'size': 10},
+            {'price': 103.0, 'size': 'also-not-a-number'},
+        ], asks=[{'price': '104.5', 'size': '10'}])
+        r = decide(self.instrument, q, self.valuation, now=self.now, market_open=True, risk=self.risk_ok)
+        self.assertIn(r['status'], ('sweet', 'add', 'buy'))
+        self.assertEqual(r['suggested'], 103.5)
+
+    def test_decide_all_garbage_bids_falls_back_to_stale(self):
+        q = self._quote_low(price=104.0, bids=[{'price': 'x', 'size': 'y'}],
+                            asks=[{'price': '104.5', 'size': '10'}])
+        r = decide(self.instrument, q, self.valuation, now=self.now, market_open=True, risk=self.risk_ok)
+        self.assertEqual(r['status'], 'stale')
+
     def test_never_suggests_above_limit_up(self):
         v = make_valuation(self.now, sweet=200, add=210, buy=220)
         q = self._quote(price=105.0)

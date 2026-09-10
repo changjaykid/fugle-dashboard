@@ -75,6 +75,38 @@ class TestObservations(StoreTestBase):
         prices = [x['price'] for x in h]
         self.assertEqual(prices, [100, 101, 102])
 
+    def test_as_of_normalized_to_plus_08_00(self):
+        """Regression: as_of must be stored in a single canonical offset form
+        so string ORDER BY matches real chronological order."""
+        q = {'symbol': '2330', 'as_of': self.now.isoformat(), 'price': 100.0}
+        self.store.observe(q)
+        got = self.store.quote('2330')
+        self.assertTrue(got['as_of'].endswith('+08:00'))
+
+    def test_mixed_z_and_offset_timestamps_sort_correctly(self):
+        """Regression: a fetcher returning UTC 'Z' timestamps interleaved with
+        +08:00 timestamps for the same symbol must not corrupt history/quote
+        ordering. Chosen instants: 'Z' one is later in real time despite an
+        earlier-looking raw string."""
+        earlier_offset = self.now.isoformat()  # 2026-09-10T10:00:00+08:00
+        later_utc_z = (self.now + timedelta(minutes=30)).astimezone(
+            __import__('datetime').timezone.utc).isoformat().replace('+00:00', 'Z')
+        self.store.observe({'symbol': '2330', 'as_of': earlier_offset, 'price': 100.0})
+        self.store.observe({'symbol': '2330', 'as_of': later_utc_z, 'price': 101.0})
+        h = self.store.history('2330')
+        self.assertEqual([x['price'] for x in h], [100.0, 101.0])
+        latest = self.store.quote('2330')
+        self.assertEqual(latest['price'], 101.0)
+
+    def test_book_as_of_also_normalized(self):
+        q = {'symbol': '2330', 'as_of': self.now.isoformat(),
+            'book_as_of': (self.now + timedelta(minutes=1)).astimezone(
+                __import__('datetime').timezone.utc).isoformat().replace('+00:00', 'Z'),
+            'price': 100.0}
+        self.store.observe(q)
+        got = self.store.quote('2330')
+        self.assertTrue(got['book_as_of'].endswith('+08:00'))
+
 
 class TestValuationLifecycle(StoreTestBase):
     def test_propose_requires_instrument_exists(self):
