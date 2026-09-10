@@ -142,7 +142,12 @@ def decide(instrument, quote, valuation, now=None, *, market_open=False, risk=No
     if not valuation:
         return stop('pending', '尚無經複核及套用的估值')
     if instrument.get('kind') not in ('stock', 'etf_equity'):
-        return stop('blocked', '此證券類型尚無適用模型')
+        # Per STOCK_RADAR_SPEC.md: ETN/bond/leveraged/commodity/active ETFs
+        # etc. without a valuation model yet are '待研究' -- a normal
+        # not-yet-covered state, not an operational block ('暫停'). Using
+        # 'pending' (not 'blocked') keeps this out of the Discord/frontend
+        # 'needs attention' framing while still surfacing the item.
+        return stop('pending', '此證券類型尚無適用估值模型，待研究')
     try:
         validate_valuation(valuation, now, kind=instrument.get('kind'))
     except ValueError as exc:

@@ -19,9 +19,16 @@ have not found a documented boolean field that distinguishes trial vs.
 regular-session price at the API level (only wall-clock time would tell us,
 and STOCK_RADAR_SPEC.md explicitly forbids inferring is_trial from the
 clock). Until a reliable signal is found and verified, `is_trial` is always
-reported as None (unknown) from this fetcher, which correctly causes
-domain.decide() to treat any pre-9am quote as stale rather than fabricate a
-trial-price signal. This is a known limitation, not a silent guess.
+reported as None (unknown) and `trial_price` is always None from this
+fetcher, which correctly causes domain.decide() to treat any pre-9am quote
+as stale rather than fabricate a trial-price signal. This is a known
+limitation, not a silent guess.
+
+See stock_radar/fugle.py for a real data-driven trial-match source
+(Fugle's lastTrial/lastTrade split, keyed off venue timestamps, not the
+clock) -- once a working Fugle API key is confirmed, that module should
+replace this one as the primary quote source and this module demoted to a
+tested fallback only.
 """
 from __future__ import annotations
 

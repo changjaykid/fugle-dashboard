@@ -6,7 +6,27 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import unittest
-from stock_radar.discord import chunk_text, format_status_line, format_daily_summary, lookup_reply, MESSAGE_CHAR_LIMIT
+from datetime import datetime, timedelta
+from unittest import mock
+
+from stock_radar.domain import TW
+from stock_radar.discord import (
+    chunk_text, format_status_line, format_daily_summary, lookup_reply,
+    send_message, MESSAGE_CHAR_LIMIT, NO_PING,
+)
+
+NOW = datetime(2026, 9, 10, 10, 0, 0, tzinfo=TW)
+
+
+def actionable_signal(now=NOW, **overrides):
+    sig = {
+        'status': 'sweet', 'status_label': '甜甜價', 'suggested': 3175.0,
+        'action': '可考慮掛3175',
+        'calculated_at': now.isoformat(),
+        'valid_until': (now + timedelta(hours=1)).isoformat(),
+    }
+    sig.update(overrides)
+    return sig
 
 
 class TestChunkText(unittest.TestCase):
@@ -30,6 +50,38 @@ class TestChunkText(unittest.TestCase):
     def test_default_limit_under_discord_cap(self):
         self.assertLess(MESSAGE_CHAR_LIMIT, 2000)
 
+    def test_single_overlong_line_is_hard_split_not_left_oversized(self):
+        """Regression (Codex review): a single line longer than `limit`
+        (e.g. one very long thesis line with no newlines) must not be
+        emitted as one oversized chunk -- every chunk must respect the
+        limit."""
+        line = 'x' * 5000
+        chunks = chunk_text(line, limit=100)
+        self.assertGreater(len(chunks), 1)
+        for c in chunks:
+            self.assertLessEqual(len(c), 100)
+        self.assertEqual(''.join(chunks), line)
+
+    def test_overlong_line_mixed_with_normal_lines(self):
+        text = 'short1\n' + ('y' * 300) + '\nshort2'
+        chunks = chunk_text(text, limit=100)
+        for c in chunks:
+            self.assertLessEqual(len(c), 100)
+        self.assertEqual(''.join(chunks).replace('\n', ''), text.replace('\n', ''))
+
+
+class TestSendMessageAllowedMentions(unittest.TestCase):
+    def test_send_message_always_sets_no_ping_allowed_mentions(self):
+        """Regression (Codex review): research text could contain a symbol
+        name or literal '@everyone'-looking substring; every send must be
+        locked to no-mention regardless of content, not opt-in per call."""
+        session = mock.Mock()
+        session.post.return_value = mock.Mock(json=lambda: {'id': '1'}, raise_for_status=lambda: None)
+        send_message('tok', 'hello @everyone', channel_id='123', session=session)
+        _, kwargs = session.post.call_args
+        self.assertEqual(kwargs['json']['allowed_mentions'], NO_PING)
+        self.assertEqual(kwargs['json']['allowed_mentions']['parse'], [])
+
 
 class TestFormatStatusLine(unittest.TestCase):
     def test_pending_item_no_valuation(self):
@@ -39,7 +91,7 @@ class TestFormatStatusLine(unittest.TestCase):
             'valuation': None,
             'signal': {'status': 'pending', 'status_label': '待估值', 'suggested': None, 'action': '等待研究'},
         }
-        line = format_status_line(item)
+        line = format_status_line(item, now=NOW)
         self.assertIn('世芯-KY', line)
         self.assertIn('3661', line)
         self.assertIn('尚無估值', line)
@@ -50,9 +102,9 @@ class TestFormatStatusLine(unittest.TestCase):
             'symbol': '3661', 'name': '世芯-KY',
             'quote': {'previous_close': 3905.0, 'trial_price': 4000.0},
             'valuation': {'sweet': 3180.0, 'add': 3590.0, 'buy': 4080.0},
-            'signal': {'status': 'sweet', 'status_label': '甜甜價', 'suggested': 3175.0, 'action': '可考慮掛3175'},
+            'signal': actionable_signal(),
         }
-        line = format_status_line(item)
+        line = format_status_line(item, now=NOW)
         self.assertIn('甜3180', line)
         self.assertIn('加3590', line)
         self.assertIn('買4080', line)
@@ -65,15 +117,44 @@ class TestFormatStatusLine(unittest.TestCase):
             'valuation': None,
             'signal': {'status': 'stale', 'status_label': '資料不足', 'suggested': None, 'action': ''},
         }
-        line = format_status_line(item)
+        line = format_status_line(item, now=NOW)
         self.assertIn('—', line)
         self.assertNotIn('昨收0', line)
 
+    def test_expired_actionable_signal_is_hidden_at_format_time(self):
+        """Regression (Codex review): format_status_line/format_daily_summary
+        must re-check a signal's own valid_until against the real send
+        time, not trust whatever status was baked into radar.json when it
+        was generated (export and notify-summary can run as separate,
+        time-separated steps)."""
+        past = NOW - timedelta(hours=2)
+        item = {
+            'symbol': '3661', 'name': '世芯-KY',
+            'quote': {'previous_close': 3905.0, 'trial_price': 4000.0},
+            'valuation': {'sweet': 3180.0, 'add': 3590.0, 'buy': 4080.0},
+            'signal': actionable_signal(now=past),  # valid_until = past + 1h, already before NOW
+        }
+        line = format_status_line(item, now=NOW)
+        self.assertNotIn('3175', line)
+        self.assertIn('過期', line)
+
+    def test_actionable_signal_from_a_different_day_is_hidden(self):
+        item = {
+            'symbol': '3661', 'name': '世芯-KY',
+            'quote': {'previous_close': 3905.0, 'trial_price': 4000.0},
+            'valuation': {'sweet': 3180.0, 'add': 3590.0, 'buy': 4080.0},
+            'signal': actionable_signal(now=NOW - timedelta(days=1),
+                                        valid_until=(NOW + timedelta(hours=1)).isoformat()),
+        }
+        line = format_status_line(item, now=NOW)
+        self.assertNotIn('3175', line)
+
 
 class TestFormatDailySummary(unittest.TestCase):
-    def make_radar(self, items, health=None):
+    def make_radar(self, items, health=None, mode='live'):
         return {
             'generated_at': '2026-09-10T08:50:00+08:00', 'market_date': '2026-09-10',
+            'mode': mode,
             'coverage': {'universe': 2, 'stocks': 1, 'etfs': 1, 'quotes': 2, 'valued': 1},
             'health': health or [], 'items': items,
         }
@@ -84,12 +165,25 @@ class TestFormatDailySummary(unittest.TestCase):
         self.assertTrue(out.startswith('🧪'))
         self.assertIn('測試', out)
 
+    def test_simulation_mode_forces_test_marker_even_without_flag(self):
+        """Regression (Codex review): the data's own mode field decides,
+        not the caller's flag -- a caller forgetting --test must not be
+        able to send simulation data unmarked."""
+        radar = self.make_radar([], mode='simulation')
+        out = format_daily_summary(radar, test_marker=False)
+        self.assertTrue(out.startswith('🧪'))
+
+    def test_live_mode_without_flag_has_no_marker(self):
+        radar = self.make_radar([], mode='live')
+        out = format_daily_summary(radar, test_marker=False)
+        self.assertFalse(out.startswith('🧪'))
+
     def test_no_actionable_shows_message(self):
         radar = self.make_radar([{
             'symbol': '3661', 'name': '世芯-KY', 'quote': {}, 'valuation': None,
             'signal': {'status': 'pending', 'status_label': '待估值', 'suggested': None, 'action': ''},
         }])
-        out = format_daily_summary(radar)
+        out = format_daily_summary(radar, now=NOW)
         self.assertIn('無符合且資料有效的可行動標的', out)
         self.assertIn('待估值1', out)
 
@@ -97,15 +191,25 @@ class TestFormatDailySummary(unittest.TestCase):
         radar = self.make_radar([{
             'symbol': '3661', 'name': '世芯-KY', 'quote': {'previous_close': 3905.0, 'trial_price': 4000.0},
             'valuation': {'sweet': 3180.0, 'add': 3590.0, 'buy': 4080.0},
-            'signal': {'status': 'sweet', 'status_label': '甜甜價', 'suggested': 3175.0, 'action': '可掛'},
+            'signal': actionable_signal(),
         }])
-        out = format_daily_summary(radar)
+        out = format_daily_summary(radar, now=NOW)
         self.assertIn('可行動標的', out)
         self.assertIn('世芯-KY', out)
 
+    def test_actionable_but_expired_moves_to_other_counts_not_listed(self):
+        radar = self.make_radar([{
+            'symbol': '3661', 'name': '世芯-KY', 'quote': {'previous_close': 3905.0, 'trial_price': 4000.0},
+            'valuation': {'sweet': 3180.0, 'add': 3590.0, 'buy': 4080.0},
+            'signal': actionable_signal(now=NOW - timedelta(hours=2)),
+        }])
+        out = format_daily_summary(radar, now=NOW)
+        self.assertIn('無符合且資料有效的可行動標的', out)
+        self.assertNotIn('可行動標的：', out)
+
     def test_health_blocked_surfaced(self):
         radar = self.make_radar([], health=[{'name': '試撮', 'status': 'blocked', 'detail': '無試撮', 'as_of': None}])
-        out = format_daily_summary(radar)
+        out = format_daily_summary(radar, now=NOW)
         self.assertIn('⚠️', out)
         self.assertIn('試撮', out)
 
@@ -121,7 +225,7 @@ class TestLookupReply(unittest.TestCase):
             'valuation': None,
             'signal': {'status': 'pending', 'status_label': '待估值', 'suggested': None, 'action': ''},
         }
-        out = lookup_reply([item])
+        out = lookup_reply([item], now=NOW)
         self.assertIn('3661', out)
 
     def test_ambiguous_match_lists_options_not_guess(self):

@@ -254,6 +254,13 @@ class TestDecide(unittest.TestCase):
         r = decide(self.instrument, self._quote(), v, now=self.now, market_open=True, risk=self.risk_ok)
         self.assertEqual(r['status'], 'blocked')
 
+    def test_unmodeled_kind_is_pending_not_blocked(self):
+        """etf_other (e.g. ETN) has no valuation model yet per spec -- this
+        is a normal '待研究' state, not an operational block."""
+        etn = dict(self.instrument, kind='etf_other')
+        r = decide(etn, self._quote(), None, now=self.now, market_open=True, risk=self.risk_ok)
+        self.assertEqual(r['status'], 'pending')
+
     def test_missing_risk_check_blocked(self):
         r = decide(self.instrument, self._quote(), self.valuation, now=self.now, market_open=True, risk=None)
         self.assertEqual(r['status'], 'blocked')

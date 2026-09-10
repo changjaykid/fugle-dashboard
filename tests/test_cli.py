@@ -79,6 +79,51 @@ class TestSyncQuotes(CliTestBase):
     def test_no_instruments_does_not_crash(self):
         self.run_cli('sync-quotes')  # empty DB, should print message not raise
 
+    def test_source_fugle_uses_fugle_fetcher_when_key_available(self):
+        fake_items = [{'symbol': '2330', 'kind': 'stock', 'watched': True}]
+        with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
+            self.run_cli('sync-universe')
+        keyfile = Path(self.tmpdir) / 'key.txt'
+        keyfile.write_text('fake-fugle-key')
+        with mock.patch('stock_radar.cli.fetch_fugle_quotes', return_value={'2330': {
+            'symbol': '2330', 'as_of': datetime.now(TW).isoformat(), 'price': 100.0,
+        }}) as fake_fugle, mock.patch('stock_radar.cli.fetch_quotes') as fake_mis:
+            self.run_cli('sync-quotes', '--source', 'fugle', '--fugle-key-file', str(keyfile))
+        fake_fugle.assert_called_once()
+        fake_mis.assert_not_called()
+
+    def test_source_fugle_without_key_refuses(self):
+        fake_items = [{'symbol': '2330', 'kind': 'stock', 'watched': True}]
+        with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
+            self.run_cli('sync-universe')
+        with mock.patch('stock_radar.cli._fugle_api_key', return_value=None):
+            with self.assertRaises(SystemExit):
+                self.run_cli('sync-quotes', '--source', 'fugle')
+
+    def test_source_fugle_failure_falls_back_to_mis(self):
+        fake_items = [{'symbol': '2330', 'kind': 'stock', 'watched': True}]
+        with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
+            self.run_cli('sync-universe')
+        keyfile = Path(self.tmpdir) / 'key.txt'
+        keyfile.write_text('fake-fugle-key')
+        with mock.patch('stock_radar.cli.fetch_fugle_quotes', side_effect=RuntimeError('401')), \
+             mock.patch('stock_radar.cli.fetch_quotes', return_value={'2330': {
+                'symbol': '2330', 'as_of': datetime.now(TW).isoformat(), 'price': 100.0,
+             }}) as fake_mis:
+            self.run_cli('sync-quotes', '--source', 'fugle', '--fugle-key-file', str(keyfile))
+        fake_mis.assert_called_once()
+
+    def test_default_source_is_mis_untouched(self):
+        fake_items = [{'symbol': '2330', 'kind': 'stock', 'watched': True}]
+        with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
+            self.run_cli('sync-universe')
+        with mock.patch('stock_radar.cli.fetch_quotes', return_value={'2330': {
+            'symbol': '2330', 'as_of': datetime.now(TW).isoformat(), 'price': 100.0,
+        }}) as fake_mis, mock.patch('stock_radar.cli.fetch_fugle_quotes') as fake_fugle:
+            self.run_cli('sync-quotes')
+        fake_mis.assert_called_once()
+        fake_fugle.assert_not_called()
+
 
 class TestProposeApply(CliTestBase):
     def setUp(self):
@@ -181,10 +226,12 @@ class TestNotifySummary(CliTestBase):
         p = self.make_radar()
         self.run_cli('notify-summary', '--radar-json', str(p), '--test', '--dry-run')
 
-    def test_simulation_mode_without_test_flag_refused(self):
+    def test_simulation_mode_without_test_flag_still_marks_test_in_output(self, capsys=None):
+        """format_daily_summary forces the 🧪 marker itself from mode=simulation,
+        so this must NOT raise even without --test, and the emitted text
+        must still be test-marked (no longer a CLI-level refusal)."""
         p = self.make_radar(mode='simulation')
-        with self.assertRaises(SystemExit):
-            self.run_cli('notify-summary', '--radar-json', str(p))
+        self.run_cli('notify-summary', '--radar-json', str(p), '--dry-run')
 
     def test_live_mode_without_test_flag_allowed_dry_run(self):
         p = self.make_radar(mode='live')

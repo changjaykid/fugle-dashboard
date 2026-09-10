@@ -31,6 +31,7 @@ from .domain import TW, decide
 from .store import Store, atomic_json
 from .universe import build_universe, equity_universe
 from .quotes import fetch_quotes, fetch_daily_close_all
+from .fugle import fetch_quotes as fetch_fugle_quotes
 from .financials import fetch_quarterly_income_general, fetch_monthly_revenue, fetch_pe_yield_pb
 from .tpex import fetch_otc_daily_close
 from .risk import build_risk_facts
@@ -60,6 +61,24 @@ def cmd_sync_universe(args):
         store.close()
 
 
+def _fugle_api_key(explicit_path):
+    """Read a Fugle API key from an explicit local file (never from
+    Discord, never printed) if --fugle-key-file is passed, else fall back
+    to fugle-dashboard/engine/config.json's existing api_key field (the
+    same file engine.py already trusts). Returns None if neither is
+    present/parseable -- caller must then use the mis.twse.com.tw fallback,
+    not crash."""
+    if explicit_path:
+        text = Path(explicit_path).read_text().strip()
+        return text or None
+    cfg_path = Path(__file__).parent.parent.parent / 'fugle-dashboard' / 'engine' / 'config.json'
+    try:
+        cfg = json.loads(cfg_path.read_text())
+        return cfg.get('api_key') or None
+    except (FileNotFoundError, json.JSONDecodeError):
+        return None
+
+
 def cmd_sync_quotes(args):
     store = Store(args.db)
     try:
@@ -69,7 +88,19 @@ def cmd_sync_quotes(args):
         if not instruments:
             print('no instruments to quote (run sync-universe first, or use --watchlist-only with a populated watchlist)')
             return
-        quotes = fetch_quotes(instruments)
+        quotes = None
+        if args.source == 'fugle':
+            key = _fugle_api_key(args.fugle_key_file)
+            if not key:
+                raise SystemExit('--source fugle requested but no API key found (pass --fugle-key-file or set fugle-dashboard/engine/config.json api_key)')
+            try:
+                quotes = fetch_fugle_quotes(instruments, key)
+                print(f'quotes source: Fugle marketdata v1.0 ({len(quotes)} symbols)')
+            except Exception as exc:
+                print(f'Fugle source failed ({exc!r}); falling back to mis.twse.com.tw')
+        if quotes is None:
+            quotes = fetch_quotes(instruments)
+            print(f'quotes source: mis.twse.com.tw ({len(quotes)} symbols)')
         n = 0
         for symbol, q in quotes.items():
             store.observe(q)
@@ -149,7 +180,14 @@ def cmd_export(args):
     store = Store(args.db)
     try:
         instruments = store.instruments()
-        target = [i for i in instruments if i['kind'] in ('stock', 'etf_equity')]
+        # Per RADAR_DATA_CONTRACT.md, radar.json items carry kind in
+        # (stock, etf_equity, etf_other) -- etf_other (ETN etc.) has no
+        # valuation model yet but must still appear and count toward
+        # coverage.etfs, shown as '待研究' (decide() returns 'pending' for
+        # any kind outside stock/etf_equity), not silently dropped.
+        # preferred/tdr/reit/abs stay in the universe DB for `lookup` but
+        # are not part of the radar.json contract's supported kinds.
+        target = [i for i in instruments if i['kind'] in ('stock', 'etf_equity', 'etf_other')]
         quotes, decisions, valuations = {}, {}, {}
         health = [{
             'name': '試撮', 'status': 'blocked',
@@ -200,9 +238,11 @@ def _bot_token():
 
 def cmd_notify_summary(args):
     radar = json.loads(Path(args.radar_json).read_text())
+    # format_daily_summary forces the 🧪 test marker itself whenever
+    # radar['mode'] == 'simulation', regardless of --test -- the data's own
+    # mode field decides, not this CLI flag, so it can't be bypassed by a
+    # future caller forgetting --test.
     text = format_daily_summary(radar, test_marker=args.test)
-    if not args.test and radar.get('mode') == 'simulation':
-        raise SystemExit('refusing to post simulation-mode data as a non-test message; pass --test or export --mode live first')
     chunks = chunk_text(text)
     if args.dry_run:
         print(f'--- would send {len(chunks)} message(s) to channel {args.channel} ---')
@@ -265,6 +305,10 @@ def main(argv=None):
 
     p = sub.add_parser('sync-quotes')
     p.add_argument('--watchlist-only', action='store_true')
+    p.add_argument('--source', choices=['mis', 'fugle'], default='mis',
+                   help='mis.twse.com.tw (default, no key, no reliable trial flag) or fugle (real lastTrial/lastTrade split, needs a working API key)')
+    p.add_argument('--fugle-key-file', type=Path, default=None,
+                   help='path to a local file containing the Fugle API key; defaults to fugle-dashboard/engine/config.json api_key')
     p.set_defaults(func=cmd_sync_quotes)
 
     sub.add_parser('sync-financials').set_defaults(func=cmd_sync_financials)

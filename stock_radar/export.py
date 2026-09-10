@@ -29,7 +29,7 @@ def build_radar_json(*, instruments, quotes, decisions, valuations, research,
         kind = inst['kind']
         if kind == 'stock':
             n_stock += 1
-        elif kind == 'etf_equity':
+        elif kind in ('etf_equity', 'etf_other'):
             n_etf += 1
         q = quotes.get(symbol)
         if q and q.get('as_of'):

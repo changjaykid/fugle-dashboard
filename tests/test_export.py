@@ -85,6 +85,19 @@ class TestBuildRadarJson(unittest.TestCase):
         self.assertEqual(out['generated_at'], self.now.isoformat())
         self.assertEqual(out['market_date'], '2026-09-10')
 
+    def test_etf_other_included_and_counted_toward_etfs(self):
+        """Per RADAR_DATA_CONTRACT.md, kind includes etf_other (e.g. ETN);
+        it must still appear in items and count toward coverage.etfs, not
+        be silently dropped from export."""
+        instruments = self.instruments + [
+            {'symbol': '020000', 'name': '富邦VIX', 'kind': 'etf_other', 'market': 'TSE', 'industry_code': None},
+        ]
+        out = build_radar_json(instruments=instruments, quotes={}, decisions={},
+                               valuations={}, research={}, health=[], now=self.now)
+        self.assertEqual(out['coverage']['etfs'], 2)
+        item = next(i for i in out['items'] if i['symbol'] == '020000')
+        self.assertEqual(item['kind'], 'etf_other')
+
     def test_research_fields_default_to_none_or_empty_list(self):
         out = build_radar_json(instruments=self.instruments, quotes={}, decisions={},
                                valuations={}, research={}, health=[], now=self.now)

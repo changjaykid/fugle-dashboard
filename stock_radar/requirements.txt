@@ -1,0 +1,8 @@
+# Runtime dependencies for stock_radar/. Standard library only otherwise
+# (sqlite3, argparse, datetime, decimal, etc.) -- Python >= 3.10 required
+# (uses `X | None` union type hints throughout). Verified working with
+# Python 3.14.3 in this environment (2026-09-10).
+#
+# Install: pip install -r stock_radar/requirements.txt
+requests>=2.31
+beautifulsoup4>=4.12
