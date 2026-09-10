@@ -45,3 +45,27 @@ docs/radar.json or dashboard.json from this branch.
 - 全額交割 (full-cash-delivery) status: no free feed found; not checked by
   risk.py in V1 (separate gap from halted/disposition, which ARE covered).
 - No purchase of any paid plan without Kid's explicit approval.
+
+## Resolved 2026-09-10 (was open, now implemented)
+- **Trading-day calendar**: replaced the manual `--assume-market-open` flag
+  with a real data source. `stock_radar/calendar.py` pulls TWSE's own
+  OpenAPI `holidaySchedule` feed (free, no key) and correctly distinguishes
+  actual closures (放假/補假/市場無交易) from rows that merely describe an
+  adjacent trading day (最後交易日/開始交易日). `cli.py sync-calendar` caches
+  it in the Store; `cli.py export` reads that cache by default and fails
+  CLOSED (health=blocked, not silently "open") if the cache has no data for
+  the current ROC year. Known limit: the feed only serves the current ROC
+  year server-side (a `?year=` param was tested live and ignored), so this
+  needs re-running once a year; `--assume-market-open` is kept only as an
+  explicit manual override for testing.
+- **ETF misclassification**: CFI-code-only classification wrongly tagged
+  leveraged/inverse (00631L/00632R) and bond (00679B/00795B) ETFs as
+  'etf_equity'. Fixed in `stock_radar/universe.py` via
+  `classify_etf_kinds()`, cross-checked against TWSE's own fund-type
+  disclosure (t187ap47_L). ETN is now its own `kind='etn'`, excluded from
+  ETF coverage counts. See git log for full detail.
+- **financials source_url + period vs publish-date**: every
+  `stock_radar/financials.py` fetcher now returns `source_url`; docstrings
+  and comments now make explicit that 出表日期 (report_date) is only a
+  publish/refresh timestamp, never the actual reporting period
+  (year_roc/quarter, or period_roc_ym for monthly revenue).

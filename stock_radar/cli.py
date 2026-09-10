@@ -13,6 +13,8 @@ Usage:
   python3 -m stock_radar.cli sync-universe [--db PATH]
   python3 -m stock_radar.cli sync-quotes [--db PATH]
   python3 -m stock_radar.cli sync-financials [--db PATH]
+  python3 -m stock_radar.cli sync-calendar [--db PATH]
+  python3 -m stock_radar.cli sync-risk [--db PATH]
   python3 -m stock_radar.cli propose SYMBOL --file valuation.json [--db PATH]
   python3 -m stock_radar.cli apply PROPOSAL_ID --actor ID --channel ID [--db PATH]
   python3 -m stock_radar.cli export --out docs/radar.json [--db PATH] [--mode live|simulation]
@@ -34,6 +36,7 @@ from .quotes import fetch_quotes, fetch_daily_close_all
 from .fugle import fetch_quotes as fetch_fugle_quotes
 from .financials import fetch_quarterly_income_general, fetch_monthly_revenue, fetch_pe_yield_pb
 from .tpex import fetch_otc_daily_close
+from .calendar import fetch_holiday_schedule, is_trading_day
 from .risk import build_risk_facts
 from .export import build_radar_json
 from .discord import send_message, chunk_text, format_daily_summary, lookup_reply, DISCORD_CHANNEL as DISCORD_CHANNEL_DEFAULT
@@ -109,6 +112,17 @@ def cmd_sync_quotes(args):
         print(f'quotes synced: {n}/{len(instruments)}')
         if n < len(instruments):
             print(f'WARNING: {len(instruments)-n} instruments did not return a quote (partial coverage, not silently treated as success)')
+    finally:
+        store.close()
+
+
+def cmd_sync_calendar(args):
+    store = Store(args.db)
+    try:
+        schedule = fetch_holiday_schedule()
+        store.set_meta('trading_calendar', schedule)
+        print(f"calendar synced: ROC years {schedule['roc_years']}, "
+              f"{len(schedule['closed_dates'])} holiday dates cached")
     finally:
         store.close()
 
@@ -201,7 +215,23 @@ def cmd_export(args):
             'as_of': None,
         }]
         now = datetime.now(TW)
-        market_open = args.assume_market_open
+        if args.assume_market_open:
+            # explicit manual/testing override, bypasses the real calendar
+            market_open = True
+        else:
+            schedule = store.meta('trading_calendar')
+            try:
+                market_open = is_trading_day(now.date(), schedule)
+            except ValueError as exc:
+                # calendar missing/stale for this year -- do NOT silently
+                # guess open; fail closed (blocked) and tell the operator
+                # to run sync-calendar, same posture as other missing-data
+                # gates in this CLI (Fugle 401, OTC risk gap, etc.)
+                market_open = False
+                health.append({
+                    'name': '交易日曆', 'status': 'blocked',
+                    'detail': f'{exc} (run sync-calendar)', 'as_of': None,
+                })
         for inst in target:
             symbol = inst['symbol']
             q = store.quote(symbol)
@@ -319,6 +349,7 @@ def main(argv=None):
 
     sub.add_parser('sync-financials').set_defaults(func=cmd_sync_financials)
     sub.add_parser('sync-risk').set_defaults(func=cmd_sync_risk)
+    sub.add_parser('sync-calendar', help='Refresh the TWSE trading-day calendar (holidaySchedule OpenAPI)').set_defaults(func=cmd_sync_calendar)
 
     p = sub.add_parser('propose')
     p.add_argument('symbol')
@@ -335,7 +366,9 @@ def main(argv=None):
     p.add_argument('--out', type=Path, required=True)
     p.add_argument('--mode', choices=['live', 'simulation'], default='live')
     p.add_argument('--assume-market-open', action='store_true',
-                   help='For manual/testing runs outside a real trading-calendar check')
+                   help='Manual override: skip the real trading-calendar check (sync-calendar). '
+                        'Without this flag, export reads the cached calendar (run sync-calendar first) '
+                        'and fails closed (blocked) if the calendar has no data for the current ROC year.')
     p.set_defaults(func=cmd_export)
 
     p = sub.add_parser('backup')

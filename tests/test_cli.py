@@ -13,6 +13,7 @@ import unittest
 from datetime import datetime, timedelta
 
 from stock_radar import cli
+from stock_radar.calendar import fetch_holiday_schedule
 from stock_radar.domain import TW
 from stock_radar.store import Store
 
@@ -200,6 +201,52 @@ class TestExport(CliTestBase):
         self.run_cli('export', '--out', str(out_path))
         data = json.loads(out_path.read_text())
         self.assertEqual(data['items'], [])
+
+
+class TestSyncCalendar(CliTestBase):
+    def test_sync_calendar_caches_schedule_in_store(self):
+        fake_schedule = {'closed_dates': {'2026-01-01': '中華民國開國紀念日'}, 'roc_years': [115]}
+        with mock.patch('stock_radar.cli.fetch_holiday_schedule', return_value=fake_schedule):
+            self.run_cli('sync-calendar')
+        store = Store(self.db_path)
+        try:
+            self.assertEqual(store.meta('trading_calendar'), fake_schedule)
+        finally:
+            store.close()
+
+
+class TestExportCalendarGating(CliTestBase):
+    """Regression (2026-09-10): --assume-market-open used to be the ONLY
+    way to unblock export; now export reads the real cached calendar via
+    sync-calendar and only needs the manual flag for testing/override."""
+
+    def setUp(self):
+        super().setUp()
+        fake_items = [{'symbol': '2330', 'kind': 'stock', 'name': '台積電', 'market': 'TSE'}]
+        with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
+            self.run_cli('sync-universe')
+
+    def test_no_calendar_synced_fails_closed_not_open(self):
+        out_path = Path(self.tmpdir) / 'radar.json'
+        self.run_cli('export', '--out', str(out_path), '--mode', 'simulation')
+        data = json.loads(out_path.read_text())
+        self.assertTrue(any(h['name'] == '交易日曆' and h['status'] == 'blocked' for h in data['health']))
+
+    def test_calendar_synced_for_open_day_unblocks_market_open_gate(self):
+        now = datetime.now(TW)
+        fake_schedule = {'closed_dates': {}, 'roc_years': [now.year - 1911]}
+        with mock.patch('stock_radar.cli.fetch_holiday_schedule', return_value=fake_schedule):
+            self.run_cli('sync-calendar')
+        out_path = Path(self.tmpdir) / 'radar.json'
+        self.run_cli('export', '--out', str(out_path), '--mode', 'simulation')
+        data = json.loads(out_path.read_text())
+        self.assertFalse(any(h['name'] == '交易日曆' for h in data['health']))
+
+    def test_assume_market_open_still_bypasses_calendar_entirely(self):
+        out_path = Path(self.tmpdir) / 'radar.json'
+        self.run_cli('export', '--out', str(out_path), '--mode', 'simulation', '--assume-market-open')
+        data = json.loads(out_path.read_text())
+        self.assertFalse(any(h['name'] == '交易日曆' for h in data['health']))
 
 
 class TestBackup(CliTestBase):
