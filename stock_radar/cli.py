@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Stock Radar CLI. All commands operate on the SQLite Store, independent
-of OpenClaw's own state. Never touches docs/dashboard.json, docs/index.html,
-docs/radar.css, docs/radar.js (frontend files, out of scope for this CLI).
+of OpenClaw's own state. Never touches docs/dashboard.json or docs/index.html
+(the existing production dashboard). The radar frontend lives at its own
+path docs/radar/{index.html,radar.css,radar.js} to avoid colliding with the
+live site; this CLI never edits those frontend files either.
 
 Usage:
   python3 -m stock_radar.cli sync-universe [--db PATH]
@@ -9,7 +11,7 @@ Usage:
   python3 -m stock_radar.cli sync-financials [--db PATH]
   python3 -m stock_radar.cli propose SYMBOL --file valuation.json [--db PATH]
   python3 -m stock_radar.cli apply PROPOSAL_ID --actor ID --channel ID [--db PATH]
-  python3 -m stock_radar.cli export --out docs/radar.json [--db PATH] [--mode live|simulation]
+  python3 -m stock_radar.cli export --out docs/radar/radar.json [--db PATH] [--mode live|simulation]
   python3 -m stock_radar.cli backup --out PATH [--db PATH]
   python3 -m stock_radar.cli lookup QUERY [--db PATH]   # disambiguation search by symbol/name
 """
@@ -121,8 +123,8 @@ def cmd_export(args):
         target = [i for i in instruments if i['kind'] in ('stock', 'etf_equity')]
         quotes, decisions, valuations = {}, {}, {}
         health = [{
-            'name': '試擮', 'status': 'blocked',
-            'detail': '目前報價來源(mis.twse.com.tw)未提供可靠的試擮/帳中旗標，Fugle API 回報 401；盠前 08:30-09:00 不會產生可掛價信號',
+            'name': '試撮', 'status': 'blocked',
+            'detail': '目前報價來源(mis.twse.com.tw)未提供可靠的試撮/盤中旗標，Fugle API 回報 401；盤前 08:30-09:00 不會產生可掛價信號',
             'as_of': None,
         }]
         now = datetime.now(TW)

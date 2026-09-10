@@ -1,4 +1,4 @@
-"""Build docs/radar.json per RADAR_DATA_CONTRACT.md. Pure function of
+"""Build docs/radar/radar.json per RADAR_DATA_CONTRACT.md. Pure function of
 (instruments, quotes, valuations, signals, research, health) -> dict.
 Writing to disk uses store.atomic_json so partial writes never corrupt the
 file consumed by the frontend."""
