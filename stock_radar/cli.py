@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """Stock Radar CLI. All commands operate on the SQLite Store, independent
-of OpenClaw's own state. Never touches docs/dashboard.json or docs/index.html
-(the existing production dashboard). The radar frontend lives at its own
-path docs/radar/{index.html,radar.css,radar.js} to avoid colliding with the
-live site; this CLI never edits those frontend files either.
+of OpenClaw's own state. Per explicit product decision (2026-09-10), the
+radar UI IS the new docs/index.html -- the old tab-based dashboard was
+intentionally replaced, not kept as a separate page. engine.py and
+docs/dashboard.json stay in place for compatibility with existing cron
+scripts (stock_morning_report.sh etc.), but they are no longer what
+docs/index.html renders. This CLI never edits docs/index.html, docs/radar.css,
+or docs/radar.js (frontend files, owned by Kid/Codex's frontend track);
+it only ever writes docs/radar.json.
 
 Usage:
   python3 -m stock_radar.cli sync-universe [--db PATH]
@@ -11,7 +15,7 @@ Usage:
   python3 -m stock_radar.cli sync-financials [--db PATH]
   python3 -m stock_radar.cli propose SYMBOL --file valuation.json [--db PATH]
   python3 -m stock_radar.cli apply PROPOSAL_ID --actor ID --channel ID [--db PATH]
-  python3 -m stock_radar.cli export --out docs/radar/radar.json [--db PATH] [--mode live|simulation]
+  python3 -m stock_radar.cli export --out docs/radar.json [--db PATH] [--mode live|simulation]
   python3 -m stock_radar.cli backup --out PATH [--db PATH]
   python3 -m stock_radar.cli lookup QUERY [--db PATH]   # disambiguation search by symbol/name
 """
@@ -29,7 +33,9 @@ from .universe import build_universe, equity_universe
 from .quotes import fetch_quotes, fetch_daily_close_all
 from .financials import fetch_quarterly_income_general, fetch_monthly_revenue, fetch_pe_yield_pb
 from .tpex import fetch_otc_daily_close
+from .risk import build_risk_facts
 from .export import build_radar_json
+from .discord import send_message, chunk_text, format_daily_summary, lookup_reply, DISCORD_CHANNEL as DISCORD_CHANNEL_DEFAULT
 
 DEFAULT_DB = Path(__file__).parent.parent / 'stock_radar.db'
 DISCORD_CHANNEL = '1493898877970153532'
@@ -72,6 +78,29 @@ def cmd_sync_quotes(args):
         print(f'quotes synced: {n}/{len(instruments)}')
         if n < len(instruments):
             print(f'WARNING: {len(instruments)-n} instruments did not return a quote (partial coverage, not silently treated as success)')
+    finally:
+        store.close()
+
+
+def cmd_sync_risk(args):
+    store = Store(args.db)
+    try:
+        instruments = [i for i in store.instruments() if i['kind'] in ('stock', 'etf_equity')]
+        if not instruments:
+            print('no instruments (run sync-universe first)')
+            return
+        facts = build_risk_facts(instruments)
+        n_cleared = n_events = n_not_cleared = 0
+        for symbol, fact in facts.items():
+            store.set_fact(symbol, 'risk', fact)
+            if fact['cleared']:
+                n_cleared += 1
+                if fact['events']:
+                    n_events += 1
+            else:
+                n_not_cleared += 1
+        store.set_meta('last_risk_sync', {'at': datetime.now(TW).isoformat(), 'count': len(facts)})
+        print(f'risk checked: {len(facts)} instruments, {n_cleared} cleared ({n_events} with events), {n_not_cleared} not checked (OTC gap)')
     finally:
         store.close()
 
@@ -159,6 +188,57 @@ def cmd_backup(args):
         store.close()
 
 
+def _bot_token():
+    """Read the Discord bot token from OpenClaw's own config at call time --
+    never hardcoded, never logged. Kept as a thin local helper (not a
+    module-level import) so stock_radar stays importable/testable without
+    OpenClaw installed; only Discord-posting commands need this."""
+    import json as _json
+    cfg = _json.loads(Path.home().joinpath('.openclaw', 'openclaw.json').read_text())
+    return cfg['channels']['discord']['token']
+
+
+def cmd_notify_summary(args):
+    radar = json.loads(Path(args.radar_json).read_text())
+    text = format_daily_summary(radar, test_marker=args.test)
+    if not args.test and radar.get('mode') == 'simulation':
+        raise SystemExit('refusing to post simulation-mode data as a non-test message; pass --test or export --mode live first')
+    chunks = chunk_text(text)
+    if args.dry_run:
+        print(f'--- would send {len(chunks)} message(s) to channel {args.channel} ---')
+        for c in chunks:
+            print(c)
+            print('---')
+        return
+    token = _bot_token()
+    ids = []
+    for c in chunks:
+        result = send_message(token, c, channel_id=args.channel)
+        ids.append(result.get('id'))
+    print(f'sent {len(ids)} message(s): {ids}')
+
+
+def cmd_discord_lookup(args):
+    store = Store(args.db)
+    try:
+        q = args.query.strip()
+        matches = [i for i in store.instruments()
+                  if q == i['symbol'] or q in (i.get('name') or '')]
+        radar = json.loads(Path(args.radar_json).read_text()) if args.radar_json and Path(args.radar_json).exists() else None
+        items = []
+        if radar:
+            by_symbol = {i['symbol']: i for i in radar['items']}
+            items = [by_symbol[m['symbol']] for m in matches if m['symbol'] in by_symbol]
+        reply = lookup_reply(items) if items else ('查無此標的。' if not matches else '找到標的但尚無雷達資料，請先執行 export。')
+        text = ('🧪【測試查詢】' + reply) if args.test else reply
+        print(text)
+        if args.post:
+            token = _bot_token()
+            send_message(token, text, channel_id=args.channel)
+    finally:
+        store.close()
+
+
 def cmd_lookup(args):
     store = Store(args.db)
     try:
@@ -188,6 +268,7 @@ def main(argv=None):
     p.set_defaults(func=cmd_sync_quotes)
 
     sub.add_parser('sync-financials').set_defaults(func=cmd_sync_financials)
+    sub.add_parser('sync-risk').set_defaults(func=cmd_sync_risk)
 
     p = sub.add_parser('propose')
     p.add_argument('symbol')
@@ -214,6 +295,21 @@ def main(argv=None):
     p = sub.add_parser('lookup')
     p.add_argument('query')
     p.set_defaults(func=cmd_lookup)
+
+    p = sub.add_parser('notify-summary', help='Post the daily summary to Discord (test-marked unless --mode live export)')
+    p.add_argument('--radar-json', type=Path, required=True)
+    p.add_argument('--channel', default=DISCORD_CHANNEL_DEFAULT)
+    p.add_argument('--test', action='store_true', help='Prefix message with the test marker (required unless the radar.json mode is live)')
+    p.add_argument('--dry-run', action='store_true', help='Print instead of sending')
+    p.set_defaults(func=cmd_notify_summary)
+
+    p = sub.add_parser('discord-lookup', help='Answer a symbol/name query, optionally posting the reply to Discord')
+    p.add_argument('query')
+    p.add_argument('--radar-json', type=Path, default=None)
+    p.add_argument('--channel', default=DISCORD_CHANNEL_DEFAULT)
+    p.add_argument('--test', action='store_true')
+    p.add_argument('--post', action='store_true', help='Actually send to Discord instead of just printing')
+    p.set_defaults(func=cmd_discord_lookup)
 
     args = parser.parse_args(argv)
     return args.func(args)

@@ -3,7 +3,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const vm = require('node:vm');
 const fs = require('node:fs');
-const script=fs.readFileSync('docs/radar/radar.js','utf8');
+const script=fs.readFileSync('docs/radar.js','utf8');
 const now=Date.parse('2026-09-10T08:50:00+08:00');
 const iso=delta=>new Date(now+delta).toISOString();
 const fixture=()=>({schema_version:1,mode:'simulation',generated_at:iso(0),items:[{symbol:'TEST',name:'<script>unsafe</script>',kind:'stock',quote:{as_of:iso(0)},valuation:{buy:100,valid_until:iso(3600000),evidence_reviewed:true},signal:{status:'buy',suggested:95,calculated_at:iso(0),valid_until:iso(120000)}}]});

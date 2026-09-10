@@ -25,5 +25,23 @@ docs/radar.json or dashboard.json from this branch.
   blocked by 401. Spec explicitly forbids treating Fugle 401 as "working" and
   forbids clock-based faking of trial price. Until resolved, live "today
   ask price" (今日掛價) features cannot go live — decide() correctly returns
-  stale/blocked without a working quote feed.
+  stale/blocked without a working quote feed. As of 2026-09-10 17:xx, Kid is
+  applying an updated key on his side per Codex's 401-vs-403 clarification;
+  re-verified still 401 with the config.json key present at that time.
+- 0050 (and ETF NAV in general): no free, machine-readable NAV/IOPV feed
+  found yet. Checked: TWSE OpenAPI (only static fund metadata via
+  t187ap47_L, no daily NAV), TWSE www.twse.com.tw/fund/T51 (returns HTML,
+  not JSON, despite response=json param), Yuanta's own NAV history page
+  (https://www.yuantaetfs.com/tradeInfo/comparison/0050/NAVhistory) is a
+  JS SPA backed by a bundled API client -- did not reverse-engineer the
+  bundle to find the real endpoint (open task, not attempted further to
+  avoid scraping something not intended for machine consumption without
+  checking terms first). etf_nav valuations are NOT proposed until this is
+  resolved; 0050 stays 'pending' in radar.json rather than guessing.
+- OTC (上櫃) halted/disposition data: no TWSE feed covers OTC symbols (TWTAWU
+  and announcement/punish are TSE-only, verified against live responses).
+  stock_radar/risk.py explicitly marks OTC instruments as not-cleared
+  (cleared=False) rather than fabricating a clean check.
+- 全額交割 (full-cash-delivery) status: no free feed found; not checked by
+  risk.py in V1 (separate gap from halted/disposition, which ARE covered).
 - No purchase of any paid plan without Kid's explicit approval.
