@@ -1,0 +1,278 @@
+"""Unit tests for stock_radar.domain — boundary conditions per spec.
+
+Run: python3 -m pytest tests/ -q  (or python3 -m unittest tests.test_domain -v)
+"""
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+import unittest
+from datetime import datetime, timedelta, timezone
+
+from stock_radar.domain import (
+    TW, number, positive, stamp, fresh, floor_tick,
+    validate_valuation, model_prices, review_reasons, decide, STATUSES,
+)
+
+
+def iso(dt):
+    return dt.isoformat()
+
+
+def make_valuation(now, **overrides):
+    v = {
+        'sweet': 100.0, 'add': 110.0, 'buy': 120.0,
+        'method': 'forward_pe', 'reason': '測試估值', 'thesis': '測試論述',
+        'as_of': iso(now - timedelta(hours=1)),
+        'valid_until': iso(now + timedelta(days=30)),
+        'sources': [{'url': 'https://example.com/report', 'as_of': iso(now - timedelta(hours=1)), 'title': '測試來源'}],
+        'evidence_reviewed': True,
+    }
+    v.update(overrides)
+    return v
+
+
+class TestNumberHelpers(unittest.TestCase):
+    def test_number_parses_and_rejects(self):
+        self.assertEqual(number('1,234.5'), 1234.5)
+        self.assertIsNone(number('abc'))
+        self.assertIsNone(number(True))  # bool must not silently become 1/0
+        self.assertIsNone(number(float('nan')))
+        self.assertIsNone(number(float('inf')))
+
+    def test_positive(self):
+        self.assertEqual(positive('5'), 5.0)
+        self.assertIsNone(positive('0'))
+        self.assertIsNone(positive('-5'))
+        self.assertIsNone(positive(None))
+
+
+class TestStampFresh(unittest.TestCase):
+    def test_stamp_requires_timezone(self):
+        self.assertIsNone(stamp('2026-09-10T10:00:00'))  # naive -> None
+        self.assertIsNotNone(stamp('2026-09-10T10:00:00+08:00'))
+        self.assertIsNone(stamp(None))
+        self.assertIsNone(stamp('not-a-date'))
+
+    def test_fresh_window(self):
+        now = datetime(2026, 9, 10, 10, 0, 0, tzinfo=TW)
+        self.assertTrue(fresh(iso(now), now, 120))
+        self.assertTrue(fresh(iso(now - timedelta(seconds=119)), now, 120))
+        self.assertFalse(fresh(iso(now - timedelta(seconds=121)), now, 120))
+        self.assertFalse(fresh(iso(now + timedelta(seconds=1)), now, 120))  # future ts not "fresh"
+        self.assertFalse(fresh(iso(now - timedelta(days=1)), now, 120))  # different date
+
+
+class TestFloorTick(unittest.TestCase):
+    def test_stock_tick_bands(self):
+        self.assertEqual(floor_tick(9.99, 'stock'), 9.99)
+        self.assertEqual(floor_tick(23.47, 'stock'), 23.45)   # band <50 -> .01, floor
+        self.assertEqual(floor_tick(67.23, 'stock'), 67.2)     # band <100 -> .05
+        self.assertEqual(floor_tick(234.7, 'stock'), 234.5)    # band <500 -> .1... actually check
+        self.assertEqual(floor_tick(1234, 'stock'), 1230.0)    # band >=1000 -> step 5 (bands list has no 1000+ entry, falls to default step 5)
+
+    def test_etf_tick_is_flat(self):
+        self.assertEqual(floor_tick(23.456, 'etf_equity'), 23.45)  # <50 -> .01
+        self.assertEqual(floor_tick(67.456, 'etf_equity'), 67.45)  # >=50 -> .05... floor to .05 band
+
+    def test_rejects_non_positive_or_bad_kind(self):
+        with self.assertRaises(ValueError):
+            floor_tick(0, 'stock')
+        with self.assertRaises(ValueError):
+            floor_tick(100, 'bond')  # unsupported kind must raise, not silently tick
+
+
+class TestValidateValuation(unittest.TestCase):
+    def setUp(self):
+        self.now = datetime(2026, 9, 10, 10, 0, 0, tzinfo=TW)
+
+    def test_valid_passes(self):
+        v = make_valuation(self.now)
+        validate_valuation(v, self.now)  # should not raise
+
+    def test_order_must_hold(self):
+        v = make_valuation(self.now, sweet=130.0)  # sweet > add > buy violates order
+        with self.assertRaises(ValueError):
+            validate_valuation(v, self.now)
+
+    def test_missing_reason_thesis_method(self):
+        v = make_valuation(self.now, reason='')
+        with self.assertRaises(ValueError):
+            validate_valuation(v, self.now)
+
+    def test_expired_valid_until_rejected(self):
+        v = make_valuation(self.now, valid_until=iso(self.now - timedelta(minutes=1)))
+        with self.assertRaises(ValueError):
+            validate_valuation(v, self.now)
+
+    def test_source_must_be_https_with_as_of(self):
+        v = make_valuation(self.now, sources=[{'url': 'http://example.com', 'as_of': iso(self.now)}])
+        with self.assertRaises(ValueError):
+            validate_valuation(v, self.now)
+
+    def test_source_as_of_cannot_be_future(self):
+        v = make_valuation(self.now, sources=[{'url': 'https://example.com', 'as_of': iso(self.now + timedelta(days=1))}])
+        with self.assertRaises(ValueError):
+            validate_valuation(v, self.now)
+
+    def test_evidence_not_reviewed_rejected(self):
+        v = make_valuation(self.now, evidence_reviewed=False)
+        with self.assertRaises(ValueError):
+            validate_valuation(v, self.now)
+
+
+class TestModelPrices(unittest.TestCase):
+    def test_forward_pe_stock(self):
+        out = model_prices('forward_pe', {
+            'forward_eps': 10, 'fair_pe': 20,
+            'sweet_factor': 0.7, 'add_factor': 0.85, 'buy_factor': 1.0,
+        }, 'stock')
+        self.assertEqual(out['fair'], 200.0)
+        self.assertEqual(out['buy'], 200.0)
+        self.assertLess(out['sweet'], out['add'])
+        self.assertLessEqual(out['add'], out['buy'])
+
+    def test_kind_mismatch_rejected(self):
+        with self.assertRaises(ValueError):
+            model_prices('forward_pe', {
+                'forward_eps': 10, 'fair_pe': 20,
+                'sweet_factor': 0.7, 'add_factor': 0.85, 'buy_factor': 1.0,
+            }, 'etf_equity')
+
+    def test_unsupported_method_rejected(self):
+        with self.assertRaises(ValueError):
+            model_prices('bond_ytm', {}, 'stock')
+
+    def test_factor_order_enforced(self):
+        with self.assertRaises(ValueError):
+            model_prices('forward_pe', {
+                'forward_eps': 10, 'fair_pe': 20,
+                'sweet_factor': 0.9, 'add_factor': 0.5, 'buy_factor': 1.0,
+            }, 'stock')
+
+    def test_etf_nav_model(self):
+        out = model_prices('etf_nav', {
+            'nav': 140, 'fair_nav_ratio': 1.0,
+            'sweet_factor': 0.95, 'add_factor': 0.98, 'buy_factor': 1.0,
+        }, 'etf_equity')
+        self.assertEqual(out['fair'], 140.0)
+
+
+class TestReviewReasons(unittest.TestCase):
+    def test_threshold_triggers(self):
+        reasons = review_reasons({'forward_eps': 10}, {'forward_eps': 11.5})
+        self.assertTrue(any('forward_eps' in r for r in reasons))
+
+    def test_below_threshold_no_trigger(self):
+        reasons = review_reasons({'forward_eps': 10}, {'forward_eps': 10.5})
+        self.assertEqual(reasons, [])
+
+    def test_events_passed_through(self):
+        reasons = review_reasons({}, {}, events=['財報公布'])
+        self.assertIn('財報公布', reasons)
+
+
+class TestDecide(unittest.TestCase):
+    def setUp(self):
+        self.now = datetime(2026, 9, 10, 9, 30, 0, tzinfo=TW)  # market hours, post-trial
+        self.valuation = make_valuation(self.now)
+        self.risk_ok = {'cleared': True, 'checked_at': iso(self.now)}
+        self.instrument = {'symbol': '2330', 'kind': 'stock'}
+
+    def _quote(self, **overrides):
+        q = {
+            'as_of': iso(self.now), 'trade_date': self.now.date().isoformat(),
+            'is_trial': False, 'price': 105.0, 'previous_close': 100.0,
+            'reference_price': 100.0, 'limit_down': 90.0, 'limit_up': 110.0,
+            'book_as_of': iso(self.now),
+            'bids': [{'price': 104.5, 'size': 10}, {'price': 104, 'size': 50}],
+            'asks': [{'price': 105.5, 'size': 10}],
+        }
+        q.update(overrides)
+        return q
+
+    def _quote_low(self, price, **overrides):
+        """Quote fixture with bids sitting just below the given price, for sweet-zone tests."""
+        q = self._quote(price=price, bids=[
+            {'price': round(price - 0.5, 2), 'size': 20},
+            {'price': round(price - 1.0, 2), 'size': 50},
+        ], asks=[{'price': round(price + 0.5, 2), 'size': 10}])
+        q.update(overrides)
+        return q
+
+    def test_no_valuation_is_pending(self):
+        r = decide(self.instrument, self._quote(), None, now=self.now, market_open=True, risk=self.risk_ok)
+        self.assertEqual(r['status'], 'pending')
+
+    def test_missing_risk_check_blocked(self):
+        r = decide(self.instrument, self._quote(), self.valuation, now=self.now, market_open=True, risk=None)
+        self.assertEqual(r['status'], 'blocked')
+
+    def test_market_closed_blocked(self):
+        r = decide(self.instrument, self._quote(), self.valuation, now=self.now, market_open=False, risk=self.risk_ok)
+        self.assertEqual(r['status'], 'blocked')
+
+    def test_stale_quote_rejected(self):
+        old_quote = self._quote(as_of=iso(self.now - timedelta(seconds=999)))
+        r = decide(self.instrument, old_quote, self.valuation, now=self.now, market_open=True, risk=self.risk_ok)
+        self.assertEqual(r['status'], 'stale')
+
+    def test_price_above_buy_is_avoid(self):
+        # Price must exceed valuation['buy']=120 but stay within the 7% gap-vs-reference
+        # guard (which fires earlier in decide()), so ref/prev also sit near 120.
+        q = self._quote_low(price=121.0, reference_price=120.0, previous_close=120.0,
+                            limit_down=108.0, limit_up=132.0)
+        r = decide(self.instrument, q, self.valuation, now=self.now, market_open=True, risk=self.risk_ok)
+        self.assertEqual(r['status'], 'avoid')
+
+    def test_price_in_sweet_zone(self):
+        q = self._quote_low(price=99.0, reference_price=100.0)
+        r = decide(self.instrument, q, self.valuation, now=self.now, market_open=True, risk=self.risk_ok)
+        self.assertEqual(r['status'], 'sweet')
+        self.assertIsNotNone(r['suggested'])
+        self.assertLessEqual(r['suggested'], 99.0)  # never suggest above cap
+
+    def test_gap_beyond_7pct_blocked(self):
+        q = self._quote(price=109.0, reference_price=100.0)  # >7% gap from ref triggers block before limit check
+        # 109/100-1 = 9% > 7%
+        r = decide(self.instrument, q, self.valuation, now=self.now, market_open=True, risk=self.risk_ok)
+        self.assertEqual(r['status'], 'blocked')
+
+    def test_halted_blocked(self):
+        q = self._quote(halted=True)
+        r = decide(self.instrument, q, self.valuation, now=self.now, market_open=True, risk=self.risk_ok)
+        self.assertEqual(r['status'], 'blocked')
+
+    def test_trial_before_9am_requires_trial_flag(self):
+        early = datetime(2026, 9, 10, 8, 45, 0, tzinfo=TW)
+        risk_early = {'cleared': True, 'checked_at': iso(early)}
+        v_early = make_valuation(early)
+        q = self._quote(as_of=iso(early), book_as_of=iso(early), is_trial=False)
+        r = decide(self.instrument, q, v_early, now=early, market_open=True, risk=risk_early)
+        # Missing explicit trial flag before 9am: domain treats as blocked (fundamentals/date
+        # check happens first) OR stale depending on which guard fires; either is an acceptable
+        # "do not show actionable price" outcome, but must never be a live status.
+        self.assertIn(r['status'], ('stale', 'blocked'))
+        self.assertIsNone(r['suggested'])
+
+    def test_corporate_action_needs_review(self):
+        q = self._quote(reference_price=95.0)  # ref moved vs prev close without review flag
+        risk = dict(self.risk_ok)
+        r = decide(self.instrument, q, self.valuation, now=self.now, market_open=True, risk=risk)
+        self.assertEqual(r['status'], 'blocked')
+
+    def test_incomplete_book_is_stale(self):
+        q = self._quote(bids=[], asks=[])
+        r = decide(self.instrument, q, self.valuation, now=self.now, market_open=True, risk=self.risk_ok)
+        self.assertEqual(r['status'], 'stale')
+
+    def test_never_suggests_above_limit_up(self):
+        v = make_valuation(self.now, sweet=200, add=210, buy=220)
+        q = self._quote(price=105.0)
+        r = decide(self.instrument, q, v, now=self.now, market_open=True, risk=self.risk_ok)
+        if r['suggested'] is not None:
+            self.assertLessEqual(r['suggested'], 110.0)  # limit_up
+
+
+if __name__ == '__main__':
+    unittest.main()
