@@ -50,6 +50,7 @@ def build_radar_json(*, instruments, quotes, decisions, valuations, research,
             'previous_close': None, 'reference_price': None, 'price': None,
             'trial_price': None, 'as_of': None, 'trade_date': None,
             'is_trial': False, 'source': '尚未取得', 'source_url': None,
+            'book_as_of': None, 'limit_up': None, 'limit_down': None,
         }
         if q:
             # Two quote shapes reach this function:
@@ -86,6 +87,17 @@ def build_radar_json(*, instruments, quotes, decisions, valuations, research,
                 'is_trial': bool(q.get('is_trial')),
                 'source': q.get('source') or '尚未取得',
                 'source_url': q.get('source_url'),
+                # book_as_of/limit_up/limit_down: v3 frontend and
+                # verify_radar.py both require these to independently
+                # confirm the order book itself (not just the last trade
+                # tick) is fresh, and that a suggested price stays inside
+                # the exchange's own daily trading-limit band -- pass
+                # through untouched from whichever source populated them
+                # (mis.twse.com.tw sets book_as_of to its own fetch time
+                # since it has no separate book timestamp; fugle.py sets it
+                # from the venue's own quote-update timestamp).
+                'book_as_of': q.get('book_as_of'),
+                'limit_up': q.get('limit_up'), 'limit_down': q.get('limit_down'),
             })
 
         signal_out = {

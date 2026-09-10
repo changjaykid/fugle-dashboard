@@ -45,8 +45,11 @@ def verify(data, production=False):
             calculated, expiry = stamp(s['calculated_at']), stamp(s['valid_until'])
             require(bool(calculated and expiry and calculated < expiry), f'{symbol}: invalid signal lifetime')
             v=i['valuation']
-            validate_valuation(v, calculated)
+            validate_valuation(v, calculated, i.get("kind"))
             require(price <= v['buy'], f'{symbol}: price exceeds buy anchor')
+            require(type(q.get('is_trial')) is bool, f'{symbol}: unknown quote phase')
+            market=q.get('trial_price') if q.get('is_trial') is True else q.get('price')
+            require(type(market) in (int,float) and price <= market, f'{symbol}: price exceeds market or market missing')
             quote_at, book_at = stamp(q['as_of']), stamp(q['book_as_of'])
             require(bool(quote_at and book_at), f'{symbol}: quote/book time missing')
             if calculated and expiry and quote_at and book_at:

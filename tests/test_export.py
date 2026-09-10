@@ -57,6 +57,31 @@ class TestBuildRadarJson(unittest.TestCase):
         self.assertIsNone(item['quote']['price'])
         self.assertEqual(item['quote']['trial_price'], 4000.0)
 
+    def test_book_as_of_and_trading_limits_pass_through(self):
+        """Regression (Codex v3 frontend/verify_radar review 2026-09-11):
+        book_as_of/limit_up/limit_down are required by both the v3 frontend
+        gate and verify_radar.py to confirm the order book itself (not just
+        the last trade tick) is fresh and that a suggested price stays
+        inside the exchange's own daily trading-limit band. These were
+        previously dropped on export even though the underlying quote
+        sources (fugle.py, quotes.py) already populate them."""
+        quotes = {'3661': {'price': 4055.0, 'as_of': self.now.isoformat(), 'is_trial': False,
+                           'previous_close': 3905.0, 'source': 'mis.twse', 'source_url': 'https://mis.twse.com.tw',
+                           'book_as_of': self.now.isoformat(), 'limit_up': 4400.0, 'limit_down': 3600.0}}
+        out = build_radar_json(instruments=self.instruments, quotes=quotes, decisions={},
+                               valuations={}, research={}, health=[], now=self.now)
+        item = next(i for i in out['items'] if i['symbol'] == '3661')
+        self.assertEqual(item['quote']['book_as_of'], self.now.isoformat())
+        self.assertEqual(item['quote']['limit_up'], 4400.0)
+        self.assertEqual(item['quote']['limit_down'], 3600.0)
+
+    def test_book_as_of_and_trading_limits_default_to_null(self):
+        out = build_radar_json(instruments=self.instruments, quotes={}, decisions={},
+                               valuations={}, research={}, health=[], now=self.now)
+        item = out['items'][0]
+        for field in ('book_as_of', 'limit_up', 'limit_down'):
+            self.assertIsNone(item['quote'][field], f'{field} should be null, not 0')
+
     def test_valuation_present_populates_valued_count(self):
         valuations = {'3661': {'id': 'abc', 'sweet': 100, 'add': 110, 'buy': 120,
                                'method': 'forward_pe', 'reason': 'x', 'thesis': 'y',
