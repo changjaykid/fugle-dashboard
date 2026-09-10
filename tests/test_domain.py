@@ -12,6 +12,7 @@ from datetime import datetime, timedelta, timezone
 from stock_radar.domain import (
     TW, number, positive, stamp, fresh, floor_tick,
     validate_valuation, model_prices, review_reasons, decide, STATUSES,
+    session_phase,
 )
 
 
@@ -207,6 +208,45 @@ class TestReviewReasons(unittest.TestCase):
         self.assertIn('財報公布', reasons)
 
 
+class TestSessionPhase(unittest.TestCase):
+    """Regression suite for the tri-state market_open contract (Codex
+    review 2026-09-10): market_open=None must be its OWN branch, never
+    collapsed into 'closed' via bool(None)."""
+
+    def test_market_open_none_returns_none_phase(self):
+        now = datetime(2026, 9, 10, 10, 0, 0, tzinfo=TW)
+        self.assertIsNone(session_phase(now, None))
+
+    def test_market_open_false_returns_closed(self):
+        now = datetime(2026, 9, 10, 10, 0, 0, tzinfo=TW)
+        self.assertEqual(session_phase(now, False), 'closed')
+
+    def test_market_open_true_pre_market_window(self):
+        now = datetime(2026, 9, 10, 8, 45, 0, tzinfo=TW)
+        self.assertEqual(session_phase(now, True), 'pre_market')
+
+    def test_market_open_true_regular_window(self):
+        now = datetime(2026, 9, 10, 10, 0, 0, tzinfo=TW)
+        self.assertEqual(session_phase(now, True), 'regular')
+
+    def test_market_open_true_but_outside_hours_is_closed(self):
+        now = datetime(2026, 9, 10, 20, 0, 0, tzinfo=TW)
+        self.assertEqual(session_phase(now, True), 'closed')
+
+    def test_none_and_closed_are_distinct_values_not_just_falsy(self):
+        """The regression this guards against: some earlier code wrote
+        `if not phase:` which is True for BOTH None and '' (never actually
+        produced, but demonstrates the bug class) -- and worse, a caller
+        that wrote `if not market_open:` could not tell None from False.
+        This test asserts identity-based distinguishability end to end."""
+        now = datetime(2026, 9, 10, 10, 0, 0, tzinfo=TW)
+        none_phase = session_phase(now, None)
+        closed_phase = session_phase(now, False)
+        self.assertIsNone(none_phase)
+        self.assertEqual(closed_phase, 'closed')
+        self.assertNotEqual(none_phase, closed_phase)
+
+
 class TestDecide(unittest.TestCase):
     def setUp(self):
         self.now = datetime(2026, 9, 10, 9, 30, 0, tzinfo=TW)  # market hours, post-trial
@@ -268,6 +308,29 @@ class TestDecide(unittest.TestCase):
     def test_market_closed_blocked(self):
         r = decide(self.instrument, self._quote(), self.valuation, now=self.now, market_open=False, risk=self.risk_ok)
         self.assertEqual(r['status'], 'blocked')
+
+    def test_market_open_none_is_blocked_with_distinct_reason_from_false(self):
+        """Regression: market_open=None (calendar unverified) must not be
+        silently coerced to the same 'closed' path as market_open=False
+        (calendar positively says today is a holiday) -- the reasons shown
+        to a human must differ so an unverified-calendar bug is
+        distinguishable from a correctly-detected holiday."""
+        r_unknown = decide(self.instrument, self._quote(), self.valuation, now=self.now,
+                           market_open=None, risk=self.risk_ok)
+        r_closed = decide(self.instrument, self._quote(), self.valuation, now=self.now,
+                          market_open=False, risk=self.risk_ok)
+        self.assertEqual(r_unknown['status'], 'blocked')
+        self.assertEqual(r_closed['status'], 'blocked')
+        self.assertNotEqual(r_unknown['reason'], r_closed['reason'])
+
+    def test_market_open_defaults_to_none_not_false(self):
+        """decide()'s market_open kwarg default changed from False to None
+        (2026-09-10): a caller that forgets to pass market_open at all must
+        land in the 'unverified' branch, not silently look like a
+        confirmed non-trading day."""
+        r = decide(self.instrument, self._quote(), self.valuation, now=self.now, risk=self.risk_ok)
+        self.assertEqual(r['status'], 'blocked')
+        self.assertIn('未確認', r['reason'])
 
     def test_stale_quote_rejected(self):
         old_quote = self._quote(as_of=iso(self.now - timedelta(seconds=999)))

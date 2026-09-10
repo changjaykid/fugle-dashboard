@@ -128,7 +128,49 @@ def review_reasons(previous, current, events=(), threshold=.10):
     return reasons
 
 
-def decide(instrument, quote, valuation, now=None, *, market_open=False, risk=None,
+def session_phase(now, market_open):
+    """Tri-state session phase, computed once so decide() never re-derives
+    trial/regular/closed from ad-hoc bool coercion at multiple call sites.
+
+    market_open must be True, False, or None:
+      - True  = caller has POSITIVELY verified today is a trading day
+                (e.g. stock_radar.calendar.is_trading_day() returned True)
+      - False = caller has POSITIVELY verified today is NOT a trading day
+                (holiday/weekend)
+      - None  = caller could NOT verify either way (e.g. trading calendar
+                cache missing/stale for this ROC year -- see cli.py's
+                sync-calendar gating)
+
+    Returns 'pre_market' | 'regular' | 'closed' | None. Returning None here
+    means "we do not know what session we're in" and is DELIBERATELY a
+    distinct value from 'closed' -- 'closed' means we positively know
+    trading is not happening right now (known non-trading-day, or a known
+    trading day but outside 08:30-13:30); None means the underlying
+    trading-day status itself is unverified. Callers MUST check for None
+    explicitly (`phase is None`) and treat it as its own hard-stop; do NOT
+    write `if not phase` or `bool(phase)` anywhere downstream, since
+    `bool(None) == False == bool('closed' truthiness of an empty string)`
+    would silently conflate "verified closed" with "we have no idea" and
+    could let an unrelated code path fall through to a not-actually-checked
+    branch. This is a real regression class (an earlier draft treated an
+    unverified calendar the same as a definitively closed market, which is
+    the right outcome for decide()'s single call site today but stops
+    being safe the moment any second call site branches on truthiness
+    instead of identity).
+    """
+    if market_open is None:
+        return None
+    if not market_open:
+        return 'closed'
+    t = now.time().replace(tzinfo=None)
+    if time(8, 30) <= t < time(9, 0):
+        return 'pre_market'
+    if time(9, 0) <= t <= time(13, 30):
+        return 'regular'
+    return 'closed'
+
+
+def decide(instrument, quote, valuation, now=None, *, market_open=None, risk=None,
            history=(), supports=(), max_age=120):
     now = (now or datetime.now(TW)).astimezone(TW)
     result = {'status': 'stale', 'status_label': STATUSES['stale'], 'suggested': None,
@@ -156,15 +198,25 @@ def decide(instrument, quote, valuation, now=None, *, market_open=False, risk=No
         return stop('blocked', '基本面、交易限制與流動性尚未完成當日檢查')
     if risk.get('events'):
         return stop('blocked', '重大事件待重新估值：' + '；'.join(risk['events']))
-    if not market_open:
-        return stop('blocked', '尚未確認今天為交易日')
-    if not time(8, 30) <= now.time().replace(tzinfo=None) <= time(13, 30):
-        return stop('stale', '非盤前或交易時段，不提供即時掛價')
+    # session_phase() is tri-state (see its docstring): None must be its
+    # OWN branch checked with `is None`, never folded into the 'closed'
+    # check via truthiness -- an unverified trading-calendar status is not
+    # the same fact as a positively-confirmed non-trading day, even though
+    # both currently lead to a block here. Keeping them as separate
+    # branches (rather than `if not phase or phase == 'closed':`) means a
+    # future change to one branch's message/behavior cannot accidentally
+    # bleed into the other via bool(None) == bool('') == False confusion.
+    phase = session_phase(now, market_open)
+    if phase is None:
+        return stop('blocked', '交易日狀態未確認（交易日曆快取缺失或過期），無法判斷盤別')
+    if phase == 'closed':
+        return stop('blocked' if market_open is False else 'stale',
+                    '尚未確認今天為交易日' if market_open is False else '非盤前或交易時段，不提供即時掛價')
     if not quote or not fresh(quote.get('as_of'), now, max_age):
         return stop('stale', '行情未取得或已過期')
     if quote.get('trade_date') != now.date().isoformat():
         return stop('stale', '行情交易日不符')
-    trial = now.time().replace(tzinfo=None) < time(9)
+    trial = phase == 'pre_market'
     if trial and quote.get('is_trial') is not True:
         return stop('stale', '盤前缺少明確試撮資料')
     if not trial and quote.get('is_trial'):

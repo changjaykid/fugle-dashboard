@@ -17,6 +17,7 @@ Usage:
   python3 -m stock_radar.cli sync-risk [--db PATH]
   python3 -m stock_radar.cli propose SYMBOL --file valuation.json [--db PATH]
   python3 -m stock_radar.cli apply PROPOSAL_ID --actor ID --channel ID [--db PATH]
+  python3 -m stock_radar.cli research SYMBOL --file notes.json [--db PATH]
   python3 -m stock_radar.cli export --out docs/radar.json [--db PATH] [--mode live|simulation]
   python3 -m stock_radar.cli backup --out PATH [--db PATH]
   python3 -m stock_radar.cli lookup QUERY [--db PATH]   # disambiguation search by symbol/name
@@ -39,9 +40,30 @@ from .tpex import fetch_otc_daily_close
 from .calendar import fetch_holiday_schedule, is_trading_day
 from .risk import build_risk_facts
 from .export import build_radar_json
-from .discord import send_message, chunk_text, format_daily_summary, lookup_reply, DISCORD_CHANNEL as DISCORD_CHANNEL_DEFAULT
+from .discord import (send_message, chunk_text, format_daily_summary, lookup_reply,
+                      is_test_mode, TEST_MARKER_PREFIX,
+                      DISCORD_CHANNEL as DISCORD_CHANNEL_DEFAULT)
 
-DEFAULT_DB = Path(__file__).parent.parent / 'stock_radar.db'
+# DEMO_DB: the default SQLite path used when --db is omitted. This lives
+# INSIDE the git worktree (.gitignore'd, never committed) and exists
+# purely for local development/manual testing convenience -- it is NOT,
+# and must never become, the production runtime database. A git worktree
+# can be deleted/recreated/pruned at any time (it is a disposable checkout
+# of a branch, not a durable data directory), so storing real production
+# valuations/state here would risk silent data loss on routine git
+# operations, and there'd be no way to tell a real production run from a
+# local dry-run just by looking at the file. cmd_export enforces this: a
+# --mode live export REQUIRES an explicit --db pointing OUTSIDE the repo
+# tree (see PROD_DB_RECOMMENDED / _reject_demo_db_for_live below), so a
+# forgotten --db flag can never let live output silently land in the demo
+# file (or, worse, a live export silently READ stale demo-mode state).
+DEMO_DB = Path(__file__).parent.parent / 'stock_radar.db'
+DEFAULT_DB = DEMO_DB  # kept as the argparse default so existing dev/test invocations are unaffected
+# Recommended production runtime path: outside any git worktree, inside
+# the durable OpenClaw workspace root (survives worktree add/remove and is
+# covered by the workspace's own backup skill, unlike a path inside a
+# disposable branch checkout).
+PROD_DB_RECOMMENDED = Path.home() / '.openclaw' / 'workspace' / '_state' / 'stock_radar' / 'prod.db'
 DISCORD_CHANNEL = '1493898877970153532'
 # Whitelist of Discord user IDs allowed to apply valuations. Populated from
 # the same guild-user allowlist already used for the bot's DM/mention scope
@@ -92,23 +114,38 @@ def cmd_sync_quotes(args):
             print('no instruments to quote (run sync-universe first, or use --watchlist-only with a populated watchlist)')
             return
         quotes = None
+        source_used = None
+        fugle_error = None
         if args.source == 'fugle':
             key = _fugle_api_key(args.fugle_key_file)
             if not key:
                 raise SystemExit('--source fugle requested but no API key found (pass --fugle-key-file or set fugle-dashboard/engine/config.json api_key)')
             try:
                 quotes = fetch_fugle_quotes(instruments, key)
+                source_used = 'fugle'
                 print(f'quotes source: Fugle marketdata v1.0 ({len(quotes)} symbols)')
             except Exception as exc:
-                print(f'Fugle source failed ({exc!r}); falling back to mis.twse.com.tw')
+                fugle_error = repr(exc)
+                print(f'Fugle source failed ({fugle_error}); falling back to mis.twse.com.tw')
         if quotes is None:
             quotes = fetch_quotes(instruments)
+            source_used = 'mis'
             print(f'quotes source: mis.twse.com.tw ({len(quotes)} symbols)')
         n = 0
         for symbol, q in quotes.items():
             store.observe(q)
             n += 1
-        store.set_meta('last_quote_sync', {'at': datetime.now(TW).isoformat(), 'requested': len(instruments), 'received': n})
+        # Record the REAL outcome (which source actually served data, and any
+        # Fugle failure detail) so cmd_export's health entries can report
+        # what actually happened instead of a hardcoded assumption. This is
+        # the single source of truth cmd_export reads from -- it must never
+        # print a stale/hardcoded '401' message once a sync has actually
+        # succeeded via mis.twse or Fugle.
+        store.set_meta('last_quote_sync', {
+            'at': datetime.now(TW).isoformat(), 'requested': len(instruments), 'received': n,
+            'source': source_used, 'fugle_attempted': args.source == 'fugle',
+            'fugle_error': fugle_error,
+        })
         print(f'quotes synced: {n}/{len(instruments)}')
         if n < len(instruments):
             print(f'WARNING: {len(instruments)-n} instruments did not return a quote (partial coverage, not silently treated as success)')
@@ -190,7 +227,86 @@ def cmd_apply(args):
         store.close()
 
 
+def cmd_research(args):
+    """Sets narrative-only research notes (why_now/chips/catalysts/risks)
+    for a symbol, stored as a 'research' fact so cmd_export can read real
+    DB content instead of a hardcoded {}. These fields do NOT feed into
+    any price math (unlike a valuation's thesis/sources, which
+    validate_valuation() already requires) -- they are purely descriptive
+    context shown in the frontend detail view."""
+    store = Store(args.db)
+    try:
+        payload = json.loads(Path(args.file).read_text())
+        allowed = {'why_now', 'chips', 'catalysts', 'risks', 'thesis', 'sources'}
+        unknown = set(payload) - allowed
+        if unknown:
+            raise SystemExit(f'unknown research fields: {sorted(unknown)} (allowed: {sorted(allowed)})')
+        store.set_fact(args.symbol, 'research', payload)
+        print(f'research notes saved for {args.symbol}')
+    finally:
+        store.close()
+
+
+def _quote_source_health(store, now):
+    """Build the '試撮'/quote-source health entry from the ACTUAL outcome of
+    the most recent sync-quotes run (stored in Store.meta('last_quote_sync')
+    by cmd_sync_quotes), never a hardcoded '401' string. Fixes a real bug:
+    the old hardcoded message kept claiming Fugle returns 401 even after a
+    successful mis.twse-only sync, and would keep claiming it forever if
+    Fugle ever started working -- health must reflect what actually just
+    happened, not a snapshot frozen at whenever this file was last edited.
+    """
+    meta = store.meta('last_quote_sync')
+    if not meta:
+        return {
+            'name': '試撮', 'status': 'pending',
+            'detail': '尚未執行過 sync-quotes，目前無任何行情來源資料', 'as_of': None,
+        }
+    source = meta.get('source')
+    fugle_attempted = meta.get('fugle_attempted')
+    fugle_error = meta.get('fugle_error')
+    at = meta.get('at')
+    if source == 'fugle':
+        return {
+            'name': '試撮', 'status': 'ok',
+            'detail': 'Fugle marketdata v1.0 成功回傳，支援資料驅動的試撮判斷（非時鐘推斷）', 'as_of': at,
+        }
+    if fugle_attempted and fugle_error:
+        return {
+            'name': '試撮', 'status': 'blocked',
+            'detail': f'行情來源(mis.twse.com.tw)未提供可靠的試撮/盤中旗標；Fugle 本次嘗試失敗（{fugle_error}），目前回到 fallback 來源；盤前 08:30-09:00 不會產生可掛價信號',
+            'as_of': at,
+        }
+    return {
+        'name': '試撮', 'status': 'blocked',
+        'detail': '目前行情來源(mis.twse.com.tw)未提供可靠的試撮/盤中旗標（未嘗試 Fugle）；盤前 08:30-09:00 不會產生可掛價信號',
+        'as_of': at,
+    }
+
+
+def _reject_demo_db_for_live(db_path: Path, mode: str) -> None:
+    """A --mode live export must never run against DEMO_DB (the git-
+    worktree-local dev/test SQLite file, .gitignore'd and disposable).
+    This is a hard SystemExit, not a warning: production data must live
+    somewhere durable and independent of the worktree's lifecycle (see
+    DEMO_DB's docstring comment above), and a forgotten/default --db in a
+    live cron invocation is exactly the kind of silent-defaults bug this
+    project has repeatedly had to fix after the fact (Fugle-401 health,
+    ETF misclassification, --assume-market-open in live mode). Comparing
+    resolved absolute paths so a relative alias or symlink to the same
+    file cannot slip through."""
+    if mode != 'live':
+        return
+    if Path(db_path).resolve() == DEMO_DB.resolve():
+        raise SystemExit(
+            f'--mode live must not use the demo/dev database ({DEMO_DB}). '
+            f'Pass an explicit --db pointing to a durable path outside this git worktree '
+            f'(recommended: {PROD_DB_RECOMMENDED}).'
+        )
+
+
 def cmd_export(args):
+    _reject_demo_db_for_live(args.db, args.mode)
     store = Store(args.db)
     try:
         instruments = store.instruments()
@@ -209,29 +325,43 @@ def cmd_export(args):
         # contract's supported kinds.
         target = [i for i in instruments if i['kind'] in ('stock', 'etf_equity', 'etf_other', 'etn')]
         quotes, decisions, valuations = {}, {}, {}
-        health = [{
-            'name': '試撮', 'status': 'blocked',
-            'detail': '目前報價來源(mis.twse.com.tw)未提供可靠的試撮/盤中旗標，Fugle API 回報 401；盤前 08:30-09:00 不會產生可掛價信號',
-            'as_of': None,
-        }]
         now = datetime.now(TW)
+        health = [_quote_source_health(store, now)]
+        if args.assume_market_open and args.mode == 'live':
+            # --assume-market-open is a manual/testing override for research
+            # runs only. A live export must reflect the REAL trading
+            # calendar; allowing this flag to bypass it in live mode would
+            # let a forgotten testing flag silently make a holiday look
+            # like a trading day in production output.
+            raise SystemExit('--assume-market-open is not allowed with --mode live '
+                             '(use sync-calendar to populate the real trading calendar instead)')
         if args.assume_market_open:
             # explicit manual/testing override, bypasses the real calendar
+            # (only reachable for --mode simulation, enforced above)
             market_open = True
         else:
             schedule = store.meta('trading_calendar')
             try:
+                # True/False here are POSITIVE determinations from a
+                # populated calendar cache. Do NOT default this to False on
+                # any other code path -- an unpopulated/absent cache must
+                # produce market_open=None (below), not a bare False, so
+                # domain.decide()'s session_phase() can tell "verified
+                # closed" apart from "we don't actually know".
                 market_open = is_trading_day(now.date(), schedule)
             except ValueError as exc:
-                # calendar missing/stale for this year -- do NOT silently
-                # guess open; fail closed (blocked) and tell the operator
-                # to run sync-calendar, same posture as other missing-data
-                # gates in this CLI (Fugle 401, OTC risk gap, etc.)
-                market_open = False
+                # calendar missing/stale for this year -- market status is
+                # UNKNOWN, not "closed". market_open=None flows into
+                # domain.decide()'s session_phase(), which has its own
+                # explicit is-None branch (never bool(None) coerced to
+                # False) and blocks with a distinct reason from a verified
+                # non-trading-day.
+                market_open = None
                 health.append({
                     'name': '交易日曆', 'status': 'blocked',
                     'detail': f'{exc} (run sync-calendar)', 'as_of': None,
                 })
+        research = {}
         for inst in target:
             symbol = inst['symbol']
             q = store.quote(symbol)
@@ -242,10 +372,32 @@ def cmd_export(args):
             history = store.history(symbol, limit=20)
             decisions[symbol] = decide(inst, q, v, now=now, market_open=market_open,
                                        risk=risk or None, history=history)
+            # Research notes come from two REAL DB sources, never a
+            # hardcoded {}: thesis/sources are read from the active
+            # (already evidence-reviewed) valuation itself -- the same
+            # data validate_valuation() already required to have an HTTPS
+            # source and a thesis string, so this is not new unvetted
+            # content. why_now/chips/catalysts/risks are narrative-only
+            # supplementary notes (they do not affect any price math) held
+            # in the 'research' facts category, settable via the
+            # `research` CLI command. valuation_history comes straight from
+            # Store.versions() so past applied/superseded/rejected
+            # valuations are visible with their own reason text, per the
+            # frontend's 估值歷史 section.
+            note = store.fact(symbol, 'research') or {}
+            research[symbol] = {
+                'thesis': (v or {}).get('thesis') or note.get('thesis'),
+                'why_now': note.get('why_now'),
+                'chips': note.get('chips'),
+                'catalysts': note.get('catalysts') or [],
+                'risks': note.get('risks') or [],
+                'sources': (v or {}).get('sources') or note.get('sources') or [],
+                'valuation_history': store.versions(symbol),
+            }
         if not any(quotes.values()):
             health.append({'name': '報價', 'status': 'blocked', 'detail': '尚無任何已同步報價', 'as_of': None})
         out = build_radar_json(instruments=target, quotes=quotes, decisions=decisions,
-                               valuations=valuations, research={}, health=health,
+                               valuations=valuations, research=research, health=health,
                                mode=args.mode, now=now)
         atomic_json(args.out, out)
         print(f'exported {len(target)} instruments to {args.out} (mode={args.mode}, quotes={out["coverage"]["quotes"]}, valued={out["coverage"]["valued"]})')
@@ -306,7 +458,12 @@ def cmd_discord_lookup(args):
             by_symbol = {i['symbol']: i for i in radar['items']}
             items = [by_symbol[m['symbol']] for m in matches if m['symbol'] in by_symbol]
         reply = lookup_reply(items) if items else ('查無此標的。' if not matches else '找到標的但尚無雷達資料，請先執行 export。')
-        text = ('🧪【測試查詢】' + reply) if args.test else reply
+        # is_test_mode() forces the marker whenever radar_json['mode'] ==
+        # 'simulation', regardless of --test -- a lookup against a
+        # simulation-mode radar.json must never render as if it were a
+        # live query just because a caller forgot --test (mirrors
+        # format_daily_summary's own auto-marking contract).
+        text = (TEST_MARKER_PREFIX + reply) if is_test_mode(radar, explicit_test=args.test) else reply
         print(text)
         if args.post:
             token = _bot_token()
@@ -361,6 +518,11 @@ def main(argv=None):
     p.add_argument('--actor', required=True)
     p.add_argument('--channel', required=True)
     p.set_defaults(func=cmd_apply)
+
+    p = sub.add_parser('research', help='Set narrative-only research notes (why_now/chips/catalysts/risks) for a symbol')
+    p.add_argument('symbol')
+    p.add_argument('--file', required=True)
+    p.set_defaults(func=cmd_research)
 
     p = sub.add_parser('export')
     p.add_argument('--out', type=Path, required=True)

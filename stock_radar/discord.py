@@ -199,3 +199,20 @@ def lookup_reply(matches: list[dict], *, now: datetime | None = None) -> str:
         options = '\n'.join(f"- {m['symbol']} {m.get('name')} [{m['kind']}]" for m in matches)
         return f'找到多筆符合，請用代號指定：\n{options}'
     return format_status_line(matches[0], now=now)
+
+
+def is_test_mode(radar_json: dict | None, *, explicit_test: bool = False) -> bool:
+    """Single source of truth for whether a reply must carry the 🧪 test
+    marker. A caller passing --test always forces it on; but critically,
+    radar_json['mode'] == 'simulation' ALSO forces it on regardless of
+    whether the caller remembered to pass --test. Mirrors
+    format_daily_summary's own is_test logic so a single-symbol lookup
+    reply cannot leak un-marked simulation data just because the caller
+    (a human typing a query in Discord, or a script) forgot a flag -- the
+    data's own mode field is authoritative, matching the daily-summary
+    contract exactly (RADAR_DATA_CONTRACT.md: mode=simulation 必須醒目標示).
+    """
+    return bool(explicit_test) or bool(radar_json and radar_json.get('mode') == 'simulation')
+
+
+TEST_MARKER_PREFIX = '🧪【測試查詢，非即時交易建議】'

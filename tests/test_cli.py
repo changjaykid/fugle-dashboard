@@ -203,6 +203,162 @@ class TestExport(CliTestBase):
         self.assertEqual(data['items'], [])
 
 
+class TestResearchAndHistoryWiring(CliTestBase):
+    """Regression (Codex review 2026-09-10): export must read research/
+    valuation_history from the real DB, not pass a hardcoded {} through."""
+
+    def setUp(self):
+        super().setUp()
+        fake_items = [{'symbol': '3661', 'kind': 'stock', 'name': '世芯-KY', 'market': 'TSE'}]
+        with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
+            self.run_cli('sync-universe')
+
+    def test_research_command_writes_fact_and_export_surfaces_it(self):
+        notes_file = Path(self.tmpdir) / 'notes.json'
+        notes_file.write_text(json.dumps({
+            'why_now': '訂單能見度提升', 'chips': '外資連續課買',
+            'catalysts': ['Q3財報'], 'risks': ['客戶集中度高'],
+        }))
+        self.run_cli('research', '3661', '--file', str(notes_file))
+        out_path = Path(self.tmpdir) / 'radar.json'
+        self.run_cli('export', '--out', str(out_path), '--mode', 'simulation')
+        data = json.loads(out_path.read_text())
+        item = next(i for i in data['items'] if i['symbol'] == '3661')
+        self.assertEqual(item['research']['why_now'], '訂單能見度提升')
+        self.assertEqual(item['research']['catalysts'], ['Q3財報'])
+        self.assertEqual(item['research']['risks'], ['客戶集中度高'])
+
+    def test_research_command_rejects_unknown_fields(self):
+        notes_file = Path(self.tmpdir) / 'notes.json'
+        notes_file.write_text(json.dumps({'made_up_field': 'x'}))
+        with self.assertRaises(SystemExit):
+            self.run_cli('research', '3661', '--file', str(notes_file))
+
+    def test_active_valuation_thesis_and_sources_surface_in_research(self):
+        now = datetime.now(TW)
+        store = Store(self.db_path)
+        try:
+            proposal_id = store.propose('3661', make_valuation(now, thesis='高成長颱帳销'))
+        finally:
+            store.close()
+        self.run_cli('apply', proposal_id, '--actor', cli.ALLOWED_ACTORS[0], '--channel', cli.DISCORD_CHANNEL)
+        out_path = Path(self.tmpdir) / 'radar.json'
+        self.run_cli('export', '--out', str(out_path), '--mode', 'simulation')
+        data = json.loads(out_path.read_text())
+        item = next(i for i in data['items'] if i['symbol'] == '3661')
+        self.assertEqual(item['research']['thesis'], '高成長颱帳销')
+        self.assertTrue(len(item['research']['sources']) > 0)
+
+    def test_valuation_history_populated_from_store_versions(self):
+        now = datetime.now(TW)
+        store = Store(self.db_path)
+        try:
+            proposal_id = store.propose('3661', make_valuation(now))
+        finally:
+            store.close()
+        self.run_cli('apply', proposal_id, '--actor', cli.ALLOWED_ACTORS[0], '--channel', cli.DISCORD_CHANNEL)
+        out_path = Path(self.tmpdir) / 'radar.json'
+        self.run_cli('export', '--out', str(out_path), '--mode', 'simulation')
+        data = json.loads(out_path.read_text())
+        item = next(i for i in data['items'] if i['symbol'] == '3661')
+        self.assertEqual(len(item['valuation_history']), 1)
+        self.assertEqual(item['valuation_history'][0]['status'], 'active')
+        self.assertEqual(item['valuation_history'][0]['payload']['buy'], 120.0)
+
+
+class TestQuoteSourceHealth(CliTestBase):
+    """Regression (Codex review 2026-09-10): health must reflect the ACTUAL
+    last sync-quotes outcome, never a hardcoded '401' string."""
+
+    def setUp(self):
+        super().setUp()
+        fake_items = [{'symbol': '2330', 'kind': 'stock', 'name': '台積電', 'market': 'TSE'}]
+        with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
+            self.run_cli('sync-universe')
+
+    def test_no_sync_yet_is_pending_not_blocked(self):
+        out_path = Path(self.tmpdir) / 'radar.json'
+        self.run_cli('export', '--out', str(out_path), '--mode', 'simulation')
+        data = json.loads(out_path.read_text())
+        h = next(x for x in data['health'] if x['name'] == '試撮')
+        self.assertEqual(h['status'], 'pending')
+
+    def test_successful_mis_sync_is_blocked_not_hardcoded_401(self):
+        fake_quotes = {'2330': {'symbol': '2330', 'as_of': datetime.now(TW).isoformat(),
+                                'price': 100.0, 'is_trial': None}}
+        with mock.patch('stock_radar.cli.fetch_quotes', return_value=fake_quotes):
+            self.run_cli('sync-quotes')
+        out_path = Path(self.tmpdir) / 'radar.json'
+        self.run_cli('export', '--out', str(out_path), '--mode', 'simulation')
+        data = json.loads(out_path.read_text())
+        h = next(x for x in data['health'] if x['name'] == '試撮')
+        self.assertEqual(h['status'], 'blocked')
+        self.assertNotIn('401', h['detail'])
+        self.assertIn('未嘗試 Fugle', h['detail'])
+
+    def test_successful_fugle_sync_is_ok_status(self):
+        fake_quotes = {'2330': {'symbol': '2330', 'as_of': datetime.now(TW).isoformat(),
+                                'price': 100.0, 'is_trial': True, 'trial_price': 100.0}}
+        with mock.patch('stock_radar.cli.fetch_fugle_quotes', return_value=fake_quotes):
+            self.run_cli('sync-quotes', '--source', 'fugle', '--fugle-key-file', self._fake_key_file())
+        out_path = Path(self.tmpdir) / 'radar.json'
+        self.run_cli('export', '--out', str(out_path), '--mode', 'simulation')
+        data = json.loads(out_path.read_text())
+        h = next(x for x in data['health'] if x['name'] == '試撮')
+        self.assertEqual(h['status'], 'ok')
+
+    def test_fugle_failure_then_mis_fallback_shows_actual_error_not_generic_401(self):
+        with mock.patch('stock_radar.cli.fetch_fugle_quotes', side_effect=RuntimeError('403 Forbidden')), \
+             mock.patch('stock_radar.cli.fetch_quotes', return_value={
+                 '2330': {'symbol': '2330', 'as_of': datetime.now(TW).isoformat(), 'price': 100.0, 'is_trial': None}}):
+            self.run_cli('sync-quotes', '--source', 'fugle', '--fugle-key-file', self._fake_key_file())
+        out_path = Path(self.tmpdir) / 'radar.json'
+        self.run_cli('export', '--out', str(out_path), '--mode', 'simulation')
+        data = json.loads(out_path.read_text())
+        h = next(x for x in data['health'] if x['name'] == '試撮')
+        self.assertEqual(h['status'], 'blocked')
+        self.assertIn('403', h['detail'])
+
+    def _fake_key_file(self):
+        p = Path(self.tmpdir) / 'key.txt'
+        p.write_text('fake-key')
+        return str(p)
+
+
+class TestDemoDbGuard(unittest.TestCase):
+    """Regression (Codex review 2026-09-10): --mode live must never be
+    allowed to run against the disposable dev/test DEMO_DB path."""
+
+    def test_live_mode_against_demo_db_path_rejected(self):
+        with self.assertRaises(SystemExit):
+            cli.main(['--db', str(cli.DEMO_DB), 'export', '--out', '/tmp/x.json', '--mode', 'live'])
+
+    def test_live_mode_against_explicit_other_db_allowed(self):
+        tmpdir = tempfile.mkdtemp(prefix='radar-proddb-test-')
+        try:
+            db_path = Path(tmpdir) / 'prod.db'
+            out_path = Path(tmpdir) / 'radar.json'
+            # No --assume-market-open in live mode either -- this should
+            # succeed (empty DB, no instruments) without the demo-db guard
+            # firing, proving the guard is path-specific, not mode-specific.
+            cli.main(['--db', str(db_path), 'export', '--out', str(out_path), '--mode', 'live'])
+            self.assertTrue(out_path.exists())
+        finally:
+            shutil.rmtree(tmpdir, ignore_errors=True)
+
+    def test_simulation_mode_against_demo_db_path_allowed(self):
+        tmpdir = tempfile.mkdtemp(prefix='radar-demodb-sim-test-')
+        try:
+            out_path = Path(tmpdir) / 'radar.json'
+            db_path = Path(tmpdir) / 'not_actually_demo.db'
+            # simulate calling with the demo db path itself in simulation mode
+            with mock.patch('stock_radar.cli.DEMO_DB', db_path):
+                cli.main(['--db', str(db_path), 'export', '--out', str(out_path), '--mode', 'simulation'])
+            self.assertTrue(out_path.exists())
+        finally:
+            shutil.rmtree(tmpdir, ignore_errors=True)
+
+
 class TestSyncCalendar(CliTestBase):
     def test_sync_calendar_caches_schedule_in_store(self):
         fake_schedule = {'closed_dates': {'2026-01-01': '中華民國開國紀念日'}, 'roc_years': [115]}
@@ -247,6 +403,44 @@ class TestExportCalendarGating(CliTestBase):
         self.run_cli('export', '--out', str(out_path), '--mode', 'simulation', '--assume-market-open')
         data = json.loads(out_path.read_text())
         self.assertFalse(any(h['name'] == '交易日曆' for h in data['health']))
+
+    def test_assume_market_open_forbidden_in_live_mode(self):
+        """Regression (Codex review 2026-09-10): --assume-market-open must
+        never be usable to fake an open market in a LIVE export -- only
+        for --mode simulation research/testing runs."""
+        out_path = Path(self.tmpdir) / 'radar.json'
+        with self.assertRaises(SystemExit):
+            self.run_cli('export', '--out', str(out_path), '--mode', 'live', '--assume-market-open')
+
+    def test_missing_calendar_produces_unverified_not_false_market_open(self):
+        """Regression: an unpopulated calendar must feed market_open=None
+        into decide(), not a bare False -- verified via the signal reason
+        text differing from a positively-confirmed holiday/closed day. A
+        valuation + risk-clear fact are set up first so decide() actually
+        reaches the market_open branch instead of stopping earlier at
+        'no valuation' / 'no risk check'."""
+        now = datetime.now(TW)
+        proposal_id = self.run_cli_capture_proposal('2330', now)
+        self.run_cli('apply', proposal_id, '--actor', cli.ALLOWED_ACTORS[0], '--channel', cli.DISCORD_CHANNEL)
+        store = Store(self.db_path)
+        try:
+            store.set_fact('2330', 'risk', {'cleared': True, 'checked_at': now.isoformat(), 'events': []})
+        finally:
+            store.close()
+        out_path = Path(self.tmpdir) / 'radar.json'
+        self.run_cli('export', '--out', str(out_path), '--mode', 'simulation')
+        data = json.loads(out_path.read_text())
+        item = next(i for i in data['items'] if i['symbol'] == '2330')
+        self.assertIn('未確認', item['signal']['reason'])
+
+    def run_cli_capture_proposal(self, symbol, now):
+        vfile = Path(self.tmpdir) / 'v.json'
+        vfile.write_text(json.dumps(make_valuation(now)))
+        store = Store(self.db_path)
+        try:
+            return store.propose(symbol, json.loads(vfile.read_text()))
+        finally:
+            store.close()
 
 
 class TestBackup(CliTestBase):
@@ -319,6 +513,32 @@ class TestDiscordLookup(CliTestBase):
              mock.patch('stock_radar.cli.send_message', return_value={'id': '1'}) as fake_send:
             self.run_cli('discord-lookup', '3661', '--radar-json', str(self.radar_path), '--test', '--post')
         fake_send.assert_called_once()
+
+    def test_simulation_mode_radar_json_auto_marks_test_without_test_flag(self, capsys=None):
+        """Regression (Codex review 2026-09-10): a lookup against a
+        simulation-mode radar.json must render the 🧪 marker even if the
+        caller forgets --test -- mirrors format_daily_summary's own
+        mode-driven auto-marking, via discord.is_test_mode()."""
+        sim_path = Path(self.tmpdir) / 'radar_sim.json'
+        payload = json.loads(self.radar_path.read_text())
+        payload['mode'] = 'simulation'
+        sim_path.write_text(json.dumps(payload))
+        import io, contextlib
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            self.run_cli('discord-lookup', '3661', '--radar-json', str(sim_path))
+        self.assertIn('🧪', buf.getvalue())
+
+    def test_live_mode_radar_json_without_test_flag_not_marked(self):
+        live_path = Path(self.tmpdir) / 'radar_live.json'
+        payload = json.loads(self.radar_path.read_text())
+        payload['mode'] = 'live'
+        live_path.write_text(json.dumps(payload))
+        import io, contextlib
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            self.run_cli('discord-lookup', '3661', '--radar-json', str(live_path))
+        self.assertNotIn('🧪', buf.getvalue())
 
 
 class TestLookup(CliTestBase):
