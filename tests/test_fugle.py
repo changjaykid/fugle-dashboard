@@ -1,167 +1,93 @@
-"""Unit tests for stock_radar.fugle — built directly from the official
-documented example payloads at developer.fugle.tw (fetched 2026-09-10),
-not synthetic data."""
-import sys
-from pathlib import Path
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-
+"""Synthetic fixtures exercise source-time/phase boundaries; no live keys."""
+from copy import deepcopy
+from datetime import datetime, timedelta
 import unittest
-from unittest import mock
+from stock_radar.fugle import FugleClient, FugleError, normalize_quote, microtime
+from stock_radar.domain import TW, decide
 
-from stock_radar.fugle import (
-    build_quote, fetch_quotes, _epoch_micros_to_iso,
-)
+NOW=datetime(2026,9,10,8,50,tzinfo=TW)
+def micros(t): return int(t.timestamp()*1_000_000)
+def inputs():
+    return ({'symbol':'0050','name':'test','date':'2026-09-10','previousClose':100,'referencePrice':100,
+      'isTrial':True,'lastTrial':{'price':99,'time':micros(NOW-timedelta(seconds=1))},
+      'lastTrade':{'price':100,'time':micros(NOW-timedelta(days=1))},'lastUpdated':micros(NOW),
+      'bids':[{'price':98,'size':20}],'asks':[{'price':99,'size':10}]},
+      {'symbol':'0050','date':'2026-09-10','securityStatus':'NORMAL','securityType':'24',
+       'isDisposition':False,'tradingCurrency':'TWD','limitUpPrice':110,'limitDownPrice':90,
+       'previousClose':100,'referencePrice':100})
 
-# Verbatim from https://developer.fugle.tw/docs/data/http-api/intraday/ticker/
-TICKER_EXAMPLE = {
-    "date": "2023-05-29", "type": "EQUITY", "exchange": "TWSE", "market": "TSE",
-    "symbol": "2330", "name": "台積電", "industry": "24", "securityType": "01",
-    "previousClose": 566, "referencePrice": 566, "limitUpPrice": 622,
-    "limitDownPrice": 510, "canDayTrade": True, "canBuyDayTrade": True,
-    "canBelowFlatMarginShortSell": True, "canBelowFlatSBLShortSell": True,
-    "isAttention": False, "isDisposition": False, "isUnusuallyRecommended": False,
-    "isSpecificAbnormally": False, "matchingInterval": 0, "securityStatus": "NORMAL",
-    "boardLot": 1000, "tradingCurrency": "TWD",
-}
+class TestNormalize(unittest.TestCase):
+    def test_trial_and_source_time(self):
+        q=normalize_quote(*inputs(),now=NOW)
+        self.assertEqual(q['trial_price'],99);self.assertEqual(q['price'],99)
+        self.assertTrue(q['is_trial']);self.assertFalse(q['halted'])
+        self.assertEqual(q['as_of'],(NOW-timedelta(seconds=1)).isoformat())
+    def test_historical_trial_does_not_set_phase(self):
+        r,t=inputs();del r['isTrial']
+        q=normalize_quote(r,t,now=NOW);self.assertIsNone(q['is_trial']);self.assertTrue(q['halted'])
+    def test_current_trade_and_historical_trial_separate(self):
+        r,t=inputs();r.pop('isTrial');r['isContinuous']=True;r['lastTrade']={'price':101,'time':micros(NOW)}
+        q=normalize_quote(r,t,now=NOW);self.assertEqual(q['price'],101);self.assertEqual(q['trial_price'],99);self.assertFalse(q['is_trial'])
+    def test_close_auction_not_labelled_premarket(self):
+        r,t=inputs();r.pop('isTrial');r['isClose']=True;r['lastTrial']['time']=micros(NOW.replace(hour=13,minute=29))
+        r['lastTrade']={'price':101,'time':micros(NOW.replace(hour=13,minute=30))};r['lastUpdated']=r['lastTrade']['time']
+        q=normalize_quote(r,t,now=NOW.replace(hour=18));self.assertIsNone(q['trial_price']);self.assertFalse(q['is_trial'])
+    def test_missing_microsecond_time_cannot_be_refreshed_by_fetch(self):
+        r,t=inputs();r['lastUpdated']=int(NOW.timestamp())
+        q=normalize_quote(r,t,now=NOW);self.assertIsNone(q['as_of']);self.assertTrue(q['halted'])
+    def test_future_timestamp_blocked(self):
+        r,t=inputs();r['lastUpdated']=micros(NOW+timedelta(seconds=1))
+        self.assertTrue(normalize_quote(r,t,now=NOW)['halted'])
+    def test_cached_old_price_stays_old(self):
+        r,t=inputs();r['lastTrial']['time']=micros(NOW-timedelta(minutes=10))
+        self.assertEqual(normalize_quote(r,t,now=NOW)['as_of'],(NOW-timedelta(minutes=10)).isoformat())
+    def test_bond_and_currency_and_disposition(self):
+        for field,value in [('securityType','32'),('tradingCurrency','USD'),('securityStatus','SUSPENDED'),('date','2026-09-09')]:
+            r,t=inputs();t[field]=value;self.assertTrue(normalize_quote(r,t,now=NOW)['halted'])
+        r,t=inputs();t['isDisposition']=True;self.assertTrue(normalize_quote(r,t,now=NOW)['disposition'])
+    def test_malformed_book_and_numbers(self):
+        r,t=inputs();r['bids']=[None,{'price':'inf','size':4},{'price':'98','size':'5'}]
+        self.assertEqual(normalize_quote(r,t,now=NOW)['bids'],[{'price':98.0,'size':5.0}])
+    def test_reference_conflict_blocked(self):
+        r,t=inputs();t['referencePrice']=99
+        self.assertTrue(normalize_quote(r,t,now=NOW)['halted'])
+    def test_symbol_mismatch(self):
+        r,t=inputs();t['symbol']='3661'
+        with self.assertRaises(FugleError):normalize_quote(r,t,now=NOW)
 
-# Verbatim from https://developer.fugle.tw/docs/data/http-api/intraday/quote/
-QUOTE_EXAMPLE = {
-    "date": "2023-05-29", "type": "EQUITY", "exchange": "TWSE", "market": "TSE",
-    "symbol": "2330", "name": "台積電", "referencePrice": 566, "previousClose": 566,
-    "openPrice": 574, "openTime": 1685322000049353, "highPrice": 574,
-    "highTime": 1685322000049353, "lowPrice": 564, "lowTime": 1685327142152580,
-    "closePrice": 568, "closeTime": 1685338200000000, "avgPrice": 568.77,
-    "change": 2, "changePercent": 0.35, "amplitude": 1.77, "lastPrice": 568,
-    "lastSize": 4778,
-    "bids": [{"price": 567, "size": 87}, {"price": 566, "size": 2454},
-             {"price": 565, "size": 611}, {"price": 564, "size": 609},
-             {"price": 563, "size": 636}],
-    "asks": [{"price": 568, "size": 800}, {"price": 569, "size": 806},
-             {"price": 570, "size": 3643}, {"price": 571, "size": 1041},
-             {"price": 572, "size": 2052}],
-    "total": {"tradeValue": 31019803000, "tradeVolume": 54538,
-              "tradeVolumeAtBid": 19853, "tradeVolumeAtAsk": 27900,
-              "transaction": 9530, "time": 1685338200000000},
-    "lastTrade": {"bid": 567, "ask": 568, "price": 568, "size": 4778,
-                  "time": 1685338200000000, "serial": 6652422},
-    "lastTrial": {"bid": 567, "ask": 568, "price": 568, "size": 4772,
-                  "time": 1685338196400347, "serial": 6651941},
-    "isClose": True, "serial": 6652422, "lastUpdated": 1685338200000000,
-}
+class Response:
+    def __init__(self,payload,status=200):self.payload=payload;self.status_code=status
+    def json(self):return self.payload
+class Session:
+    def __init__(self,responses):self.responses=iter(responses);self.calls=[]
+    def get(self,*args,**kwargs):self.calls.append((args,kwargs));return next(self.responses)
+    def close(self):pass
 
+class TestClient(unittest.TestCase):
+    def test_ticker_cached_daily_and_calls_throttled(self):
+        r,t=inputs();s=Session([Response(t),Response(r),Response(r)]);waits=[]
+        c=FugleClient('test-only',session=s,clock=lambda:0,sleep=waits.append)
+        c.quote('0050',now=NOW);c.quote('0050',now=NOW)
+        self.assertEqual(len(s.calls),3);self.assertEqual(waits,[1.1,1.1])
+        self.assertFalse(s.calls[0][1]['allow_redirects'])
+    def test_error_never_prints_key_or_response_body(self):
+        c=FugleClient('secret-test',session=Session([Response({'message':'secret-test'},401)]))
+        with self.assertRaises(FugleError) as e:c.quote('0050',now=NOW)
+        self.assertIn('401',str(e.exception));self.assertNotIn('secret-test',str(e.exception))
+    def test_symbol_cannot_inject_url(self):
+        c=FugleClient('test',session=Session([]))
+        with self.assertRaises(FugleError):c.quote('../config',now=NOW)
 
-class TestEpochConversion(unittest.TestCase):
-    def test_documented_epoch_converts_to_expected_wall_clock(self):
-        # 1685338200000000 us -> 2023-05-29 05:30:00 UTC -> 13:30:00+08:00
-        # (matches TWSE's real 13:30 market close time -- this is the
-        # `closeTime`/`lastUpdated` value from the official example.)
-        iso = _epoch_micros_to_iso(1685338200000000)
-        self.assertTrue(iso.startswith('2023-05-29T13:30:00'))
-        self.assertTrue(iso.endswith('+08:00'))
+class TestBatch(unittest.TestCase):
+    def test_batch_deduplicates_and_reuses_owned_client(self):
+        from stock_radar.fugle import fetch_quotes
+        from unittest.mock import Mock
+        c=Mock();c.quote.return_value={'symbol':'0050'}
+        self.assertEqual(fetch_quotes([{'symbol':'0050'},{'symbol':'0050'}], 'test',client=c),{'0050':{'symbol':'0050'}})
+        c.quote.assert_called_once_with('0050');c.close.assert_not_called()
+    def test_batch_rejects_over_quota_before_network(self):
+        from stock_radar.fugle import fetch_quotes
+        with self.assertRaises(FugleError):
+            fetch_quotes([{'symbol':str(1000+i)} for i in range(31)], 'test')
 
-    def test_none_and_garbage_rejected(self):
-        self.assertIsNone(_epoch_micros_to_iso(None))
-        self.assertIsNone(_epoch_micros_to_iso('not-a-number'))
-        self.assertIsNone(_epoch_micros_to_iso(0))
-        self.assertIsNone(_epoch_micros_to_iso(-5))
-
-
-class TestBuildQuote(unittest.TestCase):
-    def test_official_example_produces_regular_trade_not_trial(self):
-        """In the documented example, lastTrade.time (...200000000) is
-        AFTER lastTrial.time (...196400347), i.e. the market has closed
-        past the trial-match session -- so is_trial must be False, `price`
-        holds the real trade, and `trial_price` is still independently
-        populated from lastTrial (both keys are always populated when
-        available -- decide() reads whichever one it needs by wall-clock
-        window, not by is_trial alone)."""
-        q = build_quote('2330', TICKER_EXAMPLE, QUOTE_EXAMPLE)
-        self.assertFalse(q['is_trial'])
-        self.assertEqual(q['price'], 568.0)
-        self.assertEqual(q['trial_price'], 568.0)  # lastTrial.price in the example
-        self.assertTrue(q['as_of'].startswith('2023-05-29T13:30:00'))
-
-    def test_trial_only_payload_detected_as_trial(self):
-        """Construct a quote payload with only lastTrial present (no
-        lastTrade yet today) -- this is the real shape during the 08:30-
-        09:00 pre-market session per Fugle's docs. `price` must stay None
-        (no real trade happened yet) while `trial_price` is populated --
-        this is the exact case that a collapsed single-field design would
-        get wrong."""
-        payload = dict(QUOTE_EXAMPLE)
-        payload['lastTrade'] = {}
-        q = build_quote('2330', TICKER_EXAMPLE, payload)
-        self.assertTrue(q['is_trial'])
-        self.assertIsNone(q['price'])
-        self.assertEqual(q['trial_price'], 568.0)
-
-    def test_both_ticks_present_populates_both_fields_independently(self):
-        """Regression: even when both lastTrade and lastTrial exist (the
-        normal post-open state, trial data just lingering from the
-        morning), both price and trial_price must be independently
-        available on the quote dict -- collapsing to one field based on
-        is_trial was the bug this fixes."""
-        q = build_quote('2330', TICKER_EXAMPLE, QUOTE_EXAMPLE)
-        self.assertIsNotNone(q['price'])
-        self.assertIsNotNone(q['trial_price'])
-
-    def test_previous_close_and_reference_price_both_sourced_from_quote(self):
-        q = build_quote('2330', TICKER_EXAMPLE, QUOTE_EXAMPLE)
-        self.assertEqual(q['previous_close'], 566.0)
-        self.assertEqual(q['reference_price'], 566.0)
-
-    def test_limits_sourced_from_ticker(self):
-        q = build_quote('2330', TICKER_EXAMPLE, QUOTE_EXAMPLE)
-        self.assertEqual(q['limit_up'], 622.0)
-        self.assertEqual(q['limit_down'], 510.0)
-
-    def test_disposition_flag_passed_through(self):
-        q = build_quote('2330', TICKER_EXAMPLE, QUOTE_EXAMPLE)
-        self.assertFalse(q['disposition'])
-        disposed_ticker = dict(TICKER_EXAMPLE, isDisposition=True)
-        q2 = build_quote('2330', disposed_ticker, QUOTE_EXAMPLE)
-        self.assertTrue(q2['disposition'])
-
-    def test_bids_asks_parsed_as_numeric_dicts(self):
-        q = build_quote('2330', TICKER_EXAMPLE, QUOTE_EXAMPLE)
-        self.assertEqual(q['bids'][0], {'price': 567.0, 'size': 87.0})
-        self.assertEqual(len(q['bids']), 5)
-        self.assertEqual(len(q['asks']), 5)
-
-    def test_neither_trial_nor_trade_present_yields_no_price(self):
-        payload = dict(QUOTE_EXAMPLE, lastTrade={}, lastTrial={})
-        q = build_quote('2330', TICKER_EXAMPLE, payload)
-        self.assertIsNone(q['as_of'])
-        self.assertIsNone(q['price'])
-        self.assertIsNone(q['trial_price'])
-        self.assertIsNone(q['is_trial'])
-
-
-class TestFetchQuotes(unittest.TestCase):
-    def test_fetch_quotes_calls_ticker_then_quote_per_symbol(self):
-        class FakeResp:
-            def __init__(self, payload):
-                self.payload = payload
-            def raise_for_status(self):
-                pass
-            def json(self):
-                return self.payload
-
-        def fake_get(url, **kwargs):
-            if 'ticker' in url:
-                return FakeResp(TICKER_EXAMPLE)
-            return FakeResp(QUOTE_EXAMPLE)
-
-        session = mock.Mock()
-        session.get.side_effect = fake_get
-        out = fetch_quotes([{'symbol': '2330'}], 'fake-key', session=session)
-        self.assertIn('2330', out)
-        self.assertEqual(out['2330']['previous_close'], 566.0)
-        self.assertEqual(session.get.call_count, 2)
-        # confirm the API key header was actually sent
-        for call in session.get.call_args_list:
-            self.assertEqual(call.kwargs['headers']['X-API-KEY'], 'fake-key')
-
-
-if __name__ == '__main__':
-    unittest.main()
+if __name__=='__main__':unittest.main()

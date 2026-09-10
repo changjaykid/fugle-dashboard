@@ -29,6 +29,19 @@ def actionable_signal(now=NOW, **overrides):
     return sig
 
 
+def actionable_quote(now=NOW, **overrides):
+    q = {'previous_close': 3905.0, 'trial_price': 4000.0, 'as_of': now.isoformat()}
+    q.update(overrides)
+    return q
+
+
+def actionable_valuation(now=NOW, **overrides):
+    v = {'sweet': 3180.0, 'add': 3590.0, 'buy': 4080.0,
+        'valid_until': (now + timedelta(hours=1)).isoformat(), 'evidence_reviewed': True}
+    v.update(overrides)
+    return v
+
+
 class TestChunkText(unittest.TestCase):
     def test_short_text_single_chunk(self):
         self.assertEqual(chunk_text('hello'), ['hello'])
@@ -181,8 +194,8 @@ class TestFormatStatusLine(unittest.TestCase):
     def test_valued_item_shows_sab(self):
         item = {
             'symbol': '3661', 'name': '世芯-KY',
-            'quote': {'previous_close': 3905.0, 'trial_price': 4000.0},
-            'valuation': {'sweet': 3180.0, 'add': 3590.0, 'buy': 4080.0},
+            'quote': actionable_quote(),
+            'valuation': actionable_valuation(),
             'signal': actionable_signal(),
         }
         line = format_status_line(item, now=NOW)
@@ -211,8 +224,8 @@ class TestFormatStatusLine(unittest.TestCase):
         past = NOW - timedelta(hours=2)
         item = {
             'symbol': '3661', 'name': '世芯-KY',
-            'quote': {'previous_close': 3905.0, 'trial_price': 4000.0},
-            'valuation': {'sweet': 3180.0, 'add': 3590.0, 'buy': 4080.0},
+            'quote': actionable_quote(),
+            'valuation': actionable_valuation(),
             'signal': actionable_signal(now=past),  # valid_until = past + 1h, already before NOW
         }
         line = format_status_line(item, now=NOW)
@@ -222,10 +235,93 @@ class TestFormatStatusLine(unittest.TestCase):
     def test_actionable_signal_from_a_different_day_is_hidden(self):
         item = {
             'symbol': '3661', 'name': '世芯-KY',
-            'quote': {'previous_close': 3905.0, 'trial_price': 4000.0},
-            'valuation': {'sweet': 3180.0, 'add': 3590.0, 'buy': 4080.0},
+            'quote': actionable_quote(),
+            'valuation': actionable_valuation(),
             'signal': actionable_signal(now=NOW - timedelta(days=1),
                                         valid_until=(NOW + timedelta(hours=1)).isoformat()),
+        }
+        line = format_status_line(item, now=NOW)
+        self.assertNotIn('3175', line)
+
+    def test_suggested_above_buy_anchor_is_hidden(self):
+        """Regression (Codex review 2026-09-10): _revalidate_signal must
+        mirror docs/radar.js's own gate, which blanks the price whenever
+        suggested exceeds the valuation's buy anchor -- a stale/corrupt
+        signal claiming a price above 'buy' must not reach Discord even if
+        its own status/expiry fields still look superficially fine."""
+        item = {
+            'symbol': '3661', 'name': '世芯-KY',
+            'quote': actionable_quote(),
+            'valuation': actionable_valuation(buy=3000.0),  # suggested 3175 > buy 3000
+            'signal': actionable_signal(),
+        }
+        line = format_status_line(item, now=NOW)
+        self.assertNotIn('3175', line)
+        self.assertIn('過期', line)
+
+    def test_unreviewed_valuation_is_hidden(self):
+        """Regression (Codex review 2026-09-10): a valuation whose
+        evidence_reviewed is not exactly True must not reach Discord as an
+        actionable price, matching radar.js's v.evidence_reviewed!==true check."""
+        item = {
+            'symbol': '3661', 'name': '世芯-KY',
+            'quote': actionable_quote(),
+            'valuation': actionable_valuation(evidence_reviewed=False),
+            'signal': actionable_signal(),
+        }
+        line = format_status_line(item, now=NOW)
+        self.assertNotIn('3175', line)
+
+    def test_expired_valuation_itself_is_hidden_even_if_signal_looks_fresh(self):
+        """Regression (Codex review 2026-09-10): even if the SIGNAL's own
+        calculated_at/valid_until look fresh, an expired underlying
+        VALUATION (valuation.valid_until in the past) must still hide the
+        price -- the signal was computed from a valuation that has since
+        itself lapsed."""
+        item = {
+            'symbol': '3661', 'name': '世芯-KY',
+            'quote': actionable_quote(),
+            'valuation': actionable_valuation(valid_until=(NOW - timedelta(minutes=1)).isoformat()),
+            'signal': actionable_signal(),
+        }
+        line = format_status_line(item, now=NOW)
+        self.assertNotIn('3175', line)
+
+    def test_stale_quote_is_hidden_even_if_signal_and_valuation_look_fresh(self):
+        """Regression (Codex review 2026-09-10): a quote whose as_of is
+        from an earlier day (or missing) must hide the price even if the
+        signal/valuation fields look otherwise fine -- mirrors radar.js's
+        own !q || !Number.isFinite(timeValue(q.as_of)) || day(q.as_of)!==day(now) check."""
+        item = {
+            'symbol': '3661', 'name': '世芯-KY',
+            'quote': actionable_quote(now=NOW - timedelta(days=1)),
+            'valuation': actionable_valuation(),
+            'signal': actionable_signal(),
+        }
+        line = format_status_line(item, now=NOW)
+        self.assertNotIn('3175', line)
+
+    def test_missing_quote_is_hidden(self):
+        item = {
+            'symbol': '3661', 'name': '世芯-KY',
+            'quote': {},
+            'valuation': actionable_valuation(),
+            'signal': actionable_signal(),
+        }
+        line = format_status_line(item, now=NOW)
+        self.assertNotIn('3175', line)
+
+    def test_calculated_at_in_the_future_is_hidden(self):
+        """Regression (Codex review 2026-09-10): a calculated_at claiming a
+        future timestamp is invalid data (clock skew / corruption), not a
+        valid fresh signal -- must be hidden, mirroring radar.js's
+        calculated>now check."""
+        future = NOW + timedelta(minutes=5)
+        item = {
+            'symbol': '3661', 'name': '世芯-KY',
+            'quote': actionable_quote(),
+            'valuation': actionable_valuation(),
+            'signal': actionable_signal(calculated_at=future.isoformat()),
         }
         line = format_status_line(item, now=NOW)
         self.assertNotIn('3175', line)
@@ -270,8 +366,8 @@ class TestFormatDailySummary(unittest.TestCase):
 
     def test_actionable_listed(self):
         radar = self.make_radar([{
-            'symbol': '3661', 'name': '世芯-KY', 'quote': {'previous_close': 3905.0, 'trial_price': 4000.0},
-            'valuation': {'sweet': 3180.0, 'add': 3590.0, 'buy': 4080.0},
+            'symbol': '3661', 'name': '世芯-KY', 'quote': actionable_quote(),
+            'valuation': actionable_valuation(),
             'signal': actionable_signal(),
         }])
         out = format_daily_summary(radar, now=NOW)
@@ -280,8 +376,8 @@ class TestFormatDailySummary(unittest.TestCase):
 
     def test_actionable_but_expired_moves_to_other_counts_not_listed(self):
         radar = self.make_radar([{
-            'symbol': '3661', 'name': '世芯-KY', 'quote': {'previous_close': 3905.0, 'trial_price': 4000.0},
-            'valuation': {'sweet': 3180.0, 'add': 3590.0, 'buy': 4080.0},
+            'symbol': '3661', 'name': '世芯-KY', 'quote': actionable_quote(),
+            'valuation': actionable_valuation(),
             'signal': actionable_signal(now=NOW - timedelta(hours=2)),
         }])
         out = format_daily_summary(radar, now=NOW)

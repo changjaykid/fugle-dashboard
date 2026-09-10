@@ -616,10 +616,21 @@ class TestNotifyChanges(CliTestBase):
         return p
 
     def make_item(self, symbol, status, suggested=None):
+        now_iso = datetime.now(TW).isoformat()
         return {
             'symbol': symbol, 'name': symbol,
-            'quote': {'previous_close': 100.0, 'trial_price': None},
-            'valuation': None,
+            # quote.as_of must be TODAY for _revalidate_signal (mirrors
+            # docs/radar.js's own gate, Codex review 2026-09-10) to treat
+            # this as fresh instead of downgrading to 'stale'.
+            'quote': {'previous_close': 100.0, 'trial_price': None, 'as_of': now_iso},
+            # valuation must have a positive 'buy' >= suggested,
+            # evidence_reviewed=True, and a future valid_until, or
+            # _revalidate_signal downgrades any sweet/add/buy status to
+            # 'stale' regardless of the raw status field under test (which
+            # would make the two test runs' rendered text identical and
+            # mask the diff-detection under test).
+            'valuation': {'buy': (suggested or 0) + 100, 'evidence_reviewed': True,
+                         'valid_until': '2099-01-01T00:00:00+08:00'},
             'signal': {'status': status, 'status_label': status, 'suggested': suggested,
                       'conservative': None, 'extreme': None,
                       'valid_until': '2099-01-01T00:00:00+08:00',  # far future so
@@ -629,7 +640,7 @@ class TestNotifyChanges(CliTestBase):
                       # identical and mask the diff-detection under test).
                       # calculated_at must also be TODAY (not a hardcoded
                       # past date) for the same reason.
-                      'calculated_at': datetime.now(TW).isoformat(), 'action': ''},
+                      'calculated_at': now_iso, 'action': ''},
         }
 
     def test_first_run_with_no_actionable_items_sends_nothing(self):
@@ -668,6 +679,32 @@ class TestNotifyChanges(CliTestBase):
         with mock.patch('stock_radar.cli.send_message') as fake_send:
             self.run_cli('notify-changes', '--radar-json', str(p), '--test', '--dry-run')
         fake_send.assert_not_called()
+
+    def test_vanished_actionable_symbol_triggers_revocation_notice(self):
+        """Regression (Codex review 2026-09-10): a symbol that was
+        actionable in the last-notified snapshot but is entirely absent
+        from the next run's radar.json (not merely downgraded) must still
+        trigger a send, with an explicit revocation line -- not silence."""
+        p1 = self.make_radar([self.make_item('2330', 'sweet', suggested=100.0)])
+        p2 = self.make_radar([])  # 2330 gone entirely, e.g. dropped by a later sync-universe
+        with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \
+             mock.patch('stock_radar.cli.send_message', return_value={'id': '1'}) as fake_send:
+            self.run_cli('notify-changes', '--radar-json', str(p1), '--test')
+            self.run_cli('notify-changes', '--radar-json', str(p2), '--test')
+        self.assertEqual(fake_send.call_count, 2)
+        second_call_text = fake_send.call_args_list[1][0][1]
+        self.assertIn('2330', second_call_text)
+        self.assertIn('撤回', second_call_text)
+
+    def test_revocation_alone_with_no_other_changes_still_sends(self):
+        p1 = self.make_radar([self.make_item('2330', 'sweet', suggested=100.0),
+                              self.make_item('0050', 'pending')])
+        p2 = self.make_radar([self.make_item('0050', 'pending')])  # 0050 unchanged, 2330 vanished
+        with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \
+             mock.patch('stock_radar.cli.send_message', return_value={'id': '1'}) as fake_send:
+            self.run_cli('notify-changes', '--radar-json', str(p1), '--test')
+            self.run_cli('notify-changes', '--radar-json', str(p2), '--test')
+        self.assertEqual(fake_send.call_count, 2)
 
 
 class TestDiscordLookup(CliTestBase):

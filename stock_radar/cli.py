@@ -34,13 +34,13 @@ from .domain import TW, decide
 from .store import Store, atomic_json
 from .universe import build_universe, equity_universe
 from .quotes import fetch_quotes, fetch_daily_close_all
-from .fugle import fetch_quotes as fetch_fugle_quotes
+from .fugle import fetch_quotes as fetch_fugle_quotes, FugleClient, FugleError
 from .financials import fetch_quarterly_income_general, fetch_monthly_revenue, fetch_pe_yield_pb
 from .tpex import fetch_otc_daily_close
 from .calendar import fetch_holiday_schedule, is_trading_day
 from .risk import build_risk_facts
-from .runtime import single_flight_lock, ThrottledSession, LockBusyError
-from .diff import significant_changes_against_snapshot, snapshot_signals
+from .runtime import single_flight_lock, LockBusyError
+from .diff import significant_changes_against_snapshot, snapshot_signals, revoked_actionable_symbols
 import hashlib
 import time as _time
 from .export import build_radar_json
@@ -78,9 +78,15 @@ DEFAULT_DB = DEMO_DB  # kept as the argparse default so existing dev/test invoca
 # claim full-market real-time coverage anywhere, and this cap is what
 # keeps that claim honest in code, not just in a doc comment someone could
 # drift away from.
-FUGLE_CANDIDATE_CAP = 50
+# 30-symbol cap matches stock_radar.fugle.fetch_quotes()'s own max_symbols
+# default (Codex's v2 FugleClient adapter, 2026-09-10): one ticker+quote
+# call pair per symbol at a fixed 1.1s-between-requests pace (enforced
+# inside FugleClient itself, not by a session wrapper here -- see below),
+# so 30 candidates is roughly 66s per sync-quotes tick. Kept in sync with
+# fugle.py's own default rather than silently drifting to a different
+# number in two places.
+FUGLE_CANDIDATE_CAP = 30
 FUGLE_LOCK_PATH = Path(__file__).parent.parent / '_state' / 'fugle_sync.lock'
-FUGLE_MIN_INTERVAL_SECONDS = 0.34  # ~3 req/s conservative default; see runtime.ThrottledSession
 # Recommended production runtime path: outside any git worktree, inside
 # the durable OpenClaw workspace root (survives worktree add/remove and is
 # covered by the workspace's own backup skill, unlike a path inside a
@@ -162,16 +168,38 @@ def cmd_sync_quotes(args):
                 # --source fugle process is already running (e.g. an
                 # overlapping cron tick), this run skips cleanly rather than
                 # queuing up a second concurrent burst against the same
-                # rate-limited quota.
+                # rate-limited quota. Pacing itself (1.1s between requests)
+                # is now enforced INSIDE FugleClient (see fugle.py v2's
+                # FugleClient._get), not by a session wrapper here -- the
+                # lock still exists at this layer because it is a
+                # cross-process guard (two separate `python3 -m
+                # stock_radar.cli` invocations), which a per-client-instance
+                # pacing lock cannot provide on its own.
                 with single_flight_lock(FUGLE_LOCK_PATH):
-                    throttled = ThrottledSession(FUGLE_MIN_INTERVAL_SECONDS)
-                    quotes = fetch_fugle_quotes(instruments, key, session=throttled)
+                    client = FugleClient(key)
+                    # fetch_fugle_quotes' own max_symbols enforces the cap
+                    # BEFORE any network call (fail loud, not a silent
+                    # partial truncation). --allow-full-market-fugle is a
+                    # deliberate, explicit per-call override of that limit
+                    # (not a way to make Fugle usage look unbounded by
+                    # default) -- it raises the ceiling only for this one
+                    # invocation, to exactly len(instruments), never higher.
+                    cap = len(instruments) if args.allow_full_market_fugle else FUGLE_CANDIDATE_CAP
+                    try:
+                        quotes = fetch_fugle_quotes(instruments, key, client=client, max_symbols=cap)
+                    finally:
+                        client.close()
                 source_used = 'fugle'
                 print(f'quotes source: Fugle marketdata v1.0 ({len(quotes)} symbols)')
             except LockBusyError as exc:
                 fugle_error = repr(exc)
                 print(f'Fugle sync already in progress elsewhere, skipping this tick ({exc}); falling back to mis.twse.com.tw')
             except Exception as exc:
+                # Includes FugleError (network/HTTP/schema failures) and
+                # any other unexpected error. Never silently swallowed as
+                # success -- fugle_error is recorded into last_quote_sync
+                # below, and the fallback to mis.twse is itself printed
+                # loudly, not disguised as a Fugle success.
                 fugle_error = repr(exc)
                 print(f'Fugle source failed ({fugle_error}); falling back to mis.twse.com.tw')
         if quotes is None:
@@ -446,6 +474,26 @@ def cmd_export(args):
         out = build_radar_json(instruments=target, quotes=quotes, decisions=decisions,
                                valuations=valuations, research=research, health=health,
                                mode=args.mode, now=now)
+        # Self-check the payload we're about to publish BEFORE writing it,
+        # using the exact same verify_radar.verify() gate a human would run
+        # manually -- catches a schema/contract regression at export time
+        # instead of only discovering it later when the frontend or a
+        # Discord notify job chokes on a malformed docs/radar.json. This
+        # check is diagnostic-only here (never blocks the write): the tool
+        # itself has no network access and cannot fix a real upstream data
+        # problem, and refusing to publish ANY snapshot because one symbol
+        # has a bad record would be worse than publishing with a visible
+        # warning. --mode live additionally runs the tool's own stricter
+        # `production=True` gate (freshness window, no simulation data).
+        try:
+            from tools.verify_radar import verify as _verify_radar
+            _verify_errors = _verify_radar(out, production=(args.mode == 'live'))
+        except Exception as exc:
+            _verify_errors = [f'verify_radar itself failed to run: {exc!r}']
+        if _verify_errors:
+            print(f'WARNING: verify_radar found {len(_verify_errors)} issue(s) (export still written, evidence fields preserved):')
+            for e in _verify_errors[:20]:
+                print(f'  - {e}')
         atomic_json(args.out, out)
         print(f'exported {len(target)} instruments to {args.out} (mode={args.mode}, quotes={out["coverage"]["quotes"]}, valued={out["coverage"]["valued"]})')
     finally:
@@ -571,19 +619,36 @@ def cmd_notify_changes(args):
         now = datetime.now(TW)
         previous_snapshot = store.meta('last_notified_signals')
         changed = significant_changes_against_snapshot(previous_snapshot, radar['items'])
+        # Revoked BEFORE the snapshot is overwritten below -- this needs
+        # the OLD (previous_snapshot) vs CURRENT items comparison, per
+        # Codex review 2026-09-10: a symbol that was previously actionable
+        # (sweet/add/buy) but has vanished from current_items entirely
+        # (delisted / dropped by a later sync-universe / correction) must
+        # get an explicit revocation notice, since a human may still be
+        # acting on the stale instruction and silence would be read as
+        # "still valid", not "we don't know anymore".
+        revoked = revoked_actionable_symbols(previous_snapshot, radar['items'])
         # Always refresh the snapshot to the CURRENT full state, regardless
         # of whether anything changed -- otherwise a quiet run would leave
         # the next comparison pointed at an older, possibly stale baseline.
         store.set_meta('last_notified_signals', snapshot_signals(radar['items']))
-        if not changed:
+        if not changed and not revoked:
             print('no significant signal changes since last notification; nothing sent')
             return
         is_test = is_test_mode(radar, explicit_test=args.test)
         header = TEST_MARKER_PREFIX if is_test else ''
-        lines = [f'{header}雷達變化通知 {radar.get("market_date")} {radar.get("generated_at", "")[11:16]}',
-                '', f'{len(changed)} 檔狀態/掛價有重大變化：']
-        for item in changed:
-            lines.append(format_status_line(item, now=now))
+        lines = [f'{header}雷達變化通知 {radar.get("market_date")} {radar.get("generated_at", "")[11:16]}', '']
+        if changed:
+            lines.append(f'{len(changed)} 檔狀態/掛價有重大變化：')
+            for item in changed:
+                lines.append(format_status_line(item, now=now))
+        if revoked:
+            if changed:
+                lines.append('')
+            status_label = {'sweet': '甜甜價', 'add': '加碼區', 'buy': '買進區'}
+            lines.append(f'{len(revoked)} 檔之前的可行動掛價已撤回（標的不再存在於母表，請勿再依旧指令掃單）：')
+            for r in revoked:
+                lines.append(f"- {r['symbol']}（原狀態：{status_label.get(r['previous_status'], r['previous_status'])}）")
         text = '\n'.join(lines)
         chunks = chunk_text(text)
         if args.dry_run:

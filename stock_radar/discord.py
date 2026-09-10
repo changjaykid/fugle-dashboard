@@ -125,22 +125,57 @@ def chunk_text(text: str, limit: int = MESSAGE_CHAR_LIMIT) -> list[str]:
     return chunks
 
 
+def _positive(n) -> bool:
+    return isinstance(n, (int, float)) and not isinstance(n, bool) and n > 0
+
+
 def _revalidate_signal(item: dict, now: datetime) -> dict:
-    """Re-check a signal's own expiry/date fields against the actual send
-    time before formatting -- radar.json may have been generated some time
-    before this function runs (export -> notify-summary can be two
-    separate cron steps), and per RADAR_DATA_CONTRACT.md any positive
-    signal past valid_until or off today's date must have its price
-    hidden, not just at frontend render time. Returns a possibly-downgraded
-    copy of the signal dict; never upgrades a non-actionable status."""
+    """Re-check a signal against the actual send time before formatting --
+    radar.json may have been generated some time before this function runs
+    (export -> notify-summary can be two separate cron steps), and per
+    RADAR_DATA_CONTRACT.md any positive signal that is no longer backed by
+    fresh/valid/reviewed data must have its price hidden, not just at
+    frontend render time. Returns a possibly-downgraded copy of the signal
+    dict; never upgrades a non-actionable status.
+
+    Mirrors docs/radar.js's own `signal()` gate exactly (Codex review
+    2026-09-10: the two must give the same actionable/non-actionable
+    verdict for the same data, or a stale/invalid signal could still reach
+    a human via Discord even though the frontend would have already
+    hidden it) -- checks, in the same order as radar.js:
+      1. suggested is a positive number
+      2. valuation exists and has a positive `buy`, and suggested <= buy
+      3. signal.valid_until parses and is still in the future
+      4. signal.calculated_at parses, is not in the future, and is TODAY
+      5. quote exists and quote.as_of parses, is not in the future, and is TODAY
+      6. valuation.valid_until parses and is still in the future (the
+         valuation itself, not just the signal computed from it, must
+         still be live)
+      7. valuation.evidence_reviewed is exactly True
+    Any failure downgrades to 'stale' and blanks suggested/conservative/extreme,
+    identical to radar.js's own fallback text/behavior.
+    """
     sig = dict(item.get('signal') or {})
     if sig.get('status') in ('sweet', 'add', 'buy'):
+        v = item.get('valuation') or {}
+        q = item.get('quote') or {}
         expires = stamp(sig.get('valid_until'))
         calc = stamp(sig.get('calculated_at'))
-        if not expires or now >= expires or not calc or calc.date() != now.date():
+        quote_at = stamp(q.get('as_of'))
+        valuation_expires = stamp(v.get('valid_until'))
+        ok = (
+            _positive(sig.get('suggested'))
+            and _positive(v.get('buy')) and sig['suggested'] <= v['buy']
+            and expires is not None and expires > now
+            and calc is not None and calc <= now and calc.date() == now.date()
+            and quote_at is not None and quote_at <= now and quote_at.date() == now.date()
+            and valuation_expires is not None and valuation_expires > now
+            and v.get('evidence_reviewed') is True
+        )
+        if not ok:
             sig.update(status='stale', status_label='資料過期', suggested=None,
                       conservative=None, extreme=None,
-                      reason='掛價已過效期或跨日，發送前重新檢查已隱藏', action='請重新查詢最新雷達資料')
+                      reason='掛價已過期或資料不完整，發送前重新檢查已隱藏', action='請重新查詢最新雷達資料')
     return sig
 
 

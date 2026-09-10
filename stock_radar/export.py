@@ -52,11 +52,36 @@ def build_radar_json(*, instruments, quotes, decisions, valuations, research,
             'is_trial': False, 'source': '尚未取得', 'source_url': None,
         }
         if q:
+            # Two quote shapes reach this function:
+            #  - stock_radar.quotes (mis.twse.com.tw fallback): a single
+            #    'price' key, no 'trial_price' key at all, with 'is_trial'
+            #    always None (see that module's own docstring: it cannot
+            #    reliably tell trial vs regular price apart) -- the OLD
+            #    collapsed-field contract, kept for backward compatibility
+            #    with that fallback source.
+            #  - stock_radar.fugle (Codex's v2 FugleClient adapter):
+            #    'price' and 'trial_price' are ALWAYS both present as
+            #    independent dict keys (build via normalize_quote()),
+            #    'trial_price' only non-None during the real 08:30-09:00
+            #    pre-market trial session per the venue's own timestamp
+            #    (see fugle.py's `pretrial` check) -- collapsing these back
+            #    into one field via is_trial here would silently discard a
+            #    real trial-match tick. Detect which shape we have via the
+            #    presence of the 'trial_price' KEY itself (mis.twse quotes
+            #    never set it), not via is_trial, so a fugle quote with
+            #    is_trial=False but a populated trial_price still exports
+            #    correctly instead of being dropped.
+            if 'trial_price' in q:
+                price_out = q.get('price')
+                trial_price_out = q.get('trial_price')
+            else:
+                price_out = q.get('price') if not q.get('is_trial') else None
+                trial_price_out = q.get('price') if q.get('is_trial') else None
             quote_out.update({
                 'previous_close': q.get('previous_close'),
                 'reference_price': q.get('reference_price'),
-                'price': q.get('price') if not q.get('is_trial') else None,
-                'trial_price': q.get('price') if q.get('is_trial') else None,
+                'price': price_out,
+                'trial_price': trial_price_out,
                 'as_of': q.get('as_of'), 'trade_date': q.get('trade_date'),
                 'is_trial': bool(q.get('is_trial')),
                 'source': q.get('source') or '尚未取得',

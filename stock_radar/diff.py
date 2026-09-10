@@ -11,7 +11,19 @@ from __future__ import annotations
 # even when nothing meaningful moved (decide() always stamps it to `now`),
 # so it must NOT be in this list or every single export would look like a
 # change and defeat the entire point of the 08:55 step.
-SIGNIFICANT_SIGNAL_FIELDS = ('status', 'suggested', 'conservative', 'extreme', 'valid_until')
+#
+# `valid_until` is EXCLUDED for the same reason (Codex review,
+# 2026-09-10): decide() recomputes valid_until as roughly now+max_age on
+# every single export even when the underlying status/suggested price
+# have not changed at all, so comparing it raw made every run of an
+# unchanged sweet/add/buy signal look like a "change" purely because its
+# time window rolled forward -- a pure renewal/re-freshening, not
+# something a human needs pinged about again. A signal that actually
+# EXPIRES (rather than merely being re-stamped with a new window) is
+# still caught here: decide() flips its `status` to 'stale'/'blocked' once
+# the underlying quote/valuation genuinely goes stale, and `status` IS in
+# this list.
+SIGNIFICANT_SIGNAL_FIELDS = ('status', 'suggested', 'conservative', 'extreme')
 
 
 def _signal_key(item: dict) -> dict:
@@ -73,3 +85,33 @@ def significant_changes_against_snapshot(snapshot: dict, current_items: list[dic
         if current_key != prev_key:
             changed.append(item)
     return changed
+
+
+def revoked_actionable_symbols(snapshot: dict, current_items: list[dict]) -> list[dict]:
+    """Symbols that were actionable (sweet/add/buy) in the last-notified
+    snapshot but have vanished from current_items ENTIRELY (delisted,
+    dropped from universe by a later sync-universe, or an instrument
+    correction) -- per Codex review 2026-09-10, this is a DISTINCT case
+    from an ordinary coverage regression (a missing quote/valuation, which
+    is already surfaced via cmd_export's health entries): a human who was
+    previously told "sweet price on X" needs an explicit revocation line
+    if X disappears outright, not silence, since they may still be
+    watching/acting on that stale instruction. A symbol that is still
+    PRESENT in current_items (even if its status has since dropped to
+    'stale'/'blocked'/'pending') is NOT reported here -- that is an
+    ordinary status change, already caught by
+    significant_changes_against_snapshot()'s normal path.
+
+    Returns [{'symbol': ..., 'previous_status': 'sweet'|'add'|'buy'}, ...].
+    Self-resolving: callers refresh the stored snapshot to the CURRENT
+    item set on every run regardless of what changed (see cli.py's
+    cmd_notify_changes), so a revoked symbol -- being entirely absent from
+    that current set -- naturally drops out of next run's snapshot too,
+    and is reported here exactly once, not on every subsequent run.
+    """
+    current_symbols = {i['symbol'] for i in current_items}
+    revoked = []
+    for symbol, prev_key in snapshot.items():
+        if prev_key.get('status') in ('sweet', 'add', 'buy') and symbol not in current_symbols:
+            revoked.append({'symbol': symbol, 'previous_status': prev_key.get('status')})
+    return revoked

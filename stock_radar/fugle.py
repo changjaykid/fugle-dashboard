@@ -1,177 +1,173 @@
-"""Fugle marketdata REST fetcher -- the only source with a real, data-driven
-trial-match (試撮) signal and an explicit previousClose/referencePrice split.
-Replaces mis.twse.com.tw (quotes.py) as the primary quote source once a
-working API key is confirmed; quotes.py is kept only as an offline-tested
-fallback whose own docstring already says it cannot separate
-previous_close from reference_price and cannot detect trial-match state.
+"""Fugle REST adapter; official v1.0 quote/ticker contract, verified 2026-09-10.
 
-Endpoints (official schemas, verified against developer.fugle.tw docs
-2026-09-10, both endpoints require `X-API-KEY`):
-  GET https://api.fugle.tw/marketdata/v1.0/stock/intraday/quote/{symbol}
-      -> previousClose, referencePrice, lastPrice, lastTrade{price,time},
-         lastTrial{price,time}, bids, asks, isClose, lastUpdated
-      Both previousClose and referencePrice are present in /quote itself
-      (per the documented example payload) and are NOT assumed equal --
-      unlike mis.twse.com.tw (quotes.py), which only exposes one field and
-      forces that assumption, silently hiding ex-dividend/split deltas.
-  GET https://api.fugle.tw/marketdata/v1.0/stock/intraday/ticker/{symbol}
-      -> limitUpPrice, limitDownPrice, isDisposition, securityStatus
-      (used only for limit-up/down and disposition flag; its own
-      previousClose/referencePrice are ignored in favor of /quote's, so
-      there is exactly one source of truth for that pair, not two that
-      could silently drift apart)
-
-Trial-match detection (data-driven, NOT clock-based, per
-STOCK_RADAR_SPEC.md's explicit ban on inferring is_trial from wall-clock
-time): compare `lastTrial.time` vs `lastTrade.time` from the /quote
-response. If lastTrial exists and is the same or more recent than any
-lastTrade (or no lastTrade exists yet today), the venue's own data says the
-most recent observation is a trial match, so is_trial=True with
-price/as_of taken from lastTrial. Otherwise is_trial=False using lastTrade.
-If neither object is present, quote is unusable (as_of=None) rather than
-guessed.
-
-as_of / book_as_of: derived from the API's own `lastUpdated` /
-lastTrade.time / lastTrial.time (microsecond epoch, per docs), NEVER from
-our local fetch wall-clock -- a network delay or retry must not disguise
-old venue data as fresh. `fetched_at` is recorded separately for
-diagnostics only and is never read by domain.decide().
+Credentials stay in caller-owned private configuration. Requests are limited to
+~54/min per shared client, below the free 60/min quota. Run only one collector
+per account; independent processes must share the scheduler's process lock.
+A lastTrial object is historical information, not evidence of an active trial.
 """
-from __future__ import annotations
+from datetime import datetime, time as daytime
+import threading
+import time
+import re
 
-from datetime import datetime, timezone, timedelta
+import requests
+from .domain import TW, positive
 
-TW = timezone(timedelta(hours=8))
-API_BASE = 'https://api.fugle.tw/marketdata/v1.0/stock'
+BASE = 'https://api.fugle.tw/marketdata/v1.0/stock/'
 
 
-def _epoch_micros_to_iso(value) -> str | None:
-    """Fugle timestamps are documented as microsecond epoch integers
-    (e.g. 1685338200000000). Reject anything that doesn't parse as a
-    positive int rather than guessing a different unit."""
+class FugleError(RuntimeError):
+    pass
+
+
+def microtime(value):
+    n = positive(value)
+    if n is None or not 10**14 < n < 4*10**15:
+        return None
     try:
-        micros = int(value)
-    except (TypeError, ValueError):
-        return None
-    if micros <= 0:
-        return None
-    return datetime.fromtimestamp(micros / 1_000_000, tz=timezone.utc).astimezone(TW).isoformat()
-
-
-def _num(v):
-    try:
-        n = float(v)
-        return n if n == n else None  # reject NaN
-    except (TypeError, ValueError):
+        return datetime.fromtimestamp(n / 1000000, TW)
+    except (OverflowError, OSError, ValueError):
         return None
 
 
-def _headers(api_key: str) -> dict:
-    return {'X-API-KEY': api_key, 'User-Agent': 'StockRadar/1.0'}
+def levels(rows):
+    if not isinstance(rows, list):
+        return []
+    result=[]
+    for row in rows[:5]:
+        if not isinstance(row, dict):
+            continue
+        price, size=positive(row.get('price')),positive(row.get('size'))
+        if price is not None and size is not None:
+            result.append({'price':price,'size':size})
+    return result
 
 
-def fetch_ticker(symbol: str, api_key: str, *, session=None, timeout=15) -> dict:
-    """Raises on HTTP failure (incl. 401/403/429) -- caller must record a
-    health entry, never silently reuse a previous ticker response."""
-    import requests
-    http = session or requests
-    resp = http.get(f'{API_BASE}/intraday/ticker/{symbol}', headers=_headers(api_key), timeout=timeout)
-    resp.raise_for_status()
-    return resp.json()
-
-
-def fetch_quote(symbol: str, api_key: str, *, session=None, timeout=15) -> dict:
-    import requests
-    http = session or requests
-    resp = http.get(f'{API_BASE}/intraday/quote/{symbol}', headers=_headers(api_key), timeout=timeout)
-    resp.raise_for_status()
-    return resp.json()
-
-
-def _book(levels) -> list[dict]:
-    out = []
-    for lvl in levels or []:
-        p, s = _num(lvl.get('price')), _num(lvl.get('size'))
-        if p is not None and s is not None:
-            out.append({'price': p, 'size': s})
-    return out
-
-
-def build_quote(symbol: str, ticker_payload: dict, quote_payload: dict) -> dict:
-    """Pure function: combine one /ticker + one /quote response into our
-    internal quote shape. Kept separate from the network calls so this is
-    fully unit-testable against the official documented example payloads
-    without any mocking of requests.
-
-    IMPORTANT (fixed per Codex review of an earlier draft): `price` and
-    `trial_price` are populated INDEPENDENTLY from lastTrade/lastTrial --
-    never collapsed into a single field gated by `is_trial`. domain.decide()
-    reads `quote['trial_price']` during the pre-market window and
-    `quote['price']` otherwise as two separate dict keys on the SAME quote
-    object (see cli.py cmd_export: the raw stored quote is passed straight
-    into decide(), it is not the export-reshaped view); a single shared
-    `price` field would silently make every real trial-match tick
-    undetectable by decide() even though the data was fetched correctly.
-    `is_trial` is a data-driven corroborating flag (which of the two ticks
-    is more recent per the venue's own timestamps), used by decide() as a
-    cross-check against wall-clock time -- not as the sole discriminator
-    for which price field holds data.
-    """
-    last_trial = quote_payload.get('lastTrial') or {}
-    last_trade = quote_payload.get('lastTrade') or {}
-    trial_time = last_trial.get('time')
-    trade_time = last_trade.get('time')
-    trial_price = _num(last_trial.get('price')) if trial_time is not None else None
-    trade_price = _num(last_trade.get('price')) if trade_time is not None else None
-    if trial_time is not None and (trade_time is None or int(trial_time) >= int(trade_time)):
-        is_trial = True
-        as_of = _epoch_micros_to_iso(trial_time)
-    elif trade_time is not None:
-        is_trial = False
-        as_of = _epoch_micros_to_iso(trade_time)
-    else:
-        is_trial = None  # neither tick present -- genuinely unknown, not guessed
-        as_of = None
-    book_as_of = _epoch_micros_to_iso(quote_payload.get('lastUpdated'))
-    trade_date = quote_payload.get('date') or ticker_payload.get('date')
+def normalize_quote(raw, ticker, *, now=None):
+    now=(now or datetime.now(TW)).astimezone(TW)
+    if not isinstance(raw, dict) or not isinstance(ticker, dict):
+        raise FugleError('Fugle 回應格式錯誤')
+    symbol=raw.get('symbol')
+    if not symbol or symbol!=ticker.get('symbol'):
+        raise FugleError('Fugle 報價與標的資料不一致')
+    trial=raw.get('lastTrial') or {}
+    trade=raw.get('lastTrade') or {}
+    if not isinstance(trial,dict) or not isinstance(trade,dict):
+        raise FugleError('Fugle 成交或試撮資料格式錯誤')
+    updated=microtime(raw.get('lastUpdated'))
+    trial_at=microtime(trial.get('time'))
+    trade_at=microtime(trade.get('time'))
+    phase=True if raw.get('isTrial') is True else (
+        False if raw.get('isTrial') is False or any(raw.get(k) is True for k in ('isOpen','isContinuous','isClose')) else None)
+    price_at=trial_at if phase is True else trade_at if phase is False else None
+    source_at=min(price_at, updated) if price_at and updated else None
+    issues=[]
+    if raw.get('date')!=ticker.get('date'):
+        issues.append('報價與交易限制日期不一致')
+    if ticker.get('tradingCurrency')!='TWD':
+        issues.append('尚不支援此交易幣別')
+    if ticker.get('securityStatus')!='NORMAL':
+        issues.append('交易狀態未確認正常')
+    if ticker.get('securityType') not in ('01','24'):
+        issues.append('此證券類別不適用 V1 掛價')
+    if not source_at or not updated or source_at>now or updated>now:
+        issues.append('來源行情時間缺失或異常')
+    if phase is None:
+        issues.append('缺少明確交易階段旗標')
+    for field in ('previousClose','referencePrice'):
+        a,b=positive(raw.get(field)),positive(ticker.get(field))
+        if a and b and abs(a-b)>0.000001:
+            issues.append(field+'來源不一致')
+    halt=raw.get('tradingHalt') or {}
+    if not isinstance(halt, dict):
+        issues.append('暫停交易資料格式異常');halt={}
+    pretrial=bool(trial_at and trial_at.date().isoformat()==raw.get('date') and
+                  daytime(8,30)<=trial_at.time().replace(tzinfo=None)<daytime(9))
     return {
-        'symbol': symbol,
-        'name': ticker_payload.get('name') or quote_payload.get('name'),
-        'as_of': as_of,
-        'trade_date': trade_date,
-        'is_trial': is_trial,
-        'price': trade_price,
-        'trial_price': trial_price,
-        # Both fields sourced from /quote alone (see module docstring) --
-        # decide() compares previous_close vs reference_price to detect
-        # ex-dividend/split events; they must come from one response so a
-        # timing mismatch between two separate API calls can never create
-        # a false corporate-action alarm (or hide a real one).
-        'previous_close': _num(quote_payload.get('previousClose')),
-        'reference_price': _num(quote_payload.get('referencePrice')),
-        'limit_up': _num(ticker_payload.get('limitUpPrice')),
-        'limit_down': _num(ticker_payload.get('limitDownPrice')),
-        'book_as_of': book_as_of,
-        'bids': _book(quote_payload.get('bids')),
-        'asks': _book(quote_payload.get('asks')),
-        'halted': None,  # not in ticker's documented example fields; securityStatus
-                        # covers "NORMAL" but not an explicit halt boolean we've verified
-        'disposition': ticker_payload.get('isDisposition'),
-        'source': 'api.fugle.tw marketdata v1.0',
-        'source_url': f'{API_BASE}/intraday/quote/{symbol}',
+        'symbol':symbol,'name':raw.get('name'),'trade_date':raw.get('date'),
+        'as_of':source_at.isoformat() if source_at else None,
+        'fetched_at':now.isoformat(), 'is_trial':phase,
+        'price':positive(trial.get('price') if phase is True else trade.get('price')),
+        'last_trade_price':positive(trade.get('price')),
+        'trial_price':positive(trial.get('price')) if pretrial else None,
+        'trial_as_of':trial_at.isoformat() if pretrial else None,
+        'previous_close':positive(raw.get('previousClose')),
+        'reference_price':positive(raw.get('referencePrice')),
+        'limit_up':positive(ticker.get('limitUpPrice')),
+        'limit_down':positive(ticker.get('limitDownPrice')),
+        'book_as_of':updated.isoformat() if updated else None,
+        'bids':levels(raw.get('bids')), 'asks':levels(raw.get('asks')),
+        'halted':bool(issues) or halt.get('isHalted') is True or any(raw.get(k) is True for k in ('isDelayedOpen','isDelayedClose','isLimitUpHalt','isLimitDownHalt')),
+        'disposition':ticker.get('isDisposition') is not False,
+        'security_status':ticker.get('securityStatus'),
+        'security_type':ticker.get('securityType'),
+        'currency':ticker.get('tradingCurrency'),
+        'issues':issues,'is_close':raw.get('isClose') is True,
+        'source':'Fugle REST','source_url':BASE+'intraday/quote/'+symbol,
     }
 
 
-def fetch_quotes(instruments, api_key: str, *, session=None, timeout=15) -> dict[str, dict]:
-    """One ticker+quote call pair per symbol (Fugle's REST API has no
-    documented batch endpoint like mis.twse's `|`-joined ex_ch). Raises
-    immediately on the first HTTP failure (401/403/429/5xx) rather than
-    returning partial silently-degraded results, so callers can fall back
-    to quotes.py or abort per the caller's own policy."""
-    out = {}
-    for inst in instruments:
-        symbol = inst['symbol']
-        ticker = fetch_ticker(symbol, api_key, session=session, timeout=timeout)
-        quote = fetch_quote(symbol, api_key, session=session, timeout=timeout)
-        out[symbol] = build_quote(symbol, ticker, quote)
-    return out
+class FugleClient:
+    def __init__(self, api_key, *, session=None, clock=time.monotonic, sleep=time.sleep):
+        if not isinstance(api_key,str) or not api_key.strip() or '\n' in api_key or '\r' in api_key:
+            raise FugleError('尚未配置有效 Fugle 金鑰')
+        self._key=api_key.strip()
+        self._session=session or requests.Session()
+        self._clock=clock;self._sleep=sleep;self._last=None
+        self._lock=threading.Lock();self._tickers={}
+
+    def _get(self, endpoint, symbol):
+        if not isinstance(symbol,str) or not re.fullmatch(r'[A-Za-z0-9]{4,10}',symbol):
+            raise FugleError('無效股票代號')
+        with self._lock:
+            if self._last is not None:
+                self._sleep(max(0,1.1-(self._clock()-self._last)))
+            self._last=self._clock()
+            try:
+                response=self._session.get(BASE+'intraday/'+endpoint+'/'+symbol,
+                    headers={'X-API-KEY':self._key},timeout=(5,15),allow_redirects=False)
+            except requests.RequestException:
+                raise FugleError('Fugle 連線失敗；未更新行情') from None
+        if response.status_code!=200:
+            # Never include a response body, request headers or original exception.
+            raise FugleError(f'Fugle HTTP {response.status_code}；未更新行情')
+        try:
+            result=response.json()
+        except (ValueError,TypeError):
+            raise FugleError('Fugle 非有效 JSON 回應') from None
+        if not isinstance(result,dict) or result.get('symbol')!=symbol:
+            raise FugleError('Fugle 回應標的不一致')
+        return result
+
+    def quote(self, symbol, *, now=None):
+        injected_now=now
+        now=(now or datetime.now(TW)).astimezone(TW)
+        cache_key=(symbol,now.date().isoformat())
+        if cache_key not in self._tickers:
+            self._tickers[cache_key]=self._get('ticker',symbol)
+        raw=self._get('quote',symbol)
+        # Use actual receive time in live operation; injected time is for replay tests.
+        return normalize_quote(raw,self._tickers[cache_key],now=injected_now or datetime.now(TW))
+
+    def close(self):
+        self._session.close()
+
+
+def fetch_quotes(instruments, api_key, *, client=None, max_symbols=30):
+    """One bounded candidate batch. Reuse client across polling rounds.
+
+    This is NOT a full-market realtime scanner. First pass needs two
+    requests/symbol; 30 candidates fit roughly 66 seconds at free quota.
+    Failure propagates; callers must record unhealthy state, never stamp
+    old data as fresh or mistake a fallback feed for confirmed trial data.
+    """
+    symbols=list(dict.fromkeys(i['symbol'] for i in instruments))
+    if len(symbols)>max_symbols:
+        raise FugleError(f'候選數 {len(symbols)} 超過單批上限 {max_symbols}；請先依已核准估值篩選')
+    owned=client is None
+    client=client or FugleClient(api_key)
+    try:
+        return {s:client.quote(s) for s in symbols}
+    finally:
+        if owned:
+            client.close()
