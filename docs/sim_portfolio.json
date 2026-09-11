@@ -65,10 +65,10 @@
       "n": "國巨*",
       "entry_date": "2026-09-08",
       "entry_price": 589.0,
-      "current_price": 552.0,
+      "current_price": 572.0,
       "conf": 74,
       "days": 3,
-      "profit_pct": -6.28
+      "profit_pct": -2.89
     },
     {
       "s": "6770",
@@ -195,20 +195,20 @@
       "n": "台泥",
       "entry_date": "2026-09-11",
       "entry_price": 24.8,
-      "current_price": 24.8,
+      "current_price": 24.6,
       "conf": 58,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": -0.81
     },
     {
       "s": "2492",
       "n": "華新科",
       "entry_date": "2026-09-11",
       "entry_price": 320.5,
-      "current_price": 320.5,
+      "current_price": 334.0,
       "conf": 76,
       "days": 0,
-      "profit_pct": 0.0
+      "profit_pct": 4.21
     },
     {
       "s": "2481",
@@ -5787,5 +5787,5 @@
       "reason": "止盈 (+15%)"
     }
   ],
-  "updatedAt": "2026-09-11T09:00:01.278587+08:00"
+  "updatedAt": "2026-09-11T10:00:00.977450+08:00"
 }
