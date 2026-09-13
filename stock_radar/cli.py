@@ -124,7 +124,8 @@ def _fugle_api_key(explicit_path):
     if explicit_path:
         text = Path(explicit_path).read_text().strip()
         return text or None
-    cfg_path = Path(__file__).parent.parent.parent / 'fugle-dashboard' / 'engine' / 'config.json'
+    import os
+    cfg_path = Path(os.environ.get('STOCK_RADAR_FUGLE_CONFIG', str(Path(__file__).parent.parent.parent / 'fugle-dashboard' / 'engine' / 'config.json')))
     try:
         cfg = json.loads(cfg_path.read_text())
         return cfg.get('api_key') or None
