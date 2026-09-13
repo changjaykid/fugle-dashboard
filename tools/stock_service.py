@@ -11,16 +11,19 @@ def run(args,cwd=R):
     return p.stdout
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('task',choices=['refresh','notify']);p.add_argument('--manual',action='store_true');a=p.parse_args();now=datetime.datetime.now(ZoneInfo('Asia/Taipei'))
+    p=argparse.ArgumentParser();p.add_argument('task',choices=['refresh','notify','weekly','outlook']);p.add_argument('--manual',action='store_true');a=p.parse_args();now=datetime.datetime.now(ZoneInfo('Asia/Taipei'))
     # launchd can catch up a calendar event after wake: do not send a late morning report.
     if not a.manual:
-        target=390 if a.task=='refresh' else 530
+        target={'refresh':390,'notify':530,'weekly':600,'outlook':1200}[a.task]
+        if a.task in ('weekly','outlook') and now.weekday()!={'weekly':5,'outlook':6}[a.task]:return
         if not target<=now.hour*60+now.minute<=target+5:return
     with (D/'service.lock').open('w') as lock:
         try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         except BlockingIOError:return
         cli=[PY,'-m','stock_radar.cli','--db',str(D/'prod.db')]
-        if a.task=='refresh':
+        if a.task in ('weekly','outlook'):
+            run([PY,'-m','stock_radar.weekend',a.task,'--send'])
+        elif a.task=='refresh':
             for cmd in ['sync-universe','sync-calendar','sync-financials','sync-risk']:run(cli+[cmd])
             run([PY,str(R/'tools/initialize_watchlist.py')])
             run(cli+['export','--out','docs/radar.json','--mode','live'])
@@ -44,7 +47,11 @@ def main():
                 at=datetime.datetime.fromisoformat(meta.get('at',''))
                 if at>now or now-at>datetime.timedelta(hours=30):raise RuntimeError('Financial refresh is stale')
             finally:s.close()
-            run([PY,'-m','stock_radar.daily_report','--db',str(D/'prod.db'),'--out','docs/research-summary.json','--send'])
+            run(cli+['export','--out','docs/radar.json','--mode','live'])
+            snapshots=D/'snapshots';snapshots.mkdir(exist_ok=True)
+            snapshot=snapshots/(now.strftime('%Y%m%d-%H%M%S')+'.json')
+            with snapshot.open('xb') as f:f.write((R/'docs/radar.json').read_bytes())
+            run(cli+['notify-summary','--radar-json','docs/radar.json','--test'])
         print(json.dumps({'at':now.isoformat(),'task':a.task,'status':'ok'}))
 if __name__=='__main__':
     try:main()

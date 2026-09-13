@@ -51,6 +51,12 @@
     if(!data)return;
     const signals=new Map(data.items.map(i=>[i.symbol,signal(i)]));
     stats(signals);
+    const candidates=$('candidates');
+    if(candidates){
+      const eligible=data.mode==='live'&&!loadError?data.items.filter(i=>['sweet','add','buy'].includes(signals.get(i.symbol).status)):[];
+      candidates.innerHTML=eligible.length?eligible.slice(0,6).map(i=>{const s=signals.get(i.symbol),v=i.valuation||{},r=i.research||{};return `<article class="health-card"><button class="stock-name" data-symbol="${esc(i.symbol)}">${esc(i.name)} ${esc(i.symbol)}</button><p><strong>嘗試掛 ${price(s.suggested)} 元</strong> · 買進上限 ${price(v.buy)} 元</p><p>${esc(s.reason||r.why_now||'研究理由待補')}</p><p>風險：${esc(r.risks?.[0]||'請查看完整研究失效條件')}</p><p>有效至 ${esc(clockText(s.valid_until))}；過期即停止使用。</p></article>`;}).join(''):`<p>${data.mode==='simulation'?'目前為測試資料，不列正式買進候選。':loadError?'資料更新失敗，暫停顯示買進候選。':data.items.some(i=>['pending','blocked','stale'].includes(signals.get(i.symbol).status))?'目前資料或估值尚未完整，無法確認今天可買的股票；這不代表市場沒有機會。':'目前價格沒有符合既定買進條件，先等待。'}</p>`;
+      candidates.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>openDetail(b.dataset.symbol)));
+    }
     const q=$('search').value.trim().toLowerCase(), status=$('status').value, industry=$('industry').value;
     const filter=JSON.stringify([q,status,industry,kind]);
     if(filter!==lastFilter){visibleLimit=100;lastFilter=filter;}
