@@ -228,8 +228,8 @@ def format_daily_summary(radar_json: dict, *, test_marker: bool = False, now: da
     header_prefix = '🧪【測試訊息，非即時交易建議】\n' if is_test else ''
     lines = [
         f"{header_prefix}台股雷達 {radar_json.get('market_date')} {generated_at[11:16]}",
-        f"涵蓋率：全市場{cov['universe']}檔（股票{cov['stocks']}/ETF{cov['etfs']}），"
-        f"已取得報價{cov['quotes']}檔，已完成估值{cov['valued']}檔",
+        f"清單母表 {cov['universe']} 檔（不是已分析數量）；本次觀察 {sum(bool(i.get('watched')) for i in radar_json['items'])} 檔。",
+        f"儲存報價 {cov['quotes']} 檔（含過期資料）；已套用估值 {cov['valued']} 檔。",
     ]
     revalidated = [(i, _revalidate_signal(i, now)) for i in radar_json['items']]
     actionable = [i for i, sig in revalidated if sig['status'] in ('sweet', 'add', 'buy')]

@@ -36,6 +36,13 @@ def build(kind,now,store,folder):
         for i,v in valid[:10]:lines.append(f"{i['name']}({i['symbol']})：等待買進區 ≤ {v.get('buy')}；{v.get('thesis') or '研究理由待補'}")
         if not valid:lines.append('目前沒有有效且已核准的估值，尚不能產生有價位依據的下週推薦。')
         if pending:lines.append('待研究池（非推薦）：'+ '、'.join(f"{i['name']}({i['symbol']})" for i in pending[:10]))
+        from .research_brief import valid_research
+        for i in pending[:10]:
+            r=store.fact(i['symbol'],'research_detail') or {}
+            if valid_research(r,now):
+                proposal=r.get('proposal')
+                condition=f"待核准提案 ≤ {proposal['buy']:g}，尚非買進指令" if proposal else '先確認正常化獲利，不提供買價'
+                lines.append(f"{i['name']}：{condition}；追蹤 {r.get('catalysts',['待補'])[0]}。")
         lines.append('開盤前須重查行情、風險與估值效期；事件／失效條件不完整的標的不升級為可買。')
     lines.append('完整資料：https://changjaykid.github.io/fugle-dashboard/')
     text='\n'.join(lines)

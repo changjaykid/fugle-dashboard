@@ -4,6 +4,7 @@ from zoneinfo import ZoneInfo
 H=pathlib.Path.home(); R=H/'kid-agent-os/services/stock-radar'; W=H/'kid-agent-os/services/stock-web'; D=H/'kid-agent-data/stock-radar'; PY='/usr/local/bin/python3'
 os.umask(0o077)
 os.environ["PYTHONPATH"]=str(R)
+os.environ["STOCK_RADAR_FUGLE_CONFIG"]=str(H/".openclaw/workspace/fugle-dashboard/engine/config.json")
 
 def run(args,cwd=R):
     p=subprocess.run(args,cwd=cwd,capture_output=True,text=True,timeout=300)
@@ -26,6 +27,7 @@ def main():
         elif a.task=='refresh':
             for cmd in ['sync-universe','sync-calendar','sync-financials','sync-risk']:run(cli+[cmd])
             run([PY,str(R/'tools/initialize_watchlist.py')])
+            run([PY,'-m','stock_radar.research_brief','--db',str(D/'prod.db'),'--sync-close'])
             run(cli+['export','--out','docs/radar.json','--mode','live'])
             run([PY,'-m','stock_radar.daily_report','--db',str(D/'prod.db'),'--out','docs/research-summary.json'])
             run(cli+['backup','--out',str(D/('backup-'+now.strftime('%Y%m%d-%H%M%S')+'.db'))])
@@ -47,11 +49,12 @@ def main():
                 at=datetime.datetime.fromisoformat(meta.get('at',''))
                 if at>now or now-at>datetime.timedelta(hours=30):raise RuntimeError('Financial refresh is stale')
             finally:s.close()
+            run(cli+['sync-quotes','--source','fugle','--watchlist-only'])
             run(cli+['export','--out','docs/radar.json','--mode','live'])
             snapshots=D/'snapshots';snapshots.mkdir(exist_ok=True)
             snapshot=snapshots/(now.strftime('%Y%m%d-%H%M%S')+'.json')
             with snapshot.open('xb') as f:f.write((R/'docs/radar.json').read_bytes())
-            run(cli+['notify-summary','--radar-json','docs/radar.json','--test'])
+            run([PY,'-m','stock_radar.research_brief','--db',str(D/'prod.db'),'--morning-radar',str(R/'docs/radar.json'),'--out',str(D/'morning-latest.json'),'--send'])
         print(json.dumps({'at':now.isoformat(),'task':a.task,'status':'ok'}))
 if __name__=='__main__':
     try:main()
