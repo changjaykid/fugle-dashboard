@@ -13,16 +13,18 @@
 <div id="notice" class="notice" role="status" aria-live="polite">正在讀取資料…</div>
 <section class="stats" aria-label="今日機會總覽" id="stats"></section>
 <section class="system-section" aria-labelledby="candidates-title"><h2 id="candidates-title">今天可嘗試的候選</h2><div id="candidates" class="health-grid" aria-live="polite">正在檢查資料與價位…</div><a href="#radar-title">查看完整清單與四格篩選 ↓</a></section>
+<section class="system-section research-section" aria-labelledby="research-title"><div class="section-top"><div><p class="eyebrow">研究 / WATCHLIST</p><h2 id="research-title">先看這 10 檔：買的理由與等待條件</h2></div><span class="muted">研究提案 ≠ 今日買進訊號</span></div><p class="lead">價格、假設與風險放在一起看。新價位須核准後才能進入上方四格與盤前候選。</p><div id="research-cards" class="research-cards" aria-live="polite"></div></section>
 <section class="radar-section" aria-labelledby="radar-title">
 <div class="section-top"><div><p class="eyebrow">01 / 價格雷達</p><h2 id="radar-title">今日掛價與觀察清單</h2></div><span id="result-count" class="muted" aria-live="polite"></span></div>
 <div class="toolbar"><div class="segments" role="group" aria-label="標的類型"><button data-kind="all" aria-pressed="true">全部</button><button data-kind="stock" aria-pressed="false">個股</button><button data-kind="etf" aria-pressed="false">ETF</button></div><label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="搜尋名稱或代號" aria-label="搜尋名稱或代號"></label><label class="select-wrap"><span class="sr-only">產業</span><select id="industry"><option value="all">所有產業</option></select></label><label class="select-wrap"><span class="sr-only">狀態</span><select id="status"><option value="all">所有狀態</option><option value="sweet">甜甜價</option><option value="add">加碼區</option><option value="buy">買進區</option><option value="avoid">不追</option><option value="pending">待估值</option><option value="blocked">暫停</option><option value="stale">資料不足／過期</option></select></label></div>
-<div class="table-wrap" role="region" aria-label="股票與 ETF 價格表" tabindex="0"><table><thead><tr><th>標的 / 在做什麼</th><th>昨日收盤</th><th>盤前試撮</th><th class="suggest-head">今日建議掛價</th><th>甜甜價 ≤</th><th>加碼價 ≤</th><th>買進價 ≤</th><th>現在怎麼做 / 狀態</th><th>估值日期</th></tr></thead><tbody id="rows"></tbody></table></div>
+<div class="table-wrap" role="region" aria-label="股票與 ETF 價格表" tabindex="0"><table><thead><tr><th>標的 / 在做什麼</th><th>最近公開收盤 / 日期</th><th>盤前試撮</th><th class="suggest-head">今日建議掛價</th><th>甜甜價 ≤</th><th>加碼價 ≤</th><th>買進價 ≤</th><th>現在怎麼做 / 狀態</th><th>估值日期</th></tr></thead><tbody id="rows"></tbody></table></div>
 <div id="empty" class="empty" hidden><span aria-hidden="true">—</span><h3>沒有符合條件的標的</h3><p>試試其他名稱、類型或狀態。</p><button id="clear-filters" class="quiet">清除篩選</button></div>
 <button id="load-more" class="quiet load-more" hidden>再顯示 100 檔</button>
 <div class="table-footer"><span>點選名稱，查看研究依據與估值歷史。</span><span>所有價格以新台幣計・試撮不代表成交</span></div>
 </section>
 <section class="system-section" aria-labelledby="system-title"><div class="section-top"><div><p class="eyebrow">02 / 資料檢查</p><h2 id="system-title">系統與資料狀態</h2></div><span id="coverage" class="muted"></span></div><div id="health" class="health-grid"></div></section>
 </main>
+<p class="attribution">資料來源：金融監督管理委員會證券期貨局／臺灣證券交易所，2026 年個股日成交資訊。依 <a href="https://data.gov.tw/license" target="_blank" rel="noopener">政府資料開放授權條款第 1 版</a> 使用；<a href="https://data.gov.tw/dataset/11549" target="_blank" rel="noopener">資料集說明</a>。盤前試撮與公開收盤資料分開。</p>
 <footer><span>STOCK RADAR / 台股與 ETF</span><span>資料有缺口時，先等確認。</span></footer>
 <dialog id="detail" aria-labelledby="detail-title"><div class="dialog-bar"><span class="eyebrow">研究與價格依據</span><button id="close-detail" class="close" aria-label="關閉詳細資料">×</button></div><div id="detail-content"></div></dialog>
 <noscript>請啟用 JavaScript 以查看股票雷達。</noscript>
