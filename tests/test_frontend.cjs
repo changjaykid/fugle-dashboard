@@ -7,12 +7,13 @@ const script=fs.readFileSync('docs/radar.js','utf8');
 const now=Date.parse('2026-09-10T08:50:00+08:00');
 const iso=delta=>new Date(now+delta).toISOString();
 const fixture=()=>({schema_version:1,mode:'simulation',generated_at:iso(0),items:[{symbol:'TEST',name:'<script>unsafe</script>',kind:'stock',quote:{trade_date:"2026-09-10",book_as_of:iso(0),as_of:iso(0),is_trial:true,trial_price:96},valuation:{buy:100,valid_until:iso(3600000),evidence_reviewed:true},signal:{status:'buy',suggested:95,calculated_at:iso(0),valid_until:iso(120000)}}]});
-async function app(payload){
+async function app(payload,savedFavorites=null){
   const nodes=new Map(),timers=[];
   function node(id){if(!nodes.has(id))nodes.set(id,{value:['industry','status'].includes(id)?'all':'',innerHTML:'',textContent:'',hidden:false,options:[{value:'all'}],handlers:{},classList:{add(){}},querySelectorAll(){return [];},querySelector(){return node(id+' child');},addEventListener(k,fn){this.handlers[k]=fn;}});return nodes.get(id);}
   let currentTime=now, response=payload, fail=false;
   class Clock extends Date {constructor(...args){super(...(args.length?args:[currentTime]));}static now(){return currentTime;}}
-  const context={document:{getElementById:node,querySelectorAll:()=>[]},Date:Clock,Intl,URL,AbortSignal,console,setInterval:(fn,ms)=>timers.push({fn,ms}),fetch:async()=>{if(fail)throw Error('offline');return{ok:true,json:async()=>response};}};
+  const storage=new Map(savedFavorites===null?[]:[['kid-stock-favorites-v1',JSON.stringify(savedFavorites)]]);
+  const context={localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)},document:{getElementById:node,querySelectorAll:()=>[]},Date:Clock,Intl,URL,AbortSignal,console,setInterval:(fn,ms)=>timers.push({fn,ms}),fetch:async()=>{if(fail)throw Error('offline');return{ok:true,json:async()=>response};}};
   vm.runInNewContext(script,context);await new Promise(setImmediate);
   return {node,timers,advance:ms=>currentTime+=ms,fail:(v=true)=>fail=v,reload:async()=>{await node('refresh').handlers.click();},response:v=>response=v};
 }
@@ -30,3 +31,8 @@ const planned=()=>{const d=fixture();d.mode='live';const i=d.items[0];i.watched=
 test('closing plan populates candidates while remaining explicitly conditional',async()=>{const a=await app(planned());assert.match(a.node('candidates').innerHTML,/承接參考/);assert.match(a.node('candidates').innerHTML,/>90</);assert.match(a.node('candidates').innerHTML,/等止穩/);assert.doesNotMatch(a.node('candidates').innerHTML,/嘗試掛/);});
 test('public plan expiry removes entry even without refreshing',async()=>{const a=await app(planned());a.advance(3600001);a.timers.find(t=>t.ms===30000).fn();assert.doesNotMatch(a.node('candidates').innerHTML,/>90</);});
 for(const [name,change] of Object.entries({aboveClose:d=>d.items[0].plan.entry=99,aboveBuy:d=>d.items[0].plan.entry=101,wrongDate:d=>d.items[0].plan.close_date='2026-09-08',unreviewed:d=>d.items[0].valuation.evidence_reviewed=false}))test('invalid public plan '+name+' hides entry',async()=>{const d=planned();change(d);const a=await app(d);assert.doesNotMatch(a.node('candidates').innerHTML,/承接參考/);});
+
+test('full market remains visible when some stocks are monitored',async()=>{const d=fixture();d.items[0].watched=true;d.items.push({symbol:'OTHER',name:'其他股票',kind:'stock',signal:{status:'pending'}});const a=await app(d);assert.match(a.node('rows').innerHTML,/其他股票/);assert.match(a.node('result-count').textContent,/符合 2/);});
+test('saved favorites are independent of the server notification watchlist',async()=>{const d=fixture();d.items[0].watched=true;d.items.push({symbol:'OTHER',name:'我的另一檔',kind:'stock',signal:{status:'pending'}});const a=await app(d,['OTHER']);assert.match(a.node('research-cards').innerHTML,/我的另一檔/);assert.doesNotMatch(a.node('research-cards').innerHTML,/unsafe/);assert.match(a.node('rows').innerHTML,/unsafe/);});
+test('an intentionally empty favorites list stays empty',async()=>{const d=fixture();d.items[0].watched=true;const a=await app(d,[]);assert.match(a.node('research-cards').innerHTML,/尚未加入關注/);});
+test('purchase evidence and caveats appear together on candidate cards',async()=>{const d=planned();d.items[0].research_detail={buy_reasons:['已公布 EPS 獲利依據'],buy_caveat:'增資可能稀釋',risks:[]};const a=await app(d);assert.match(a.node('candidates').innerHTML,/已公布 EPS/);assert.match(a.node('candidates').innerHTML,/增資可能稀釋/);});

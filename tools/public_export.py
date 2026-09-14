@@ -7,11 +7,32 @@ from stock_radar.research_brief import valid_research
 from stock_radar.buy_plan import store_plan
 from datetime import datetime
 
+def basic_fundamentals(f):
+    import math
+    if not f:return None
+    inc=f.get('income') or {};rev=f.get('revenue') or {}
+    def num(x):return x if isinstance(x,(float,int)) and not isinstance(x,bool) and math.isfinite(x) else None
+    sales=num(inc.get('revenue'));op=num(inc.get('operating_income'));eps=num(inc.get('eps_basic'));yoy=num(rev.get('yoy_pct'));monthly=num(rev.get('revenue_this_month'))
+    margin=round(op/sales*100,2) if op is not None and sales and sales>0 else None
+    try:income_period=f"{int(inc['year_roc'])+1911} 年第 {inc['quarter']} 季累計"
+    except (ValueError,KeyError,TypeError):income_period=None
+    try:
+        period=str(rev['period_roc_ym']);revenue_period=f"{int(period[:-2])+1911} 年 {int(period[-2:])} 月"
+    except (ValueError,KeyError,TypeError):revenue_period=None
+    reading=[]
+    if yoy is not None:reading.append('月營收較去年同期增加' if yoy>0 else '月營收未較去年同期成長')
+    if op is not None:reading.append('本業仍有營業利益' if op>0 else '本業尚未獲利')
+    if eps is not None and eps<0:reading.append('每股盈餘為負，不能直接用一般本益比判斷便宜')
+    if not reading:reading=['資料尚不足以形成基本面判斷']
+    sources=[{'url':x['source_url'],'title':title,'as_of':f.get('fetched_at')} for x,title in [(inc,'證交所公開財報'),(rev,'證交所公開月營收')] if x.get('source_url','').startswith('https://')]
+    return {'income_period':income_period,'revenue_period':revenue_period,'eps':eps,'operating_margin':margin,'monthly_revenue_100m':round(monthly/100000,2) if monthly is not None else None,'revenue_yoy':yoy,'reading':'；'.join(reading)+'。仍需檢查產業前景與合理價位。','sources':sources}
+
 def sanitize(r,s,now):
     r['coverage']['quotes']=0
     counts={'watched':0,'research':0,'proposals':0,'public_closes':0}
     for i in r['items']:
         i['quote']=None
+        i['fundamentals']=basic_fundamentals(s.fact(i['symbol'],'financials')) if i.get('kind')=='stock' else None
         i['signal'].update(status='stale' if i.get('valuation') else 'pending',status_label='待確認' if i.get('valuation') else '待估值',suggested=None,conservative=None,extreme=None,action='買進價尚未確認，先觀察；收盤價不是盤前掛價')
         c=s.fact(i['symbol'],'public_close') or None
         i['public_close']=c
