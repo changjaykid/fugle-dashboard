@@ -31,6 +31,7 @@ def make_plan(instrument,valuation,close,technical,risk,schedule,now):
         support=positive(technical.get('support'))
         if not support or n<support:
             p.update(status='broken',label='跌破支撐，先等',reason='已跌破原先支撐，暫停買進計畫並重新檢查');return p
+        p['support']=support
         supports=[positive(x) for x in technical.get('supports',[])]
         entries=[x for x in supports if x and x<=min(n,valuation['buy'])]
         if p['band']=='avoid':
@@ -39,7 +40,7 @@ def make_plan(instrument,valuation,close,technical,risk,schedule,now):
             p.update(status='waiting',label='等承接位置',reason='估值符合，但上限內尚無可確認的支撐');return p
         entry=floor_tick(max(entries),instrument['kind'])
         wait=technical.get('requires_stabilization') is True
-        p.update(entry=entry,status='wait_stabilize' if wait else 'conditional',label='等止穩再考慮' if wait else '可列入分批計畫',reason='低於月線且近五日外資與投信合計賣超，先等價格站回月線或賣壓改善' if wait else '估值與承接位置符合；盤前仍須確認試撮、五檔與交易限制')
+        p.update(entry=entry,status='wait_stabilize' if wait else 'conditional',label='等止穩再考慮' if wait else '可列入分批計畫',reason='低於月線且近五日外資與投信合計賣超，先等收盤站回月線或近五日賣壓改善' if wait else '估值與承接位置符合；盤前仍須確認試撮、五檔與交易限制')
         return p
     except (ValueError,TypeError,KeyError):return p
 
@@ -47,9 +48,13 @@ def store_plan(s,i,now):
     r=s.fact(i['symbol'],'research_detail') or {}
     return make_plan(i,s.active(i['symbol']),s.fact(i['symbol'],'public_close'),r.get('technical'),s.fact(i['symbol'],'risk'),s.meta('trading_calendar'),now)
 
-def gate_signal(signal,plan):
+def gate_signal(signal,plan,quote=None):
     if signal['status'] in ('sweet','add','buy') and plan['status']!='conditional':
         return {**signal,'status':'blocked','status_label':'暫停','suggested':None,'conservative':None,'extreme':None,'valid_until':None,'reason':plan['reason'],'action':plan['reason']}
+    if signal['status'] in ('sweet','add','buy') and quote:
+        current=positive(quote.get('trial_price') if quote.get('is_trial') else quote.get('price'))
+        if current and positive(plan.get('support')) and current<plan['support']:
+            return {**signal,'status':'blocked','status_label':'暫停','suggested':None,'conservative':None,'extreme':None,'valid_until':None,'reason':'當日價格已跌破研究支撐，暫停掛價','action':'當日價格已跌破研究支撐，暫停掛價'}
     return signal
 
 def format_plans(s,now):

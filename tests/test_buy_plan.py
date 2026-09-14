@@ -22,3 +22,8 @@ class PlanTests(unittest.TestCase):
  def test_weekend_and_missing_calendar(self):
   self.assertEqual(str(last_completed_day(datetime(2026,9,14,8,tzinfo=TW),self.cal)),'2026-09-11')
   self.cal={};self.assertIsNone(self.plan()['entry'])
+
+ def test_current_trial_breakdown_revokes_otherwise_valid_plan(self):
+  p=self.plan();self.assertEqual(p['status'],'conditional')
+  sig=gate_signal({'status':'buy','suggested':78},p,{'is_trial':True,'trial_price':78})
+  self.assertEqual(sig['status'],'blocked');self.assertIsNone(sig['suggested'])
