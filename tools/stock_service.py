@@ -12,10 +12,10 @@ def run(args,cwd=R):
     return p.stdout
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('task',choices=['refresh','notify','recheck','weekly','outlook']);p.add_argument('--manual',action='store_true');a=p.parse_args();now=datetime.datetime.now(ZoneInfo('Asia/Taipei'))
+    p=argparse.ArgumentParser();p.add_argument('task',choices=['refresh','notify','recheck','close','weekly','outlook']);p.add_argument('--manual',action='store_true');a=p.parse_args();now=datetime.datetime.now(ZoneInfo('Asia/Taipei'))
     # launchd can catch up a calendar event after wake: do not send a late morning report.
     if not a.manual:
-        target={'refresh':390,'notify':530,'recheck':535,'weekly':600,'outlook':1200}[a.task]
+        target={'refresh':390,'notify':530,'recheck':535,'close':870,'weekly':600,'outlook':1200}[a.task]
         if a.task in ('weekly','outlook') and now.weekday()!={'weekly':5,'outlook':6}[a.task]:return
         if not target<=now.hour*60+now.minute<=target+5:return
     with (D/'service.lock').open('w') as lock:
@@ -24,7 +24,7 @@ def main():
         cli=[PY,'-m','stock_radar.cli','--db',str(D/'prod.db')]
         if a.task in ('weekly','outlook'):
             run([PY,'-m','stock_radar.weekend',a.task,'--send'])
-        elif a.task=='refresh':
+        elif a.task in ('refresh','close'):
             for cmd in ['sync-universe','sync-calendar','sync-financials','sync-risk']:run(cli+[cmd])
             run([PY,str(R/'tools/initialize_watchlist.py')])
             run([PY,'-m','stock_radar.research_brief','--db',str(D/'prod.db'),'--sync-close'])
