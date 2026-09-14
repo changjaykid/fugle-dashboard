@@ -11,13 +11,16 @@ def sanitize(r,s,now):
     counts={'watched':0,'research':0,'proposals':0,'public_closes':0}
     for i in r['items']:
         i['quote']=None
-        i['signal'].update(status='stale' if i.get('valuation') else 'pending',status_label='待確認' if i.get('valuation') else '待估值',suggested=None,conservative=None,extreme=None,action='查看研究與待核准提案；公開收盤價不作盤前掛價')
+        i['signal'].update(status='stale' if i.get('valuation') else 'pending',status_label='待確認' if i.get('valuation') else '待估值',suggested=None,conservative=None,extreme=None,action='買進價尚未確認，先觀察；收盤價不是盤前掛價')
         c=s.fact(i['symbol'],'public_close') or None
         i['public_close']=c
         if c:counts['public_closes']+=1
         if i.get('watched'):counts['watched']+=1
         detail=s.fact(i['symbol'],'research_detail') or None
+        if detail:
+            detail={k:v for k,v in detail.items() if k not in ('proposal','proposal_db_id','research_version')}
         i['research_detail']=detail
+        i['valuation_history']=[]
         if detail:
             i['description']=detail['description']
             if valid_research(detail,now):
@@ -26,7 +29,7 @@ def sanitize(r,s,now):
     r['coverage'].update(counts)
     r['health']=[h for h in r.get('health',[]) if h.get('name') not in ('試撮','報價','公開頁範圍','公開收盤')]
     r['health'].append({'name':'公開收盤','status':'ok' if counts['public_closes'] else 'blocked','detail':'證交所開放資料；每筆顯示實際交易日，不是即時行情。','as_of':(s.meta('public_close_sync') or {}).get('at')})
-    r['health'].append({'name':'研究涵蓋','status':'partial','detail':f"觀察 {counts['watched']} 檔；研究 {counts['research']} 檔；待核准提案 {counts['proposals']} 檔。母表不是已完成分析數量。",'as_of':r['generated_at']})
+    r['health'].append({'name':'研究涵蓋','status':'partial','detail':f"觀察 {counts['watched']} 檔；研究 {counts['research']} 檔；買進條件尚未完整。母表不是已完成分析數量。",'as_of':r['generated_at']})
     return r
 
 def main():

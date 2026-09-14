@@ -46,17 +46,11 @@ def build(s,now):
     for i in watched:
         r=s.fact(i['symbol'],'research_detail') or {}
         if valid_research(r,now):rows.append((i,r,s.fact(i['symbol'],'public_close') or {}))
-    active=sum(bool(s.active(i['symbol'])) for i in watched)
-    lines=['台股研究更新｜'+now.strftime('%Y-%m-%d'),'研究觀察 '+str(len(rows))+'/'+str(len(watched))+' 檔；已套用估值 '+str(active)+' 檔。','以下為研究與待核准價位，不是今日掛單指令。']
+    lines=['台股觀察重點｜'+now.strftime('%Y-%m-%d'),'買進條件尚未完整，以下只供觀察，今天先不依這份清單掛單。']
     for i,r,c in rows:
-        p=r.get('proposal');v=stamp((p or {}).get('valid_until'))
-        close=f"收盤 {c['close']:g}（{c['trade_date']}）" if c.get('close') else '收盤未取得'
-        if p and v and v>now:
-            action=f"提案買進上限 {p['buy']:g}；"+('收盤低於／等於提案門檻，優先複核' if c.get('close') and c['close']<=p['buy'] else '等待價格或獲利條件改善')
-        else:action=(r.get('valuation_gap') or '研究需更新').rstrip('。')
-        lines.append(f"{i['name']} {i['symbol']}｜{close}\n{action}。風險：{r['risks'][0]}。")
-    if not rows:lines.append('研究缺失或已過期，不能提供候選理由；需要更新研究。')
-    lines+=['估值假設：H1 EPS×2×四個月歷史PE中位數，再保留15%安全邊際；非公司全年預測。','新版本未核准前不提供可掛價；現金流、籌碼與量價仍待補。',SITE+'#research-title']
+        lines.append(f"{i['name']} {i['symbol']}｜{r.get('stance','先觀察')}\n{r['thesis']}\n風險：{r['risks'][0]}。")
+    if not rows:lines.append('分析資料不足，暫時無法提供觀察名單。')
+    lines.append(SITE)
     text='\n'.join(lines)
     if len(text)>1900:raise ValueError('Research brief exceeds Discord limit')
     return text
@@ -68,11 +62,20 @@ def morning(s,radar,now):
     if eligible:
         scoped={**radar,'items':watched}
         return format_daily_summary(scoped,now=now)+'\n'+SITE
-    prefix='【盤前檢查 '+now.strftime('%Y-%m-%d %H:%M')+'】\n今天沒有通過全部檢查的掛價；不是全市場沒有機會。\n'
-    if radar.get('mode')!='live':prefix='【測試資料，非即時交易建議】\n'+prefix
-    text=prefix+build(s,now)
-    if len(text)>1900:raise ValueError('Morning brief exceeds limit')
-    return text
+    pending=sum(i.get('signal',{}).get('status')=='pending' for i in watched)
+    stale=sum(i.get('signal',{}).get('status') in ('stale','blocked') for i in watched)
+    lines=['台股盤前｜'+now.strftime('%Y-%m-%d %H:%M')]
+    if radar.get('mode')!='live':lines.insert(0,'【測試資料，非即時交易建議】')
+    if pending or stale:
+        lines+=['今天先等：目前無法確認可買名單。',f'本次追蹤 {len(watched)} 檔；買進分析未完成 {pending} 檔，行情或風險尚待確認 {stale} 檔。']
+    else:lines+=['今天先等：目前價格沒有符合既定買進條件。']
+    notes=[]
+    for i in watched:
+        r=s.fact(i['symbol'],'research_detail') or {}
+        if valid_research(r,now):notes.append(f"{i['name']} {i['symbol']}｜觀察 {r.get('catalysts',['待確認'])[0]}；風險：{r.get('risks',['待確認'])[0]}。")
+    if notes:lines+=['觀察重點（不是買進推薦）：']+notes[:5]
+    lines.append(SITE)
+    return '\n'.join(lines)
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--db',type=Path,required=True);p.add_argument('--import-file',type=Path);p.add_argument('--sync-close',action='store_true');p.add_argument('--send',action='store_true');p.add_argument('--morning-radar',type=Path);p.add_argument('--out',type=Path);a=p.parse_args();now=datetime.now(TW);s=Store(a.db)
