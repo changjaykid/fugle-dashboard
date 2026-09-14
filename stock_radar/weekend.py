@@ -22,8 +22,27 @@ def build(kind,now,store,folder):
         items={i['symbol']:i for r in records for i in r.get('items',[]) if i.get('signal',{}).get('status') in ('sweet','add','buy')}
         lines.append(f'已保留 {len(days)} 天、{len(records)} 次盤前快照；其餘日期未驗證，不視為沒有候選。')
         if not items:lines.append('快照中沒有可確認的合格候選；可能是資料／估值不足，不能推論市場沒有機會。')
-        for i in list(items.values())[:10]:lines.append(f"{i.get('name',i['symbol'])}({i['symbol']})：曾列候選；觸價及後續表現尚未驗證。")
-        lines.append('未接入後續行情回顧前，不計算報酬、不推測你的成交或持倉。')
+        from .price_structure import roc,num
+        from .buy_plan import last_completed_day,store_plan
+        try:latest=last_completed_day(now,store.meta('trading_calendar'))
+        except ValueError:latest=None
+        changes=[]
+        for i in store.instruments():
+            if not i.get('watched'):continue
+            bars=store.fact(i['symbol'],'price_bars').get('rows',[])
+            before=sorted([x for x in bars if roc(x[0])<monday],key=lambda x:roc(x[0]))
+            during=sorted([x for x in bars if monday<=roc(x[0])<=now.date()],key=lambda x:roc(x[0]))
+            if not before or not during or roc(during[-1][0])!=latest:continue
+            first,last=num(before[-1][6]),num(during[-1][6])
+            if first<=0:continue
+            pct=(last/first-1)*100;plan=store_plan(store,i,now)
+            changes.append((pct,f"{i['name']} {i['symbol']}｜{first:g} → {last:g} 元（{pct:+.2f}%）；{plan['label']}"))
+        if changes:
+            lines.append('觀察股一週收盤變化（前週末收盤至本週最後交易日；不含股息）：')
+            lines += [text for _,text in sorted(changes,reverse=True)[:10]]
+        else:lines.append('本週收盤資料尚未完整，暫不計算一週價格變化。')
+        if items:lines.append('本週曾通過即時條件：'+'、'.join(i.get('name',i['symbol']) for i in items.values()))
+        lines.append('以上為市場價格變化，不代表你的成交或投資報酬；除權息與分割可能影響可比性。')
     else:
         from .buy_plan import format_plans
         return format_plans(store,now).replace('台股買進計畫｜','下週股票觀察清單｜').replace('08:50 再確認當日行情','下個交易日 08:50 再確認行情')
