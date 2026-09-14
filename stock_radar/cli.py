@@ -446,8 +446,12 @@ def cmd_export(args):
             valuations[symbol] = v
             risk = store.fact(symbol, 'risk')
             history = store.history(symbol, limit=20)
+            from .buy_plan import store_plan, gate_signal
+            detail = store.fact(symbol, 'research_detail') or {}
             decisions[symbol] = decide(inst, q, v, now=now, market_open=market_open,
-                                       risk=risk or None, history=history)
+                                       risk=risk or None, history=history, supports=detail.get('technical', {}).get('supports', []))
+            if v and v.get('analysis_review'):
+                decisions[symbol] = gate_signal(decisions[symbol], store_plan(store, inst, now))
             # Research notes come from two REAL DB sources, never a
             # hardcoded {}: thesis/sources are read from the active
             # (already evidence-reviewed) valuation itself -- the same

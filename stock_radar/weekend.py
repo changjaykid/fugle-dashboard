@@ -25,24 +25,8 @@ def build(kind,now,store,folder):
         for i in list(items.values())[:10]:lines.append(f"{i.get('name',i['symbol'])}({i['symbol']})：曾列候選；觸價及後續表現尚未驗證。")
         lines.append('未接入後續行情回顧前，不計算報酬、不推測你的成交或持倉。')
     else:
-        lines=['下週股票觀察清單',f'準備日期 {now.date()}；不是下個交易日買進指令。'];pending=[];valid=[]
-        for i in store.instruments():
-            if not i.get('watched'):continue
-            v=store.active(i['symbol'])
-            if v:
-                payload=v.get('payload',v);expiry=stamp(payload.get('valid_until'))
-                if payload.get('evidence_reviewed') is True and expiry and expiry>now:valid.append((i,payload));continue
-            pending.append(i)
-        for i,v in valid[:10]:lines.append(f"{i['name']}({i['symbol']})：等待買進區 ≤ {v.get('buy')}；{v.get('thesis') or '研究理由待補'}")
-        if not valid:lines.append('買進分析尚未完整，下週先觀察，暫不列買進推薦。')
-        if pending:lines.append('待研究池（非推薦）：'+ '、'.join(f"{i['name']}({i['symbol']})" for i in pending[:10]))
-        from .research_brief import valid_research
-        for i in pending[:10]:
-            r=store.fact(i['symbol'],'research_detail') or {}
-            if valid_research(r,now):
-                condition='先觀察，買進條件尚待確認'
-                lines.append(f"{i['name']}：{condition}；追蹤 {r.get('catalysts',['待補'])[0]}。")
-        lines.append('開盤前須重查行情、風險與估值效期；事件／失效條件不完整的標的不升級為可買。')
+        from .buy_plan import format_plans
+        return format_plans(store,now).replace('台股買進計畫｜','下週股票觀察清單｜').replace('08:50 再確認當日行情','下個交易日 08:50 再確認行情')
     lines.append('完整資料：https://changjaykid.github.io/fugle-dashboard/')
     text='\n'.join(lines)
     if len(text)>1900:raise ValueError('Report too long')

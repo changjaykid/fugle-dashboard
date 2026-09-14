@@ -170,6 +170,36 @@ class Store:
             self.db.execute("UPDATE valuations SET status='active',applied_at=?,applied_by=? WHERE id=?", (now.isoformat(), str(actor), proposal_id))
             self.audit('apply', {'id': proposal_id, 'actor': str(actor), 'channel': str(channel)})
 
+    def publish_reviewed_analysis(self, proposal_id, *, now=None):
+        """Publish researched prices under the user's explicit delegated authority.
+
+        This is an internal research operation, never a Discord sender identity.
+        It does not authorize an order and does not weaken validate_valuation.
+        """
+        now = now or datetime.now(TW)
+        authority = self.meta('analysis_authority')
+        if authority.get('decision') != 'user-confirmed-2026-09-14' or authority.get('autonomous_research') is not True:
+            raise PermissionError('尚未取得自主更新分析價位的授權')
+        with self.transaction():
+            r = self.db.execute('SELECT * FROM valuations WHERE id=?', (proposal_id,)).fetchone()
+            if not r or r['status'] != 'proposed':
+                raise ValueError('分析版本不存在或已處理')
+            payload = json.loads(r['payload'])
+            if payload.get('id', '').startswith('V20260914-'):
+                raise ValueError('使用者拒絕的簡化估值不得自動發布')
+            review = payload.get('analysis_review') or {}
+            required = ('financials', 'outlook', 'valuation_basis', 'price_structure', 'risks')
+            if any(review.get(k) is not True for k in required):
+                raise ValueError('分析複核尚未完成')
+            inst = json.loads(self.db.execute('SELECT payload FROM instruments WHERE symbol=?', (r['symbol'],)).fetchone()[0])
+            validate_valuation(payload, now, kind=inst.get('kind'))
+            old = self.active(r['symbol'])
+            if (old['id'] if old else None) != r['parent_id']:
+                raise ValueError('基準版本已改變，需重新分析')
+            self.db.execute("UPDATE valuations SET status='superseded' WHERE symbol=? AND status='active'", (r['symbol'],))
+            self.db.execute("UPDATE valuations SET status='active',applied_at=?,applied_by=? WHERE id=?", (now.isoformat(), 'codex-research', proposal_id))
+            self.audit('publish_reviewed_analysis', {'id': proposal_id, 'actor': 'codex-research', 'authority': authority['decision'], 'review': review})
+
     def meta(self, key):
         r = self.db.execute('SELECT payload FROM metadata WHERE key=?', (key,)).fetchone()
         return json.loads(r[0]) if r else {}

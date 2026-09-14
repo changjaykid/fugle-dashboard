@@ -4,6 +4,7 @@ sys.path.insert(0,str(pathlib.Path(__file__).resolve().parents[1]))
 from stock_radar.store import Store
 from stock_radar.domain import TW
 from stock_radar.research_brief import valid_research
+from stock_radar.buy_plan import store_plan
 from datetime import datetime
 
 def sanitize(r,s,now):
@@ -14,6 +15,7 @@ def sanitize(r,s,now):
         i['signal'].update(status='stale' if i.get('valuation') else 'pending',status_label='待確認' if i.get('valuation') else '待估值',suggested=None,conservative=None,extreme=None,action='買進價尚未確認，先觀察；收盤價不是盤前掛價')
         c=s.fact(i['symbol'],'public_close') or None
         i['public_close']=c
+        i['plan']=store_plan(s,i,now) if i.get('valuation') else None
         if c:counts['public_closes']+=1
         if i.get('watched'):counts['watched']+=1
         detail=s.fact(i['symbol'],'research_detail') or None
@@ -29,7 +31,7 @@ def sanitize(r,s,now):
     r['coverage'].update(counts)
     r['health']=[h for h in r.get('health',[]) if h.get('name') not in ('試撮','報價','公開頁範圍','公開收盤')]
     r['health'].append({'name':'公開收盤','status':'ok' if counts['public_closes'] else 'blocked','detail':'證交所開放資料；每筆顯示實際交易日，不是即時行情。','as_of':(s.meta('public_close_sync') or {}).get('at')})
-    r['health'].append({'name':'研究涵蓋','status':'partial','detail':f"觀察 {counts['watched']} 檔；研究 {counts['research']} 檔；買進條件尚未完整。母表不是已完成分析數量。",'as_of':r['generated_at']})
+    r['health'].append({'name':'研究涵蓋','status':'partial','detail':f"觀察 {counts['watched']} 檔；研究 {counts['research']} 檔；以收盤資料建立買進計畫；即時掛價由盤前通知確認。母表不是已完成分析數量。",'as_of':r['generated_at']})
     return r
 
 def main():

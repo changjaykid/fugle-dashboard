@@ -12,10 +12,10 @@ def run(args,cwd=R):
     return p.stdout
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('task',choices=['refresh','notify','weekly','outlook']);p.add_argument('--manual',action='store_true');a=p.parse_args();now=datetime.datetime.now(ZoneInfo('Asia/Taipei'))
+    p=argparse.ArgumentParser();p.add_argument('task',choices=['refresh','notify','recheck','weekly','outlook']);p.add_argument('--manual',action='store_true');a=p.parse_args();now=datetime.datetime.now(ZoneInfo('Asia/Taipei'))
     # launchd can catch up a calendar event after wake: do not send a late morning report.
     if not a.manual:
-        target={'refresh':390,'notify':530,'weekly':600,'outlook':1200}[a.task]
+        target={'refresh':390,'notify':530,'recheck':535,'weekly':600,'outlook':1200}[a.task]
         if a.task in ('weekly','outlook') and now.weekday()!={'weekly':5,'outlook':6}[a.task]:return
         if not target<=now.hour*60+now.minute<=target+5:return
     with (D/'service.lock').open('w') as lock:
@@ -28,6 +28,7 @@ def main():
             for cmd in ['sync-universe','sync-calendar','sync-financials','sync-risk']:run(cli+[cmd])
             run([PY,str(R/'tools/initialize_watchlist.py')])
             run([PY,'-m','stock_radar.research_brief','--db',str(D/'prod.db'),'--sync-close'])
+            run([PY,'-m','stock_radar.price_structure','--db',str(D/'prod.db')])
             run(cli+['export','--out','docs/radar.json','--mode','live'])
             run([PY,'-m','stock_radar.daily_report','--db',str(D/'prod.db'),'--out','docs/research-summary.json'])
             run(cli+['backup','--out',str(D/('backup-'+now.strftime('%Y%m%d-%H%M%S')+'.db'))])
@@ -54,7 +55,14 @@ def main():
             snapshots=D/'snapshots';snapshots.mkdir(exist_ok=True)
             snapshot=snapshots/(now.strftime('%Y%m%d-%H%M%S')+'.json')
             with snapshot.open('xb') as f:f.write((R/'docs/radar.json').read_bytes())
-            run([PY,'-m','stock_radar.research_brief','--db',str(D/'prod.db'),'--morning-radar',str(R/'docs/radar.json'),'--out',str(D/'morning-latest.json'),'--send'])
+            radar=json.loads((R/'docs/radar.json').read_text())
+            state={'date':str(now.date()),'items':{i['symbol']:{k:i.get('signal',{}).get(k) for k in ('status','suggested','reason')} for i in radar['items'] if i.get('watched')}}
+            prev=D/'morning-state.json'
+            same=prev.exists() and json.loads(prev.read_text())==state
+            if a.task!='recheck' or not same:
+                run([PY,'-m','stock_radar.research_brief','--db',str(D/'prod.db'),'--morning-radar',str(R/'docs/radar.json'),'--out',str(D/'morning-latest.json'),'--send'])
+            from stock_radar.store import atomic_json
+            atomic_json(prev,state)
         print(json.dumps({'at':now.isoformat(),'task':a.task,'status':'ok'}))
 if __name__=='__main__':
     try:main()
