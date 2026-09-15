@@ -152,6 +152,8 @@
     } finally {busy=false;$('refresh').disabled=false;}
   }
   document.querySelectorAll('[data-scope]').forEach(b=>b.addEventListener('click',()=>{scope=b.dataset.scope;$('status').value='all';render();}));
+  $('browse-market')?.addEventListener('click',()=>{scope='all';kind='all';$('status').value='all';$('search').value='';$('industry').value='all';render();jumpToResults();});
+  $('browse-favorites')?.addEventListener('click',()=>{scope='favorites';kind='all';$('status').value='all';$('search').value='';$('industry').value='all';render();jumpToResults();});
   $('show-my-stocks')?.addEventListener('click',()=>{scope='favorites';$('status').value='all';$('search').value='';render();jumpToResults();});
   $('refresh').addEventListener('click',load);
   $('load-more').addEventListener('click',()=>{visibleLimit+=100;render();});
