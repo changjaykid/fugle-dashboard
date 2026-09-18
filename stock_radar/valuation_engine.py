@@ -101,7 +101,6 @@ def finish(s,inst,v,now,source):
     sym=inst['symbol'];fin=s.fact(sym,'financials') or {};detail=s.fact(sym,'research_detail') or {};etf=v['method']=='etf_band'
     v.update(id=f"RULE-{now:%Y%m%d}-{sym}",as_of=now.isoformat(),valid_until=(now+timedelta(days=VALID_DAYS)).isoformat(),
              thesis=detail.get('thesis') or ('ETF 依一年價格位置判斷，不做個股研究。' if etf else '依規則估值；尚無個股研究論述。'),evidence_reviewed=True,review_mode='rule-engine-v1',
-             analysis_review={k:True for k in ('financials','outlook','valuation_basis','price_structure','risks')},
              invalidation=['每日依最新收盤與全市場資料重算；資料缺漏時不更新，舊估值於效期後停用']+([] if etf else ['新季報公布後過去四季 EPS 自動更新']),
              sources=[{'url':source,'as_of':now.isoformat(),'title':'證交所｜全市場每日收盤行情（過去一年）' if etf else '證交所｜本益比、股價淨值比（過去一年）'}]
                      +([] if etf else [{'url':'https://openapi.twse.com.tw/v1/opendata/t187ap05_L','as_of':fin.get('fetched_at') or now.isoformat(),'title':'證交所｜月營收'}]))
@@ -124,7 +123,7 @@ def publish_all(s,now,built):
         if old and old.get('review_mode')==v['review_mode'] and all(old.get(k)==v[k] for k in ('sweet','add','buy')) and basis(old)==basis(v) and left and left-now>timedelta(hours=36):
             out.append((inst['symbol'],'same',v['buy']));continue
         # One bad symbol must not stop the others; its previous valuation simply expires.
-        try:s.publish_reviewed_analysis(s.propose(inst['symbol'],v,now=now),now=now);out.append((inst['symbol'],'published',v['buy']))
+        try:s.publish_rule_valuation(s.propose(inst['symbol'],v,now=now),now=now);out.append((inst['symbol'],'published',v['buy']))
         except (ValueError,PermissionError) as e:out.append((inst['symbol'],'error',str(e)))
     return out
 

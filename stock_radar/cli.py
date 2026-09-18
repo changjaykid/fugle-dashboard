@@ -462,7 +462,7 @@ def cmd_export(args):
             from .buy_plan import store_plan, gate_signal, technical_for
             decisions[symbol] = decide(inst, q, v, now=now, market_open=market_open,
                                        risk=risk or None, history=history, supports=(technical_for(store, symbol) or {}).get('supports', []))
-            if v and v.get('analysis_review'):
+            if v and (v.get('analysis_review') or v.get('review_mode')):
                 decisions[symbol] = gate_signal(decisions[symbol], store_plan(store, inst, now), q)
             # Research notes come from two REAL DB sources, never a
             # hardcoded {}: thesis/sources are read from the active

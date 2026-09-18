@@ -202,6 +202,33 @@ class Store:
             self.db.execute("UPDATE valuations SET status='active',applied_at=?,applied_by=? WHERE id=?", (now.isoformat(), 'codex-research', proposal_id))
             self.audit('publish_reviewed_analysis', {'id': proposal_id, 'actor': 'codex-research', 'authority': authority['decision'], 'review': review})
 
+    def publish_rule_valuation(self, proposal_id, *, now=None):
+        """Publish a deterministic rule-engine valuation under the same delegated authority.
+
+        Unlike publish_reviewed_analysis it does not claim company research: the payload carries
+        review_mode='rule-engine-v1' and no analysis_review, so nothing downstream can mistake a
+        screen for researched analysis. Sources must still be dated official data (validate_valuation).
+        """
+        now = now or datetime.now(TW)
+        authority = self.meta('analysis_authority')
+        if authority.get('decision') != 'user-confirmed-2026-09-14' or authority.get('autonomous_research') is not True:
+            raise PermissionError('尚未取得自主更新分析價位的授權')
+        with self.transaction():
+            r = self.db.execute('SELECT * FROM valuations WHERE id=?', (proposal_id,)).fetchone()
+            if not r or r['status'] != 'proposed':
+                raise ValueError('估值版本不存在或已處理')
+            payload = json.loads(r['payload'])
+            if payload.get('review_mode') != 'rule-engine-v1' or payload.get('analysis_review'):
+                raise ValueError('只有規則引擎估值可用此方式發布，且不得宣稱已完成研究複核')
+            inst = json.loads(self.db.execute('SELECT payload FROM instruments WHERE symbol=?', (r['symbol'],)).fetchone()[0])
+            validate_valuation(payload, now, kind=inst.get('kind'))
+            old = self.active(r['symbol'])
+            if (old['id'] if old else None) != r['parent_id']:
+                raise ValueError('基準版本已改變，需重新計算')
+            self.db.execute("UPDATE valuations SET status='superseded' WHERE symbol=? AND status='active'", (r['symbol'],))
+            self.db.execute("UPDATE valuations SET status='active',applied_at=?,applied_by=? WHERE id=?", (now.isoformat(), 'rule-engine', proposal_id))
+            self.audit('publish_rule_valuation', {'id': proposal_id, 'authority': authority['decision']})
+
     def meta(self, key):
         r = self.db.execute('SELECT payload FROM metadata WHERE key=?', (key,)).fetchone()
         return json.loads(r[0]) if r else {}

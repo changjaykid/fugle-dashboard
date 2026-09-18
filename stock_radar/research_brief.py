@@ -65,6 +65,13 @@ def researched(s,inst,now):
     r=s.fact(inst['symbol'],'research_detail') or {}
     return bool(r.get('thesis') and r.get('risks') and valid_research(r,now))
 
+def research_coverage(s,now):
+    """How many stocks can be recommended at all, and when the first research lapses."""
+    valid=[(stamp(r['valid_until']),i['name']) for i in s.instruments() if i['kind']=='stock'
+           for r in [s.fact(i['symbol'],'research_detail') or {}] if r.get('thesis') and r.get('risks') and valid_research(r,now)]
+    if not valid:return '目前沒有有效的個股研究，個股不會被推薦（ETF 不受影響）。'
+    first=min(valid);return f"有效個股研究 {len(valid)} 檔，最早 {first[0].astimezone(TW):%m/%d} 到期（{first[1]}）。"
+
 def _names(xs):
     return '、'.join(xs[:MAX_NAMES])+(f" 等 {len(xs)} 檔" if len(xs)>MAX_NAMES else '')
 
@@ -127,6 +134,7 @@ def morning(s,radar,now):
     if watched:lines.append(f"你的關注中評價過高：{_names(watched)}")
     scan=s.meta('market_scan') or {}
     if scan.get('liquid'):lines.append(f"已掃描上市 {scan['listed']} 檔，成交量達標 {scan['liquid']} 檔。")
+    lines.append(research_coverage(s,now))
     lines.append(SITE)
     return ('【測試資料，非即時交易建議】\n' if radar.get('mode')!='live' else '')+fit(lines)
 

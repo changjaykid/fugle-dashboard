@@ -57,6 +57,9 @@ class PublishTests(unittest.TestCase):
  def test_publishes_once_per_day_and_skips_incomplete(self):
   self.assertEqual(ve.publish(self.s,self.now),[('T','published',68.0)])
   a=self.s.active('T');self.assertEqual((a['method'],a['buy'],a['review_mode']),('pe_band',68.0,'rule-engine-v1'))
+  self.assertNotIn('analysis_review',a)
+  with self.assertRaises(ValueError):
+   bad=dict(a);bad.pop('id');bad['analysis_review']={'financials':True};self.s.publish_rule_valuation(self.s.propose('T',bad,now=self.now),now=self.now)
   self.assertEqual(ve.publish(self.s,self.now+timedelta(hours=1))[0][1],'same')
   self.s.set_fact('T','ratio_history',{'months':{}});self.assertEqual(ve.publish(self.s,self.now+timedelta(days=1))[0][1],'skip')
   self.assertEqual(self.s.active('T')['buy'],68.0)

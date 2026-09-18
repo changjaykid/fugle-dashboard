@@ -54,6 +54,10 @@ def main():
             run(cli+['export','--out','docs/radar.json','--mode','live'])
             run([PY,'-m','stock_radar.daily_report','--db',str(D/'prod.db'),'--out','docs/research-summary.json'])
             run(cli+['backup','--out',str(D/('backup-'+now.strftime('%Y%m%d-%H%M%S')+'.db'))])
+            # Retention: newest 14 database backups, 120 days of morning snapshots (weekly review and tracking read far less).
+            for old in sorted(D.glob('backup-*.db'))[:-14]:old.unlink()
+            for old in (D/'snapshots').glob('*.json'):
+                if now.timestamp()-old.stat().st_mtime>120*86400:old.unlink()
             (W/'docs/radar.json').write_text(run([PY,'tools/public_export.py']))
             (W/'docs/research-summary.json').write_bytes((R/'docs/research-summary.json').read_bytes())
             run(['git','add','docs/radar.json','docs/research-summary.json'],W)

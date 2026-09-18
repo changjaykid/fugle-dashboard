@@ -74,7 +74,7 @@ def format_plans(s,now):
     """Closing-price plan over the whole scanned market (Sunday outlook, manual runs): cheapest first,
     five stocks and three ETFs at most, then where the user's own watchlist stands."""
     from .market_scan import discount
-    from .research_brief import _why,_names,researched
+    from .research_brief import _why,_names,researched,research_coverage
     pairs=[(i,store_plan(s,i,now)) for i in s.instruments() if s.active(i['symbol'])]
     def cheap(ip):
         return -(discount(s.active(ip[0]['symbol']),(s.fact(ip[0]['symbol'],'public_close') or {}).get('close')) or 0)
@@ -101,6 +101,7 @@ def format_plans(s,now):
     if mine:lines.append('\n你的關注：'+'；'.join(mine)+'。')
     dates=sorted({p['close_date'] for i,p in pairs if p['close_date']})
     if dates:lines.append('價格依據：'+dates[-1]+' 收盤；承接參考不是即時掛價。')
+    lines.append(research_coverage(s,now))
     lines.append('https://changjaykid.github.io/fugle-dashboard/')
     text='\n'.join(lines)
     if len(text)>1900:raise ValueError('通知內容超過長度限制')
