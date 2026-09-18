@@ -161,3 +161,22 @@ def fetch_daily_close_all(*, session=None, timeout=30) -> dict[str, dict]:
             symbol = row[0]
             out[symbol] = {'symbol': symbol, 'name': row[1], 'close': _num(row[7])}
     return out
+
+
+ETF_NAV_URL = 'https://mis.twse.com.tw/stock/data/all_etf.txt'
+
+
+def fetch_etf_navs(*, session=None, timeout=15) -> dict[str, float]:
+    """{symbol: net asset value per unit} from TWSE's all-ETF feed (issuer-published estimate,
+    falling back to the previous day's NAV). Used only to refuse buying above NAV."""
+    import requests
+    http = session or requests
+    resp = http.get(ETF_NAV_URL, headers=HEADERS, timeout=timeout)
+    resp.raise_for_status()
+    out = {}
+    for group in resp.json().get('a1', []):
+        for row in group.get('msgArray', []) or []:
+            nav = _num(row.get('f')) or _num(row.get('h'))
+            if row.get('a') and nav and nav > 0:
+                out[str(row['a']).strip()] = nav
+    return out

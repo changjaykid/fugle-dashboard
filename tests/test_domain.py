@@ -297,9 +297,19 @@ class TestDecide(unittest.TestCase):
     def test_unmodeled_kind_is_pending_not_blocked(self):
         """etf_other (e.g. ETN) has no valuation model yet per spec -- this
         is a normal '待研究' state, not an operational block."""
-        etn = dict(self.instrument, kind='etf_other')
-        r = decide(etn, self._quote(), None, now=self.now, market_open=True, risk=self.risk_ok)
+        etn = dict(self.instrument, kind='etn')
+        r = decide(etn, self._quote(), make_valuation(self.now, method='etf_band'), now=self.now, market_open=True, risk=self.risk_ok)
         self.assertEqual(r['status'], 'pending')
+
+    def test_etf_needs_nav_and_is_never_bought_at_a_premium(self):
+        etf = {'symbol': '0050', 'kind': 'etf_equity'}
+        v = make_valuation(self.now, method='etf_band')
+        q = self._quote_low(price=105.0)
+        self.assertEqual(decide(etf, q, v, now=self.now, market_open=True, risk=self.risk_ok)['status'], 'stale')
+        r = decide(etf, {**q, 'nav': 103.0}, v, now=self.now, market_open=True, risk=self.risk_ok)
+        self.assertEqual(r['status'], 'avoid'); self.assertIn('溢價不買', r['reason'])
+        r = decide(dict(etf, kind='etf_other'), {**q, 'nav': 104.5}, v, now=self.now, market_open=True, risk=self.risk_ok)
+        self.assertIn(r['status'], ('sweet', 'add', 'buy')); self.assertIsNotNone(r['suggested'])
 
     def test_missing_risk_check_blocked(self):
         r = decide(self.instrument, self._quote(), self.valuation, now=self.now, market_open=True, risk=None)

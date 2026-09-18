@@ -51,4 +51,13 @@ class TrackTests(unittest.TestCase):
   (snap/'b.json').write_text(json.dumps({**radar(('A',{'status':'buy','suggested':50})),'generated_at':'2026-09-14T10:00:00+08:00'}))
   track.backfill(self.s,snap);self.assertEqual(self.rec('A')['suggested'],96)
 
+ def test_market_prices_cover_any_valued_symbol(self):
+  from stock_radar.store import dumps
+  for k in range(8):
+   d=self.d0+timedelta(days=k);self.s.db.execute('INSERT INTO market_days VALUES(?,?,?)',(str(d),'prices',dumps({'Z':[1,1,90 if k==0 else 100,100+k,5000]})))
+  self.s.db.commit()
+  r=radar();r['items'].append({'watched':False,'symbol':'Z','name':'Z','valuation':{'buy':1},'signal':{'status':'buy','suggested':95}})
+  track.record(self.s,r,'2026-09-14','2026-09-14T08:50:00+08:00');track.evaluate(self.s);z=self.rec('Z')
+  self.assertTrue(z['filled']);self.assertEqual(z['returns']['5'],round((105/95-1)*100,2));self.assertNotIn('X',[x['symbol'] for x in track.rows(self.s)])
+
 if __name__=='__main__':unittest.main()

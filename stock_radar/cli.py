@@ -33,7 +33,7 @@ from pathlib import Path
 from .domain import TW, decide
 from .store import Store, atomic_json
 from .universe import build_universe, equity_universe
-from .quotes import fetch_quotes, fetch_daily_close_all
+from .quotes import fetch_quotes, fetch_daily_close_all, fetch_etf_navs
 from .fugle import fetch_quotes as fetch_fugle_quotes, FugleClient, FugleError
 from .financials import fetch_quarterly_income_general, fetch_monthly_revenue, fetch_pe_yield_pb
 from .tpex import fetch_otc_daily_close
@@ -136,9 +136,14 @@ def _fugle_api_key(explicit_path):
 def cmd_sync_quotes(args):
     store = Store(args.db)
     try:
-        instruments = [i for i in store.instruments() if i['kind'] in ('stock', 'etf_equity')]
+        instruments = [i for i in store.instruments() if i['kind'] in ('stock', 'etf_equity', 'etf_other')]
         if args.watchlist_only:
             instruments = [i for i in instruments if i.get('watched')]
+        if args.candidates:
+            # The nightly full-market scan's ranked list: plans that passed on the close, cheapest first.
+            wanted = (store.meta('morning_candidates') or {}).get('symbols') or []
+            by_symbol = {i['symbol']: i for i in instruments}
+            instruments = [by_symbol[s] for s in wanted if s in by_symbol]
         if not instruments:
             print('no instruments to quote (run sync-universe first, or use --watchlist-only with a populated watchlist)')
             return
@@ -207,8 +212,16 @@ def cmd_sync_quotes(args):
             quotes = fetch_quotes(instruments)
             source_used = 'mis'
             print(f'quotes source: mis.twse.com.tw ({len(quotes)} symbols)')
+        navs = {}
+        if any(i['kind'].startswith('etf') for i in instruments):
+            try:
+                navs = fetch_etf_navs()
+            except Exception as exc:
+                print(f'ETF NAV fetch failed ({exc!r}); ETF signals will stay unconfirmed')
         n = 0
         for symbol, q in quotes.items():
+            if symbol in navs:
+                q = {**q, 'nav': navs[symbol]}
             store.observe(q)
             n += 1
         # Record the REAL outcome (which source actually served data, and any
@@ -243,7 +256,7 @@ def cmd_sync_calendar(args):
 def cmd_sync_risk(args):
     store = Store(args.db)
     try:
-        instruments = [i for i in store.instruments() if i['kind'] in ('stock', 'etf_equity')]
+        instruments = [i for i in store.instruments() if i['kind'] in ('stock', 'etf_equity', 'etf_other')]
         if not instruments:
             print('no instruments (run sync-universe first)')
             return
@@ -446,10 +459,9 @@ def cmd_export(args):
             valuations[symbol] = v
             risk = store.fact(symbol, 'risk')
             history = store.history(symbol, limit=20)
-            from .buy_plan import store_plan, gate_signal
-            detail = store.fact(symbol, 'research_detail') or {}
+            from .buy_plan import store_plan, gate_signal, technical_for
             decisions[symbol] = decide(inst, q, v, now=now, market_open=market_open,
-                                       risk=risk or None, history=history, supports=detail.get('technical', {}).get('supports', []))
+                                       risk=risk or None, history=history, supports=(technical_for(store, symbol) or {}).get('supports', []))
             if v and v.get('analysis_review'):
                 decisions[symbol] = gate_signal(decisions[symbol], store_plan(store, inst, now), q)
             # Research notes come from two REAL DB sources, never a
@@ -775,6 +787,7 @@ def main(argv=None):
 
     p = sub.add_parser('sync-quotes')
     p.add_argument('--watchlist-only', action='store_true')
+    p.add_argument('--candidates', action='store_true', help='quote only the nightly scan\'s ranked morning candidates')
     p.add_argument('--source', choices=['mis', 'fugle'], default='mis',
                    help='mis.twse.com.tw (default, no key, no reliable trial flag) or fugle (real lastTrial/lastTrade split, needs a working API key)')
     p.add_argument('--fugle-key-file', type=Path, default=None,

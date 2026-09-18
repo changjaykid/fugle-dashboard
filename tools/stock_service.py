@@ -34,9 +34,11 @@ def main():
             run([PY,str(R/'tools/initialize_watchlist.py')])
             run([PY,'-m','stock_radar.research_brief','--db',str(D/'prod.db'),'--sync-close'])
             run([PY,'-m','stock_radar.price_structure','--db',str(D/'prod.db')])
+            # Full market: add the latest session (a few requests), then liquidity gate, structure, valuation
+            # and the ranked 08:50 candidates -- all before anything is exported.
+            run([PY,'-m','stock_radar.market','--db',str(D/'prod.db')])
+            run([PY,'-m','stock_radar.market_scan','--db',str(D/'prod.db')])
             track(['evaluate'])
-            # Rule valuations are refreshed from the same day's close before anything is exported.
-            run([PY,'-m','stock_radar.valuation_engine','--db',str(D/'prod.db')])
             run(cli+['export','--out','docs/radar.json','--mode','live'])
             run([PY,'-m','stock_radar.daily_report','--db',str(D/'prod.db'),'--out','docs/research-summary.json'])
             run(cli+['backup','--out',str(D/('backup-'+now.strftime('%Y%m%d-%H%M%S')+'.db'))])
@@ -58,14 +60,14 @@ def main():
                 at=datetime.datetime.fromisoformat(meta.get('at',''))
                 if at>now or now-at>datetime.timedelta(hours=30):raise RuntimeError('Financial refresh is stale')
             finally:s.close()
-            run(cli+['sync-quotes','--source','fugle','--watchlist-only'])
+            run(cli+['sync-quotes','--source','fugle','--candidates'])
             run(cli+['export','--out','docs/radar.json','--mode','live'])
             snapshots=D/'snapshots';snapshots.mkdir(exist_ok=True)
             snapshot=snapshots/(now.strftime('%Y%m%d-%H%M%S')+'.json')
             with snapshot.open('xb') as f:f.write((R/'docs/radar.json').read_bytes())
             radar=json.loads((R/'docs/radar.json').read_text())
             track(['record','--radar',str(snapshot)])
-            state={'date':str(now.date()),'items':{i['symbol']:{k:i.get('signal',{}).get(k) for k in ('status','suggested','reason')} for i in radar['items'] if i.get('watched')}}
+            state={'date':str(now.date()),'items':{i['symbol']:{k:i.get('signal',{}).get(k) for k in ('status','suggested','reason')} for i in radar['items'] if i.get('watched') or i.get('signal',{}).get('status') in ('sweet','add','buy')}}
             prev=D/'morning-state.json'
             same=prev.exists() and json.loads(prev.read_text())==state
             if a.task!='recheck' or not same:

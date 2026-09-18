@@ -10,11 +10,13 @@ Companies without a usable P/E fall back to book value x median P/B.
 import argparse,statistics,time
 from datetime import date,datetime,timedelta
 from pathlib import Path
-from .domain import TW,positive,floor_tick
+from .domain import TW,positive,floor_tick,stamp
 from .store import Store
 
 URL='https://www.twse.com.tw/exchangeReport/BWIBBU'
 HEADERS={'User-Agent':'Mozilla/5.0 (compatible; StockRadar/1.0)'}
+# Above this median P/E, earnings are too thin relative to price for a P/E band to be stable.
+MAX_FAIR_PE=50
 MONTHS=13;MIN_SAMPLES=120;BANDS=(.65,.75,.85);VALID_DAYS=3;PAUSE=2.0
 
 def _num(v):
@@ -69,49 +71,58 @@ def compute(inst,close,fin,history):
     pes=[_num(r[3]) for r in rows if _num(r[3])];pbs=[_num(r[4]) for r in rows if _num(r[4])]
     rev=(fin or {}).get('revenue') or {}
     period=f"{rev.get('period_roc_ym','')[:3]} 年 {rev.get('period_roc_ym','')[3:]} 月"
-    if _num(today[3]) and len(pes)>=MIN_SAMPLES:
+    thin=len(pes)>=MIN_SAMPLES and statistics.median(pes)>MAX_FAIR_PE
+    if _num(today[3]) and len(pes)>=MIN_SAMPLES and not thin:
         ttm=px/_num(today[3]);ytd=(rev['cumulative_revenue']/rev['cumulative_revenue_last_year']-1) if positive(rev.get('cumulative_revenue')) and positive(rev.get('cumulative_revenue_last_year')) else None
         month=rev.get('yoy_pct')/100 if isinstance(rev.get('yoy_pct'),(int,float)) else None
         fair_pe=statistics.median(pes);fair=ttm*fair_pe
         lo,hi=statistics.quantiles(pes,n=4)[0],statistics.quantiles(pes,n=4)[2]
         growth=[t for t in (f"今年累計 {ytd:+.1%}" if ytd is not None else '',f"{period} 單月 {month:+.1%}" if month is not None else '') if t]
         reason=(f"過去四季 EPS {ttm:.2f} 元（收盤 {px:g} ÷ 本益比 {_num(today[3]):g}）× 過去一年本益比中位數 {fair_pe:.2f} 倍（四分位 {lo:.1f}～{hi:.1f}）＝ 合理價 {fair:.2f} 元。"
-                f"成長不另外加價：歷史本益比已含市場對成長的預期，實際成長會在新季報提高 EPS 後反映。"+(f"參考：營收年增 {'、'.join(growth)}。" if growth else ''))
+                f"成長不另外加價：歷史本益比已含市場對成長的預期，實際成長會在新季報提高 EPS 後反映。景氣循環股在獲利高峰時本益比會偏低，看似便宜未必是真便宜。"+(f"參考：營收年增 {'、'.join(growth)}。" if growth else ''))
         v={'method':'pe_band','inputs':{'ttm_eps':round(ttm,4),'forward_eps':round(ttm,4),'fair_pe':round(fair_pe,4),'pe_today':_num(today[3]),'pe_q1':round(lo,2),'pe_q3':round(hi,2),'samples':len(pes),'revenue_ytd_yoy':None if ytd is None else round(ytd,4),'revenue_month_yoy':None if month is None else round(month,4)}}
     elif _num(today[4]) and len(pbs)>=MIN_SAMPLES:
         bvps=px/_num(today[4]);fair_pb=statistics.median(pbs);fair=bvps*fair_pb
-        reason=f"過去一年多數時間沒有可用本益比（虧損或無資料），改用淨值：每股淨值 {bvps:.2f} 元（收盤 {px:g} ÷ 股價淨值比 {_num(today[4]):g}）× 過去一年股價淨值比中位數 {fair_pb:.2f} 倍 ＝ 合理價 {fair:.2f} 元。"
+        why=f"過去一年本益比中位數 {statistics.median(pes):.0f} 倍，獲利相對股價太薄，本益比估值不穩定" if thin else '過去一年多數時間沒有可用本益比（虧損或無資料）'
+        reason=f"{why}，改用淨值：每股淨值 {bvps:.2f} 元（收盤 {px:g} ÷ 股價淨值比 {_num(today[4]):g}）× 過去一年股價淨值比中位數 {fair_pb:.2f} 倍 ＝ 合理價 {fair:.2f} 元。"
         v={'method':'pb_band','inputs':{'book_value_per_share':round(bvps,4),'fair_pb':round(fair_pb,4),'pb_today':_num(today[4]),'samples':len(pbs)}}
     else:return None,f'過去一年本益比／淨值比樣本不足 {MIN_SAMPLES} 筆'
     v.update(fair=round(fair,2),**{k:floor_tick(fair*b,inst['kind']) for k,b in zip(('sweet','add','buy'),BANDS)})
     v['reason']=reason+f" 甜甜、加碼、買進分別取合理價的 {BANDS[0]:.0%}、{BANDS[1]:.0%}、{BANDS[2]:.0%}，為安全邊際政策，非回測最佳參數。"
     return v,None
 
-def build(s,inst,now):
-    sym=inst['symbol'];close=s.fact(sym,'public_close');fin=s.fact(sym,'financials')
-    v,why=compute(inst,close,fin,s.fact(sym,'ratio_history'))
-    if not v:return None,why
-    detail=s.fact(sym,'research_detail') or {};ym=close['trade_date'][:7].replace('-','')
+def finish(s,inst,v,now,source):
+    """Adds the fields every published valuation carries: identity, validity, thesis, review and sources."""
+    sym=inst['symbol'];fin=s.fact(sym,'financials') or {};detail=s.fact(sym,'research_detail') or {};etf=v['method']=='etf_band'
     v.update(id=f"RULE-{now:%Y%m%d}-{sym}",as_of=now.isoformat(),valid_until=(now+timedelta(days=VALID_DAYS)).isoformat(),
-             thesis=detail.get('thesis') or '依規則估值；尚無個股研究論述。',evidence_reviewed=True,review_mode='rule-engine-v1',
+             thesis=detail.get('thesis') or ('ETF 依一年價格位置判斷，不做個股研究。' if etf else '依規則估值；尚無個股研究論述。'),evidence_reviewed=True,review_mode='rule-engine-v1',
              analysis_review={k:True for k in ('financials','outlook','valuation_basis','price_structure','risks')},
-             invalidation=['每日依最新收盤、本益比與月營收重算；資料缺漏時不更新，舊估值於效期後停用','新季報公布後過去四季 EPS 自動更新'],
-             sources=[{'url':f"{URL}?date={ym}01&stockNo={sym}&response=json",'as_of':now.isoformat(),'title':'證交所｜個股每日本益比、股價淨值比（過去一年）'},
-                      {'url':'https://openapi.twse.com.tw/v1/opendata/t187ap05_L','as_of':(fin or {}).get('fetched_at') or now.isoformat(),'title':'證交所｜月營收'}])
-    return v,None
+             invalidation=['每日依最新收盤與全市場資料重算；資料缺漏時不更新，舊估值於效期後停用']+([] if etf else ['新季報公布後過去四季 EPS 自動更新']),
+             sources=[{'url':source,'as_of':now.isoformat(),'title':'證交所｜全市場每日收盤行情（過去一年）' if etf else '證交所｜本益比、股價淨值比（過去一年）'}]
+                     +([] if etf else [{'url':'https://openapi.twse.com.tw/v1/opendata/t187ap05_L','as_of':fin.get('fetched_at') or now.isoformat(),'title':'證交所｜月營收'}]))
+    return v
 
-def publish(s,now):
+def build(s,inst,now):
+    sym=inst['symbol'];close=s.fact(sym,'public_close')
+    v,why=compute(inst,close,s.fact(sym,'financials'),s.fact(sym,'ratio_history'))
+    if not v:return None,why
+    return finish(s,inst,v,now,f"{URL}?date={close['trade_date'][:7].replace('-','')}01&stockNo={sym}&response=json"),None
+
+def publish_all(s,now,built):
+    """built: [(inst, valuation or None, reason)]. Republish only when prices change or validity runs short."""
     out=[]
-    for inst in [i for i in s.instruments() if i.get('watched') and i['kind']=='stock']:
-        v,why=build(s,inst,now)
+    for inst,v,why in built:
         if not v:out.append((inst['symbol'],'skip',why));continue
-        old=s.active(inst['symbol'])
-        if old and old.get('review_mode')==v['review_mode'] and all(old.get(k)==v[k] for k in ('sweet','add','buy')) and old.get('as_of','')[:10]==v['as_of'][:10]:
+        old=s.active(inst['symbol']);left=stamp((old or {}).get('valid_until'))
+        if old and old.get('review_mode')==v['review_mode'] and all(old.get(k)==v[k] for k in ('sweet','add','buy')) and left and left-now>timedelta(hours=36):
             out.append((inst['symbol'],'same',v['buy']));continue
-        # One bad stock must not stop the others; its previous valuation simply expires.
+        # One bad symbol must not stop the others; its previous valuation simply expires.
         try:s.publish_reviewed_analysis(s.propose(inst['symbol'],v,now=now),now=now);out.append((inst['symbol'],'published',v['buy']))
         except (ValueError,PermissionError) as e:out.append((inst['symbol'],'error',str(e)))
     return out
+
+def publish(s,now):
+    return publish_all(s,now,[(i,*build(s,i,now)) for i in s.instruments() if i.get('watched') and i['kind']=='stock'])
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--db',type=Path,required=True);p.add_argument('--no-fetch',action='store_true');a=p.parse_args()

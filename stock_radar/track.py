@@ -21,7 +21,7 @@ def record(s,radar,day,at):
     n=0
     with s.transaction():
         for i in radar.get('items',[]):
-            if not i.get('watched'):continue
+            if not (i.get('watched') or i.get('valuation')):continue
             sig=i.get('signal') or {};key=f"{day}:{i['symbol']}"
             old=s.db.execute('SELECT payload FROM recommendations WHERE id=?',(key,)).fetchone()
             if old and json.loads(old[0])['recorded_at']>at:continue
@@ -32,10 +32,14 @@ def record(s,radar,day,at):
 
 def evaluate(s):
     """Fill in outcomes from stored daily bars. Results are kept once known, so the rolling 60-bar cache is enough."""
+    from .market import load
+    market={}
+    for d,day in load(s,'prices'):
+        for sym,r in day.items():market.setdefault(sym,[]).append([f"{int(d[:4])-1911}/{d[5:7]}/{d[8:]}",'','','','',str(r[2]),str(r[3])])
     changed=0
     with s.transaction():
         for rec in rows(s):
-            bars=sorted(s.fact(rec['symbol'],'price_bars').get('rows',[]),key=lambda x:_roc(x[0]))
+            bars=market.get(rec['symbol']) or sorted(s.fact(rec['symbol'],'price_bars').get('rows',[]),key=lambda x:_roc(x[0]))
             day=date.fromisoformat(rec['day']);base=next((b for b in bars if _roc(b[0])==day),None);before=dumps(rec)
             if 'close' not in rec and base:
                 rec['close']=_num(base[6]);rec['low']=_num(base[5])

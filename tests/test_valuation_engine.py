@@ -23,6 +23,8 @@ class ComputeTests(unittest.TestCase):
   self.assertEqual(a['fair'],b['fair']);self.assertIn('營收年增 今年累計 +100.0%',a['reason']);self.assertIn('成長不另外加價',a['reason'])
  def test_stock_at_its_normal_multiple_is_not_a_buy(self):
   v,_=ve.compute(INST,CLOSE,rev(),history(pe_today='20'));self.assertLess(v['buy'],CLOSE['close'])
+ def test_very_high_normal_pe_uses_book_value(self):
+  v,_=ve.compute(INST,CLOSE,rev(),history(pe='80',pe_today='70'));self.assertEqual(v['method'],'pb_band');self.assertIn('獲利相對股價太薄',v['reason'])
  def test_loss_maker_falls_back_to_book_value(self):
   v,_=ve.compute(INST,CLOSE,rev(),history(pe_today='-'));self.assertEqual(v['method'],'pb_band');self.assertEqual(v['fair'],80.0)
  def test_insufficient_history_or_missing_day_refuses(self):

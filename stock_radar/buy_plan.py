@@ -33,7 +33,8 @@ def make_plan(instrument,valuation,close,technical,risk,schedule,now):
         # A valuation far outside the traded range is a model problem, not a buy/no-chase signal.
         low,high,fair=positive(technical.get('low_60d')),positive(technical.get('high_60d')),positive(valuation.get('fair'))
         if low and valuation['buy']<low*GAP_LOW:
-            p.update(band='avoid',status='overvalued',label='不追：評價過高',reason=f"股價已遠高於過去一年的常態評價，照一年評價水準的買點短期難以到達（近 60 日最低 {low:g} 元），不追");return p
+            etf=valuation.get('method')=='etf_band'
+            p.update(band='avoid',status='overvalued',label='不追：價格在一年高檔' if etf else '不追：評價過高',reason=(f"價格已遠高於過去一年的中位數，短期難回到買進區（近 60 日最低 {low:g} 元），不追" if etf else f"股價已遠高於過去一年的常態評價，照一年評價水準的買點短期難以到達（近 60 日最低 {low:g} 元），不追"));return p
         if high and fair and fair>high*GAP_HIGH:
             p.update(band='blocked',status='valuation_gap',label='估值待重新研究',reason=f"合理價 {fair:g} 元高於近 60 日最高 {high:g} 元逾三成，獲利外推可能過度樂觀，暫不提供買點");return p
         support=positive(technical.get('support'))
@@ -52,9 +53,13 @@ def make_plan(instrument,valuation,close,technical,risk,schedule,now):
         return p
     except (ValueError,TypeError,KeyError):return p
 
+def technical_for(s,symbol):
+    """Hand-researched structure (with its invalidation anchor) when current, else the full-market scan's."""
+    r=(s.fact(symbol,'research_detail') or {}).get('technical');m=s.fact(symbol,'technical') or None
+    return r if r and (not m or r.get('as_of','')>=m.get('as_of','')) else m
+
 def store_plan(s,i,now):
-    r=s.fact(i['symbol'],'research_detail') or {}
-    return make_plan(i,s.active(i['symbol']),s.fact(i['symbol'],'public_close'),r.get('technical'),s.fact(i['symbol'],'risk'),s.meta('trading_calendar'),now)
+    return make_plan(i,s.active(i['symbol']),s.fact(i['symbol'],'public_close'),technical_for(s,i['symbol']),s.fact(i['symbol'],'risk'),s.meta('trading_calendar'),now)
 
 def gate_signal(signal,plan,quote=None):
     if signal['status'] in ('sweet','add','buy') and plan['status']!='conditional':

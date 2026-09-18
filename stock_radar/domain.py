@@ -38,11 +38,11 @@ def fresh(value, now, seconds):
 
 def floor_tick(value, kind):
     """TWD ordinary shares and domestic equity ETFs only; reject other types."""
-    if not positive(value) or kind not in ('stock', 'etf_equity'):
+    if not positive(value) or kind not in ('stock', 'etf_equity', 'etf_other'):
         raise ValueError('價格或跳動單位類型不支援')
     p = Decimal(str(value))
     bands = [(10, '.01'), (50, '.05'), (100, '.1'), (500, '.5'), (1000, '1')]
-    step = Decimal('.01' if p < 50 else '.05') if kind == 'etf_equity' else next(
+    step = Decimal('.01' if p < 50 else '.05') if kind.startswith('etf') else next(
         (Decimal(s) for b, s in bands if p < b), Decimal('5'))
     return float((p / step).to_integral_value(rounding=ROUND_FLOOR) * step)
 
@@ -172,6 +172,9 @@ def session_phase(now, market_open):
     return 'closed'
 
 
+ETF_PREMIUM_MAX = 1.0  # percent above NAV
+
+
 def decide(instrument, quote, valuation, now=None, *, market_open=None, risk=None,
            history=(), supports=(), max_age=120):
     now = (now or datetime.now(TW)).astimezone(TW)
@@ -185,7 +188,7 @@ def decide(instrument, quote, valuation, now=None, *, market_open=None, risk=Non
 
     if not valuation:
         return stop('pending', '尚無經複核及套用的估值')
-    if instrument.get('kind') not in ('stock', 'etf_equity'):
+    if instrument.get('kind') not in ('stock', 'etf_equity', 'etf_other'):
         # Per STOCK_RADAR_SPEC.md: ETN/bond/leveraged/commodity/active ETFs
         # etc. without a valuation model yet are '待研究' -- a normal
         # not-yet-covered state, not an operational block ('暫停'). Using
@@ -232,6 +235,13 @@ def decide(instrument, quote, valuation, now=None, *, market_open=None, risk=Non
         return stop('blocked', '除權息／分割或參考價異動，需校正定錨')
     if quote.get('halted') or quote.get('disposition'):
         return stop('blocked', '停牌或處置，暫停掛價')
+    if instrument.get('kind', '').startswith('etf'):
+        # ETFs are only bought at or near net asset value; a premium is paying above what the fund holds.
+        nav = positive(quote.get('nav'))
+        if not nav:
+            return stop('stale', '缺少淨值，無法確認是否溢價')
+        if p / nav - 1 > ETF_PREMIUM_MAX / 100:
+            return stop('avoid', f'市價高於淨值 {(p/nav-1)*100:.2f}%，溢價不買')
     if abs(p/ref-1) >= .07:
         return stop('blocked', '大幅跳空，需重新檢查事件與價格')
     if p > valuation['buy']:

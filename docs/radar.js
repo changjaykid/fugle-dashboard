@@ -63,12 +63,20 @@
   // One plain answer for the day, derived only from valid closing plans; 08:50 Discord confirms with live quotes.
   function verdictHTML() {
     if(data.mode!=='live'||loadError)return '';
-    const ps=data.items.filter(i=>i.watched).map(i=>[i,plan(i)]).filter(([,p])=>p);
+    const ps=data.items.map(i=>[i,plan(i)]).filter(([,p])=>p).sort((a,b)=>discount(b[0])-discount(a[0]));
     if(!ps.length)return '<p class="verdict-head">資料更新中</p><p>收盤資料每天 16:30 更新；更新前請以 08:50 Discord 通知為準。</p>'+trackHTML(data.track);
     const go=ps.filter(([,p])=>p.status==='conditional'),wait=ps.filter(([,p])=>p.status==='wait_stabilize');
-    const body=go.length?`<p class="verdict-head go">今天可考慮進場</p><ul>${go.map(([i,p])=>`<li><strong>${esc(i.name)} ${esc(i.symbol)}</strong>：承接 ${price(p.entry)} 元，最高 ${price(p.buy_max)} 元，超過不追</li>`).join('')}</ul><p class="muted">依 ${esc(go[0][1].close_date)} 收盤規劃。08:50 Discord 會用當日行情再確認，沒收到確認就不要掛單；是否下單由你決定。</p>`
-      :`<p class="verdict-head stop">今天不進場</p><p>${wait.length?`沒有符合全部條件的股票。${wait.map(([i])=>esc(i.name)).join('、')} 價格已進入買進區，但要先等止穩。`:'觀察清單中沒有股票落在合理買進區。'}</p>`;
+    const stocks=go.filter(([i])=>i.kind==='stock').slice(0,5),etfs=go.filter(([i])=>i.kind!=='stock').slice(0,3);
+    const li=([i,p])=>`<li><strong>${esc(i.name)} ${esc(i.symbol)}</strong>：承接 ${price(p.entry)} 元，最高 ${price(p.buy_max)} 元，超過不追</li>`;
+    const names=xs=>xs.slice(0,5).map(([i])=>esc(i.name)).join('、')+(xs.length>5?` 等 ${xs.length} 檔`:'');
+    const body=go.length?`<p class="verdict-head go">今天可考慮進場</p>${stocks.length?`<ul>${stocks.map(li).join('')}</ul>`:''}${etfs.length?`<p class="muted">ETF</p><ul>${etfs.map(li).join('')}</ul>`:''}<p class="muted">全市場依收盤規劃，由便宜到貴排列。08:50 Discord 會用當日試撮再確認，沒收到確認就不要掛單；是否下單由你決定。</p>`
+      :`<p class="verdict-head stop">今天不進場</p><p>${wait.length?`沒有符合全部條件的標的。${names(wait)} 價格已進入買進區，但要先等止穩。`:'全市場沒有標的落在合理買進區。'}</p>`;
     return body+trackHTML(data.track);
+  }
+  // Cheapest first: how far below its own one-year norm (P/E, P/B, or an ETF's price median).
+  function discount(i) {
+    const v=i.valuation||{},x=v.inputs||{},c=publicClose(i)?.close;
+    return x.pe_today&&x.fair_pe?1-x.pe_today/x.fair_pe:x.pb_today&&x.fair_pb?1-x.pb_today/x.fair_pb:v.fair&&c?1-c/v.fair:0;
   }
   function trackHTML(t) {
     if(!t?.days)return '';
@@ -108,7 +116,7 @@
     renderResearch();
     const candidates=$('candidates');
     if(candidates){
-      const eligible=data.mode==='live'&&!loadError?data.items.filter(i=>plan(i)?.entry).sort((a,b)=>Number(plan(a).status==='wait_stabilize')-Number(plan(b).status==='wait_stabilize')):[];
+      const eligible=data.mode==='live'&&!loadError?data.items.filter(i=>plan(i)?.entry).sort((a,b)=>Number(plan(a).status==='wait_stabilize')-Number(plan(b).status==='wait_stabilize')||discount(b)-discount(a)):[];
       $('candidates-section').hidden=!eligible.length;
       candidates.innerHTML=eligible.length?eligible.slice(0,6).map(i=>{const p=plan(i),r=i.research_detail||{};return `<article class="health-card plan-card"><span class="tag ${p.status==='conditional'?'buy':''}">${esc(p.label)}</span><h3><button class="stock-name" data-symbol="${esc(i.symbol)}">${esc(i.name)} ${esc(i.symbol)}</button></h3><p class="plan-price">承接參考 <strong>${price(p.entry)}</strong><span> 元</span></p><p>最高接受 <strong>${price(p.buy_max)} 元</strong> · 超過不追</p><p>${esc(p.reason)}。</p><p>${esc(r.thesis)}</p>${purchaseReasons(i)}<p class="watch-risk">風險：${esc(r.risks?.[0]||'待確認')}</p><small>${esc(p.close_date)} 收盤規劃 · 更新期限 ${esc(clockText(p.valid_until))}<br>盤前確認後才考慮掛單</small></article>`;}).join(''):'<p>目前没有完整有效的承接計畫，請查看下方等待原因。</p>'.replace('没有','沒有');
       candidates.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>openDetail(b.dataset.symbol)));
