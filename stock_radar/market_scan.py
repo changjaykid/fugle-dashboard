@@ -64,11 +64,13 @@ def candidates(s,liquid,now):
     reserved slots -- an ETF's discount to its price median is naturally smaller than a stock's to its
     P/E norm, so one shared ranking would never reach the ETFs. Leftover slots: stabilizing, then watched."""
     from .buy_plan import store_plan
+    from .research_brief import researched
     ready={'stock':[],'etf':[]};wait=[]
     for inst in liquid:
         v=s.active(inst['symbol'])
         if not v:continue
-        p=store_plan(s,inst,now);d=-(discount(v,(s.fact(inst['symbol'],'public_close') or {}).get('close')) or 0)
+        # Researched symbols sort first: only they can be recommended; the rest only inform the research pool.
+        p=store_plan(s,inst,now);d=(not researched(s,inst,now),-(discount(v,(s.fact(inst['symbol'],'public_close') or {}).get('close')) or 0))
         if p['status']=='conditional':ready['stock' if inst['kind']=='stock' else 'etf'].append((d,inst['symbol']))
         elif p['status']=='wait_stabilize':wait.append((d,inst['symbol']))
     order=[sym for _,sym in sorted(ready['stock'])[:STOCK_SLOTS]]+[sym for _,sym in sorted(ready['etf'])[:ETF_SLOTS]]
