@@ -69,8 +69,10 @@
     const stocks=go.filter(([i])=>i.kind==='stock').slice(0,5),etfs=go.filter(([i])=>i.kind!=='stock').slice(0,3);
     const li=([i,p])=>`<li><strong>${esc(i.name)} ${esc(i.symbol)}</strong>：承接 ${price(p.entry)} 元，最高 ${price(p.buy_max)} 元，超過不追</li>`;
     const names=xs=>xs.slice(0,5).map(([i])=>esc(i.name)).join('、')+(xs.length>5?` 等 ${xs.length} 檔`:'');
-    const body=go.length?`<p class="verdict-head go">今天可考慮進場</p>${stocks.length?`<ul>${stocks.map(li).join('')}</ul>`:''}${etfs.length?`<p class="muted">ETF</p><ul>${etfs.map(li).join('')}</ul>`:''}<p class="muted">全市場依收盤規劃，由便宜到貴排列。08:50 Discord 會用當日試撮再確認，沒收到確認就不要掛單；是否下單由你決定。</p>`
-      :`<p class="verdict-head stop">今天不進場</p><p>${wait.length?`沒有符合全部條件的標的。${names(wait)} 價格已進入買進區，但要先等止穩。`:'全市場沒有標的落在合理買進區。'}</p>`;
+    // Plans made on a close are for the next session; name that day instead of saying "today" after hours.
+    const day=(t=>{const d=new Date(t);return Number.isFinite(d.getTime())?`${d.toLocaleDateString('zh-TW',{month:'numeric',day:'numeric',timeZone:'Asia/Taipei'})}（${'日一二三四五六'[new Date(d.toLocaleString('en-US',{timeZone:'Asia/Taipei'})).getDay()]}）`:'今天';})(ps[0][1].valid_until);
+    const body=go.length?`<p class="verdict-head go">${day}可考慮進場</p>${stocks.length?`<ul>${stocks.map(li).join('')}</ul>`:''}${etfs.length?`<p class="muted">ETF</p><ul>${etfs.map(li).join('')}</ul>`:''}<p class="muted">全市場依收盤規劃，由便宜到貴排列。08:50 Discord 會用當日試撮再確認，沒收到確認就不要掛單；是否下單由你決定。</p>`
+      :`<p class="verdict-head stop">${day}不進場</p><p>${wait.length?`沒有符合全部條件的標的。${names(wait)} 價格已進入買進區，但要先等止穩。`:'全市場沒有標的落在合理買進區。'}</p>`;
     return body+trackHTML(data.track);
   }
   // Cheapest first: how far below its own one-year norm (P/E, P/B, or an ETF's price median).
