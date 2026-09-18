@@ -71,19 +71,30 @@ def gate_signal(signal,plan,quote=None):
     return signal
 
 def format_plans(s,now):
-    pairs=[(i,store_plan(s,i,now)) for i in s.instruments() if i.get('watched')]
-    candidates=[(i,p) for i,p in pairs if p.get('entry')]
+    """Closing-price plan over the whole scanned market (Sunday outlook, manual runs): cheapest first,
+    five stocks and three ETFs at most, then where the user's own watchlist stands."""
+    from .market_scan import discount
+    from .research_brief import _why,_names
+    pairs=[(i,store_plan(s,i,now)) for i in s.instruments() if s.active(i['symbol'])]
+    def cheap(ip):
+        return -(discount(s.active(ip[0]['symbol']),(s.fact(ip[0]['symbol'],'public_close') or {}).get('close')) or 0)
+    ready=sorted([x for x in pairs if x[1]['status']=='conditional'],key=cheap)
+    stocks=[x for x in ready if x[0]['kind']=='stock'][:5];etfs=[x for x in ready if x[0]['kind']!='stock'][:3]
+    wait=sorted([x for x in pairs if x[1]['status']=='wait_stabilize'],key=cheap)
     lines=['台股買進計畫｜'+now.strftime('%Y-%m-%d'),'以最近完成交易日收盤規劃；08:50 再確認當日行情。']
-    for i,p in candidates[:6]:
+    def block(n,i,p):
         r=s.fact(i['symbol'],'research_detail') or {}
-        lines.append(f"\n{i['name']} {i['symbol']}｜{p['label']}\n承接參考 {p['entry']:g} 元／買進上限 {p['buy_max']:g} 元\n{p['reason']}。\n理由：{r.get('thesis','待確認')}\n風險：{(r.get('risks') or ['待確認'])[0]}。")
-    rest=[i['name'] for i,p in pairs if p['status']=='no_chase']
-    if rest:lines.append('\n高於買進上限，先不追：'+'、'.join(rest)+'。')
-    rich=[i['name'] for i,p in pairs if p['status']=='overvalued']
-    if rich:lines.append('\n評價遠高於過去一年常態，不追：'+'、'.join(rich)+'。')
-    gap=[i['name'] for i,p in pairs if p['status']=='valuation_gap']
-    if gap:lines.append('\n估值與近期價格差距過大，重新研究中：'+'、'.join(gap)+'。')
-    if not candidates:lines.append('目前沒有資料完整的承接計畫，請查看網站各檔等待原因。')
+        out=['',f"{'①②③④⑤'[n-1]} {i['name']} {i['symbol']}｜承接 {p['entry']:g} 元／最高 {p['buy_max']:g} 元",f"理由：{_why(s.active(i['symbol']),p['entry'])}"]
+        if r.get('risks'):out.append(f"風險：{r['risks'][0]}")
+        return out
+    for n,(i,p) in enumerate(stocks,1):lines+=block(n,i,p)
+    if etfs:
+        lines+=['','— ETF —']
+        for n,(i,p) in enumerate(etfs,1):lines+=block(n,i,p)
+    if not ready:lines.append('目前沒有資料完整的承接計畫：收盤已進入買進區、且技術面符合的標的為 0。')
+    if wait:lines.append('\n已進買進區，先等止穩：'+_names([i['name'] for i,_ in wait])+'。')
+    mine=[f"{i['name']} {p['label']}" for i,p in pairs if i.get('watched')]
+    if mine:lines.append('\n你的關注：'+'；'.join(mine)+'。')
     dates=sorted({p['close_date'] for i,p in pairs if p['close_date']})
     if dates:lines.append('價格依據：'+dates[-1]+' 收盤；承接參考不是即時掛價。')
     lines.append('https://changjaykid.github.io/fugle-dashboard/')

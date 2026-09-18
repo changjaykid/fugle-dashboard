@@ -39,3 +39,24 @@ class PlanTests(unittest.TestCase):
   p=self.plan();self.assertEqual(p['status'],'conditional')
   sig=gate_signal({'status':'buy','suggested':78},p,{'is_trial':True,'trial_price':78})
   self.assertEqual(sig['status'],'blocked');self.assertIsNone(sig['suggested'])
+
+class OutlookTests(unittest.TestCase):
+ def test_outlook_ranks_the_whole_market_and_reports_the_watchlist(self):
+  import tempfile
+  from pathlib import Path
+  from stock_radar.store import Store
+  from stock_radar.buy_plan import format_plans
+  now=datetime(2026,9,20,20,tzinfo=TW);d=tempfile.TemporaryDirectory();s=Store(Path(d.name)/'t.db')
+  s.set_meta('analysis_authority',{'decision':'user-confirmed-2026-09-14','autonomous_research':True})
+  s.set_meta('trading_calendar',{'roc_years':[115],'closed_dates':{}})
+  syms=[(f'S{k}','stock',False) for k in range(7)]+[('W','stock',True)]
+  s.upsert_instruments([{'symbol':a,'name':'名'+a,'kind':k,'watched':w} for a,k,w in syms])
+  for k,(a,_,w) in enumerate(syms):
+   v={'sweet':70 if not w else 30,'add':80 if not w else 40,'buy':90 if not w else 50,'fair':100,'method':'pe_band','inputs':{'pe_today':20-k if not w else 30,'fair_pe':20},'thesis':'t','reason':'r','as_of':(now-timedelta(hours=1)).isoformat(),'valid_until':(now+timedelta(days=3)).isoformat(),'evidence_reviewed':True,'analysis_review':{x:True for x in ('financials','outlook','valuation_basis','price_structure','risks')},'sources':[{'url':'https://example.com','as_of':(now-timedelta(hours=1)).isoformat()}]}
+   s.publish_reviewed_analysis(s.propose(a,v,now=now-timedelta(minutes=30)),now=now-timedelta(minutes=30))
+   s.set_fact(a,'public_close',{'close':85,'trade_date':'2026-09-18'})
+   s.set_fact(a,'technical',{'as_of':'2026-09-18','flow_as_of':'2026-09-18','support':79,'supports':[79,83],'requires_stabilization':False})
+   s.set_fact(a,'risk',{'cleared':True,'events':[],'checked_at':(now-timedelta(hours=2)).isoformat()})
+  text=format_plans(s,now);s.close();d.cleanup()
+  self.assertEqual(text.count('承接 83 元'),5);self.assertLess(text.index('名S6'),text.index('名S5'));self.assertNotIn('名S0 ',text)
+  self.assertIn('你的關注：名W 不追',text)
