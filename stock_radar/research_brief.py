@@ -2,7 +2,7 @@
 import argparse,csv,io,json,math
 from datetime import datetime,date,timedelta
 from pathlib import Path
-from .domain import TW,stamp
+from .domain import TW,stamp,positive
 from .store import Store,atomic_json
 URL='https://www.twse.com.tw/exchangeReport/STOCK_DAY_ALL?response=open_data'
 SITE='https://changjaykid.github.io/fugle-dashboard/'
@@ -44,22 +44,43 @@ def build(s,now):
     from .buy_plan import format_plans
     return format_plans(s,now)
 
+WEEKDAYS='一二三四五六日'
+def _why(v):
+    """One line a person can check: how far today's multiple is below the stock's own one-year norm."""
+    i=(v or {}).get('inputs') or {}
+    for today,norm,name in (('pe_today','fair_pe','本益比'),('pb_today','fair_pb','股價淨值比')):
+        if positive(i.get(today)) and positive(i.get(norm)):
+            gap=1-i[today]/i[norm]
+            return f"{name} {i[today]:g}，{'比一年常態 '+format(i[norm],'.1f')+' 便宜 '+format(gap,'.0%') if gap>0 else '高於一年常態 '+format(i[norm],'.1f')}"
+    return (v or {}).get('thesis') or '估值依據請見網站'
+
 def morning(s,radar,now):
-    from .discord import format_daily_summary,_revalidate_signal
-    watched=[i for i in radar['items'] if i.get('watched')]
-    eligible=[i for i in watched if _revalidate_signal(i,now)['status'] in ('sweet','add','buy')]
-    if eligible:
-        lines=['台股盤前｜'+now.strftime('%Y-%m-%d %H:%M'),'【今天可考慮進場】通過行情與分析檢查，可考慮以下限價（買不到不追，是否下單由你決定）：']
-        for i in eligible[:6]:
-            sig=_revalidate_signal(i,now);v=i['valuation'];r=s.fact(i['symbol'],'research_detail') or {}
-            lines.append(f"{i['name']} {i['symbol']}｜嘗試掛 {sig['suggested']:g} 元，上限 {v['buy']:g} 元\n{r.get('thesis','')}\n風險：{(r.get('risks') or ['待確認'])[0]}\n有效至 {sig['valid_until']}，過期即停用。")
-        lines.append(SITE)
-        text='\n'.join(lines)
-        return ('【測試資料，非即時交易建議】\n' if radar.get('mode')!='live' else '')+text
-    text=build(s,now)
-    prefix='台股盤前｜'+now.strftime('%Y-%m-%d %H:%M')+'\n【今天不進場】沒有通過全部即時掛價條件的標的。\n'
-    if radar.get('mode')!='live':prefix='【測試資料，非即時交易建議】\n'+prefix
-    return prefix+text
+    """08:50 message: the answer first, then only what is needed to act on it."""
+    from .discord import _revalidate_signal
+    from .buy_plan import store_plan
+    head=f"台股盤前｜{now.month}/{now.day}（{WEEKDAYS[now.weekday()]}）{now:%H:%M}"
+    valued=[i for i in radar['items'] if i.get('valuation') and (i.get('watched') or i.get('kind')=='stock')]
+    go=[(i,_revalidate_signal(i,now)) for i in valued];go=[(i,g) for i,g in go if g['status'] in ('sweet','add','buy')][:5]
+    plans={i['symbol']:store_plan(s,i,now) for i in valued}
+    names=lambda st:[i['name'] for i in valued if plans[i['symbol']]['status']==st]
+    lines=[head]
+    if go:
+        lines.append('【今天可考慮進場】限價掛單，買不到不追；是否下單由你決定。')
+        for n,(i,g) in enumerate(go,1):
+            r=s.fact(i['symbol'],'research_detail') or {};until=stamp(g.get('valid_until'))
+            lines+=['',f"{'①②③④⑤'[n-1]} {i['name']} {i['symbol']}",f"掛 {g['suggested']:g} 元｜最高 {i['valuation']['buy']:g} 元，超過不追",f"理由：{_why(i['valuation'])}"]
+            if r.get('risks'):lines.append(f"風險：{r['risks'][0]}")
+            if until:lines.append(f"{until.astimezone(TW):%H:%M} 前有效，過期停用")
+    else:
+        lines.append('【今天不進場】沒有股票通過全部條件。')
+        for st,label in (('wait_stabilize','已進買進區，先等止穩'),('conditional','估值符合，但今天盤前行情未通過'),('waiting','估值符合，等承接位置')):
+            if names(st):lines.append(f"接近的：{'、'.join(names(st))}（{label}）")
+    if names('overvalued'):lines.append(f"評價過高：{'、'.join(names('overvalued'))}")
+    rest=sum(plans[i['symbol']]['status']=='no_chase' for i in valued)
+    if rest:lines.append(f"其餘 {rest} 檔尚未進入買進區。")
+    lines.append(SITE)
+    text='\n'.join(lines)
+    return ('【測試資料，非即時交易建議】\n' if radar.get('mode')!='live' else '')+text
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--db',type=Path,required=True);p.add_argument('--import-file',type=Path);p.add_argument('--sync-close',action='store_true');p.add_argument('--send',action='store_true');p.add_argument('--morning-radar',type=Path);p.add_argument('--out',type=Path);a=p.parse_args();now=datetime.now(TW);s=Store(a.db)

@@ -21,6 +21,18 @@ class ResearchTests(unittest.TestCase):
    self.assertEqual(sum(len(s.versions(r['symbol'])) for r in doc['items']),1)
    self.assertTrue(all(s.active(r['symbol']) is None for r in doc['items']))
    text=build(s,now);self.assertLessEqual(len(text),1900);self.assertIn('目前沒有資料完整的承接計畫',text)
-   text=morning(s,{'mode':'live','items':[]},now);self.assertLessEqual(len(text),1900);self.assertIn('沒有通過全部即時掛價條件',text)
+   text=morning(s,{'mode':'live','items':[]},now);self.assertLessEqual(len(text),1900);self.assertIn('【今天不進場】',text)
    self.assertNotIn('提案買進上限',build(s,now+timedelta(days=31)))
    s.close()
+
+class MorningTests(unittest.TestCase):
+ def test_go_message_puts_answer_first_with_price_cap_reason_and_clock_time(self):
+  now=datetime(2026,9,21,8,50,tzinfo=TW)
+  item={'symbol':'3706','name':'神達','kind':'stock','watched':True,'valuation':{'buy':82.8,'inputs':{'pe_today':14.38,'fair_pe':17.42},'valid_until':(now+timedelta(days=2)).isoformat(),'evidence_reviewed':True},
+        'signal':{'status':'buy','suggested':77.6,'valid_until':(now+timedelta(minutes=2)).isoformat(),'calculated_at':now.isoformat()},'quote':{'as_of':now.isoformat(),'trade_date':'2026-09-21','is_trial':True,'trial_price':78}}
+  with tempfile.TemporaryDirectory() as d:
+   s=Store(Path(d)/'t.db');text=morning(s,{'mode':'live','items':[item]},now);s.close()
+  lines=text.split('\n')
+  self.assertEqual(lines[0],'台股盤前｜9/21（一）08:50');self.assertTrue(lines[1].startswith('【今天可考慮進場】'))
+  self.assertIn('掛 77.6 元｜最高 82.8 元，超過不追',text);self.assertIn('本益比 14.38，比一年常態 17.4 便宜 17%',text);self.assertIn('08:52 前有效',text)
+  self.assertNotIn('T08:52',text)

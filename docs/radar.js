@@ -13,7 +13,7 @@
   const publicClose = i => {const c=i.public_close;return c && /^\d{4}-\d{2}-\d{2}$/.test(c.trade_date||'') && c.trade_date<=day(Date.now()) && positive(c.close)?c:null;};
   const kindName = k => k === 'stock' ? '個股' : k?.startsWith('etf') ? 'ETF' : '其他';
   const safeURL = url => { try {const u = new URL(url); return u.protocol === 'https:' ? u.href : null;} catch {return null;} };
-  let data = null, scope = 'all', favorites = null, kind = 'all', selected = null, busy = false, loadError = null, visibleLimit = 100, lastFilter = '';
+  let data = null, scope = 'all', favorites = null, kind = 'stock', selected = null, busy = false, loadError = null, visibleLimit = 100, lastFilter = '';
   const favoriteKey='kid-stock-favorites-v1';
   function initFavorites() {
     if(favorites!==null)return;
@@ -75,12 +75,19 @@
     const f=a=>a?.[1]?`${a[0]>0?'+':''}${a[0]}%（${a[1]} 筆）`:'—',h=['60','20','5'].map(k=>[k,t.horizons?.[k]]).find(([,v])=>v?.baseline?.[1]);
     return `<p class="track">建議追蹤：${t.days} 個交易日，可掛價建議 ${t.actionable} 筆、當日觸及 ${t.filled} 筆。${h?`${h[0]} 日後平均：成交建議 ${f(h[1].filled)}，不追 ${f(h[1].avoid)}，觀察股整體 ${f(h[1].baseline)}。`:'尚未滿 5 個交易日，還不能判斷準不準。'}</p>`;
   }
+  // Stocks filter by industry; ETFs carry no industry, so they filter by product type instead.
+  function industryOptions() {
+    const current=$('industry').value;
+    const opts=kind==='etf'?[['etf_equity','股票型 ETF'],['etf_other','債券、商品等其他 ETF'],['etn','ETN']]:[...new Set((data?.items||[]).filter(i=>kind==='all'||i.kind==='stock').map(i=>i.industry).filter(Boolean))].sort().map(x=>[x,x]);
+    $('industry').innerHTML=`<option value="all">${kind==='etf'?'所有類型':'所有產業'}</option>`+opts.map(([v,t])=>`<option value="${esc(v)}">${esc(t)}</option>`).join('');
+    $('industry').value=[...$('industry').options].some(o=>o.value===current)?current:'all';
+  }
   function stats(signals) {
     const counts = {sweet:0,add:0,buy:0,avoid:0,pending:0,blocked:0,stale:0};
     for (const i of data.items) counts[signals.get(i.symbol).status]++;
     const notes = {sweet:'已進入深度折價區',add:'已進入加碼定錨區',buy:'已進入第一層買進區',avoid:'高於基本面買進價'};
     $('stats').innerHTML = ['sweet','add','buy','avoid'].map(k => `<button class="stat" data-status="${k}" aria-pressed="${$('status').value===k}"><span class="stat-top">${labels[k]} <span aria-hidden="true">↗</span></span><strong>${counts[k]}<small>檔</small></strong><span class="stat-note">${notes[k]}</span></button>`).join('');
-    $('stats').querySelectorAll('button').forEach(b => b.addEventListener('click',()=>{$('status').value=$('status').value===b.dataset.status?'all':b.dataset.status;scope='all';kind='all';$('search').value='';$('industry').value='all';render();jumpToResults();}));
+    $('stats').querySelectorAll('button').forEach(b => b.addEventListener('click',()=>{$('status').value=$('status').value===b.dataset.status?'all':b.dataset.status;scope='all';kind='stock';$('search').value='';$('industry').value='all';render();jumpToResults();}));
     const valid=counts.sweet+counts.add+counts.buy;
     const pending=counts.pending+counts.blocked+counts.stale;
     $('verdict').innerHTML=verdictHTML();
@@ -88,7 +95,7 @@
     if(loadError){notice.classList.add('error');notice.textContent=`${loadError}。目前保留上次資料，過期掛價會自動停用。`;}
     else if(data.mode==='simulation'){notice.textContent='測試資料｜此畫面用於驗證流程，所有測試價格均不可作為即時交易依據。';}
     else if(data.mode==='initializing'){notice.textContent='新雷達正在接入資料。下方先列既有觀察標的；尚未取得可驗證的估值與盤前試撮。';}
-    else {notice.textContent=`${valid} 檔收盤價位於分析買區。四格依最近收盤分類；下方列承接計畫與等待條件，當日掛價以 08:50 Discord 通知為準。`;}
+    notice.hidden=!loadError&&data.mode==='live';
 
   }
   function render() {
@@ -102,6 +109,7 @@
     const candidates=$('candidates');
     if(candidates){
       const eligible=data.mode==='live'&&!loadError?data.items.filter(i=>plan(i)?.entry).sort((a,b)=>Number(plan(a).status==='wait_stabilize')-Number(plan(b).status==='wait_stabilize')):[];
+      $('candidates-section').hidden=!eligible.length;
       candidates.innerHTML=eligible.length?eligible.slice(0,6).map(i=>{const p=plan(i),r=i.research_detail||{};return `<article class="health-card plan-card"><span class="tag ${p.status==='conditional'?'buy':''}">${esc(p.label)}</span><h3><button class="stock-name" data-symbol="${esc(i.symbol)}">${esc(i.name)} ${esc(i.symbol)}</button></h3><p class="plan-price">承接參考 <strong>${price(p.entry)}</strong><span> 元</span></p><p>最高接受 <strong>${price(p.buy_max)} 元</strong> · 超過不追</p><p>${esc(p.reason)}。</p><p>${esc(r.thesis)}</p>${purchaseReasons(i)}<p class="watch-risk">風險：${esc(r.risks?.[0]||'待確認')}</p><small>${esc(p.close_date)} 收盤規劃 · 更新期限 ${esc(clockText(p.valid_until))}<br>盤前確認後才考慮掛單</small></article>`;}).join(''):'<p>目前没有完整有效的承接計畫，請查看下方等待原因。</p>'.replace('没有','沒有');
       candidates.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>openDetail(b.dataset.symbol)));
     }
@@ -109,8 +117,8 @@
     const filter=JSON.stringify([q,status,industry,kind,scope]);
     if(filter!==lastFilter){visibleLimit=100;lastFilter=filter;}
     const order={sweet:0,add:1,buy:2,avoid:3,blocked:4,pending:5,stale:6};
-    const items=data.items.filter(i => (scope==='all'||(scope==='favorites'?favorites.has(i.symbol):!!i.valuation)) && (kind==='all'||(kind==='etf'?i.kind?.startsWith('etf'):i.kind==='stock')) &&
-      (industry==='all'||i.industry===industry) && (status==='all'||signals.get(i.symbol).status===status) &&
+    const items=data.items.filter(i => (scope==='all'||(scope==='favorites'?favorites.has(i.symbol):!!i.valuation)) && (kind==='all'||(kind==='etf'?i.kind!=='stock':i.kind==='stock')) &&
+      (industry==='all'||(kind==='etf'?i.kind===industry:i.industry===industry)) && (status==='all'||signals.get(i.symbol).status===status) &&
       (!q||`${i.symbol} ${i.name}`.toLowerCase().includes(q))).sort((a,b)=>order[signals.get(a.symbol).status]-order[signals.get(b.symbol).status] || Number(!!b.watched)-Number(!!a.watched) || a.symbol.localeCompare(b.symbol));
     $('result-count').textContent=`顯示 ${Math.min(visibleLimit,items.length).toLocaleString()} / 符合 ${items.length.toLocaleString()} 檔 · 全部 ${data.items.length.toLocaleString()}`;
     $('load-more').hidden=items.length<=visibleLimit;
@@ -156,28 +164,26 @@
       if(next.schema_version!==1||!Array.isArray(next.items)||!['live','simulation','initializing'].includes(next.mode))throw new Error('資料格式不相容，等待主機更新');
       if(next.items.some(i=>!i||typeof i.symbol!=='string'))throw new Error('標的資料格式異常');
       data=next;loadError=null;
-      const current=$('industry').value;
-      $('industry').innerHTML='<option value="all">所有產業</option>'+[...new Set(data.items.map(i=>i.industry).filter(Boolean))].sort().map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');
-      if([...$('industry').options].some(o=>o.value===current))$('industry').value=current;
+      industryOptions();
       $('last-scan').textContent=`最後掃描 ${clockText(data.generated_at)}`;
       $('market-date').textContent=`${new Date().toLocaleDateString('zh-TW',{timeZone:'Asia/Taipei'})} · 台北`;
       render();system();if(selected&&$('detail').open)openDetail(selected);
     } catch(e) {
       loadError=e.message;
       if(data)render();
-      $('notice').className='notice error';$('notice').textContent=`${e.message}。${data?'目前保留上次資料，過期掛價會自動停用。':'目前無可用資料，請稍後重新整理。'}`;
+      $('notice').hidden=false;$('notice').className='notice error';$('notice').textContent=`${e.message}。${data?'目前保留上次資料，過期掛價會自動停用。':'目前無可用資料，請稍後重新整理。'}`;
       if(!data){$('stats').innerHTML='';$('rows').innerHTML='';$('empty').hidden=false;$('empty').querySelector('h3').textContent='尚未取得雷達資料';}
     } finally {busy=false;$('refresh').disabled=false;}
   }
   document.querySelectorAll('[data-scope]').forEach(b=>b.addEventListener('click',()=>{scope=b.dataset.scope;$('status').value='all';render();}));
-  $('browse-market')?.addEventListener('click',()=>{scope='all';kind='all';$('status').value='all';$('search').value='';$('industry').value='all';render();jumpToResults();});
-  $('browse-favorites')?.addEventListener('click',()=>{scope='favorites';kind='all';$('status').value='all';$('search').value='';$('industry').value='all';render();jumpToResults();});
+  $('browse-market')?.addEventListener('click',()=>{scope='all';kind='stock';industryOptions();$('status').value='all';$('search').value='';$('industry').value='all';render();jumpToResults();});
+  $('browse-favorites')?.addEventListener('click',()=>{scope='favorites';kind='all';industryOptions();$('status').value='all';$('search').value='';$('industry').value='all';render();jumpToResults();});
   $('show-my-stocks')?.addEventListener('click',()=>{scope='favorites';$('status').value='all';$('search').value='';render();jumpToResults();});
   $('refresh').addEventListener('click',load);
   $('load-more').addEventListener('click',()=>{visibleLimit+=100;render();});
   $('search').addEventListener('input',render);$('industry').addEventListener('change',render);$('status').addEventListener('change',render);
-  document.querySelectorAll('[data-kind]').forEach(b=>b.addEventListener('click',()=>{kind=b.dataset.kind;document.querySelectorAll('[data-kind]').forEach(n=>n.setAttribute('aria-pressed',String(n===b)));render();}));
-  $('clear-filters').addEventListener('click',()=>{scope='all';$('search').value='';$('status').value='all';$('industry').value='all';document.querySelector('[data-kind="all"]').click();});
+  document.querySelectorAll('[data-kind]').forEach(b=>b.addEventListener('click',()=>{kind=b.dataset.kind;industryOptions();document.querySelectorAll('[data-kind]').forEach(n=>n.setAttribute('aria-pressed',String(n===b)));render();}));
+  $('clear-filters').addEventListener('click',()=>{scope='all';$('search').value='';$('status').value='all';$('industry').value='all';document.querySelector('[data-kind="stock"]').click();});
   $('close-detail').addEventListener('click',()=>$('detail').close());
   $('detail').addEventListener('close',()=>{selected=null;});
   setInterval(()=>{if(data){render();if(selected&&$('detail').open)openDetail(selected);}},30000);
