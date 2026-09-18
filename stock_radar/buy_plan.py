@@ -2,6 +2,8 @@
 from datetime import datetime,timedelta
 from .domain import TW,positive,stamp,validate_valuation,floor_tick
 from .calendar import is_trading_day
+# Sanity bounds against the last 60 trading days: buy cap below 85% of the low, or fair value 30% above the high.
+GAP_LOW,GAP_HIGH=.85,1.3
 
 def last_completed_day(now,schedule):
     d=now.date() if now.hour>=14 else now.date()-timedelta(days=1)
@@ -28,6 +30,12 @@ def make_plan(instrument,valuation,close,technical,risk,schedule,now):
             p['reason']='交易限制或重大事件尚待確認';return p
         if not technical or technical.get('as_of')!=close['trade_date'] or technical.get('flow_as_of')!=close['trade_date']:
             p['reason']='價格結構或法人資料尚待更新';return p
+        # A valuation far outside the traded range is a model problem, not a buy/no-chase signal.
+        low,high,fair=positive(technical.get('low_60d')),positive(technical.get('high_60d')),positive(valuation.get('fair'))
+        if low and valuation['buy']<low*GAP_LOW:
+            p.update(band='blocked',status='valuation_gap',label='估值待重新研究',reason=f"買進上限 {valuation['buy']:g} 元遠低於近 60 日最低 {low:g} 元，估值可能未反映目前市場評價，暫不提供買點");return p
+        if high and fair and fair>high*GAP_HIGH:
+            p.update(band='blocked',status='valuation_gap',label='估值待重新研究',reason=f"合理價 {fair:g} 元高於近 60 日最高 {high:g} 元逾三成，獲利外推可能過度樂觀，暫不提供買點");return p
         support=positive(technical.get('support'))
         if not support or n<support:
             p.update(status='broken',label='跌破支撐，先等',reason='已跌破原先支撐，暫停買進計畫並重新檢查');return p
@@ -66,6 +74,8 @@ def format_plans(s,now):
         lines.append(f"\n{i['name']} {i['symbol']}｜{p['label']}\n承接參考 {p['entry']:g} 元／買進上限 {p['buy_max']:g} 元\n{p['reason']}。\n理由：{r.get('thesis','待確認')}\n風險：{(r.get('risks') or ['待確認'])[0]}。")
     rest=[i['name'] for i,p in pairs if p['status']=='no_chase']
     if rest:lines.append('\n高於買進上限，先不追：'+'、'.join(rest)+'。')
+    gap=[i['name'] for i,p in pairs if p['status']=='valuation_gap']
+    if gap:lines.append('\n估值與近期價格差距過大，重新研究中：'+'、'.join(gap)+'。')
     if not candidates:lines.append('目前沒有資料完整的承接計畫，請查看網站各檔等待原因。')
     dates=sorted({p['close_date'] for i,p in pairs if p['close_date']})
     if dates:lines.append('價格依據：'+dates[-1]+' 收盤；承接參考不是即時掛價。')

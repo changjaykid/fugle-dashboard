@@ -16,7 +16,7 @@ def calculate(bars,flows,as_of):
     days=sorted(flows)[-5:]
     if len(days)!=5 or days[-1]!=str(as_of):raise ValueError('近五日法人資料不完整')
     foreign=sum(flows[d]['foreign'] for d in days);trust=sum(flows[d]['trust'] for d in days)
-    return {'as_of':str(as_of),'flow_as_of':days[-1],'ma20':round(ma,2),'support':min(lo[-20:]),'resistance':max(num(x[4]) for x in rows[-20:]),'supports':supports,'requires_stabilization':cl[-1]<ma and foreign+trust<0,'foreign_5d_lots':round(foreign,3),'trust_5d_lots':round(trust,3),'flow_start':days[0]}
+    return {'as_of':str(as_of),'flow_as_of':days[-1],'ma20':round(ma,2),'support':min(lo[-20:]),'resistance':max(num(x[4]) for x in rows[-20:]),'low_60d':min(lo),'high_60d':max(num(x[4]) for x in rows),'supports':supports,'requires_stabilization':cl[-1]<ma and foreign+trust<0,'foreign_5d_lots':round(foreign,3),'trust_5d_lots':round(trust,3),'flow_start':days[0]}
 
 def sync(s,now):
     import requests

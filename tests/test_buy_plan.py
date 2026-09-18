@@ -23,6 +23,18 @@ class PlanTests(unittest.TestCase):
   self.assertEqual(str(last_completed_day(datetime(2026,9,14,8,tzinfo=TW),self.cal)),'2026-09-11')
   self.cal={};self.assertIsNone(self.plan()['entry'])
 
+ def test_buy_cap_far_below_traded_range_is_valuation_gap(self):
+  self.t.update(low_60d=120,high_60d=180);self.c['close']=150;p=self.plan()
+  self.assertEqual(p['status'],'valuation_gap');self.assertEqual(p['band'],'blocked');self.assertIsNone(p['entry'])
+  self.assertIsNone(gate_signal({'status':'avoid','suggested':None},p)['suggested'])
+ def test_fair_far_above_traded_range_blocks_sweet_signal(self):
+  self.v['fair']=150;self.t.update(low_60d=75,high_60d=100);p=self.plan()
+  self.assertEqual(p['status'],'valuation_gap');self.assertIsNone(p['entry'])
+  self.assertEqual(gate_signal({'status':'sweet','suggested':84},p)['status'],'blocked')
+ def test_valuation_inside_traded_range_keeps_plan(self):
+  self.v['fair']=105;self.t.update(low_60d=80,high_60d=100);p=self.plan()
+  self.assertEqual(p['status'],'conditional');self.assertEqual(p['entry'],83)
+
  def test_current_trial_breakdown_revokes_otherwise_valid_plan(self):
   p=self.plan();self.assertEqual(p['status'],'conditional')
   sig=gate_signal({'status':'buy','suggested':78},p,{'is_trial':True,'trial_price':78})
