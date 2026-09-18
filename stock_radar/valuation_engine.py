@@ -17,6 +17,10 @@ URL='https://www.twse.com.tw/exchangeReport/BWIBBU'
 HEADERS={'User-Agent':'Mozilla/5.0 (compatible; StockRadar/1.0)'}
 # Above this median P/E, earnings are too thin relative to price for a P/E band to be stable.
 MAX_FAIR_PE=50
+# Per the stock skill: financials are valued on book (P/B), and cyclicals are not valued on the P/E of
+# the current cycle -- peak earnings make them look cheap exactly when they are not. Both use the P/B band.
+BOOK_INDUSTRIES={'金融保險業':'金融業以淨值（P/B）評價','航運業':'景氣循環股','鋼鐵工業':'景氣循環股','塑膠工業':'景氣循環股','水泥工業':'景氣循環股',
+                 '玻璃陶瓷':'景氣循環股','造紙工業':'景氣循環股','化學工業':'景氣循環股','橡膠工業':'景氣循環股','油電燃氣業':'景氣循環股'}
 MONTHS=13;MIN_SAMPLES=120;BANDS=(.65,.75,.85);VALID_DAYS=3;PAUSE=2.0
 
 def _num(v):
@@ -72,7 +76,8 @@ def compute(inst,close,fin,history):
     rev=(fin or {}).get('revenue') or {}
     period=f"{rev.get('period_roc_ym','')[:3]} 年 {rev.get('period_roc_ym','')[3:]} 月"
     thin=len(pes)>=MIN_SAMPLES and statistics.median(pes)>MAX_FAIR_PE
-    if _num(today[3]) and len(pes)>=MIN_SAMPLES and not thin:
+    book=BOOK_INDUSTRIES.get(inst.get('industry_code') or inst.get('industry') or '')
+    if _num(today[3]) and len(pes)>=MIN_SAMPLES and not thin and not book:
         ttm=px/_num(today[3]);ytd=(rev['cumulative_revenue']/rev['cumulative_revenue_last_year']-1) if positive(rev.get('cumulative_revenue')) and positive(rev.get('cumulative_revenue_last_year')) else None
         month=rev.get('yoy_pct')/100 if isinstance(rev.get('yoy_pct'),(int,float)) else None
         fair_pe=statistics.median(pes);fair=ttm*fair_pe
@@ -83,7 +88,7 @@ def compute(inst,close,fin,history):
         v={'method':'pe_band','inputs':{'ttm_eps':round(ttm,4),'forward_eps':round(ttm,4),'fair_pe':round(fair_pe,4),'pe_today':_num(today[3]),'pe_q1':round(lo,2),'pe_q3':round(hi,2),'samples':len(pes),'revenue_ytd_yoy':None if ytd is None else round(ytd,4),'revenue_month_yoy':None if month is None else round(month,4)}}
     elif _num(today[4]) and len(pbs)>=MIN_SAMPLES:
         bvps=px/_num(today[4]);fair_pb=statistics.median(pbs);fair=bvps*fair_pb
-        why=f"過去一年本益比中位數 {statistics.median(pes):.0f} 倍，獲利相對股價太薄，本益比估值不穩定" if thin else '過去一年多數時間沒有可用本益比（虧損或無資料）'
+        why=(f"{book}，獲利高低會隨景氣或利率大幅波動，不用當期本益比" if book and book.startswith('景氣') else book) if book else f"過去一年本益比中位數 {statistics.median(pes):.0f} 倍，獲利相對股價太薄，本益比估值不穩定" if thin else '過去一年多數時間沒有可用本益比（虧損或無資料）'
         reason=f"{why}，改用淨值：每股淨值 {bvps:.2f} 元（收盤 {px:g} ÷ 股價淨值比 {_num(today[4]):g}）× 過去一年股價淨值比中位數 {fair_pb:.2f} 倍 ＝ 合理價 {fair:.2f} 元。"
         v={'method':'pb_band','inputs':{'book_value_per_share':round(bvps,4),'fair_pb':round(fair_pb,4),'pb_today':_num(today[4]),'samples':len(pbs)}}
     else:return None,f'過去一年本益比／淨值比樣本不足 {MIN_SAMPLES} 筆'
@@ -114,7 +119,9 @@ def publish_all(s,now,built):
     for inst,v,why in built:
         if not v:out.append((inst['symbol'],'skip',why));continue
         old=s.active(inst['symbol']);left=stamp((old or {}).get('valid_until'))
-        if old and old.get('review_mode')==v['review_mode'] and all(old.get(k)==v[k] for k in ('sweet','add','buy')) and left and left-now>timedelta(hours=36):
+        # Same prices and the same basis (method and the reason's leading clause) need no new version.
+        basis=lambda x:(x.get('method'),(x.get('reason') or '').split('：')[0])
+        if old and old.get('review_mode')==v['review_mode'] and all(old.get(k)==v[k] for k in ('sweet','add','buy')) and basis(old)==basis(v) and left and left-now>timedelta(hours=36):
             out.append((inst['symbol'],'same',v['buy']));continue
         # One bad symbol must not stop the others; its previous valuation simply expires.
         try:s.publish_reviewed_analysis(s.propose(inst['symbol'],v,now=now),now=now);out.append((inst['symbol'],'published',v['buy']))

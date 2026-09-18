@@ -58,6 +58,13 @@ def _why(v,price=None):
             return f"{name} {i[today]:g}，{'比一年常態 '+format(i[norm],'.1f')+' 便宜 '+format(gap,'.0%') if gap>0 else '高於一年常態 '+format(i[norm],'.1f')}"
     return (v or {}).get('thesis') or '估值依據請見網站'
 
+def researched(s,inst,now):
+    """Per the stock skill, only a symbol with valid research is recommended. ETFs follow the user-approved
+    ETF rule (NAV premium + one-year price position) instead of company research."""
+    if inst.get('kind','').startswith('etf'):return True
+    r=s.fact(inst['symbol'],'research_detail') or {}
+    return bool(r.get('thesis') and r.get('risks') and valid_research(r,now))
+
 def _names(xs):
     return '、'.join(xs[:MAX_NAMES])+(f" 等 {len(xs)} 檔" if len(xs)>MAX_NAMES else '')
 
@@ -74,6 +81,8 @@ def fit(lines,limit=1900):
     """Discord takes one message: shed risk lines first, then the ETF section, never the answer."""
     text='\n'.join(lines)
     if len(text)>limit:lines=[l for l in lines if not l.startswith('風險：')];text='\n'.join(lines)
+    pool=next((k for k,l in enumerate(lines) if l.startswith('— 待研究')),None)
+    if len(text)>limit and pool is not None:lines=lines[:pool]+[SITE];text='\n'.join(lines)
     if len(text)>limit and '— ETF —' in lines:lines=lines[:lines.index('— ETF —')]+[SITE];text='\n'.join(lines)
     return text[:limit]
 
@@ -86,18 +95,21 @@ def morning(s,radar,now):
     valued=[i for i in radar['items'] if i.get('valuation')]
     checked=[(i,_revalidate_signal(i,now)) for i in valued]
     go=sorted([(i,g) for i,g in checked if g['status'] in ('sweet','add','buy')],key=lambda x:-(discount(x[0]['valuation'],x[1].get('suggested')) or 0))
+    pool=[x for x in go if not researched(s,x[0],now)];go=[x for x in go if researched(s,x[0],now)]
     stocks=[x for x in go if x[0].get('kind')=='stock'][:MAX_STOCKS];etfs=[x for x in go if x[0].get('kind','').startswith('etf')][:MAX_ETFS]
     plans={i['symbol']:store_plan(s,i,now) for i in valued}
-    names=lambda st:[i['name'] for i in sorted(valued,key=lambda i:-(discount(i['valuation'],(i.get('public_close') or {}).get('close')) or 0)) if plans[i['symbol']]['status']==st]
+    names=lambda st:[i['name'] for i in sorted(valued,key=lambda i:-(discount(i['valuation'],(i.get('public_close') or {}).get('close')) or 0)) if plans[i['symbol']]['status']==st and researched(s,i,now)]
     def block(n,i,g):
         r=s.fact(i['symbol'],'research_detail') or {};until=stamp(g.get('valid_until'))
-        out=['',f"{'①②③④⑤'[n-1]} {i['name']} {i['symbol']}",f"掛 {g['suggested']:g} 元｜最高 {i['valuation']['buy']:g} 元，超過不追",f"理由：{_why(i['valuation'],g.get('suggested'))}"]
+        out=['',f"{'①②③④⑤'[n-1]} {i['name']} {i['symbol']}",f"掛 {g['suggested']:g} 元｜最高 {i['valuation']['buy']:g} 元，超過不追",f"價位：{_why(i['valuation'],g.get('suggested'))}"]
+        if r.get('thesis'):out.append(f"看好：{r['thesis']}")
         if r.get('risks'):out.append(f"風險：{r['risks'][0]}")
         if until:out.append(f"{until.astimezone(TW):%H:%M} 前有效，過期停用")
         return out
     lines=[head]
     if go:
         lines.append('【今天可考慮進場】限價掛單，買不到不追；是否下單由你決定。')
+        if not stocks:lines.append('個股：有研究支持的標的今天沒有通過。')
         for n,(i,g) in enumerate(stocks,1):lines+=block(n,i,g)
         if etfs:
             lines+=['','— ETF —']
@@ -105,9 +117,12 @@ def morning(s,radar,now):
     elif (problem:=quotes_checked(s,now)) and radar.get('mode')=='live':
         lines+=[f'【無法確認】{problem}。','今天不提供買點；這不是「不進場」的判斷，請勿依此下單。']
     else:
-        lines.append('【今天不進場】沒有股票通過全部條件。')
+        lines.append('【今天不進場】有研究支持的標的沒有通過全部條件。')
         for st,label in (('wait_stabilize','已進買進區，先等止穩'),('conditional','估值符合，但今天盤前行情未通過'),('waiting','估值符合，等承接位置')):
             if names(st):lines.append(f"接近的：{_names(names(st))}（{label}）")
+    if pool and not quotes_checked(s,now):
+        lines+=['','— 待研究（價位與試撮通過，但尚無個股研究；不是推薦）—']+[f"{i['name']} {i['symbol']}｜試撮可掛 {g['suggested']:g}／規則上限 {i['valuation']['buy']:g}" for i,g in pool[:MAX_NAMES]]
+        if len(pool)>MAX_NAMES:lines.append(f"等 {len(pool)} 檔，請見網站")
     watched=[i['name'] for i in valued if i.get('watched') and plans[i['symbol']]['status']=='overvalued']
     if watched:lines.append(f"你的關注中評價過高：{_names(watched)}")
     scan=s.meta('market_scan') or {}

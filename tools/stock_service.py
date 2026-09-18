@@ -31,6 +31,9 @@ def main():
         target={'refresh':390,'notify':530,'recheck':535,'close':990,'weekly':600,'outlook':1200}[a.task]
         if a.task in ('weekly','outlook') and now.weekday()!={'weekly':5,'outlook':6}[a.task]:return
         if not target<=now.hour*60+now.minute<=target+5:return
+    # Kill switch (no LLM, no network): `touch ~/kid-agent-data/stock-radar/PAUSED` stops every stock job; rm resumes.
+    if (D/'PAUSED').exists():
+        print(json.dumps({'at':now.isoformat(),'task':a.task,'status':'paused'}));return
     with (D/'service.lock').open('w') as lock:
         try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         except BlockingIOError:return
@@ -88,5 +91,10 @@ if __name__=='__main__':
     try:main()
     except Exception as e:
         print(json.dumps({'status':'failed','error_type':type(e).__name__}),flush=True)
-        if sys.argv[1:2]==['notify']:alert(f"台股盤前｜{datetime.datetime.now(ZoneInfo('Asia/Taipei')):%m/%d %H:%M}\n【系統異常】今天盤前流程失敗（{type(e).__name__}: {str(e)[:80]}），沒有產生建議。這不是「不進場」的判斷，請勿依此下單。\nhttps://changjaykid.github.io/fugle-dashboard/")
+        task=sys.argv[1] if len(sys.argv)>1 else '';t=datetime.datetime.now(ZoneInfo('Asia/Taipei'));why=f"{type(e).__name__}: {str(e)[:80]}"
+        what={'notify':'今天盤前流程失敗，沒有產生建議。這不是「不進場」的判斷，請勿依此下單。',
+              'refresh':'早上資料更新失敗，網站與估值停在上一次成功的版本；08:50 可能無法確認。',
+              'close':'收盤資料更新失敗，網站停在上一次成功的版本。',
+              'weekly':'週六週報產生失敗。','outlook':'週日下週觀察清單產生失敗。'}.get(task)
+        if what:alert(f"台股系統｜{t:%m/%d %H:%M}\n【系統異常】{what}（{why}）\nhttps://changjaykid.github.io/fugle-dashboard/")
         sys.exit(1)

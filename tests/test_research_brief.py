@@ -33,11 +33,11 @@ class MorningTests(unittest.TestCase):
   item={'symbol':'3706','name':'神達','kind':'stock','watched':True,'valuation':{'buy':82.8,'inputs':{'pe_today':14.38,'fair_pe':17.42},'valid_until':(now+timedelta(days=2)).isoformat(),'evidence_reviewed':True},
         'signal':{'status':'buy','suggested':77.6,'valid_until':(now+timedelta(minutes=2)).isoformat(),'calculated_at':now.isoformat()},'quote':{'as_of':now.isoformat(),'trade_date':'2026-09-21','is_trial':True,'trial_price':78}}
   with tempfile.TemporaryDirectory() as d:
-   s=Store(Path(d)/'t.db');text=morning(s,{'mode':'live','items':[item]},now);s.close()
+   s=Store(Path(d)/'t.db');s.set_fact('3706','research_detail',{'thesis':'看好理由','risks':['主要風險'],'as_of':(now-timedelta(days=1)).isoformat(),'valid_until':(now+timedelta(days=10)).isoformat()});text=morning(s,{'mode':'live','items':[item]},now);s.close()
   lines=text.split('\n')
   self.assertEqual(lines[0],'台股盤前｜9/21（一）08:50');self.assertTrue(lines[1].startswith('【今天可考慮進場】'))
   self.assertIn('掛 77.6 元｜最高 82.8 元，超過不追',text);self.assertIn('本益比 14.38，比一年常態 17.4 便宜 17%',text);self.assertIn('08:52 前有效',text)
-  self.assertNotIn('T08:52',text)
+  self.assertNotIn('T08:52',text);self.assertIn('看好：看好理由',text);self.assertIn('風險：主要風險',text)
 
 class MarketMorningTests(unittest.TestCase):
  def test_cheapest_five_stocks_then_etfs_in_their_own_section(self):
@@ -46,10 +46,14 @@ class MarketMorningTests(unittest.TestCase):
    inputs={'pe_today':pe_today,'fair_pe':fair} if kind=='stock' else {'median':100,'p25':95,'p10':90,'price_today':94}
    return {'symbol':sym,'name':'名'+sym,'kind':kind,'valuation':{'buy':120,'method':'pe_band' if kind=='stock' else 'etf_band','inputs':inputs,'valid_until':(now+timedelta(days=2)).isoformat(),'evidence_reviewed':True},
            'signal':{'status':'buy','suggested':94.0,'valid_until':(now+timedelta(minutes=2)).isoformat(),'calculated_at':now.isoformat()},'quote':{'as_of':now.isoformat(),'trade_date':'2026-09-21','is_trial':True,'trial_price':95}}
-  items=[item(f'S{k}','stock',20-k) for k in range(7)]+[item('0050','etf_equity',None)]
+  items=[item(f'S{k}','stock',20-k) for k in range(7)]+[item('0050','etf_equity',None),item('U','stock',1)]
   with tempfile.TemporaryDirectory() as d:
-   s=Store(Path(d)/'t.db');text=morning(s,{'mode':'live','items':items},now);s.close()
+   s=Store(Path(d)/'t.db')
+   for k in range(7):s.set_fact(f'S{k}','research_detail',{'thesis':'看好理由','risks':['主要風險'],'as_of':(now-timedelta(days=1)).isoformat(),'valid_until':(now+timedelta(days=10)).isoformat()})
+   s.set_meta('morning_candidates',{'as_of':now.isoformat(),'symbols':['S0']});s.set_meta('last_quote_sync',{'at':now.isoformat(),'source':'fugle','requested':9,'received':9})
+   text=morning(s,{'mode':'live','items':items},now);s.close()
   self.assertEqual(text.count('掛 94 元'),6);self.assertIn('— ETF —',text)
+  self.assertIn('— 待研究',text);self.assertIn('名U U｜試撮可掛 94',text);self.assertLess(text.index('— ETF —'),text.index('— 待研究'))
   self.assertLess(text.index('名S6'),text.index('名S5'));self.assertNotIn('名S0 ',text);self.assertNotIn('名S1 ',text)
   self.assertIn('最便宜 25%',text);self.assertLessEqual(len(text),1900)
 

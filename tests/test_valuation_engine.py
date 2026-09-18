@@ -25,6 +25,9 @@ class ComputeTests(unittest.TestCase):
   v,_=ve.compute(INST,CLOSE,rev(),history(pe_today='20'));self.assertLess(v['buy'],CLOSE['close'])
  def test_very_high_normal_pe_uses_book_value(self):
   v,_=ve.compute(INST,CLOSE,rev(),history(pe='80',pe_today='70'));self.assertEqual(v['method'],'pb_band');self.assertIn('獲利相對股價太薄',v['reason'])
+ def test_financials_and_cyclicals_use_book_value(self):
+  for ind,word in (('金融保險業','P/B'),('航運業','景氣循環股')):
+   v,_=ve.compute({**INST,'industry_code':ind},CLOSE,rev(),history());self.assertEqual(v['method'],'pb_band');self.assertIn(word,v['reason'])
  def test_loss_maker_falls_back_to_book_value(self):
   v,_=ve.compute(INST,CLOSE,rev(),history(pe_today='-'));self.assertEqual(v['method'],'pb_band');self.assertEqual(v['fair'],80.0)
  def test_insufficient_history_or_missing_day_refuses(self):

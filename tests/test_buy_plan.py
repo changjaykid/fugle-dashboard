@@ -57,6 +57,7 @@ class OutlookTests(unittest.TestCase):
    s.set_fact(a,'public_close',{'close':85,'trade_date':'2026-09-18'})
    s.set_fact(a,'technical',{'as_of':'2026-09-18','flow_as_of':'2026-09-18','support':79,'supports':[79,83],'requires_stabilization':False})
    s.set_fact(a,'risk',{'cleared':True,'events':[],'checked_at':(now-timedelta(hours=2)).isoformat()})
+   if a!='S6':s.set_fact(a,'research_detail',{'thesis':'看好理由','risks':['主要風險'],'as_of':(now-timedelta(days=1)).isoformat(),'valid_until':(now+timedelta(days=10)).isoformat()})
   text=format_plans(s,now);s.close();d.cleanup()
-  self.assertEqual(text.count('承接 83 元'),5);self.assertLess(text.index('名S6'),text.index('名S5'));self.assertNotIn('名S0 ',text)
+  self.assertEqual(text.count('承接 83 元'),5);self.assertNotIn('① 名S6',text);self.assertIn('待研究池',text);self.assertIn('名S6',text[text.index('待研究池'):]);self.assertNotIn('名S0 ',text)
   self.assertIn('你的關注：名W 不追',text)
