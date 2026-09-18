@@ -64,6 +64,9 @@
   // One plain answer for the day, derived only from valid closing plans; 08:50 Discord confirms with live quotes.
   function verdictHTML() {
     if(data.mode!=='live'||loadError)return '';
+    // The old Mac cannot report its own outage; a stale page is the only signal the user will see.
+    const age=(Date.now()-timeValue(data.generated_at))/3600000;
+    if(age>30)return `<p class="verdict-head stop">系統可能停止運作</p><p>資料已 ${Math.floor(age)} 小時沒有更新（最後 ${esc(clockText(data.generated_at))}）。請勿依本頁判斷，並檢查舊 Mac。</p>`;
     const ps=data.items.map(i=>[i,plan(i)]).filter(([,p])=>p).sort((a,b)=>discount(b[0])-discount(a[0]));
     // Plans still waiting on data ('missing') are not a 'no' -- if they dominate, say the data is not in yet.
     if(!ps.length||ps.filter(([,p])=>p.status==='missing').length*2>ps.length)return '<p class="verdict-head">資料更新中</p><p>收盤資料每天 16:30 更新；更新前請以 08:50 Discord 通知為準。</p>'+trackHTML(data.track);
@@ -76,7 +79,7 @@
     const body=go.length?`<p class="verdict-head go">${day}可考慮進場</p>${stocks.length?`<ul>${stocks.map(li).join('')}</ul>`:''}${etfs.length?`<p class="muted">ETF</p><ul>${etfs.map(li).join('')}</ul>`:''}<p class="muted">全市場依收盤規劃，由便宜到貴排列。08:50 Discord 會用當日試撮再確認，沒收到確認就不要掛單；是否下單由你決定。</p>`
       :`<p class="verdict-head stop">${day}不進場</p><p>${wait.length?`有研究支持的標的沒有符合全部條件。${names(wait)} 價格已進入買進區，但要先等止穩。`:'有研究支持的標的都不在合理買進區。'}</p>`;
     const research=pool.length?`<p class="muted">待研究（規則篩選已進買進區，尚無個股研究，不是推薦）：${names(pool)}</p>`:'';
-    return body+research+trackHTML(data.track);
+    return body+research+(data.research_coverage?`<p class="track">${esc(data.research_coverage)}</p>`:'')+trackHTML(data.track);
   }
   // Only researched stocks are recommended (stock skill); ETFs follow the user-approved ETF rule instead.
   function researched(i) {
