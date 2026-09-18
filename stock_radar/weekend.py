@@ -43,6 +43,9 @@ def build(kind,now,store,folder):
         else:lines.append('本週收盤資料尚未完整，暫不計算一週價格變化。')
         if items:lines.append('本週曾通過即時條件：'+'、'.join(i.get('name',i['symbol']) for i in items.values()))
         lines.append('以上為市場價格變化，不代表你的成交或投資報酬；除權息與分割可能影響可比性。')
+        from .track import summary
+        tracked=summary(store)
+        if len('\n'.join(lines))+len(tracked)<1700:lines.append(tracked)
     else:
         from .buy_plan import format_plans
         return format_plans(store,now).replace('台股買進計畫｜','下週股票觀察清單｜').replace('08:50 再確認當日行情','下個交易日 08:50 再確認行情')

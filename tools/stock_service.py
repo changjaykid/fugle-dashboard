@@ -11,6 +11,11 @@ def run(args,cwd=R):
     if p.returncode:raise RuntimeError('Command failed: '+str(args[:3]))
     return p.stdout
 
+def track(args):
+    # The recommendation ledger is secondary: log a failure, never block the report or the site.
+    try:run([PY,'-m','stock_radar.track','--db',str(D/'prod.db')]+args)
+    except (RuntimeError,subprocess.TimeoutExpired) as e:print(json.dumps({'status':'track_failed','step':args[0],'error_type':type(e).__name__}),file=sys.stderr,flush=True)
+
 def main():
     p=argparse.ArgumentParser();p.add_argument('task',choices=['refresh','notify','recheck','close','weekly','outlook']);p.add_argument('--manual',action='store_true');a=p.parse_args();now=datetime.datetime.now(ZoneInfo('Asia/Taipei'))
     # launchd can catch up a calendar event after wake: do not send a late morning report.
@@ -29,6 +34,7 @@ def main():
             run([PY,str(R/'tools/initialize_watchlist.py')])
             run([PY,'-m','stock_radar.research_brief','--db',str(D/'prod.db'),'--sync-close'])
             run([PY,'-m','stock_radar.price_structure','--db',str(D/'prod.db')])
+            track(['evaluate'])
             run(cli+['export','--out','docs/radar.json','--mode','live'])
             run([PY,'-m','stock_radar.daily_report','--db',str(D/'prod.db'),'--out','docs/research-summary.json'])
             run(cli+['backup','--out',str(D/('backup-'+now.strftime('%Y%m%d-%H%M%S')+'.db'))])
@@ -56,6 +62,7 @@ def main():
             snapshot=snapshots/(now.strftime('%Y%m%d-%H%M%S')+'.json')
             with snapshot.open('xb') as f:f.write((R/'docs/radar.json').read_bytes())
             radar=json.loads((R/'docs/radar.json').read_text())
+            track(['record','--radar',str(snapshot)])
             state={'date':str(now.date()),'items':{i['symbol']:{k:i.get('signal',{}).get(k) for k in ('status','suggested','reason')} for i in radar['items'] if i.get('watched')}}
             prev=D/'morning-state.json'
             same=prev.exists() and json.loads(prev.read_text())==state
