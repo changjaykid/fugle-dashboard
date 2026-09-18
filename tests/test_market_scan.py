@@ -49,6 +49,10 @@ class ScanTests(unittest.TestCase):
   self.assertEqual(s.meta('liquidity')['lots']['THIN'],200.0);self.assertIsNotNone(s.fact('LIQ','technical'))
   s.close();d.cleanup()
 
+class DiscountTests(unittest.TestCase):
+ def test_etf_discount_falls_back_to_recorded_price(self):
+  self.assertAlmostEqual(ms.discount({'fair':100,'inputs':{'price_today':95}},None),.05)
+
 class CandidateTests(unittest.TestCase):
  def test_etfs_keep_reserved_slots_even_when_stocks_look_cheaper(self):
   from unittest import mock

@@ -55,6 +55,7 @@ def discount(v,close):
     i=(v or {}).get('inputs') or {}
     for today,norm in (('pe_today','fair_pe'),('pb_today','fair_pb')):
         if i.get(today) and i.get(norm):return 1-i[today]/i[norm]
+    close=close or i.get('price_today')
     return 1-close/v['fair'] if v and v.get('fair') and close else None
 
 def candidates(s,liquid,now):
