@@ -88,7 +88,7 @@ def morning(s,radar,now):
     go=sorted([(i,g) for i,g in checked if g['status'] in ('sweet','add','buy')],key=lambda x:-(discount(x[0]['valuation'],x[1].get('suggested')) or 0))
     stocks=[x for x in go if x[0].get('kind')=='stock'][:MAX_STOCKS];etfs=[x for x in go if x[0].get('kind','').startswith('etf')][:MAX_ETFS]
     plans={i['symbol']:store_plan(s,i,now) for i in valued}
-    names=lambda st:[i['name'] for i in valued if plans[i['symbol']]['status']==st]
+    names=lambda st:[i['name'] for i in sorted(valued,key=lambda i:-(discount(i['valuation'],(i.get('public_close') or {}).get('close')) or 0)) if plans[i['symbol']]['status']==st]
     def block(n,i,g):
         r=s.fact(i['symbol'],'research_detail') or {};until=stamp(g.get('valid_until'))
         out=['',f"{'①②③④⑤'[n-1]} {i['name']} {i['symbol']}",f"掛 {g['suggested']:g} 元｜最高 {i['valuation']['buy']:g} 元，超過不追",f"理由：{_why(i['valuation'],g.get('suggested'))}"]
