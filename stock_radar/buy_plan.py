@@ -33,7 +33,7 @@ def make_plan(instrument,valuation,close,technical,risk,schedule,now):
         # A valuation far outside the traded range is a model problem, not a buy/no-chase signal.
         low,high,fair=positive(technical.get('low_60d')),positive(technical.get('high_60d')),positive(valuation.get('fair'))
         if low and valuation['buy']<low*GAP_LOW:
-            p.update(band='blocked',status='valuation_gap',label='估值待重新研究',reason=f"買進上限 {valuation['buy']:g} 元遠低於近 60 日最低 {low:g} 元，估值可能未反映目前市場評價，暫不提供買點");return p
+            p.update(band='avoid',status='overvalued',label='不追：評價過高',reason=f"股價已遠高於過去一年的常態評價，照一年評價水準的買點短期難以到達（近 60 日最低 {low:g} 元），不追");return p
         if high and fair and fair>high*GAP_HIGH:
             p.update(band='blocked',status='valuation_gap',label='估值待重新研究',reason=f"合理價 {fair:g} 元高於近 60 日最高 {high:g} 元逾三成，獲利外推可能過度樂觀，暫不提供買點");return p
         support=positive(technical.get('support'))
@@ -74,6 +74,8 @@ def format_plans(s,now):
         lines.append(f"\n{i['name']} {i['symbol']}｜{p['label']}\n承接參考 {p['entry']:g} 元／買進上限 {p['buy_max']:g} 元\n{p['reason']}。\n理由：{r.get('thesis','待確認')}\n風險：{(r.get('risks') or ['待確認'])[0]}。")
     rest=[i['name'] for i,p in pairs if p['status']=='no_chase']
     if rest:lines.append('\n高於買進上限，先不追：'+'、'.join(rest)+'。')
+    rich=[i['name'] for i,p in pairs if p['status']=='overvalued']
+    if rich:lines.append('\n評價遠高於過去一年常態，不追：'+'、'.join(rich)+'。')
     gap=[i['name'] for i,p in pairs if p['status']=='valuation_gap']
     if gap:lines.append('\n估值與近期價格差距過大，重新研究中：'+'、'.join(gap)+'。')
     if not candidates:lines.append('目前沒有資料完整的承接計畫，請查看網站各檔等待原因。')

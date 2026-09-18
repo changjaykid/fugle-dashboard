@@ -39,7 +39,7 @@
     return p;
   }
   // A valuation far outside the traded range is under re-research: hide its price anchors.
-  const gap=i=>plan(i)?.status==='valuation_gap';
+  const gap=i=>['valuation_gap','overvalued'].includes(plan(i)?.status);
   const displaySignal=i=>{const p=plan(i);return p?{...signal(i),status:p.band,action:p.reason}:signal(i);};
   function signal(item) {
     const s = {...(item.signal || {status:'pending',action:'等待估值'})};
@@ -60,6 +60,21 @@
     if (!['sweet','add','buy'].includes(s.status)) s.suggested=null;
     return s;
   }
+  // One plain answer for the day, derived only from valid closing plans; 08:50 Discord confirms with live quotes.
+  function verdictHTML() {
+    if(data.mode!=='live'||loadError)return '';
+    const ps=data.items.filter(i=>i.watched).map(i=>[i,plan(i)]).filter(([,p])=>p);
+    if(!ps.length)return '<p class="verdict-head">資料更新中</p><p>收盤資料每天 16:30 更新；更新前請以 08:50 Discord 通知為準。</p>'+trackHTML(data.track);
+    const go=ps.filter(([,p])=>p.status==='conditional'),wait=ps.filter(([,p])=>p.status==='wait_stabilize');
+    const body=go.length?`<p class="verdict-head go">今天可考慮進場</p><ul>${go.map(([i,p])=>`<li><strong>${esc(i.name)} ${esc(i.symbol)}</strong>：承接 ${price(p.entry)} 元，最高 ${price(p.buy_max)} 元，超過不追</li>`).join('')}</ul><p class="muted">依 ${esc(go[0][1].close_date)} 收盤規劃。08:50 Discord 會用當日行情再確認，沒收到確認就不要掛單；是否下單由你決定。</p>`
+      :`<p class="verdict-head stop">今天不進場</p><p>${wait.length?`沒有符合全部條件的股票。${wait.map(([i])=>esc(i.name)).join('、')} 價格已進入買進區，但要先等止穩。`:'觀察清單中沒有股票落在合理買進區。'}</p>`;
+    return body+trackHTML(data.track);
+  }
+  function trackHTML(t) {
+    if(!t?.days)return '';
+    const f=a=>a?.[1]?`${a[0]>0?'+':''}${a[0]}%（${a[1]} 筆）`:'—',h=['60','20','5'].map(k=>[k,t.horizons?.[k]]).find(([,v])=>v?.baseline?.[1]);
+    return `<p class="track">建議追蹤：${t.days} 個交易日，可掛價建議 ${t.actionable} 筆、當日觸及 ${t.filled} 筆。${h?`${h[0]} 日後平均：成交建議 ${f(h[1].filled)}，不追 ${f(h[1].avoid)}，觀察股整體 ${f(h[1].baseline)}。`:'尚未滿 5 個交易日，還不能判斷準不準。'}</p>`;
+  }
   function stats(signals) {
     const counts = {sweet:0,add:0,buy:0,avoid:0,pending:0,blocked:0,stale:0};
     for (const i of data.items) counts[signals.get(i.symbol).status]++;
@@ -68,6 +83,7 @@
     $('stats').querySelectorAll('button').forEach(b => b.addEventListener('click',()=>{$('status').value=$('status').value===b.dataset.status?'all':b.dataset.status;scope='all';kind='all';$('search').value='';$('industry').value='all';render();jumpToResults();}));
     const valid=counts.sweet+counts.add+counts.buy;
     const pending=counts.pending+counts.blocked+counts.stale;
+    $('verdict').innerHTML=verdictHTML();
     const notice=$('notice');notice.className='notice';
     if(loadError){notice.classList.add('error');notice.textContent=`${loadError}。目前保留上次資料，過期掛價會自動停用。`;}
     else if(data.mode==='simulation'){notice.textContent='測試資料｜此畫面用於驗證流程，所有測試價格均不可作為即時交易依據。';}
@@ -109,7 +125,7 @@
   function renderResearch() {
     const box=$('research-cards');if(!box)return;
     const rows=data.items.filter(i=>favorites.has(i.symbol));
-    box.innerHTML=rows.length?rows.map(i=>{const r=i.research_detail||{},c=publicClose(i),v=i.valuation,valid=timeValue(r.valid_until)>Date.now()&&timeValue(r.as_of)<=Date.now();return `<article class="watch-row"><div>${star(i)}<button class="stock-name" data-symbol="${esc(i.symbol)}">${esc(i.name)} <span class="code">${esc(i.symbol)}</span></button><p class="muted">${esc(r.description||i.industry||'')}</p></div><div class="watch-price"><strong>${price(c?.close)}</strong><small>${esc(c?.trade_date||'價格未取得')} 收盤</small></div><div class="watch-verdict"><strong>${esc(valid?(plan(i)?.label||'等待資料'):'先等資料確認')}</strong><p>${esc(r.thesis||i.fundamentals?.reading||'尚未完成分析，加入關注後可在這裡集中查看。')}</p><p class="watch-risk">風險：${esc(r.risks?.[0]||'尚待確認')}</p></div><div><span class="tag">${gap(i)?'估值重新研究中':plan(i)?.buy_max?'買進上限 '+price(plan(i).buy_max):'買進價尚未確認'}</span><button class="quiet" data-symbol="${esc(i.symbol)}">看分析依據 ↗</button></div></article>`;}).join(''):'<p>尚未加入關注。到全市場清單點選 ☆，即可加入這裡。</p>';
+    box.innerHTML=rows.length?rows.map(i=>{const r=i.research_detail||{},c=publicClose(i),v=i.valuation,valid=timeValue(r.valid_until)>Date.now()&&timeValue(r.as_of)<=Date.now();return `<article class="watch-row"><div>${star(i)}<button class="stock-name" data-symbol="${esc(i.symbol)}">${esc(i.name)} <span class="code">${esc(i.symbol)}</span></button><p class="muted">${esc(r.description||i.industry||'')}</p></div><div class="watch-price"><strong>${price(c?.close)}</strong><small>${esc(c?.trade_date||'價格未取得')} 收盤</small></div><div class="watch-verdict"><strong>${esc(valid?(plan(i)?.label||'等待資料'):'先等資料確認')}</strong><p>${esc(r.thesis||i.fundamentals?.reading||'尚未完成分析，加入關注後可在這裡集中查看。')}</p><p class="watch-risk">風險：${esc(r.risks?.[0]||'尚待確認')}</p></div><div><span class="tag">${gap(i)?(plan(i).status==='overvalued'?'評價過高':'估值重新研究中'):plan(i)?.buy_max?'買進上限 '+price(plan(i).buy_max):'買進價尚未確認'}</span><button class="quiet" data-symbol="${esc(i.symbol)}">看分析依據 ↗</button></div></article>`;}).join(''):'<p>尚未加入關注。到全市場清單點選 ☆，即可加入這裡。</p>';
     bindStars(box);
     box.querySelectorAll('button[data-symbol]').forEach(b=>b.addEventListener('click',()=>openDetail(b.dataset.symbol)));
   }

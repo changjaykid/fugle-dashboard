@@ -54,13 +54,15 @@ def floor_tick(value, kind):
 # other valuation.
 METHOD_KIND = {
     'forward_pe': 'stock', 'financial_pb': 'stock', 'normalized_pe': 'stock',
-    'etf_nav': 'etf_equity',
+    'etf_nav': 'etf_equity', 'pe_band': 'stock', 'pb_band': 'stock',
 }
 METHOD_INPUTS = {
     'forward_pe': ('forward_eps', 'fair_pe'),
     'financial_pb': ('book_value_per_share', 'fair_pb'),
     'normalized_pe': ('normalized_eps', 'fair_pe'),
     'etf_nav': ('nav', 'fair_nav_ratio'),
+    'pe_band': ('forward_eps', 'fair_pe'),
+    'pb_band': ('book_value_per_share', 'fair_pb'),
 }
 
 

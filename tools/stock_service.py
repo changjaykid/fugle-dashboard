@@ -35,6 +35,8 @@ def main():
             run([PY,'-m','stock_radar.research_brief','--db',str(D/'prod.db'),'--sync-close'])
             run([PY,'-m','stock_radar.price_structure','--db',str(D/'prod.db')])
             track(['evaluate'])
+            # Rule valuations are refreshed from the same day's close before anything is exported.
+            run([PY,'-m','stock_radar.valuation_engine','--db',str(D/'prod.db')])
             run(cli+['export','--out','docs/radar.json','--mode','live'])
             run([PY,'-m','stock_radar.daily_report','--db',str(D/'prod.db'),'--out','docs/research-summary.json'])
             run(cli+['backup','--out',str(D/('backup-'+now.strftime('%Y%m%d-%H%M%S')+'.db'))])

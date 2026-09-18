@@ -49,7 +49,7 @@ def morning(s,radar,now):
     watched=[i for i in radar['items'] if i.get('watched')]
     eligible=[i for i in watched if _revalidate_signal(i,now)['status'] in ('sweet','add','buy')]
     if eligible:
-        lines=['台股盤前｜'+now.strftime('%Y-%m-%d %H:%M'),'通過行情與分析檢查，可考慮以下限價：']
+        lines=['台股盤前｜'+now.strftime('%Y-%m-%d %H:%M'),'【今天可考慮進場】通過行情與分析檢查，可考慮以下限價（買不到不追，是否下單由你決定）：']
         for i in eligible[:6]:
             sig=_revalidate_signal(i,now);v=i['valuation'];r=s.fact(i['symbol'],'research_detail') or {}
             lines.append(f"{i['name']} {i['symbol']}｜嘗試掛 {sig['suggested']:g} 元，上限 {v['buy']:g} 元\n{r.get('thesis','')}\n風險：{(r.get('risks') or ['待確認'])[0]}\n有效至 {sig['valid_until']}，過期即停用。")
@@ -57,7 +57,7 @@ def morning(s,radar,now):
         text='\n'.join(lines)
         return ('【測試資料，非即時交易建議】\n' if radar.get('mode')!='live' else '')+text
     text=build(s,now)
-    prefix='台股盤前｜'+now.strftime('%Y-%m-%d %H:%M')+'\n本次沒有通過全部即時掛價條件的標的。\n'
+    prefix='台股盤前｜'+now.strftime('%Y-%m-%d %H:%M')+'\n【今天不進場】沒有通過全部即時掛價條件的標的。\n'
     if radar.get('mode')!='live':prefix='【測試資料，非即時交易建議】\n'+prefix
     return prefix+text
 
