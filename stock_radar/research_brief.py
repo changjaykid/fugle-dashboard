@@ -61,6 +61,22 @@ def _why(v,price=None):
 def _names(xs):
     return '、'.join(xs[:MAX_NAMES])+(f" 等 {len(xs)} 檔" if len(xs)>MAX_NAMES else '')
 
+def quotes_checked(s,now):
+    """None when this morning's live trial check really ran, else the reason it cannot be trusted."""
+    q=s.meta('last_quote_sync') or {};c=s.meta('morning_candidates') or {};at=stamp(q.get('at'));built=stamp(c.get('as_of'))
+    if not built or now-built>timedelta(hours=30):return '昨晚的全市場掃描沒有完成，沒有候選清單'
+    if not at or at.astimezone(TW).date()!=now.date():return '今天盤前報價沒有執行'
+    if q.get('source')!='fugle':return f"試撮報價來源失敗（改用 {q.get('source') or '無'}，無法分辨試撮價）"
+    if q.get('received',0)<max(1,int(q.get('requested',0)*.8)):return f"試撮報價只取得 {q.get('received',0)}/{q.get('requested',0)} 檔"
+    return None
+
+def fit(lines,limit=1900):
+    """Discord takes one message: shed risk lines first, then the ETF section, never the answer."""
+    text='\n'.join(lines)
+    if len(text)>limit:lines=[l for l in lines if not l.startswith('風險：')];text='\n'.join(lines)
+    if len(text)>limit and '— ETF —' in lines:lines=lines[:lines.index('— ETF —')]+[SITE];text='\n'.join(lines)
+    return text[:limit]
+
 def morning(s,radar,now):
     """08:50 message over the whole scanned market: the answer first, then only what is needed to act."""
     from .discord import _revalidate_signal
@@ -86,6 +102,8 @@ def morning(s,radar,now):
         if etfs:
             lines+=['','— ETF —']
             for n,(i,g) in enumerate(etfs,1):lines+=block(n,i,g)
+    elif (problem:=quotes_checked(s,now)) and radar.get('mode')=='live':
+        lines+=[f'【無法確認】{problem}。','今天不提供買點；這不是「不進場」的判斷，請勿依此下單。']
     else:
         lines.append('【今天不進場】沒有股票通過全部條件。')
         for st,label in (('wait_stabilize','已進買進區，先等止穩'),('conditional','估值符合，但今天盤前行情未通過'),('waiting','估值符合，等承接位置')):
@@ -95,15 +113,14 @@ def morning(s,radar,now):
     scan=s.meta('market_scan') or {}
     if scan.get('liquid'):lines.append(f"已掃描上市 {scan['listed']} 檔，成交量達標 {scan['liquid']} 檔。")
     lines.append(SITE)
-    text='\n'.join(lines)
-    return ('【測試資料，非即時交易建議】\n' if radar.get('mode')!='live' else '')+text
+    return ('【測試資料，非即時交易建議】\n' if radar.get('mode')!='live' else '')+fit(lines)
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--db',type=Path,required=True);p.add_argument('--import-file',type=Path);p.add_argument('--sync-close',action='store_true');p.add_argument('--send',action='store_true');p.add_argument('--morning-radar',type=Path);p.add_argument('--out',type=Path);a=p.parse_args();now=datetime.now(TW);s=Store(a.db)
+    p=argparse.ArgumentParser();p.add_argument('--db',type=Path,required=True);p.add_argument('--import-file',type=Path);p.add_argument('--sync-close',action='store_true');p.add_argument('--send',action='store_true');p.add_argument('--morning-radar',type=Path);p.add_argument('--out',type=Path);p.add_argument('--alert');a=p.parse_args();now=datetime.now(TW);s=Store(a.db)
     try:
         if a.import_file:install(s,json.loads(a.import_file.read_text()),now)
         if a.sync_close:sync_close(s,now)
-        text=morning(s,json.loads(a.morning_radar.read_text()),now) if a.morning_radar else build(s,now)
+        text=a.alert if a.alert else morning(s,json.loads(a.morning_radar.read_text()),now) if a.morning_radar else build(s,now)
         if a.out:atomic_json(a.out,{'generated_at':now.isoformat(),'text':text})
         if a.send:
             from .cli import _bot_token,_send_with_outbox

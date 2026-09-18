@@ -11,10 +11,18 @@ def run(args,cwd=R):
     if p.returncode:raise RuntimeError('Command failed: '+str(args[:3]))
     return p.stdout
 
+def secondary(args,step):
+    # Secondary steps log a failure but never block the report or the site.
+    try:run(args)
+    except (RuntimeError,subprocess.TimeoutExpired) as e:print(json.dumps({'status':'secondary_failed','step':step,'error_type':type(e).__name__}),file=sys.stderr,flush=True)
+
 def track(args):
-    # The recommendation ledger is secondary: log a failure, never block the report or the site.
-    try:run([PY,'-m','stock_radar.track','--db',str(D/'prod.db')]+args)
-    except (RuntimeError,subprocess.TimeoutExpired) as e:print(json.dumps({'status':'track_failed','step':args[0],'error_type':type(e).__name__}),file=sys.stderr,flush=True)
+    secondary([PY,'-m','stock_radar.track','--db',str(D/'prod.db')]+args,'track '+args[0])
+
+def alert(text):
+    # A silent morning looks like "nothing to buy"; say plainly that the system failed instead.
+    try:run([PY,'-m','stock_radar.research_brief','--db',str(D/'prod.db'),'--alert',text,'--send'])
+    except Exception:pass
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('task',choices=['refresh','notify','recheck','close','weekly','outlook']);p.add_argument('--manual',action='store_true');a=p.parse_args();now=datetime.datetime.now(ZoneInfo('Asia/Taipei'))
@@ -33,7 +41,8 @@ def main():
             for cmd in ['sync-universe','sync-calendar','sync-financials','sync-risk']:run(cli+[cmd])
             run([PY,str(R/'tools/initialize_watchlist.py')])
             run([PY,'-m','stock_radar.research_brief','--db',str(D/'prod.db'),'--sync-close'])
-            run([PY,'-m','stock_radar.price_structure','--db',str(D/'prod.db')])
+            # Watched-only legacy structure (keeps hand-research anchors); the full-market scan covers the rest.
+            secondary([PY,'-m','stock_radar.price_structure','--db',str(D/'prod.db')],'price_structure')
             # Full market: add the latest session (a few requests), then liquidity gate, structure, valuation
             # and the ranked 08:50 candidates -- all before anything is exported.
             run([PY,'-m','stock_radar.market','--db',str(D/'prod.db')])
@@ -79,4 +88,5 @@ if __name__=='__main__':
     try:main()
     except Exception as e:
         print(json.dumps({'status':'failed','error_type':type(e).__name__}),flush=True)
+        if sys.argv[1:2]==['notify']:alert(f"台股盤前｜{datetime.datetime.now(ZoneInfo('Asia/Taipei')):%m/%d %H:%M}\n【系統異常】今天盤前流程失敗（{type(e).__name__}: {str(e)[:80]}），沒有產生建議。這不是「不進場」的判斷，請勿依此下單。\nhttps://changjaykid.github.io/fugle-dashboard/")
         sys.exit(1)

@@ -49,4 +49,18 @@ class ScanTests(unittest.TestCase):
   self.assertEqual(s.meta('liquidity')['lots']['THIN'],200.0);self.assertIsNotNone(s.fact('LIQ','technical'))
   s.close();d.cleanup()
 
+class CandidateTests(unittest.TestCase):
+ def test_etfs_keep_reserved_slots_even_when_stocks_look_cheaper(self):
+  from unittest import mock
+  insts=[{'symbol':f'S{k}','kind':'stock'} for k in range(40)]+[{'symbol':f'E{k}','kind':'etf_equity'} for k in range(8)]
+  class S:
+   def __init__(self):self.m={}
+   def active(self,sym):return {'inputs':{'pe_today':10,'fair_pe':20}} if sym[0]=='S' else {'fair':100,'inputs':{}}
+   def fact(self,sym,cat):return {'close':97}
+   def instruments(self):return insts
+   def set_meta(self,k,v):self.m[k]=v
+  s=S()
+  with mock.patch('stock_radar.buy_plan.store_plan',return_value={'status':'conditional'}):out=ms.candidates(s,insts,datetime(2026,9,18,17,tzinfo=TW))
+  self.assertEqual(len(out),30);self.assertEqual(sum(x[0]=='E' for x in out),6);self.assertEqual(out[20],'E0')
+
 if __name__=='__main__':unittest.main()

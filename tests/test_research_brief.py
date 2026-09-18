@@ -21,6 +21,8 @@ class ResearchTests(unittest.TestCase):
    self.assertEqual(sum(len(s.versions(r['symbol'])) for r in doc['items']),1)
    self.assertTrue(all(s.active(r['symbol']) is None for r in doc['items']))
    text=build(s,now);self.assertLessEqual(len(text),1900);self.assertIn('目前沒有資料完整的承接計畫',text)
+   text=morning(s,{'mode':'live','items':[]},now);self.assertIn('【無法確認】',text);self.assertNotIn('今天不進場',text)
+   s.set_meta('morning_candidates',{'as_of':(now-timedelta(hours=2)).isoformat(),'symbols':[]});s.set_meta('last_quote_sync',{'at':now.isoformat(),'source':'fugle','requested':10,'received':10})
    text=morning(s,{'mode':'live','items':[]},now);self.assertLessEqual(len(text),1900);self.assertIn('【今天不進場】',text)
    self.assertNotIn('提案買進上限',build(s,now+timedelta(days=31)))
    s.close()
@@ -50,3 +52,21 @@ class MarketMorningTests(unittest.TestCase):
   self.assertEqual(text.count('掛 94 元'),6);self.assertIn('— ETF —',text)
   self.assertLess(text.index('名S6'),text.index('名S5'));self.assertNotIn('名S0 ',text);self.assertNotIn('名S1 ',text)
   self.assertIn('最便宜 25%',text);self.assertLessEqual(len(text),1900)
+
+class HonestyTests(unittest.TestCase):
+ def check(self,**q):
+  from stock_radar.research_brief import quotes_checked
+  now=datetime(2026,9,21,8,51,tzinfo=TW)
+  with tempfile.TemporaryDirectory() as d:
+   s=Store(Path(d)/'t.db');s.set_meta('morning_candidates',{'as_of':(now-timedelta(hours=2)).isoformat(),'symbols':['A']})
+   s.set_meta('last_quote_sync',{'at':now.isoformat(),'source':'fugle','requested':30,'received':30,**q});r=quotes_checked(s,now);s.close()
+  return r
+ def test_only_a_real_fugle_check_today_counts(self):
+  self.assertIsNone(self.check())
+  self.assertIn('無法分辨試撮價',self.check(source='mis'))
+  self.assertIn('10/30',self.check(received=10))
+  self.assertIn('沒有執行',self.check(at='2026-09-18T08:50:00+08:00'))
+ def test_fit_keeps_the_answer_and_drops_detail_first(self):
+  from stock_radar.research_brief import fit,SITE
+  lines=['台股盤前','【今天可考慮進場】']+['風險：'+'很長'*300,'— ETF —','ETF 行'*400,SITE]
+  text=fit(lines);self.assertLessEqual(len(text),1900);self.assertIn('【今天可考慮進場】',text);self.assertNotIn('風險：',text)

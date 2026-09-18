@@ -15,6 +15,7 @@ ETF_KINDS=('etf_equity','etf_other')
 DECAYING_SUFFIX=('L','R','U')
 from .domain import ETF_PREMIUM_MAX
 CANDIDATE_CAP=30  # Fugle trial-price checks at 08:50 (cli.FUGLE_CANDIDATE_CAP)
+STOCK_SLOTS,ETF_SLOTS=20,6  # Discord shows 5 stocks and 3 ETFs; the rest is headroom for trial checks that fail
 
 def _roc(ds):
     d=date.fromisoformat(ds);return f"{d.year-1911}年{d.month:02d}月{d.day:02d}日"
@@ -57,18 +58,22 @@ def discount(v,close):
     return 1-close/v['fair'] if v and v.get('fair') and close else None
 
 def candidates(s,liquid,now):
-    """Only a plan that already passed on the close can become a buy at 08:50 (gate_signal), so those,
-    cheapest first, are what the limited live trial-price check is spent on; then stabilizing ones, then watched."""
+    """Only a plan that already passed on the close can become a buy at 08:50 (gate_signal), so those are
+    what the limited live trial-price check is spent on. Stocks and ETFs are ranked separately with
+    reserved slots -- an ETF's discount to its price median is naturally smaller than a stock's to its
+    P/E norm, so one shared ranking would never reach the ETFs. Leftover slots: stabilizing, then watched."""
     from .buy_plan import store_plan
-    ranked={'conditional':[],'wait_stabilize':[]}
+    ready={'stock':[],'etf':[]};wait=[]
     for inst in liquid:
         v=s.active(inst['symbol'])
         if not v:continue
-        p=store_plan(s,inst,now)
-        if p['status'] in ranked:ranked[p['status']].append((-(discount(v,(s.fact(inst['symbol'],'public_close') or {}).get('close')) or 0),inst['symbol']))
-    order=[sym for st in ('conditional','wait_stabilize') for _,sym in sorted(ranked[st])]
+        p=store_plan(s,inst,now);d=-(discount(v,(s.fact(inst['symbol'],'public_close') or {}).get('close')) or 0)
+        if p['status']=='conditional':ready['stock' if inst['kind']=='stock' else 'etf'].append((d,inst['symbol']))
+        elif p['status']=='wait_stabilize':wait.append((d,inst['symbol']))
+    order=[sym for _,sym in sorted(ready['stock'])[:STOCK_SLOTS]]+[sym for _,sym in sorted(ready['etf'])[:ETF_SLOTS]]
+    order+=[sym for _,sym in sorted(ready['stock'])[STOCK_SLOTS:]+sorted(ready['etf'])[ETF_SLOTS:]+sorted(wait)]
     order+=[i['symbol'] for i in s.instruments() if i.get('watched') and i['symbol'] not in order]
-    s.set_meta('morning_candidates',{'as_of':now.isoformat(),'symbols':order[:CANDIDATE_CAP],'conditional':len(ranked['conditional']),'wait_stabilize':len(ranked['wait_stabilize'])})
+    s.set_meta('morning_candidates',{'as_of':now.isoformat(),'symbols':order[:CANDIDATE_CAP],'conditional':len(ready['stock'])+len(ready['etf']),'conditional_etf':len(ready['etf']),'wait_stabilize':len(wait)})
     return order[:CANDIDATE_CAP]
 
 def scan(s,now):
