@@ -76,7 +76,7 @@
     const names=xs=>xs.slice(0,5).map(([i])=>esc(i.name)).join('、')+(xs.length>5?` 等 ${xs.length} 檔`:'');
     // Plans made on a close are for the next session; name that day instead of saying "today" after hours.
     const day=(t=>{const d=new Date(t);return Number.isFinite(d.getTime())?`${d.toLocaleDateString('zh-TW',{month:'numeric',day:'numeric',timeZone:'Asia/Taipei'})}（${'日一二三四五六'[new Date(d.toLocaleString('en-US',{timeZone:'Asia/Taipei'})).getDay()]}）`:'今天';})(ps[0][1].valid_until);
-    const body=go.length?`<p class="verdict-head go">${day}可考慮進場</p>${stocks.length?`<ul>${stocks.map(li).join('')}</ul>`:''}${etfs.length?`<p class="muted">ETF</p><ul>${etfs.map(li).join('')}</ul>`:''}<p class="muted">全市場依收盤規劃，由便宜到貴排列。08:50 Discord 會用當日試撮再確認，沒收到確認就不要掛單；是否下單由你決定。</p>`
+    const body=go.length?`<p class="verdict-head go">${day}可考慮進場</p>${stocks.length?`<ul>${stocks.map(li).join('')}</ul>`:'<p>個股：有研究支持的標的目前沒有進入買進區。</p>'}${etfs.length?`<p class="muted">ETF</p><ul>${etfs.map(li).join('')}</ul>`:''}<p class="muted">全市場依收盤規劃，由便宜到貴排列。08:50 Discord 會用當日試撮再確認，沒收到確認就不要掛單；是否下單由你決定。</p>`
       :`<p class="verdict-head stop">${day}不進場</p><p>${wait.length?`有研究支持的標的沒有符合全部條件。${names(wait)} 價格已進入買進區，但要先等止穩。`:'有研究支持的標的都不在合理買進區。'}</p>`;
     const research=pool.length?`<p class="muted">待研究（規則篩選已進買進區，尚無個股研究，不是推薦）：${names(pool)}</p>`:'';
     return body+research+(data.research_coverage?`<p class="track">${esc(data.research_coverage)}</p>`:'')+trackHTML(data.track);
@@ -130,7 +130,7 @@
     renderResearch();
     const candidates=$('candidates');
     if(candidates){
-      const eligible=data.mode==='live'&&!loadError?data.items.filter(i=>plan(i)?.entry).sort((a,b)=>Number(plan(a).status==='wait_stabilize')-Number(plan(b).status==='wait_stabilize')||discount(b)-discount(a)):[];
+      const eligible=data.mode==='live'&&!loadError?data.items.filter(i=>plan(i)?.entry&&researched(i)).sort((a,b)=>Number(plan(a).status==='wait_stabilize')-Number(plan(b).status==='wait_stabilize')||discount(b)-discount(a)):[];
       $('candidates-section').hidden=!eligible.length;
       candidates.innerHTML=eligible.length?eligible.slice(0,6).map(i=>{const p=plan(i),r=i.research_detail||{};return `<article class="health-card plan-card"><span class="tag ${p.status==='conditional'&&researched(i)?'buy':''}">${esc(p.label)}</span>${researched(i)?'':'<span class="tag">尚無個股研究</span>'}<h3><button class="stock-name" data-symbol="${esc(i.symbol)}">${esc(i.name)} ${esc(i.symbol)}</button></h3><p class="plan-price">承接參考 <strong>${price(p.entry)}</strong><span> 元</span></p><p>最高接受 <strong>${price(p.buy_max)} 元</strong> · 超過不追</p><p>${esc(p.reason)}。</p><p>${esc(r.thesis)}</p>${purchaseReasons(i)}<p class="watch-risk">風險：${esc(r.risks?.[0]||'待確認')}</p><small>${esc(p.close_date)} 收盤規劃 · 更新期限 ${esc(clockText(p.valid_until))}<br>盤前確認後才考慮掛單</small></article>`;}).join(''):'<p>目前没有完整有效的承接計畫，請查看下方等待原因。</p>'.replace('没有','沒有');
       candidates.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>openDetail(b.dataset.symbol)));
