@@ -120,7 +120,7 @@ def publish_all(s,now,built):
         old=s.active(inst['symbol']);left=stamp((old or {}).get('valid_until'))
         # Same prices and the same basis (method and the reason's leading clause) need no new version.
         basis=lambda x:(x.get('method'),(x.get('reason') or '').split('：')[0])
-        if old and old.get('review_mode')==v['review_mode'] and all(old.get(k)==v[k] for k in ('sweet','add','buy')) and basis(old)==basis(v) and left and left-now>timedelta(hours=36):
+        if old and old.get('review_mode')==v['review_mode'] and all(old.get(k)==v[k] for k in ('sweet','add','buy')) and basis(old)==basis(v) and not old.get('analysis_review') and left and left-now>timedelta(hours=36):
             out.append((inst['symbol'],'same',v['buy']));continue
         # One bad symbol must not stop the others; its previous valuation simply expires.
         try:s.publish_rule_valuation(s.propose(inst['symbol'],v,now=now),now=now);out.append((inst['symbol'],'published',v['buy']))
