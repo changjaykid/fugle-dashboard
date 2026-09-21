@@ -49,6 +49,8 @@ MAX_STOCKS,MAX_ETFS,MAX_NAMES=5,3,5
 def _why(v,price=None):
     """One line a person can check: how far below its own one-year norm the symbol trades."""
     i=(v or {}).get('inputs') or {}
+    if (v or {}).get('method')=='forward_pe' and i.get('forecast_year') and positive(i.get('forward_eps')) and positive(i.get('fair_pe')):
+        return f"{i['forecast_year']} 情境 EPS {i['forward_eps']:.2f} 元 × 參考 PE {i['fair_pe']:.2f} 倍；屬分析推估，非公司財測"
     if (v or {}).get('method')=='etf_band' and positive(i.get('median')):
         p=price or i.get('price_today');tier='最便宜 10%' if p<=i['p10'] else '最便宜 25%' if p<=i['p25'] else '低於一年中位數'
         return f"價格 {p:g} 在過去一年{tier}（中位數 {i['median']:.2f}）；價格位置，不是估值"
