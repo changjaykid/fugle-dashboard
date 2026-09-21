@@ -223,6 +223,9 @@ class Store:
             inst = json.loads(self.db.execute('SELECT payload FROM instruments WHERE symbol=?', (r['symbol'],)).fetchone()[0])
             validate_valuation(payload, now, kind=inst.get('kind'))
             old = self.active(r['symbol'])
+            from .valuation_quality import researched_anchor
+            if researched_anchor(old):
+                raise ValueError('規則掃描不得覆蓋個股研究價位')
             if (old['id'] if old else None) != r['parent_id']:
                 raise ValueError('基準版本已改變，需重新計算')
             self.db.execute("UPDATE valuations SET status='superseded' WHERE symbol=? AND status='active'", (r['symbol'],))

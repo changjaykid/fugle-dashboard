@@ -118,6 +118,10 @@ def publish_all(s,now,built):
     for inst,v,why in built:
         if not v:out.append((inst['symbol'],'skip',why));continue
         old=s.active(inst['symbol']);left=stamp((old or {}).get('valid_until'))
+        from .valuation_quality import researched_anchor
+        if researched_anchor(old):
+            # Expired research must be renewed by research, never silently replaced by a screen.
+            out.append((inst['symbol'],'skip','保留個股研究價位；到期後等待研究更新'));continue
         # Same prices and the same basis (method and the reason's leading clause) need no new version.
         basis=lambda x:(x.get('method'),(x.get('reason') or '').split('：')[0])
         if old and old.get('review_mode')==v['review_mode'] and all(old.get(k)==v[k] for k in ('sweet','add','buy')) and basis(old)==basis(v) and not old.get('analysis_review') and left and left-now>timedelta(hours=36):

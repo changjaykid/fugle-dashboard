@@ -14,6 +14,11 @@ def last_completed_day(now,schedule):
 
 def make_plan(instrument,valuation,close,technical,risk,schedule,now):
     p={'band':'stale','status':'missing','label':'等待資料','entry':None,'buy_max':None,'close_date':(close or {}).get('trade_date'),'valid_until':None,'reason':'等待完整且有效的分析資料','is_live_order':False}
+    from .valuation_quality import assess
+    quality=assess(instrument,valuation,technical)
+    if quality:
+        p.update(band='blocked',status='valuation_gap',label='價位需重新評估',reason=quality['reason'])
+        return p
     try:
         validate_valuation(valuation or {},now,kind=instrument.get('kind'))
         if not close or close.get('trade_date')!=str(last_completed_day(now,schedule)):return p
@@ -59,10 +64,14 @@ def technical_for(s,symbol):
     return r if r and (not m or r.get('as_of','')>=m.get('as_of','')) else m
 
 def store_plan(s,i,now):
+    from .valuation_quality import for_store
+    quality=for_store(s,i)
+    if quality:
+        return {'band':'blocked','status':'valuation_gap','label':'價位需重新評估','entry':None,'buy_max':None,'close_date':(s.fact(i['symbol'],'public_close') or {}).get('trade_date'),'valid_until':None,'reason':quality['reason'],'is_live_order':False}
     return make_plan(i,s.active(i['symbol']),s.fact(i['symbol'],'public_close'),technical_for(s,i['symbol']),s.fact(i['symbol'],'risk'),s.meta('trading_calendar'),now)
 
 def gate_signal(signal,plan,quote=None):
-    if signal['status'] in ('sweet','add','buy') and plan['status']!='conditional':
+    if plan['status']=='valuation_gap' or (signal['status'] in ('sweet','add','buy') and plan['status']!='conditional'):
         return {**signal,'status':'blocked','status_label':'暫停','suggested':None,'conservative':None,'extreme':None,'valid_until':None,'reason':plan['reason'],'action':plan['reason']}
     if signal['status'] in ('sweet','add','buy') and quote:
         current=positive(quote.get('trial_price') if quote.get('is_trial') else quote.get('price'))

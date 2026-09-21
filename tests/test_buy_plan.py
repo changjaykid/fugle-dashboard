@@ -25,7 +25,7 @@ class PlanTests(unittest.TestCase):
 
  def test_buy_cap_far_below_traded_range_is_overvalued(self):
   self.t.update(low_60d=120,high_60d=180);self.c['close']=150;p=self.plan()
-  self.assertEqual(p['status'],'overvalued');self.assertEqual(p['band'],'avoid');self.assertIsNone(p['entry'])
+  self.assertEqual(p['status'],'valuation_gap');self.assertEqual(p['band'],'blocked');self.assertIsNone(p['entry'])
   self.assertIsNone(gate_signal({'status':'buy','suggested':89},p)['suggested'])
  def test_fair_far_above_traded_range_blocks_sweet_signal(self):
   self.v['fair']=150;self.t.update(low_60d=75,high_60d=100);p=self.plan()

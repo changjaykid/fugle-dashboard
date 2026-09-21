@@ -44,6 +44,15 @@ def sanitize(r,s,now):
             detail={k:v for k,v in detail.items() if k not in ('proposal','proposal_db_id','research_version')}
         i['research_detail']=detail
         i['valuation_history']=[]
+        from stock_radar.valuation_quality import for_store
+        quality=for_store(s,i)
+        i['valuation_quality']=quality
+        if quality:
+            i['signal'].update(status='blocked',status_label='價位需重新評估',reason=quality['reason'],action=quality['reason'])
+            if i.get('valuation'):
+                i['valuation']={**i['valuation'],**{k:None for k in ('sweet','add','buy','fair','avoid','sell','reduce','inputs')},'reason':quality['reason']}
+            if quality.get('sources'):
+                i['research']['sources']=quality['sources']
         if detail:
             i['description']=detail['description']
             if valid_research(detail,now):
