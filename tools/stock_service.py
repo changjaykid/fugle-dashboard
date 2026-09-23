@@ -8,7 +8,16 @@ os.environ["STOCK_RADAR_FUGLE_CONFIG"]=str(H/".openclaw/workspace/fugle-dashboar
 
 def run(args,cwd=R):
     p=subprocess.run(args,cwd=cwd,capture_output=True,text=True,timeout=300)
-    if p.returncode:raise RuntimeError('Command failed: '+str(args[:3]))
+    if p.returncode:
+        import re
+        operations={'sync-quotes','export','sync-universe','sync-calendar','sync-financials','sync-risk','backup'}
+        step=next((a for a in args if a in operations),'other')
+        # Preserve diagnostic categories, never stderr bodies, args, tokens or URLs.
+        matches=re.findall(r'^([A-Za-z][A-Za-z0-9_]*(?:Error|Exception)):',p.stderr or '',re.M)
+        category=matches[-1] if matches else 'NonzeroExit'
+        print(json.dumps({'at':datetime.datetime.now(ZoneInfo('Asia/Taipei')).isoformat(),
+            'status':'command_failed','step':step,'exit_code':p.returncode,'error_type':category}),file=sys.stderr,flush=True)
+        raise RuntimeError('Command failed: '+step+' ('+category+')')
     return p.stdout
 
 def secondary(args,step):

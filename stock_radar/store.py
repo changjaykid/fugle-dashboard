@@ -97,6 +97,8 @@ class Store:
                                 [(i['symbol'], dumps(i)) for i in items])
 
     def quote(self, symbol):
+        if (self.fact(symbol, 'quote_health') or {}).get('status') == 'blocked':
+            return None  # keep history, but never silently reuse it after a failed refresh
         r = self.db.execute('SELECT payload FROM observations WHERE symbol=? ORDER BY as_of DESC LIMIT 1', (symbol,)).fetchone()
         return json.loads(r[0]) if r else None
 
@@ -117,6 +119,8 @@ class Store:
         with self.transaction():
             self.db.execute('INSERT OR REPLACE INTO observations VALUES(?,?,?)',
                             (quote['symbol'], quote['as_of'], dumps(quote)))
+            self.db.execute('INSERT INTO facts VALUES (?,?,?) ON CONFLICT(symbol,category) DO UPDATE SET payload=excluded.payload',
+                            (quote['symbol'], 'quote_health', dumps({'status':'valid'})))
 
     def history(self, symbol, limit=60):
         rows = self.db.execute('SELECT payload FROM observations WHERE symbol=? ORDER BY as_of DESC LIMIT ?', (symbol, limit)).fetchall()

@@ -31,7 +31,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 from .domain import TW, decide
-from .store import Store, atomic_json
+from .store import Store, atomic_json, normalize_iso, dumps
 from .universe import build_universe, equity_universe
 from .quotes import fetch_quotes, fetch_daily_close_all, fetch_etf_navs
 from .fugle import fetch_quotes as fetch_fugle_quotes, FugleClient, FugleError
@@ -219,9 +219,32 @@ def cmd_sync_quotes(args):
             except Exception as exc:
                 print(f'ETF NAV fetch failed ({exc!r}); ETF signals will stay unconfirmed')
         n = 0
-        for symbol, q in quotes.items():
-            if symbol in navs:
-                q = {**q, 'nav': navs[symbol]}
+        rejected = {}
+        for inst in instruments:
+            symbol = inst['symbol']
+            q = quotes.get(symbol)
+            reason = None
+            if not isinstance(q, dict) or q.get('symbol') != symbol:
+                reason = 'QUOTE_MISSING_OR_MISMATCH'
+            else:
+                if symbol in navs:
+                    q = {**q, 'nav': navs[symbol]}
+                try:
+                    normalize_iso(q.get('as_of'))
+                    if q.get('book_as_of'):
+                        normalize_iso(q['book_as_of'])
+                except (TypeError, ValueError, OverflowError):
+                    reason = 'SOURCE_TIME_INVALID'
+                if reason is None:
+                    try:dumps(q)
+                    except (TypeError, ValueError, OverflowError):reason = 'QUOTE_PAYLOAD_INVALID'
+            if reason:
+                rejected[symbol] = reason
+                store.set_fact(symbol, 'quote_health', {'status':'blocked','reason':reason,
+                    'checked_at':datetime.now(TW).isoformat()})
+                print(json.dumps({'status':'quote_rejected','symbol':symbol,'reason':reason},ensure_ascii=False))
+                continue
+            # Storage errors are not swallowed as bad quotes; they must fail the job.
             store.observe(q)
             n += 1
         # Record the REAL outcome (which source actually served data, and any
@@ -233,7 +256,7 @@ def cmd_sync_quotes(args):
         store.set_meta('last_quote_sync', {
             'at': datetime.now(TW).isoformat(), 'requested': len(instruments), 'received': n,
             'source': source_used, 'fugle_attempted': args.source == 'fugle',
-            'fugle_error': fugle_error,
+            'fugle_error': fugle_error, 'rejected': rejected,
         })
         print(f'quotes synced: {n}/{len(instruments)}')
         if n < len(instruments):
