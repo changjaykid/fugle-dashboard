@@ -89,59 +89,50 @@ def quotes_checked(s,now):
 def fit(lines,limit=1900):
     """Discord takes one message: shed risk lines first, then the ETF section, never the answer."""
     text='\n'.join(lines)
-    if len(text)>limit:lines=[l for l in lines if not l.startswith('風險：')];text='\n'.join(lines)
-    pool=next((k for k,l in enumerate(lines) if l.startswith('— 待研究')),None)
-    if len(text)>limit and pool is not None:lines=lines[:pool]+[SITE];text='\n'.join(lines)
-    if len(text)>limit and '— ETF —' in lines:lines=lines[:lines.index('— ETF —')]+[SITE];text='\n'.join(lines)
+    if len(text)>limit:lines=[l for l in lines if not l.strip().startswith('風險：')];text='\n'.join(lines)
+    if len(text)>limit:lines=[l for l in lines if not l.strip().startswith('另有 ')];text='\n'.join(lines)
     return text[:limit]
 
 def morning(s,radar,now):
-    """08:50 message over the whole scanned market: the answer first, then only what is needed to act."""
+    """08:50 message: one message a trading day, the answer in the first two lines, detail on the site."""
     from .discord import _revalidate_signal
     from .buy_plan import store_plan
     from .market_scan import discount
-    head=f"台股盤前｜{now.month}/{now.day}（{WEEKDAYS[now.weekday()]}）{now:%H:%M}"
+    head=f"台股盤前 {now.month}/{now.day}（{WEEKDAYS[now.weekday()]}）{now:%H:%M}"
     valued=[i for i in radar['items'] if i.get('valuation')]
     checked=[(i,_revalidate_signal(i,now)) for i in valued]
     go=sorted([(i,g) for i,g in checked if g['status'] in ('sweet','add','buy')],key=lambda x:-(discount(x[0]['valuation'],x[1].get('suggested')) or 0))
     pool=[x for x in go if not researched(s,x[0],now)];go=[x for x in go if researched(s,x[0],now)]
-    stocks=[x for x in go if x[0].get('kind')=='stock'][:MAX_STOCKS];etfs=[x for x in go if x[0].get('kind','').startswith('etf')][:MAX_ETFS]
+    picks=[x for x in go if x[0].get('kind')=='stock'][:MAX_STOCKS]+[x for x in go if x[0].get('kind','').startswith('etf')][:MAX_ETFS]
     plans={i['symbol']:store_plan(s,i,now) for i in valued}
     names=lambda st:[i['name'] for i in sorted(valued,key=lambda i:-(discount(i['valuation'],(i.get('public_close') or {}).get('close')) or 0)) if plans[i['symbol']]['status']==st and researched(s,i,now)]
     def block(n,i,g):
-        r=s.fact(i['symbol'],'research_detail') or {};until=stamp(g.get('valid_until'))
-        out=['',f"{'①②③④⑤'[n-1]} {i['name']} {i['symbol']}",f"掛 {g['suggested']:g} 元｜最高 {i['valuation']['buy']:g} 元，超過不追",f"價位：{_why(i['valuation'],g.get('suggested'))}"]
-        if r.get('thesis'):out.append(f"看好：{r['thesis']}")
-        if r.get('risks'):out.append(f"風險：{r['risks'][0]}")
-        if until:out.append(f"{until.astimezone(TW):%H:%M} 前有效，過期停用")
+        r=s.fact(i['symbol'],'research_detail') or {};etf='（ETF）' if i.get('kind','').startswith('etf') else ''
+        out=['',f"{n}. {i['name']} {i['symbol']}{etf} ── 掛 {g['suggested']:g}，最高 {i['valuation']['buy']:g}",f"   {_why(i['valuation'],g.get('suggested'))}"]
+        if r.get('risks'):out.append(f"   風險：{r['risks'][0]}")
         return out
-    lines=[head]
-    if go:
-        lines.append('【今天可考慮進場】限價掛單，買不到不追；是否下單由你決定。')
-        if not stocks:lines.append('個股：有研究支持的標的今天沒有通過。')
-        for n,(i,g) in enumerate(stocks,1):lines+=block(n,i,g)
-        if etfs:
-            lines+=['','— ETF —']
-            for n,(i,g) in enumerate(etfs,1):lines+=block(n,i,g)
+    lines=[head,'']
+    if picks:
+        lines.append(f"✅ 今天可以買 {len(picks)} 檔（限價掛單，買不到就不追）")
+        for n,(i,g) in enumerate(picks,1):lines+=block(n,i,g)
+        lines+=['',f"價格以 {now:%H:%M} 試撮價計算，09:00 開盤前參考；開盤後請重新確認。超過最高價不追，是否下單由你決定。"]
     elif (problem:=quotes_checked(s,now)) and radar.get('mode')=='live':
-        lines+=[f'【無法確認】{problem}。','今天不提供買點；這不是「不進場」的判斷，請勿依此下單。']
+        lines+=[f"⚠️ 無法確認：{problem}","今天不提供買點。這不是「不進場」的判斷，請勿依此下單。"]
     else:
-        lines.append('【今天不進場】有研究支持的標的沒有通過全部條件。')
-        for st,label in (('wait_stabilize','已進買進區，先等止穩'),('conditional','估值符合，但今天盤前行情未通過'),('waiting','估值符合，等承接位置')):
-            if names(st):lines.append(f"接近的：{_names(names(st))}（{label}）")
-    if pool and not quotes_checked(s,now):
-        lines+=['','— 待研究（價位與試撮通過，但尚無個股研究；不是推薦）—']+[f"{i['name']} {i['symbol']}｜試撮可掛 {g['suggested']:g}／規則上限 {i['valuation']['buy']:g}" for i,g in pool[:MAX_NAMES]]
-        if len(pool)>MAX_NAMES:lines.append(f"等 {len(pool)} 檔，請見網站")
+        lines.append('⛔ 今天不進場')
+        near=[f"{_names(names(st))}（{label}）" for st,label in (('wait_stabilize','已進買進區，等止穩'),('conditional','估值符合，盤前行情未通過'),('waiting','估值符合，等承接位置')) if names(st)]
+        lines.append('有研究支持的標的都沒有通過條件。'+('最接近：'+'；'.join(near) if near else ''))
+    if pool:lines.append(f"另有 {len(pool)} 檔通過規則篩選但尚未研究，不是推薦 → 網站")
     watched=[i['name'] for i in valued if i.get('watched') and plans[i['symbol']]['status']=='overvalued']
     if watched:lines.append(f"你的關注中評價過高：{_names(watched)}")
     scan=s.meta('market_scan') or {}
-    if scan.get('liquid'):lines.append(f"已掃描上市 {scan['listed']} 檔，成交量達標 {scan['liquid']} 檔。")
-    lines.append(research_coverage(s,now))
+    tail=[f"掃描上市 {scan['listed']} 檔，成交量達標 {scan['liquid']} 檔" if scan.get('liquid') else '',research_coverage(s,now).rstrip('。')]
+    lines.append('｜'.join(x for x in tail if x))
     lines.append(SITE)
     return ('【測試資料，非即時交易建議】\n' if radar.get('mode')!='live' else '')+fit(lines)
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--db',type=Path,required=True);p.add_argument('--import-file',type=Path);p.add_argument('--sync-close',action='store_true');p.add_argument('--send',action='store_true');p.add_argument('--morning-radar',type=Path);p.add_argument('--out',type=Path);p.add_argument('--alert');a=p.parse_args();now=datetime.now(TW);s=Store(a.db)
+    p=argparse.ArgumentParser();p.add_argument('--db',type=Path,required=True);p.add_argument('--import-file',type=Path);p.add_argument('--sync-close',action='store_true');p.add_argument('--send',action='store_true');p.add_argument('--morning-radar',type=Path);p.add_argument('--out',type=Path);p.add_argument('--alert');p.add_argument('--edit-id');a=p.parse_args();now=datetime.now(TW);s=Store(a.db)
     try:
         if a.import_file:install(s,json.loads(a.import_file.read_text()),now)
         if a.sync_close:sync_close(s,now)
@@ -149,7 +140,14 @@ def main():
         if a.out:atomic_json(a.out,{'generated_at':now.isoformat(),'text':text})
         if a.send:
             from .cli import _bot_token,_send_with_outbox
-            from .discord import DISCORD_CHANNEL
+            from .discord import DISCORD_CHANNEL,edit_message
+            if a.edit_id:
+                # One message per morning: replace it rather than posting a second, contradictory one.
+                try:
+                    edit_message(_bot_token(),a.edit_id,text,channel_id=DISCORD_CHANNEL)
+                    print(json.dumps({'status':'edited','message_id':a.edit_id}));return
+                except Exception as exc:
+                    print(json.dumps({'status':'edit_failed','error_type':type(exc).__name__}))
             r=_send_with_outbox(s,_bot_token(),text,channel=DISCORD_CHANNEL,now=now,max_attempts=1)
             print(json.dumps(r))
         else:print(text)

@@ -21,9 +21,9 @@ class ResearchTests(unittest.TestCase):
    self.assertEqual(sum(len(s.versions(r['symbol'])) for r in doc['items']),1)
    self.assertTrue(all(s.active(r['symbol']) is None for r in doc['items']))
    text=build(s,now);self.assertLessEqual(len(text),1900);self.assertIn('目前沒有資料完整的承接計畫',text)
-   text=morning(s,{'mode':'live','items':[]},now);self.assertIn('【無法確認】',text);self.assertNotIn('今天不進場',text)
+   text=morning(s,{'mode':'live','items':[]},now);self.assertIn('⚠️ 無法確認',text);self.assertNotIn('今天不進場',text)
    s.set_meta('morning_candidates',{'as_of':(now-timedelta(hours=2)).isoformat(),'symbols':[]});s.set_meta('last_quote_sync',{'at':now.isoformat(),'source':'fugle','requested':10,'received':10})
-   text=morning(s,{'mode':'live','items':[]},now);self.assertLessEqual(len(text),1900);self.assertIn('【今天不進場】',text)
+   text=morning(s,{'mode':'live','items':[]},now);self.assertLessEqual(len(text),1900);self.assertIn('⛔ 今天不進場',text)
    self.assertNotIn('提案買進上限',build(s,now+timedelta(days=31)))
    s.close()
 
@@ -35,9 +35,9 @@ class MorningTests(unittest.TestCase):
   with tempfile.TemporaryDirectory() as d:
    s=Store(Path(d)/'t.db');s.set_fact('3706','research_detail',{'thesis':'看好理由','risks':['主要風險'],'as_of':(now-timedelta(days=1)).isoformat(),'valid_until':(now+timedelta(days=10)).isoformat()});text=morning(s,{'mode':'live','items':[item]},now);s.close()
   lines=text.split('\n')
-  self.assertEqual(lines[0],'台股盤前｜9/21（一）08:50');self.assertTrue(lines[1].startswith('【今天可考慮進場】'))
-  self.assertIn('掛 77.6 元｜最高 82.8 元，超過不追',text);self.assertIn('本益比 14.38，比一年常態 17.4 便宜 17%',text);self.assertIn('08:52 前有效',text)
-  self.assertNotIn('T08:52',text);self.assertIn('看好：看好理由',text);self.assertIn('風險：主要風險',text)
+  self.assertEqual(lines[0],'台股盤前 9/21（一）08:50');self.assertTrue(lines[2].startswith('✅ 今天可以買 1 檔'))
+  self.assertIn('神達 3706 ── 掛 77.6，最高 82.8',text);self.assertIn('本益比 14.38，比一年常態 17.4 便宜 17%',text)
+  self.assertIn('09:00 開盤前參考',text);self.assertNotIn('T08:5',text);self.assertIn('風險：主要風險',text)
 
 class MarketMorningTests(unittest.TestCase):
  def test_cheapest_five_stocks_then_etfs_in_their_own_section(self):
@@ -52,8 +52,8 @@ class MarketMorningTests(unittest.TestCase):
    for k in range(7):s.set_fact(f'S{k}','research_detail',{'thesis':'看好理由','risks':['主要風險'],'as_of':(now-timedelta(days=1)).isoformat(),'valid_until':(now+timedelta(days=10)).isoformat()})
    s.set_meta('morning_candidates',{'as_of':now.isoformat(),'symbols':['S0']});s.set_meta('last_quote_sync',{'at':now.isoformat(),'source':'fugle','requested':9,'received':9})
    text=morning(s,{'mode':'live','items':items},now);s.close()
-  self.assertEqual(text.count('掛 94 元'),6);self.assertIn('— ETF —',text)
-  self.assertIn('— 待研究',text);self.assertIn('名U U｜試撮可掛 94',text);self.assertLess(text.index('— ETF —'),text.index('— 待研究'))
+  self.assertIn('✅ 今天可以買 6 檔',text);self.assertIn('6. 名0050 0050（ETF）',text);self.assertEqual(text.count('── 掛 94，最高 120'),6)
+  self.assertIn('另有 1 檔通過規則篩選但尚未研究，不是推薦',text);self.assertNotIn('名U U ──',text)
   self.assertLess(text.index('名S6'),text.index('名S5'));self.assertNotIn('名S0 ',text);self.assertNotIn('名S1 ',text)
   self.assertIn('最便宜 25%',text);self.assertLessEqual(len(text),1900)
 
@@ -72,5 +72,5 @@ class HonestyTests(unittest.TestCase):
   self.assertIn('沒有執行',self.check(at='2026-09-18T08:50:00+08:00'))
  def test_fit_keeps_the_answer_and_drops_detail_first(self):
   from stock_radar.research_brief import fit,SITE
-  lines=['台股盤前','【今天可考慮進場】']+['風險：'+'很長'*300,'— ETF —','ETF 行'*400,SITE]
-  text=fit(lines);self.assertLessEqual(len(text),1900);self.assertIn('【今天可考慮進場】',text);self.assertNotIn('風險：',text)
+  lines=['台股盤前','✅ 今天可以買 1 檔','1. 神達 3706 ── 掛 80，最高 90','   風險：'+'很長'*900,'另有 20 檔通過規則篩選但尚未研究，不是推薦 → 網站',SITE]
+  text=fit(lines);self.assertLessEqual(len(text),1900);self.assertIn('✅ 今天可以買 1 檔',text);self.assertIn('1. 神達 3706',text);self.assertNotIn('風險：',text)

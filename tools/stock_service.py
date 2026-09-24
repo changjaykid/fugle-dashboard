@@ -37,7 +37,9 @@ def main():
     p=argparse.ArgumentParser();p.add_argument('task',choices=['refresh','notify','recheck','close','weekly','outlook']);p.add_argument('--manual',action='store_true');a=p.parse_args();now=datetime.datetime.now(ZoneInfo('Asia/Taipei'))
     # launchd can catch up a calendar event after wake: do not send a late morning report.
     if not a.manual:
-        target={'refresh':390,'notify':530,'recheck':535,'close':990,'weekly':600,'outlook':1200}[a.task]
+        # close at 18:00: TWSE publishes the daily P/E file (BWIBBU_d) after 16:30, so an earlier run
+        # skips most symbols. Keep this in sync with local.kid.stock.close.plist.
+        target={'refresh':390,'notify':530,'recheck':535,'close':1080,'weekly':600,'outlook':1200}[a.task]
         if a.task in ('weekly','outlook') and now.weekday()!={'weekly':5,'outlook':6}[a.task]:return
         if not target<=now.hour*60+now.minute<=target+5:return
     # Kill switch (no LLM, no network): `touch ~/kid-agent-data/stock-radar/PAUSED` stops every stock job; rm resumes.
@@ -87,16 +89,34 @@ def main():
             finally:s.close()
             run(cli+['sync-quotes','--source','fugle','--candidates'])
             run(cli+['export','--out','docs/radar.json','--mode','live'])
+            radar=json.loads((R/'docs/radar.json').read_text())
+            # The first pass quotes 30 candidates over ~a minute, so the picks carry the oldest prices.
+            # Re-quote just the picks so the price in the message is seconds old, then re-export.
+            picks=[i['symbol'] for i in radar['items'] if (i.get('signal') or {}).get('status') in ('sweet','add','buy')][:8]
+            if picks:
+                secondary(cli+['sync-quotes','--source','fugle','--symbols',','.join(picks)],'requote picks')
+                run(cli+['export','--out','docs/radar.json','--mode','live'])
+                radar=json.loads((R/'docs/radar.json').read_text())
             snapshots=D/'snapshots';snapshots.mkdir(exist_ok=True)
             snapshot=snapshots/(now.strftime('%Y%m%d-%H%M%S')+'.json')
             with snapshot.open('xb') as f:f.write((R/'docs/radar.json').read_bytes())
-            radar=json.loads((R/'docs/radar.json').read_text())
             track(['record','--radar',str(snapshot)])
             state={'date':str(now.date()),'items':{i['symbol']:{k:i.get('signal',{}).get(k) for k in ('status','suggested','reason')} for i in radar['items'] if i.get('watched') or i.get('signal',{}).get('status') in ('sweet','add','buy')}}
-            prev=D/'morning-state.json'
+            prev=D/'morning-state.json';sent=D/'morning-message.json'
             same=prev.exists() and json.loads(prev.read_text())==state
-            if a.task!='recheck' or not same:
-                run([PY,'-m','stock_radar.research_brief','--db',str(D/'prod.db'),'--morning-radar',str(R/'docs/radar.json'),'--out',str(D/'morning-latest.json'),'--send'])
+            # One message per trading day: 08:50 posts it (that is the phone notification), 08:55 edits
+            # the same message when anything changed, so the channel never shows two versions.
+            today=json.loads(sent.read_text()) if sent.exists() else {}
+            today=today if today.get('date')==str(now.date()) else {}
+            args=[PY,'-m','stock_radar.research_brief','--db',str(D/'prod.db'),'--morning-radar',str(R/'docs/radar.json'),'--out',str(D/'morning-latest.json'),'--send']
+            if today.get('message_id'):args+=['--edit-id',today['message_id']]
+            if not (a.task=='recheck' and same and today.get('message_id')):
+                out=run(args)
+                for line in out.splitlines():
+                    try:r=json.loads(line)
+                    except ValueError:continue
+                    if r.get('message_id') and r.get('status')!='edit_failed':
+                        from stock_radar.store import atomic_json as _aj;_aj(sent,{'date':str(now.date()),'message_id':r['message_id']})
             from stock_radar.store import atomic_json
             atomic_json(prev,state)
         print(json.dumps({'at':now.isoformat(),'task':a.task,'status':'ok'}))

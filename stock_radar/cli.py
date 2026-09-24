@@ -139,6 +139,9 @@ def cmd_sync_quotes(args):
         instruments = [i for i in store.instruments() if i['kind'] in ('stock', 'etf_equity', 'etf_other')]
         if args.watchlist_only:
             instruments = [i for i in instruments if i.get('watched')]
+        if args.symbols:
+            wanted={x.strip() for x in args.symbols.split(',') if x.strip()}
+            instruments=[i for i in instruments if i['symbol'] in wanted]
         if args.candidates:
             # The nightly full-market scan's ranked list: plans that passed on the close, cheapest first.
             wanted = (store.meta('morning_candidates') or {}).get('symbols') or []
@@ -811,6 +814,7 @@ def main(argv=None):
     p = sub.add_parser('sync-quotes')
     p.add_argument('--watchlist-only', action='store_true')
     p.add_argument('--candidates', action='store_true', help='quote only the nightly scan\'s ranked morning candidates')
+    p.add_argument('--symbols', help='comma-separated symbols to quote (used to refresh the final picks just before sending)')
     p.add_argument('--source', choices=['mis', 'fugle'], default='mis',
                    help='mis.twse.com.tw (default, no key, no reliable trial flag) or fugle (real lastTrial/lastTrade split, needs a working API key)')
     p.add_argument('--fugle-key-file', type=Path, default=None,

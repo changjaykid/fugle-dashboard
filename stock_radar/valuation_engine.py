@@ -21,7 +21,8 @@ MAX_FAIR_PE=50
 # the current cycle -- peak earnings make them look cheap exactly when they are not. Both use the P/B band.
 BOOK_INDUSTRIES={'金融保險業':'金融業以淨值（P/B）評價','航運業':'景氣循環股','鋼鐵工業':'景氣循環股','塑膠工業':'景氣循環股','水泥工業':'景氣循環股',
                  '玻璃陶瓷':'景氣循環股','造紙工業':'景氣循環股','化學工業':'景氣循環股','橡膠工業':'景氣循環股','油電燃氣業':'景氣循環股'}
-MONTHS=13;MIN_SAMPLES=120;BANDS=(.65,.75,.85);VALID_DAYS=3;PAUSE=2.0
+# 4 days: one missed session (holiday, late TWSE file, failed run) must not expire a valuation.
+MONTHS=13;MIN_SAMPLES=120;BANDS=(.65,.75,.85);VALID_DAYS=4;PAUSE=2.0
 
 def _num(v):
     try:n=float(str(v).replace(',',''))
