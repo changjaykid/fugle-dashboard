@@ -418,3 +418,36 @@ class TestLookupReply(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class EditMessageTests(unittest.TestCase):
+    """The morning report is one message a day: 08:55 must replace 08:50's content, never post a second."""
+
+    class _Session:
+        def __init__(self):
+            self.calls = []
+
+        def patch(self, url, json=None, headers=None, timeout=None):
+            self.calls.append((url, json))
+
+            class R:
+                status_code = 200
+
+                @staticmethod
+                def raise_for_status():
+                    return None
+
+                @staticmethod
+                def json():
+                    return {'id': '42', 'content': json['content']}
+            return R()
+
+    def test_edit_targets_the_message_and_keeps_mentions_locked(self):
+        from stock_radar.discord import edit_message, NO_PING, DISCORD_CHANNEL
+        session = self._Session()
+        out = edit_message('token', '42', '新內容', session=session)
+        url, payload = session.calls[0]
+        self.assertTrue(url.endswith(f'/channels/{DISCORD_CHANNEL}/messages/42'))
+        self.assertEqual(payload['content'], '新內容')
+        self.assertEqual(payload['allowed_mentions'], NO_PING)
+        self.assertEqual(out['id'], '42')
