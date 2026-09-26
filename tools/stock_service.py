@@ -57,6 +57,13 @@ def main():
         elif a.task in ('weekly','outlook'):
             run([PY,'-m','stock_radar.weekend',a.task,'--send'])
         elif a.task in ('refresh','close'):
+            sys.path.insert(0,str(R))
+            from stock_radar.store import Store as _Store
+            from stock_radar.calendar import is_trading_day as _trading
+            _s=_Store(D/'prod.db')
+            try:trading_today=bool(_s.meta('trading_calendar')) and _trading(now.date(),_s.meta('trading_calendar'))
+            except Exception:trading_today=False
+            finally:_s.close()
             for cmd in ['sync-universe','sync-calendar','sync-financials','sync-risk']:run(cli+[cmd])
             run([PY,str(R/'tools/initialize_watchlist.py')])
             run([PY,'-m','stock_radar.research_brief','--db',str(D/'prod.db'),'--sync-close'])
@@ -70,8 +77,11 @@ def main():
             # Once a day, after the close scan: research the symbols the scan says are worth researching,
             # so tomorrow's recommendations have a reason attached. Model access goes through the shared
             # runtime's budgeted CLI; a failure here must never block the site or the report.
-            if a.task=='close':secondary([PY,'-m','stock_radar.research_llm','--db',str(D/'prod.db')],'research')
-            if a.task=='close':secondary([PY,'-m','stock_radar.close_review','--db',str(D/'prod.db'),'--send'],'close_review')
+            # Data refreshes every day, but reviewing and researching a session that already ended would
+            # repeat yesterday's report and spend tokens for nothing: both are trading-day only.
+            if a.task=='close' and trading_today:
+                secondary([PY,'-m','stock_radar.research_llm','--db',str(D/'prod.db')],'research')
+                secondary([PY,'-m','stock_radar.close_review','--db',str(D/'prod.db'),'--send'],'close_review')
             run(cli+['export','--out','docs/radar.json','--mode','live'])
             run([PY,'-m','stock_radar.daily_report','--db',str(D/'prod.db'),'--out','docs/research-summary.json'])
             run(cli+['backup','--out',str(D/('backup-'+now.strftime('%Y%m%d-%H%M%S')+'.db'))])
