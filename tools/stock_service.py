@@ -52,6 +52,20 @@ def main():
         except BlockingIOError:return
         cli=[PY,'-m','stock_radar.cli','--db',str(D/'prod.db')]
         if a.task=='intraday':
+            # The 09:05 run is the first thing after the only pre-open send, so it is where a missing
+            # morning message is still worth acting on; at 18:00 the trading day is already over.
+            if now.hour*60+now.minute<550:
+                posted=D/'morning-message.json'
+                if not (posted.exists() and json.loads(posted.read_text()).get('date')==str(now.date())):
+                    sys.path.insert(0,str(R))
+                    from stock_radar.calendar import is_trading_day as _td
+                    from stock_radar.store import Store as _S
+                    _s=_S(D/'prod.db')
+                    try:cal=_s.meta('trading_calendar')
+                    finally:_s.close()
+                    if cal and _td(now.date(),cal):
+                        alert(f"台股系統｜{now:%m/%d %H:%M}\n【系統異常】今天沒有送出盤前建議（08:55 未執行或發送失敗）。這不是「不進場」的判斷，請勿依此下單。\nhttps://changjaykid.github.io/fugle-dashboard/")
+                        from stock_radar.store import atomic_json as _aj;_aj(D/'morning-alert.json',{'date':str(now.date())})
             # Free TWSE quotes during the session: no Fugle quota, no tokens, silent unless something changed.
             print(run([PY,'-m','stock_radar.intraday','--db',str(D/'prod.db'),'--send']).strip())
         elif a.task in ('weekly','outlook'):
@@ -82,8 +96,9 @@ def main():
             if a.task=='close' and trading_today:
                 # A job that never starts is silent, and silence looks exactly like "no opportunities".
                 # The close run is the last one of the day, so it is where a missing morning shows up.
-                posted=D/'morning-message.json'
+                posted=D/'morning-message.json';told=D/'morning-alert.json'
                 ran=posted.exists() and json.loads(posted.read_text()).get('date')==str(now.date())
+                ran=ran or (told.exists() and json.loads(told.read_text()).get('date')==str(now.date()))
                 if not ran:alert(f"台股系統｜{now:%m/%d %H:%M}\n【系統異常】今天是交易日，但沒有送出盤前建議（08:55 未執行或發送失敗）。請檢查舊 Mac 的排程。\nhttps://changjaykid.github.io/fugle-dashboard/")
                 secondary([PY,'-m','stock_radar.research_llm','--db',str(D/'prod.db')],'research')
                 secondary([PY,'-m','stock_radar.close_review','--db',str(D/'prod.db'),'--send'],'close_review')

@@ -149,7 +149,10 @@ def main():
                     print(json.dumps({'status':'edited','message_id':a.edit_id}));return
                 except Exception as exc:
                     print(json.dumps({'status':'edit_failed','error_type':type(exc).__name__}))
-            r=_send_with_outbox(s,_bot_token(),text,channel=channel_for('alert' if a.alert else 'daily'),now=now,max_attempts=1)
+            # The pre-open message is sent once a day by the 08:55 run and nothing else retries it,
+            # so a transient Discord failure must be retried here rather than losing the whole day.
+            r=_send_with_outbox(s,_bot_token(),text,channel=channel_for('alert' if a.alert else 'daily'),now=now,
+                                max_attempts=1 if a.alert else 3)
             print(json.dumps(r))
         else:print(text)
     finally:s.close()

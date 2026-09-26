@@ -576,6 +576,26 @@ class TestNotifySummary(CliTestBase):
             self.run_cli('notify-summary', '--radar-json', str(p), '--test')
         fake_send.assert_called_once()  # second run skipped as a duplicate
 
+    def test_a_skipped_duplicate_still_reports_the_original_message_id(self):
+        """The morning heartbeat asks "did today's message go out?". A duplicate means it did,
+        so the id of the message already in the channel must come back with the skip."""
+        from stock_radar.cli import _send_with_outbox
+        from stock_radar.store import Store
+        from datetime import datetime
+        from stock_radar.domain import TW
+        db = Path(self.tmpdir) / "dup.db"
+        store = Store(db)
+        try:
+            now = datetime(2026, 9, 29, 8, 55, tzinfo=TW)
+            with mock.patch('stock_radar.cli.send_message', return_value={'id': '999'}):
+                first = _send_with_outbox(store, 't', 'hello', channel='c', now=now)
+            second = _send_with_outbox(store, 't', 'hello', channel='c', now=now)
+        finally:
+            store.close()
+        self.assertEqual(first['status'], 'sent')
+        self.assertEqual(second['status'], 'skipped_duplicate')
+        self.assertEqual(second['message_id'], '999')
+
     def test_send_failure_retries_up_to_max_attempts_then_raises(self):
         p = self.make_radar()
         with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \

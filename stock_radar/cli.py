@@ -597,7 +597,10 @@ def _send_with_outbox(store, token, text, *, channel, now, max_attempts=3,
     since = now.replace(hour=0, minute=0, second=0, microsecond=0)
     existing = store.find_sent_delivery(chash, since=since)
     if existing:
-        return {'status': 'skipped_duplicate', 'delivery_id': existing['id']}
+        # The message is already in the channel, so callers that track "did today's message go out"
+        # (tools/stock_service.py's morning heartbeat) need its id, not just the fact that we skipped.
+        return {'status': 'skipped_duplicate', 'delivery_id': existing['id'],
+                'message_id': existing['payload'].get('message_id')}
     if dry_run:
         return {'status': 'dry_run'}
     last_exc = None
