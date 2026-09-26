@@ -52,8 +52,9 @@ class MarketMorningTests(unittest.TestCase):
    for k in range(7):s.set_fact(f'S{k}','research_detail',{'thesis':'看好理由','risks':['主要風險'],'as_of':(now-timedelta(days=1)).isoformat(),'valid_until':(now+timedelta(days=10)).isoformat()})
    s.set_meta('morning_candidates',{'as_of':now.isoformat(),'symbols':['S0']});s.set_meta('last_quote_sync',{'at':now.isoformat(),'source':'fugle','requested':9,'received':9})
    text=morning(s,{'mode':'live','items':items},now);s.close()
-  self.assertIn('✅ 今天可以買 6 檔',text);self.assertIn('6. 名0050 0050（ETF）',text);self.assertEqual(text.count('── 掛 94，最高 120'),6)
-  self.assertIn('另有 1 檔通過規則篩選但尚未研究，不是推薦',text);self.assertNotIn('名U U ──',text)
+  self.assertIn('✅ 今天可以買 6 檔',text);self.assertIn('（ETF）',text);self.assertEqual(text.count('── 掛 94，最高 120'),6)
+  self.assertIn('名U U ──',text)  # the rules decide the picks; research only adds a 深度 line
+  self.assertIn('深度：看好理由',text);self.assertEqual(text.count('深度：'),4)
   self.assertLess(text.index('名S6'),text.index('名S5'));self.assertNotIn('名S0 ',text);self.assertNotIn('名S1 ',text)
   self.assertIn('最便宜 25%',text);self.assertLessEqual(len(text),1900)
 

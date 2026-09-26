@@ -59,5 +59,7 @@ class OutlookTests(unittest.TestCase):
    s.set_fact(a,'risk',{'cleared':True,'events':[],'checked_at':(now-timedelta(hours=2)).isoformat()})
    if a!='S6':s.set_fact(a,'research_detail',{'thesis':'看好理由','risks':['主要風險'],'as_of':(now-timedelta(days=1)).isoformat(),'valid_until':(now+timedelta(days=10)).isoformat()})
   text=format_plans(s,now);s.close();d.cleanup()
-  self.assertEqual(text.count('承接 83 元'),5);self.assertNotIn('① 名S6',text);self.assertIn('待研究池',text);self.assertIn('名S6',text[text.index('待研究池'):]);self.assertNotIn('名S0 ',text)
+  self.assertEqual(text.count('承接 83 元'),5)
+  self.assertIn('① 名S6',text)  # unresearched but cheapest: the rules recommend it
+  self.assertIn('深度：看好理由',text);self.assertNotIn('名S0 ',text)
   self.assertIn('你的關注：名W 不追',text)

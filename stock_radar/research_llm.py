@@ -1,10 +1,10 @@
 """Per-stock research for the symbols the daily scan says are worth researching.
 
-Only researched stocks may be recommended (see research_brief.researched), so this closes the gap
-between "the rules like this price" and "there is a reason to buy it". Selection is deterministic and
-model-free: liquid, valued symbols that are already actionable or one condition away, cheapest first,
-without valid research. The model only writes the narrative, and only from figures this repo already
-verified -- it is told not to introduce numbers, and any reply carrying an unseen figure is rejected.
+The Python rules decide what may be bought and at what price; this only adds depth to the few names
+those rules already surfaced, and the site shows it. Nothing here gates a recommendation (2026-09-26
+user decision), so tokens are spent only where a person would actually read the analysis: symbols the
+close scan put in the buy zone, cheapest first, with no current write-up. The model may use only
+figures this repo verified -- it is told not to introduce numbers, and an unseen figure is rejected.
 Model access goes through the shared runtime (integrations.research_cli), never a second router here.
 """
 import argparse,json,re,subprocess
@@ -13,7 +13,7 @@ from pathlib import Path
 from .domain import TW,stamp
 from .store import Store
 
-LIMIT=5;VALID_DAYS=21;RESEARCH_MODE='llm-v1';ATTEMPTS=2  # a provider or contract fault must not waste a whole day
+LIMIT=3;VALID_DAYS=21;RESEARCH_MODE='llm-v1';ATTEMPTS=2  # a provider or contract fault must not waste a whole day
 RUNTIME=Path('/Users/kid/kid-ai-agent-os');PYTHON='/usr/local/bin/python3'
 # Anthropic's structured output accepts types and required fields only: length and item-count
 # keywords are rejected by the API, so those limits are enforced in validate() instead.
@@ -31,7 +31,8 @@ def candidates(s,now,limit=LIMIT):
     from .buy_plan import store_plan
     from .market_scan import discount
     from .research_brief import researched
-    rank={'conditional':0,'wait_stabilize':1,'waiting':2}
+    # Only names the rules can already recommend, or one condition away: no tokens on the rest.
+    rank={'conditional':0,'wait_stabilize':1}
     out=[]
     for inst in s.instruments():
         if inst['kind']!='stock' or researched(s,inst,now):continue

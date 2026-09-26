@@ -61,18 +61,20 @@ def _why(v,price=None):
     return (v or {}).get('thesis') or '估值依據請見網站'
 
 def researched(s,inst,now):
-    """Per the stock skill, only a symbol with valid research is recommended. ETFs follow the user-approved
-    ETF rule (NAV premium + one-year price position) instead of company research."""
+    """Whether a deeper written analysis is currently on file. 2026-09-26 user decision: this is depth,
+    not a gate -- the Python rules decide what may be bought, and research only enriches it. ETFs are
+    covered by the ETF rule (NAV premium + one-year price position) and never need company research."""
     if inst.get('kind','').startswith('etf'):return True
     r=s.fact(inst['symbol'],'research_detail') or {}
     return bool(r.get('thesis') and r.get('risks') and valid_research(r,now))
 
 def research_coverage(s,now):
-    """How many stocks can be recommended at all, and when the first research lapses."""
+    """How many recommendations currently carry a deeper written analysis. Depth is optional: the rules
+    decide what may be bought, so an empty result is a note, not a blocker."""
     valid=[(stamp(r['valid_until']),i['name']) for i in s.instruments() if i['kind']=='stock'
            for r in [s.fact(i['symbol'],'research_detail') or {}] if r.get('thesis') and r.get('risks') and valid_research(r,now)]
-    if not valid:return '目前沒有有效的個股研究，個股不會被推薦（ETF 不受影響）。'
-    first=min(valid);return f"有效個股研究 {len(valid)} 檔，最早 {first[0].astimezone(TW):%m/%d} 到期（{first[1]}）。"
+    if not valid:return '尚無深度分析；買點仍由規則判斷。'
+    first=min(valid);return f"深度分析 {len(valid)} 檔有效，最早 {first[0].astimezone(TW):%m/%d} 到期（{first[1]}）。"
 
 def _names(xs):
     return '、'.join(xs[:MAX_NAMES])+(f" 等 {len(xs)} 檔" if len(xs)>MAX_NAMES else '')
@@ -102,13 +104,13 @@ def morning(s,radar,now):
     valued=[i for i in radar['items'] if i.get('valuation')]
     checked=[(i,_revalidate_signal(i,now)) for i in valued]
     go=sorted([(i,g) for i,g in checked if g['status'] in ('sweet','add','buy')],key=lambda x:-(discount(x[0]['valuation'],x[1].get('suggested')) or 0))
-    pool=[x for x in go if not researched(s,x[0],now)];go=[x for x in go if researched(s,x[0],now)]
     picks=[x for x in go if x[0].get('kind')=='stock'][:MAX_STOCKS]+[x for x in go if x[0].get('kind','').startswith('etf')][:MAX_ETFS]
     plans={i['symbol']:store_plan(s,i,now) for i in valued}
-    names=lambda st:[i['name'] for i in sorted(valued,key=lambda i:-(discount(i['valuation'],(i.get('public_close') or {}).get('close')) or 0)) if plans[i['symbol']]['status']==st and researched(s,i,now)]
+    names=lambda st:[i['name'] for i in sorted(valued,key=lambda i:-(discount(i['valuation'],(i.get('public_close') or {}).get('close')) or 0)) if plans[i['symbol']]['status']==st]
     def block(n,i,g):
         r=s.fact(i['symbol'],'research_detail') or {};etf='（ETF）' if i.get('kind','').startswith('etf') else ''
         out=['',f"{n}. {i['name']} {i['symbol']}{etf} ── 掛 {g['suggested']:g}，最高 {i['valuation']['buy']:g}",f"   {_why(i['valuation'],g.get('suggested'))}"]
+        if researched(s,i,now) and r.get('thesis'):out.append(f"   深度：{r['thesis'][:80]}")
         if r.get('risks'):out.append(f"   風險：{r['risks'][0]}")
         return out
     lines=[head,'']
@@ -121,8 +123,7 @@ def morning(s,radar,now):
     else:
         lines.append('⛔ 今天不進場')
         near=[f"{_names(names(st))}（{label}）" for st,label in (('wait_stabilize','已進買進區，等止穩'),('conditional','估值符合，盤前行情未通過'),('waiting','估值符合，等承接位置')) if names(st)]
-        lines.append('有研究支持的標的都沒有通過條件。'+('最接近：'+'；'.join(near) if near else ''))
-    if pool:lines.append(f"另有 {len(pool)} 檔通過規則篩選但尚未研究，不是推薦 → 網站")
+        lines.append('沒有標的通過全部條件。'+('最接近：'+'；'.join(near) if near else ''))
     watched=[i['name'] for i in valued if i.get('watched') and plans[i['symbol']]['status']=='overvalued']
     if watched:lines.append(f"你的關注中評價過高：{_names(watched)}")
     scan=s.meta('market_scan') or {}
