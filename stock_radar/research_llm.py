@@ -101,10 +101,9 @@ def validate(payload,data):
         if not isinstance(value,str) or len(value.strip())<low:raise ValueError('invalid_'+key)
         payload[key]=shorten(value,high)
     for key,(low,high) in LISTS.items():
-        value=payload.get(key)
-        if not isinstance(value,list) or not low<=len(value)<=high:raise ValueError('invalid_'+key)
-        if not all(isinstance(x,str) and len(x.strip())>=4 for x in value):raise ValueError('invalid_'+key)
-        payload[key]=[shorten(x,ITEM_MAX) for x in value]
+        value=[x for x in payload.get(key) or [] if isinstance(x,str) and len(x.strip())>=4]
+        if len(value)<low:raise ValueError('invalid_'+key)
+        payload[key]=[shorten(x,ITEM_MAX) for x in value[:high]]
     used=numbers(' '.join([payload['description'],payload['thesis'],payload['why_now'],
                            *payload['catalysts'],*payload['risks'],*payload['invalidation']]))
     unseen=sorted({n for n in used if not seen(float(n),allowed)})
