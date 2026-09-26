@@ -13,7 +13,7 @@ from pathlib import Path
 from .domain import TW,stamp
 from .store import Store
 
-LIMIT=3;VALID_DAYS=21;RESEARCH_MODE='llm-v1';ATTEMPTS=2  # a provider or contract fault must not waste a whole day
+LIMIT=5;VALID_DAYS=21;RESEARCH_MODE='llm-v1';ATTEMPTS=2  # a provider or contract fault must not waste a whole day
 RUNTIME=Path('/Users/kid/kid-ai-agent-os');PYTHON='/usr/local/bin/python3'
 # Anthropic's structured output accepts types and required fields only: length and item-count
 # keywords are rejected by the API, so those limits are enforced in validate() instead.

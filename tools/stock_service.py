@@ -82,9 +82,9 @@ def main():
             if a.task=='close' and trading_today:
                 # A job that never starts is silent, and silence looks exactly like "no opportunities".
                 # The close run is the last one of the day, so it is where a missing morning shows up.
-                state=D/'morning-state.json'
-                ran=state.exists() and json.loads(state.read_text()).get('date')==str(now.date())
-                if not ran:alert(f"台股系統｜{now:%m/%d %H:%M}\n【系統異常】今天是交易日，但盤前流程沒有留下紀錄，你今天不會收到盤前建議。請檢查舊 Mac 的排程。\nhttps://changjaykid.github.io/fugle-dashboard/")
+                posted=D/'morning-message.json'
+                ran=posted.exists() and json.loads(posted.read_text()).get('date')==str(now.date())
+                if not ran:alert(f"台股系統｜{now:%m/%d %H:%M}\n【系統異常】今天是交易日，但沒有送出盤前建議（08:55 未執行或發送失敗）。請檢查舊 Mac 的排程。\nhttps://changjaykid.github.io/fugle-dashboard/")
                 secondary([PY,'-m','stock_radar.research_llm','--db',str(D/'prod.db')],'research')
                 secondary([PY,'-m','stock_radar.close_review','--db',str(D/'prod.db'),'--send'],'close_review')
             run(cli+['export','--out','docs/radar.json','--mode','live'])
@@ -128,14 +128,13 @@ def main():
             track(['record','--radar',str(snapshot)])
             state={'date':str(now.date()),'items':{i['symbol']:{k:i.get('signal',{}).get(k) for k in ('status','suggested','reason')} for i in radar['items'] if i.get('watched') or i.get('signal',{}).get('status') in ('sweet','add','buy')}}
             prev=D/'morning-state.json';sent=D/'morning-message.json'
-            same=prev.exists() and json.loads(prev.read_text())==state
-            # One message per trading day: 08:50 posts it (that is the phone notification), 08:55 edits
-            # the same message when anything changed, so the channel never shows two versions.
             today=json.loads(sent.read_text()) if sent.exists() else {}
             today=today if today.get('date')==str(now.date()) else {}
             args=[PY,'-m','stock_radar.research_brief','--db',str(D/'prod.db'),'--morning-radar',str(R/'docs/radar.json'),'--out',str(D/'morning-latest.json'),'--send']
             if today.get('message_id'):args+=['--edit-id',today['message_id']]
-            if not (a.task=='recheck' and same and today.get('message_id')):
+            # One message a day, sent by the 08:55 run: its trial price is the closest to the open.
+            # 08:50 only prepares data (quotes, export, snapshot, ledger) so 08:55 has everything ready.
+            if a.task=='recheck' or today.get('message_id'):
                 out=run(args)
                 for line in out.splitlines():
                     try:r=json.loads(line)
@@ -152,6 +151,7 @@ if __name__=='__main__':
         task=sys.argv[1] if len(sys.argv)>1 else '';t=datetime.datetime.now(ZoneInfo('Asia/Taipei'));why=f"{type(e).__name__}: {str(e)[:80]}"
         what={'notify':'今天盤前流程失敗，沒有產生建議。這不是「不進場」的判斷，請勿依此下單。',
               'intraday':'盤中重新判斷失敗，本輪沒有檢查；下一輪會再試。',
+              'recheck':'今天 08:55 盤前流程失敗，沒有送出當日建議。這不是「不進場」的判斷，請勿依此下單。',
               'refresh':'早上資料更新失敗，網站與估值停在上一次成功的版本；08:50 可能無法確認。',
               'close':'收盤資料更新失敗，網站停在上一次成功的版本。',
               'weekly':'週六週報產生失敗。','outlook':'週日下週觀察清單產生失敗。'}.get(task)

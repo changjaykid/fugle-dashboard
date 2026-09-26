@@ -45,6 +45,16 @@ class IntradayTests(unittest.TestCase):
         self.assertEqual(out['events'],1);self.assertIn('跌破支撐',out['text'])
         self.assertEqual(intraday.run(self.s,NOW+timedelta(minutes=5),fetch=self.quote(68.0))['status'],'quiet')
 
+    def test_only_one_intraday_message_a_day(self):
+        first=intraday.run(self.s,NOW,fetch=self.quote(79.0))
+        self.assertEqual(first['events'],1)
+        self.assertEqual(intraday.run(self.s,NOW+timedelta(hours=2),fetch=self.quote(60.0))['status'],'quiet')
+
+    def test_falling_back_into_range_alone_is_not_worth_a_message(self):
+        self.s.set_fact('3706','public_close',{'close':95.0,'trade_date':'2026-09-28'})  # closed above the cap
+        out=intraday.run(self.s,NOW,fetch=self.quote(82.0))  # back under buy_max, nothing broken
+        self.assertEqual(out['status'],'quiet')
+
     def test_a_price_above_the_plan_says_nothing(self):
         self.assertEqual(intraday.run(self.s,NOW,fetch=self.quote(120.0))['status'],'quiet')
 

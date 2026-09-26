@@ -13,6 +13,9 @@ from .store import Store
 
 DROP=.02  # below the researched support by this much is a real breakdown, not a tick
 SHOW=4
+# The user reads one message a day, so only a broken plan or a reached entry is worth interrupting for;
+# a name merely falling back into range can wait for tomorrow's pre-open list.
+URGENT=('support_lost','reached_entry')
 
 def watched_symbols(s):
     """The morning candidate list plus anything already recommended today; both are bounded."""
@@ -39,13 +42,13 @@ def state(s,now,quotes):
     return events
 
 def new_events(s,events,now):
-    """One message per event per day: an unchanged situation must not be re-sent every hour."""
-    seen=s.meta('intraday_seen') or {}
-    today=str(now.date());sent=set(seen.get(today) or [])
-    fresh=[e for e in events if f"{e['kind']}:{e['symbol']}" not in sent]
-    if fresh:
-        s.set_meta('intraday_seen',{today:sorted(sent|{f"{e['kind']}:{e['symbol']}" for e in fresh})})
-    return fresh
+    """At most one intraday message a day, carrying everything worth acting on at that moment."""
+    seen=s.meta('intraday_seen') or {};today=str(now.date())
+    if seen.get(today):return []
+    urgent=[e for e in events if e['kind'] in URGENT]
+    if not urgent:return []
+    s.set_meta('intraday_seen',{today:sorted({f"{e['kind']}:{e['symbol']}" for e in events})})
+    return events
 
 LABELS={'support_lost':'跌破支撐，原買點失效','reached_entry':'觸及承接參考價','entered_zone':'回落進入買進區'}
 
@@ -53,7 +56,7 @@ def text(events,now):
     lines=[f"台股盤中更新 {now:%m/%d %H:%M}",'']
     for e in sorted(events,key=lambda e:e['kind']):
         lines.append(f"{e['name']} {e['symbol']}｜{LABELS[e['kind']]}（現價 {e['price']:g}，參考 {e['level']:g}）")
-    lines.append('盤中價格會變動，這是事實提醒，不是新的掛價建議；是否下單由你決定。')
+    lines.append('今天只會有這一則盤中提醒。盤中價格會變動，這是事實提醒，不是新的掛價建議；是否下單由你決定。')
     return '\n'.join(lines)
 
 def run(s,now,send=False,fetch=None):
