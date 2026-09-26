@@ -451,3 +451,22 @@ class EditMessageTests(unittest.TestCase):
         self.assertEqual(payload['content'], '新內容')
         self.assertEqual(payload['allowed_mentions'], NO_PING)
         self.assertEqual(out['id'], '42')
+
+
+class ChannelRoutingTests(unittest.TestCase):
+    """Reports can be split per STOCK_AGENT.md 15; an unconfigured kind stays on the approved channel."""
+
+    def test_kinds_fall_back_and_configured_ids_are_used(self):
+        import json, tempfile
+        from pathlib import Path
+        from stock_radar.discord import channel_for, DISCORD_CHANNEL
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / 'channels.json'
+            path.write_text(json.dumps({'daily': '123456', 'alert': None, 'review': 'not-an-id'}))
+            self.assertEqual(channel_for('daily', config_path=path), '123456')
+            self.assertEqual(channel_for('alert', config_path=path), DISCORD_CHANNEL)
+            self.assertEqual(channel_for('review', config_path=path), DISCORD_CHANNEL)
+            self.assertEqual(channel_for('status', config_path=path), DISCORD_CHANNEL)
+            self.assertEqual(channel_for('daily', config_path=Path(folder) / 'missing.json'), DISCORD_CHANNEL)
+        with self.assertRaises(ValueError):
+            channel_for('trading')

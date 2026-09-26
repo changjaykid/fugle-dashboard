@@ -1,0 +1,7 @@
+{
+  "_comment": "Fill in a channel id to split reports; anything missing falls back to the approved channel.",
+  "daily": null,
+  "alert": null,
+  "review": null,
+  "status": null
+}

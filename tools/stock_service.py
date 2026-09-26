@@ -34,14 +34,16 @@ def alert(text):
     except Exception:pass
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('task',choices=['refresh','notify','recheck','close','weekly','outlook']);p.add_argument('--manual',action='store_true');a=p.parse_args();now=datetime.datetime.now(ZoneInfo('Asia/Taipei'))
+    p=argparse.ArgumentParser();p.add_argument('task',choices=['refresh','notify','recheck','close','weekly','outlook','intraday']);p.add_argument('--manual',action='store_true');a=p.parse_args();now=datetime.datetime.now(ZoneInfo('Asia/Taipei'))
     # launchd can catch up a calendar event after wake: do not send a late morning report.
     if not a.manual:
         # close at 18:00: TWSE publishes the daily P/E file (BWIBBU_d) after 16:30, so an earlier run
         # skips most symbols. Keep this in sync with local.kid.stock.close.plist.
-        target={'refresh':390,'notify':530,'recheck':535,'close':1080,'weekly':600,'outlook':1200}[a.task]
+        # intraday runs at several points; every other task has one scheduled minute.
+        windows={'refresh':[390],'notify':[530],'recheck':[535],'close':[1080],'weekly':[600],'outlook':[1200],
+                 'intraday':[545,600,660,720,800]}[a.task]
         if a.task in ('weekly','outlook') and now.weekday()!={'weekly':5,'outlook':6}[a.task]:return
-        if not target<=now.hour*60+now.minute<=target+5:return
+        if not any(t<=now.hour*60+now.minute<=t+5 for t in windows):return
     # Kill switch (no LLM, no network): `touch ~/kid-agent-data/stock-radar/PAUSED` stops every stock job; rm resumes.
     if (D/'PAUSED').exists():
         print(json.dumps({'at':now.isoformat(),'task':a.task,'status':'paused'}));return
@@ -49,7 +51,10 @@ def main():
         try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         except BlockingIOError:return
         cli=[PY,'-m','stock_radar.cli','--db',str(D/'prod.db')]
-        if a.task in ('weekly','outlook'):
+        if a.task=='intraday':
+            # Free TWSE quotes during the session: no Fugle quota, no tokens, silent unless something changed.
+            print(run([PY,'-m','stock_radar.intraday','--db',str(D/'prod.db'),'--send']).strip())
+        elif a.task in ('weekly','outlook'):
             run([PY,'-m','stock_radar.weekend',a.task,'--send'])
         elif a.task in ('refresh','close'):
             for cmd in ['sync-universe','sync-calendar','sync-financials','sync-risk']:run(cli+[cmd])
@@ -66,6 +71,7 @@ def main():
             # so tomorrow's recommendations have a reason attached. Model access goes through the shared
             # runtime's budgeted CLI; a failure here must never block the site or the report.
             if a.task=='close':secondary([PY,'-m','stock_radar.research_llm','--db',str(D/'prod.db')],'research')
+            if a.task=='close':secondary([PY,'-m','stock_radar.close_review','--db',str(D/'prod.db'),'--send'],'close_review')
             run(cli+['export','--out','docs/radar.json','--mode','live'])
             run([PY,'-m','stock_radar.daily_report','--db',str(D/'prod.db'),'--out','docs/research-summary.json'])
             run(cli+['backup','--out',str(D/('backup-'+now.strftime('%Y%m%d-%H%M%S')+'.db'))])
@@ -130,6 +136,7 @@ if __name__=='__main__':
         print(json.dumps({'status':'failed','error_type':type(e).__name__}),flush=True)
         task=sys.argv[1] if len(sys.argv)>1 else '';t=datetime.datetime.now(ZoneInfo('Asia/Taipei'));why=f"{type(e).__name__}: {str(e)[:80]}"
         what={'notify':'今天盤前流程失敗，沒有產生建議。這不是「不進場」的判斷，請勿依此下單。',
+              'intraday':'盤中重新判斷失敗，本輪沒有檢查；下一輪會再試。',
               'refresh':'早上資料更新失敗，網站與估值停在上一次成功的版本；08:50 可能無法確認。',
               'close':'收盤資料更新失敗，網站停在上一次成功的版本。',
               'weekly':'週六週報產生失敗。','outlook':'週日下週觀察清單產生失敗。'}.get(task)

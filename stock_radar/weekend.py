@@ -5,7 +5,7 @@ from pathlib import Path
 from .domain import TW,stamp
 from .store import Store,atomic_json
 from .cli import _bot_token,_send_with_outbox
-from .discord import DISCORD_CHANNEL
+from .discord import channel_for
 
 def build(kind,now,store,folder):
     lines=[]
@@ -60,7 +60,7 @@ def main():
     try:
         text=build(a.kind,now,s,d/'snapshots')
         atomic_json(d/(a.kind+'-latest.json'),{'generated_at':now.isoformat(),'text':text})
-        if a.send:print(json.dumps(_send_with_outbox(s,_bot_token(),text,channel=DISCORD_CHANNEL,now=now,max_attempts=1)))
+        if a.send:print(json.dumps(_send_with_outbox(s,_bot_token(),text,channel=channel_for('review'),now=now,max_attempts=1)))
         else:print(text)
     finally:s.close()
 if __name__=='__main__':main()

@@ -141,15 +141,15 @@ def main():
         if a.out:atomic_json(a.out,{'generated_at':now.isoformat(),'text':text})
         if a.send:
             from .cli import _bot_token,_send_with_outbox
-            from .discord import DISCORD_CHANNEL,edit_message
+            from .discord import channel_for,edit_message
             if a.edit_id:
                 # One message per morning: replace it rather than posting a second, contradictory one.
                 try:
-                    edit_message(_bot_token(),a.edit_id,text,channel_id=DISCORD_CHANNEL)
+                    edit_message(_bot_token(),a.edit_id,text,channel_id=channel_for('daily'))
                     print(json.dumps({'status':'edited','message_id':a.edit_id}));return
                 except Exception as exc:
                     print(json.dumps({'status':'edit_failed','error_type':type(exc).__name__}))
-            r=_send_with_outbox(s,_bot_token(),text,channel=DISCORD_CHANNEL,now=now,max_attempts=1)
+            r=_send_with_outbox(s,_bot_token(),text,channel=channel_for('alert' if a.alert else 'daily'),now=now,max_attempts=1)
             print(json.dumps(r))
         else:print(text)
     finally:s.close()
