@@ -30,15 +30,16 @@ class CloseReviewTests(unittest.TestCase):
         summary=cr.review(self.s,DAY)
         self.assertEqual((summary['picks'],summary['filled'],summary['unfilled']),(2,1,1))
         self.assertAlmostEqual(summary['filled_avg_pct'],round((98/96-1)*100,2))
-        self.assertEqual(summary['waits'],2)
+        self.assertEqual((summary['not_recommended'],summary['movers']),(2,1))
         self.assertEqual([x['symbol'] for x in summary['missed']],['WAIT'])
-        self.assertEqual(summary['wait_ok'],1)
+
 
     def test_text_states_both_sides_and_the_caveat(self):
         body=cr.text(cr.review(self.s,DAY))
         self.assertIn('觸及掛價 1 檔',body)
         self.assertIn('未觸及 1 檔',body)
-        self.assertIn('錯過',body)
+        self.assertIn('未列入建議 2 檔，其中 1 檔當天漲逾 3%',body)
+        self.assertIn('不代表當時應該買',body)
         self.assertIn('當日漲跌不代表這些判斷長期正確',body)
 
     def test_a_day_without_bars_reports_no_data_and_sends_nothing(self):

@@ -38,10 +38,9 @@ def review(s,day):
         if not bar or not bar[0]:continue
         move=(bar[3]/bar[0]-1)
         if move>=MISSED_MOVE:missed.append({**r,'move_pct':round(move*100,2)})
-    good_wait=len(waits)-len(missed)
     return {'day':day,'picks':len(picks),'filled':len(filled),'unfilled':len(unfilled),
             'filled_avg_pct':round(sum(x['move_pct'] for x in filled)/len(filled),2) if filled else None,
-            'waits':len(waits),'wait_ok':good_wait,'missed':sorted(missed,key=lambda x:-x['move_pct'])[:SHOW],
+            'not_recommended':len(waits),'movers':len(missed),'missed':sorted(missed,key=lambda x:-x['move_pct'])[:SHOW],
             'filled_detail':sorted(filled,key=lambda x:x['move_pct'])[:SHOW],
             'unfilled_detail':sorted(unfilled,key=lambda x:-x['move_pct'])[:SHOW]}
 
@@ -57,9 +56,10 @@ def text(summary):
             lines.append(f"　{x['name']} {x['symbol']}｜掛 {x['suggested']:g} 未成交，當日最低 {x['low']:g}")
     else:
         lines.append('今天沒有發出可掛價建議。')
-    lines.append(f"判斷不追／等待 {summary['waits']} 檔，其中 {summary['wait_ok']} 檔當天沒有明顯上漲（暫時正確）。")
+    # Not a claim that each of these was judged: most simply never entered the buy zone.
+    lines.append(f"未列入建議 {summary['not_recommended']} 檔，其中 {summary['movers']} 檔當天漲逾 3%。")
     if summary['missed']:
-        lines.append('錯過（不追但當天仍漲逾 3%）：'+'、'.join(f"{x['name']} {x['move_pct']:+.1f}%" for x in summary['missed']))
+        lines.append('漲最多的：'+'、'.join(f"{x['name']} {x['move_pct']:+.1f}%" for x in summary['missed'])+'（未建議，不代表當時應該買）')
     lines.append('當日漲跌不代表這些判斷長期正確；5／20／60 日成效仍以追蹤紀錄為準。')
     return '\n'.join(lines)
 
