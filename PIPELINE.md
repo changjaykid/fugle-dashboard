@@ -111,6 +111,22 @@
 - 網站的 JS 版本號＝radar.js SHA-256 前 12 碼，寫在 `docs/index.html`。
 - 首次全市場回填約 510 個請求（每次間隔 2.5 秒）；之後每次排程只需 3 個。
 
+## 收盤檢討（每天 18:00 之後，純 Python）
+
+`stock_radar/close_review.py`：以當天的全市場 K 線檢討當日建議——觸及掛價幾檔、收盤相對掛價的平均、未觸及的最低價、未列入建議但當天漲逾 3%（`MISSED_MOVE`）的標的。發到 review 頻道並存入 meta `close_review`。不宣稱「不追是正確的」，只陳述市場實際走勢。
+
+## 盤中重新判斷（交易日 09:05／10:00／11:00／12:00／13:20，純 Python）
+
+`stock_radar/intraday.py`：用證交所免費即時報價（盤中沒有試撮判讀問題，不耗富果額度、不用 LLM）重算計畫，只在事實改變時才發訊息：
+- `reached_entry`：現價觸及承接參考價。
+- `support_lost`：現價低於研究支撐 2%（`DROP`）。
+- `entered_zone`：原本不追的標的回落進入買進區。
+同一天同一事件只發一次（meta `intraday_seen`）；沒有事件就完全不發。launchd label `local.kid.stock.intraday`。
+
+## Discord 頻道路由
+
+`stock_radar/channels.json` 可分別指定 daily／alert／review／status 的頻道 ID；未填則全部回到既有頻道。盤前用 daily、盤中與系統異常用 alert、收盤檢討與週報用 review。
+
 ## 已知限制
 
 - 上櫃（TPEx）股票與 ETF 尚未納入；ETN 不評價。
