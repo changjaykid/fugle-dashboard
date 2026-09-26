@@ -13,7 +13,7 @@ from pathlib import Path
 from .domain import TW,stamp
 from .store import Store
 
-LIMIT=5;VALID_DAYS=21;RESEARCH_MODE='llm-v1'
+LIMIT=5;VALID_DAYS=21;RESEARCH_MODE='llm-v1';ATTEMPTS=2  # a provider or contract fault must not waste a whole day
 RUNTIME=Path('/Users/kid/kid-ai-agent-os');PYTHON='/usr/local/bin/python3'
 # Anthropic's structured output accepts types and required fields only: length and item-count
 # keywords are rejected by the API, so those limits are enforced in validate() instead.
@@ -105,9 +105,21 @@ def call(request,timeout=90):
     if result.returncode or not result.stdout.strip():raise RuntimeError('research_cli_failed')
     return json.loads(result.stdout.strip().splitlines()[-1])
 
+def attempt_id(s,sym,now):
+    """Each attempt still consumes one slot of the shared daily budget; this only stops a single bad
+    reply from locking the symbol out for the rest of the day."""
+    day=f'{now:%Y%m%d}';log=s.meta('stock_research_attempts') or {}
+    used=log.get(day,{}).get(sym,0)
+    if used>=ATTEMPTS:return None
+    log={day:{**log.get(day,{}),sym:used+1}}
+    s.set_meta('stock_research_attempts',log)
+    return f'stock-research:{sym}:{day}:{used+1}'
+
 def research(s,inst,now,caller=call):
     data=facts(s,inst);sym=inst['symbol']
-    reply=caller({'event_id':f"stock-research:{sym}:{now:%Y%m%d}",'subject':sym,'prompt':prompt(data),'schema':SCHEMA})
+    event_id=attempt_id(s,sym,now)
+    if not event_id:return 'skipped','attempts_exhausted'
+    reply=caller({'event_id':event_id,'subject':sym,'prompt':prompt(data),'schema':SCHEMA})
     if reply.get('status')!='ok':return reply.get('status','failed'),reply.get('reason') or reply.get('category')
     payload=validate(json.loads(reply['text']),data)
     usage=(reply.get('usage') or [{}])[-1]

@@ -77,10 +77,20 @@ class ResearchTests(Fixture):
 
     def test_reply_breaking_length_or_count_limits_is_rejected(self):
         for bad in (dict(REPLY,risks=['只有一項風險']),dict(REPLY,description='這段公司介紹寫得太長了'*5),dict(REPLY,thesis='太短')):
+            self.s.set_meta('stock_research_attempts',{})  # each case is its own day's first attempt
             reply={'status':'ok','text':json.dumps(bad,ensure_ascii=False),'usage':[{}]}
             result=rl.run(self.s,NOW,caller=self.caller(reply))
             self.assertEqual(result[0][1],'error');self.assertIn('invalid_',result[0][2])
             self.assertEqual(self.s.fact('3706','research_detail'),{})
+
+    def test_a_bad_reply_leaves_one_retry_then_stops_for_the_day(self):
+        ids=[]
+        def failing(request):
+            ids.append(request['event_id']);return {'status':'failed','category':'http_client'}
+        for _ in range(3):rl.run(self.s,NOW,caller=failing)
+        self.assertEqual(len(ids),rl.ATTEMPTS)
+        self.assertEqual(ids,['stock-research:3706:20260929:1','stock-research:3706:20260929:2'])
+        self.assertEqual(rl.run(self.s,NOW,caller=failing)[0][1],'skipped')
 
     def test_schema_uses_only_keywords_the_provider_accepts(self):
         text=json.dumps(rl.SCHEMA)
