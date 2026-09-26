@@ -80,6 +80,11 @@ def main():
             # Data refreshes every day, but reviewing and researching a session that already ended would
             # repeat yesterday's report and spend tokens for nothing: both are trading-day only.
             if a.task=='close' and trading_today:
+                # A job that never starts is silent, and silence looks exactly like "no opportunities".
+                # The close run is the last one of the day, so it is where a missing morning shows up.
+                state=D/'morning-state.json'
+                ran=state.exists() and json.loads(state.read_text()).get('date')==str(now.date())
+                if not ran:alert(f"台股系統｜{now:%m/%d %H:%M}\n【系統異常】今天是交易日，但盤前流程沒有留下紀錄，你今天不會收到盤前建議。請檢查舊 Mac 的排程。\nhttps://changjaykid.github.io/fugle-dashboard/")
                 secondary([PY,'-m','stock_radar.research_llm','--db',str(D/'prod.db')],'research')
                 secondary([PY,'-m','stock_radar.close_review','--db',str(D/'prod.db'),'--send'],'close_review')
             run(cli+['export','--out','docs/radar.json','--mode','live'])
