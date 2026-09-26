@@ -7,6 +7,7 @@ from stock_radar import research_llm as rl
 
 NOW=datetime(2026,9,29,18,10,tzinfo=TW)
 REPLY={'description':'伺服器代工','thesis':'本益比 14.3 低於一年常態 17.4，便宜約 17%，獲利支撐評價','why_now':'價格已進入買進區，等法人賣壓改善',
+       'why_not':'近五日外資賣超，籌碼面尚未轉強，追價風險仍在','next_trigger':'跌破支撐 77.6 或外資轉為買超時重新判斷',
        'catalysts':['月營收年增是否延續'],'risks':['代工毛利偏低','法人仍在賣超'],'invalidation':['跌破支撐 77.6 元']}
 
 def valuation(now,**over):
@@ -37,11 +38,32 @@ class Fixture(unittest.TestCase):
 
 class SelectionTests(Fixture):
     def test_only_unresearched_actionable_stocks_are_chosen(self):
-        picked=[i['symbol'] for i in rl.candidates(self.s,NOW)]
+        picked=[i['symbol'] for i,_ in rl.candidates(self.s,NOW)]
         self.assertEqual(picked,['3706'])  # the ETF follows the ETF rule and needs no company research
         rl.run(self.s,NOW,caller=lambda request:{'status':'ok','text':json.dumps(REPLY,ensure_ascii=False),
                                                  'usage':[{'provider':'anthropic','model':'claude-sonnet-5','estimated_cost_usd':0.01}]})
-        self.assertEqual(rl.candidates(self.s,NOW),[])  # already researched, so the budget moves on
+        self.assertEqual(rl.candidates(self.s,NOW),[])  # already researched and unchanged: a quiet day costs nothing
+
+class WakeTests(Fixture):
+    def research_once(self):
+        rl.run(self.s,NOW,caller=lambda request:{'status':'ok','text':json.dumps(REPLY,ensure_ascii=False),
+                                                 'usage':[{'provider':'anthropic','model':'claude-sonnet-5'}]})
+
+    def test_a_broken_setup_wakes_research_again(self):
+        self.research_once()
+        self.s.set_fact('3706','public_close',{'close':70.0,'trade_date':'2026-09-29'})  # below support 77.6
+        woken=rl.candidates(self.s,NOW)
+        self.assertEqual([(i['symbol'],why) for i,why in woken],[('3706','setup_broken')])
+
+    def test_a_large_valuation_move_wakes_research_again(self):
+        self.research_once()
+        self.s.publish_rule_valuation(self.s.propose('3706',valuation(NOW,fair=200.0,inputs={'pe_today':7.0,'fair_pe':17.42}),now=NOW),now=NOW)
+        self.assertEqual([why for _,why in rl.candidates(self.s,NOW)],['valuation_moved'])
+
+    def test_first_time_in_the_buy_zone_is_the_wake_reason(self):
+        self.assertEqual([why for _,why in rl.candidates(self.s,NOW)],['entered_buy_zone'])
+        self.research_once()
+        self.assertEqual(self.s.fact('3706','research_detail')['wake_reason'],'entered_buy_zone')
 
 class ResearchTests(Fixture):
     def caller(self,reply=None,capture=None):
