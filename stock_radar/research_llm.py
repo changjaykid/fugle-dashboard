@@ -15,13 +15,15 @@ from .store import Store
 
 LIMIT=5;VALID_DAYS=21;RESEARCH_MODE='llm-v1'
 RUNTIME=Path('/Users/kid/kid-ai-agent-os');PYTHON='/usr/local/bin/python3'
-TEXT={'type':'string','minLength':8,'maxLength':180}
+# Anthropic's structured output accepts types and required fields only: length and item-count
+# keywords are rejected by the API, so those limits are enforced in validate() instead.
+LISTS={'catalysts':(1,3),'risks':(2,3),'invalidation':(1,3)};LIMITS={'description':(2,30),'thesis':(8,180),'why_now':(8,180)}
 SCHEMA={'type':'object','additionalProperties':False,
         'required':['description','thesis','why_now','catalysts','risks','invalidation'],
-        'properties':{'description':{'type':'string','minLength':2,'maxLength':30},'thesis':TEXT,'why_now':TEXT,
-                      'catalysts':{'type':'array','minItems':1,'maxItems':3,'items':TEXT},
-                      'risks':{'type':'array','minItems':2,'maxItems':3,'items':TEXT},
-                      'invalidation':{'type':'array','minItems':1,'maxItems':3,'items':TEXT}}}
+        'properties':{'description':{'type':'string'},'thesis':{'type':'string'},'why_now':{'type':'string'},
+                      'catalysts':{'type':'array','items':{'type':'string'}},
+                      'risks':{'type':'array','items':{'type':'string'}},
+                      'invalidation':{'type':'array','items':{'type':'string'}}}}
 
 def candidates(s,now,limit=LIMIT):
     """Cheapest actionable-or-nearly symbols without valid research; ETFs never need company research."""
@@ -84,12 +86,13 @@ def seen(value,allowed):
 def validate(payload,data):
     """Reject a reply that invents figures: every number it states must come from the facts given."""
     allowed=allowed_values(data)
-    for key in ('description','thesis','why_now'):
-        if not isinstance(payload.get(key),str) or not payload[key].strip():raise ValueError('missing_'+key)
-    for key in ('catalysts','risks','invalidation'):
-        if not isinstance(payload.get(key),list) or not all(isinstance(x,str) and x.strip() for x in payload[key]):
-            raise ValueError('missing_'+key)
-    if not 2<=len(payload['risks'])<=3:raise ValueError('risks_count')
+    for key,(low,high) in LIMITS.items():
+        value=payload.get(key)
+        if not isinstance(value,str) or not low<=len(value.strip())<=high:raise ValueError('invalid_'+key)
+    for key,(low,high) in LISTS.items():
+        value=payload.get(key)
+        if not isinstance(value,list) or not low<=len(value)<=high:raise ValueError('invalid_'+key)
+        if not all(isinstance(x,str) and 4<=len(x.strip())<=180 for x in value):raise ValueError('invalid_'+key)
     used=numbers(' '.join([payload['description'],payload['thesis'],payload['why_now'],
                            *payload['catalysts'],*payload['risks'],*payload['invalidation']]))
     unseen=sorted({n for n in used if not seen(float(n),allowed)})

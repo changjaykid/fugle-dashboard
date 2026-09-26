@@ -75,6 +75,18 @@ class ResearchTests(Fixture):
         self.assertIn('unverified_numbers',result[0][2])
         self.assertEqual(self.s.fact('3706','research_detail'),{})
 
+    def test_reply_breaking_length_or_count_limits_is_rejected(self):
+        for bad in (dict(REPLY,risks=['只有一項風險']),dict(REPLY,description='這段公司介紹寫得太長了'*5),dict(REPLY,thesis='太短')):
+            reply={'status':'ok','text':json.dumps(bad,ensure_ascii=False),'usage':[{}]}
+            result=rl.run(self.s,NOW,caller=self.caller(reply))
+            self.assertEqual(result[0][1],'error');self.assertIn('invalid_',result[0][2])
+            self.assertEqual(self.s.fact('3706','research_detail'),{})
+
+    def test_schema_uses_only_keywords_the_provider_accepts(self):
+        text=json.dumps(rl.SCHEMA)
+        for unsupported in ('maxItems','minItems','maxLength','minLength'):
+            self.assertNotIn(unsupported,text)
+
     def test_budget_denial_and_model_failure_are_reported_not_stored(self):
         for reply,expected in (({'status':'denied','reason':'daily_budget'},'denied'),
                                ({'status':'failed','category':'output_truncated'},'failed')):
