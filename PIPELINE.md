@@ -70,12 +70,22 @@
 - 這一點取代 `.agents/skills/tw-stock-price-analysis` 中「08:50 只列研究有效標的」的寫法（Skill 本身規定使用者最新決策優先）。
 - 能不用 LLM 就不用：每天最多 3 檔、只研究已在買進區或一步之遙的標的、研究保留 21 天不重做。
 
+## Wake Engine（2026-09-26，對齊 STOCK_AGENT.md 第 6 節）
+
+`research_llm.wake()` 是 deterministic 的喚醒判斷，沒有事件就不呼叫模型：
+- `entered_buy_zone`：計畫為 conditional／wait_stabilize 且尚無有效深度分析。
+- `setup_broken`：已有分析但計畫轉為 broken／overvalued（跌破支撐或評價過高）。
+- `valuation_moved`：便宜程度與做研究當時相差 10 個百分點以上（`MOVED`）。
+- 其餘一律不喚醒；已分析且設定未變的標的會沿用 21 天。安靜日 = 0 次呼叫。
+每次喚醒原因寫入 `research_detail.wake_reason`，每天最多 3 檔。
+
 ## 每日自動研究（2026-09-26 起）
 
 - 排程：每天 18:00 收盤掃描後，`stock_radar.research_llm` 挑選並研究，失敗不影響網站與通知（`secondary()`）。
-- 選股（無 LLM）：成交量達標、有估值、**尚無有效研究**，且計畫狀態為 conditional ＞ wait_stabilize（不研究更遠的標的），同級以「比自己一年常態便宜」排序，每天最多 3 檔（省 token）。ETF 依 ETF 規則，不需個股研究。
+- 選股（無 LLM）：由上面的 Wake Engine 決定，同級以「比自己一年常態便宜」排序，每天最多 3 檔。ETF 依 ETF 規則，不需個股研究。
 - 模型：透過共用 Runtime 的 `integrations/research_cli.py`（Anthropic claude-sonnet-5），使用**獨立帳本** `.runtime/stock-research.sqlite3`，每日上限 12 次，不會動用 Crypto 的 48 次。每檔每天最多嘗試 2 次。
 - 提示只含本 repo 已查證的數字（收盤、估值與其說明、月線／支撐／壓力／60 日高低、近五日法人、最近一季 EPS、月營收年增）。明確禁止引入其他數字或新聞。
+- 輸出欄位對齊 STOCK_AGENT.md 第 10 節可由模型判斷的部分：description、thesis、why_now、**why_not**、**next_trigger**、catalysts、risks、invalidation。DECISION／ENTRY ZONE／IDEAL LIMIT／TARGET／價格失效條件由 Python 規則提供，不花 token。
 - 回覆驗證：欄位與字數、清單數量（多的截斷、少的退回）、**數字必須來自提供的事實**（允許四捨五入與由事實推導的比率，否則以 `unverified_numbers` 退回）。過長文字在句號處截斷，不浪費已付費的呼叫。
 - 寫入 `research_detail`（含 `research_mode=llm-v1`、provider／model、成本估算、facts_used），效期 21 天。`researched()` 只決定要不要顯示深度內容，不影響推薦。
 - 實測：每檔成本估算約 $0.031，3 檔約 $0.09／天。
