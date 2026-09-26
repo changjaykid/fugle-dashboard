@@ -48,7 +48,7 @@ def build(kind,now,store,folder):
         if len('\n'.join(lines))+len(tracked)<1700:lines.append(tracked)
     else:
         from .buy_plan import format_plans
-        return format_plans(store,now).replace('台股買進計畫｜','下週股票觀察清單｜').replace('08:50 再確認當日行情','下個交易日 08:50 再確認行情')
+        return format_plans(store,now).replace('台股買進計畫｜','下週股票觀察清單｜').replace('08:55 再確認當日行情','下個交易日 08:55 再確認行情')
     lines.append('完整資料：https://changjaykid.github.io/fugle-dashboard/')
     text='\n'.join(lines)
     if len(text)>1900:raise ValueError('Report too long')

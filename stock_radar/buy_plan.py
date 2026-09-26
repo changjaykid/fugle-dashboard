@@ -90,7 +90,7 @@ def format_plans(s,now):
     ready=sorted([x for x in pairs if x[1]['status']=='conditional'],key=cheap)
     stocks=[x for x in ready if x[0]['kind']=='stock'][:5];etfs=[x for x in ready if x[0]['kind']!='stock'][:3]
     wait=sorted([x for x in pairs if x[1]['status']=='wait_stabilize'],key=cheap)
-    lines=['台股買進計畫｜'+now.strftime('%Y-%m-%d'),'以最近完成交易日收盤規劃；08:50 再確認當日行情。']
+    lines=['台股買進計畫｜'+now.strftime('%Y-%m-%d'),'以最近完成交易日收盤規劃；08:55 再確認當日行情。']
     def block(n,i,p):
         r=s.fact(i['symbol'],'research_detail') or {}
         out=['',f"{'①②③④⑤'[n-1]} {i['name']} {i['symbol']}｜承接 {p['entry']:g} 元／最高 {p['buy_max']:g} 元",f"價位：{_why(s.active(i['symbol']),p['entry'])}"]

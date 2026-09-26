@@ -107,8 +107,8 @@ def send_message(bot_token: str, text: str, *, channel_id: str = DISCORD_CHANNEL
 def edit_message(bot_token: str, message_id: str, text: str, *, channel_id: str = DISCORD_CHANNEL,
                  session=None, timeout=15) -> dict:
     """Replaces the content of one already-sent message. The morning report is a single message per
-    trading day: the 08:50 send is what reaches the phone, and the 08:55 recheck edits it in place so
-    the channel never holds two contradictory versions. Same no-ping lock as send_message."""
+    trading day, sent by the 08:55 run; this exists so a later correction replaces it rather than
+    posting a second, contradictory version. Same no-ping lock as send_message."""
     import requests
     http = session or requests
     resp = http.patch(f'{API_BASE}/channels/{channel_id}/messages/{message_id}',

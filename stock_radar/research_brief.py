@@ -96,7 +96,7 @@ def fit(lines,limit=1900):
     return text[:limit]
 
 def morning(s,radar,now):
-    """08:50 message: one message a trading day, the answer in the first two lines, detail on the site."""
+    """The 08:55 message: the one message of the trading day, answer in the first two lines, detail on the site."""
     from .discord import _revalidate_signal
     from .buy_plan import store_plan
     from .market_scan import discount
