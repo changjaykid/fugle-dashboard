@@ -76,7 +76,7 @@ class ResearchTests(Fixture):
         self.assertEqual(self.s.fact('3706','research_detail'),{})
 
     def test_reply_breaking_length_or_count_limits_is_rejected(self):
-        for bad in (dict(REPLY,risks=['只有一項風險']),dict(REPLY,description='這段公司介紹寫得太長了'*5),dict(REPLY,thesis='太短')):
+        for bad in (dict(REPLY,risks=['只有一項風險']),dict(REPLY,thesis='太短')):
             self.s.set_meta('stock_research_attempts',{})  # each case is its own day's first attempt
             reply={'status':'ok','text':json.dumps(bad,ensure_ascii=False),'usage':[{}]}
             result=rl.run(self.s,NOW,caller=self.caller(reply))
@@ -91,6 +91,14 @@ class ResearchTests(Fixture):
         self.assertEqual(len(ids),rl.ATTEMPTS)
         self.assertEqual(ids,['stock-research:3706:20260929:1','stock-research:3706:20260929:2'])
         self.assertEqual(rl.run(self.s,NOW,caller=failing)[0][1],'skipped')
+
+    def test_overlong_text_is_trimmed_at_a_sentence_not_rejected(self):
+        long_thesis='本益比 14.3 低於一年常態 17.4。'*40
+        reply={'status':'ok','text':json.dumps(dict(REPLY,thesis=long_thesis),ensure_ascii=False),'usage':[{}]}
+        self.assertEqual(rl.run(self.s,NOW,caller=self.caller(reply))[0][1],'researched')
+        stored=self.s.fact('3706','research_detail')['thesis']
+        self.assertLessEqual(len(stored),rl.LIMITS['thesis'][1])
+        self.assertTrue(stored.endswith('。'))
 
     def test_schema_uses_only_keywords_the_provider_accepts(self):
         text=json.dumps(rl.SCHEMA)
