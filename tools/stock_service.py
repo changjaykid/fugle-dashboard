@@ -62,6 +62,10 @@ def main():
             run([PY,'-m','stock_radar.market','--db',str(D/'prod.db')])
             run([PY,'-m','stock_radar.market_scan','--db',str(D/'prod.db')])
             track(['evaluate'])
+            # Once a day, after the close scan: research the symbols the scan says are worth researching,
+            # so tomorrow's recommendations have a reason attached. Model access goes through the shared
+            # runtime's budgeted CLI; a failure here must never block the site or the report.
+            if a.task=='close':secondary([PY,'-m','stock_radar.research_llm','--db',str(D/'prod.db')],'research')
             run(cli+['export','--out','docs/radar.json','--mode','live'])
             run([PY,'-m','stock_radar.daily_report','--db',str(D/'prod.db'),'--out','docs/research-summary.json'])
             run(cli+['backup','--out',str(D/('backup-'+now.strftime('%Y%m%d-%H%M%S')+'.db'))])
