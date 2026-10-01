@@ -237,8 +237,8 @@
     // something is covering it.
     data=null;selected=null;
     ['stats','rows','candidates','research-cards','health','paper-head','paper-stats','paper-open',
-     'paper-closed','verdict'].forEach(id=>{const n=$(id);if(n)n.innerHTML='';});
-    $('paper-section').hidden=true;
+     'paper-closed','verdict','v1-picks','v1-waits','v1-tally'].forEach(id=>{const n=$(id);if(n)n.innerHTML='';});
+    $('paper-section').hidden=true;$('v1-section').hidden=true;
     if($('detail').open)$('detail').close();
     $('lock').hidden=false;document.querySelector('main').hidden=true;
     const err=$('lock-error');
@@ -259,6 +259,40 @@
     if(!rows.length)return '';
     return `<div class="paper-scroll"><table class="paper-table"><thead><tr>${head.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
   }
+  // --- Strategy v1 -------------------------------------------------------------------------------
+  // What selects now. The valuation band below is kept as context -- knowing what a stock is worth is
+  // useful -- but it is no longer what decides.
+  function v1() {
+    const d=data.v1, box=$('v1-section');
+    if(!d||!d.candidates){box.hidden=true;return;}
+    box.hidden=false;
+    const t=d.tally||{};
+    $('v1-stamp').textContent=`${d.day} 收盤掃描｜下單門檻 ${d.min_score} 分`;
+    const kind=x=>x==='breakout'?'突破':'回檔';
+    if(d.candidates.length){
+      $('v1-picks').innerHTML=`<div class="paper-scroll"><table class="paper-table"><thead><tr>`+
+        ['標的','型態','分數','進場','停損','目標','風報比','失效點'].map(h=>`<th>${esc(h)}</th>`).join('')+
+        `</tr></thead><tbody>`+d.candidates.map(c=>
+          `<tr><td>${esc(c.name)} ${esc(c.symbol)}</td><td>${esc(kind(c.setup))}</td>`+
+          `<td>${c.total.toFixed(0)} <span class="paper-tag">${esc(c.grade)}</span></td>`+
+          `<td>${c.entry}</td><td>${c.stop}</td><td>${c.target}</td>`+
+          `<td>${c.rr.toFixed(1)}</td><td>${esc(c.stop_reason||'')}</td></tr>`).join('')+
+        `</tbody></table></div>`;
+    } else {
+      $('v1-picks').innerHTML='<p class="muted">今天沒有標的同時通過選股、進場與風報比，不交易。</p>';
+    }
+    const waits=(d.waits||[]).slice(0,8);
+    $('v1-waits').innerHTML=waits.length
+      ? `<h3 class="paper-sub">分數夠高但不下單</h3><div class="paper-scroll"><table class="paper-table"><thead><tr>`+
+        ['標的','型態','分數','不下單的理由'].map(h=>`<th>${esc(h)}</th>`).join('')+`</tr></thead><tbody>`+
+        waits.map(c=>`<tr><td>${esc(c.name)} ${esc(c.symbol)}</td><td>${esc(kind(c.setup))}</td>`+
+          `<td>${c.total.toFixed(0)}</td><td style="text-align:left">${esc(c.wait_reason||'')}</td></tr>`).join('')+
+        `</tbody></table></div>`
+      : '';
+    $('v1-tally').textContent=`掃描上市普通股 ${t.universe||0} 檔：硬性排除 ${t.filtered||0}、無型態 ${t.no_setup||0}、`+
+      `突破 ${t.breakout||0}、回檔 ${t.pullback||0}。選股與進場分開判斷：分數高不代表現在能買。`;
+  }
+
   function paper() {
     const p=data.paper;
     const section=$('paper-section');
@@ -318,7 +352,7 @@
       industryOptions();
       $('last-scan').textContent=`最後掃描 ${clockText(data.generated_at)}`;
       $('market-date').textContent=`${new Date().toLocaleDateString('zh-TW',{timeZone:'Asia/Taipei'})} · 台北`;
-      render();system();paper();if(selected&&$('detail').open)openDetail(selected);
+      render();system();v1();paper();if(selected&&$('detail').open)openDetail(selected);
     } catch(e) {
       loadError=e.message;
       if(data)render();
@@ -337,7 +371,7 @@
   $('clear-filters').addEventListener('click',()=>{scope='all';$('search').value='';$('status').value='all';$('industry').value='all';document.querySelector('[data-kind="stock"]').click();});
   $('close-detail').addEventListener('click',()=>$('detail').close());
   $('detail').addEventListener('close',()=>{selected=null;});
-  setInterval(()=>{if(data){render();paper();if(selected&&$('detail').open)openDetail(selected);}},30000);
+  setInterval(()=>{if(data){render();v1();paper();if(selected&&$('detail').open)openDetail(selected);}},30000);
   $('lock-form').addEventListener('submit',async e=>{
     e.preventDefault();
     const password=$('lock-input').value;
@@ -351,7 +385,7 @@
       $('last-scan').textContent=`最後掃描 ${clockText(data.generated_at)}`;
       $('market-date').textContent=`${new Date().toLocaleDateString('zh-TW',{timeZone:'Asia/Taipei'})} · 台北`;
       $('notice').hidden=true;
-      render();system();paper();
+      render();system();v1();paper();
       setInterval(load,60000);
     }catch(err){
       $('lock-go').textContent='解鎖';
