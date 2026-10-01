@@ -20,17 +20,29 @@ STOCK_SLOTS,ETF_SLOTS=20,6  # Discord shows 5 stocks and 3 ETFs; the rest is hea
 def _roc(ds):
     d=date.fromisoformat(ds);return f"{d.year-1911}年{d.month:02d}月{d.day:02d}日"
 
-def technical(sym,prices,flows):
-    """Same structure the buy plan reads for watched stocks, built from full-market history."""
+def structure(sym,prices):
+    """The price-only half of the structure: levels that need no institutional flow data.
+
+    Split out from technical() so the backtest reads exactly the same levels production does. The flow
+    cache holds ten days, so a backtest over stored history cannot have flows -- but it must not compute
+    its supports differently either, or it stops predicting the thing it is meant to predict."""
     bars=[(d,rows[sym]) for d,rows in prices[-60:] if sym in rows]
     if len(bars)<20 or bars[-1][0]!=prices[-1][0]:return None
     lo=[b[2] for _,b in bars];hi=[b[1] for _,b in bars];cl=[b[3] for _,b in bars];ma=statistics.mean(cl[-20:])
     supports=sorted(set([min(lo[-20:])]+[lo[k] for k in range(max(1,len(bars)-20),len(bars)-1) if lo[k]<=lo[k-1] and lo[k]<lo[k+1]]))
+    return {'as_of':bars[-1][0],'ma20':round(ma,2),'support':min(lo[-20:]),'resistance':max(hi[-20:]),
+            'low_60d':min(lo),'high_60d':max(hi),'supports':supports,'close':cl[-1],'below_ma20':cl[-1]<ma}
+
+def technical(sym,prices,flows):
+    """Same structure the buy plan reads for watched stocks, built from full-market history."""
+    base=structure(sym,prices)
+    if not base:return None
     days=[(d,rows.get(sym,[0,0])) for d,rows in flows[-5:]]
-    if len(days)<5 or days[-1][0]!=bars[-1][0]:return None
+    if len(days)<5 or days[-1][0]!=base['as_of']:return None
     foreign=sum(f[0] for _,f in days);trust=sum(f[1] for _,f in days)
-    return {'as_of':bars[-1][0],'flow_as_of':days[-1][0],'flow_start':days[0][0],'ma20':round(ma,2),'support':min(lo[-20:]),'resistance':max(hi[-20:]),
-            'low_60d':min(lo),'high_60d':max(hi),'supports':supports,'requires_stabilization':cl[-1]<ma and foreign+trust<0,
+    return {**{k:v for k,v in base.items() if k not in ('close','below_ma20')},
+            'flow_as_of':days[-1][0],'flow_start':days[0][0],
+            'requires_stabilization':base['below_ma20'] and foreign+trust<0,
             'foreign_5d_lots':round(foreign,3),'trust_5d_lots':round(trust,3)}
 
 def stock_valuation(inst,close,fin,ratios):

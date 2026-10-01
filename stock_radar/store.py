@@ -40,6 +40,13 @@ CREATE TABLE IF NOT EXISTS reviews(id TEXT PRIMARY KEY, symbol TEXT, at TEXT, re
 CREATE TABLE IF NOT EXISTS metadata(key TEXT PRIMARY KEY, payload TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS recommendations(id TEXT PRIMARY KEY, day TEXT NOT NULL, symbol TEXT NOT NULL, payload TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS market_days(day TEXT NOT NULL, kind TEXT NOT NULL, payload TEXT NOT NULL, PRIMARY KEY(day,kind));
+-- Simulated trading. Every buy, every sell and every completed round trip, each with the day it
+-- happened on, so the record can be read back as "what did it trade, when, and what did that cost".
+-- `side` is 'buy', 'sell' or 'closed'; a 'closed' row is the pair, carrying the realised result.
+CREATE TABLE IF NOT EXISTS paper_trades(id TEXT PRIMARY KEY, at TEXT NOT NULL, day TEXT NOT NULL,
+ symbol TEXT NOT NULL, side TEXT NOT NULL, payload TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS paper_positions(symbol TEXT PRIMARY KEY, payload TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS paper_trades_day ON paper_trades(day);
 '''
 
 
