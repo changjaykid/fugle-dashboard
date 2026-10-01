@@ -88,12 +88,12 @@ class Book:
             'cost_in': charge['cash'], 'entry_fee': charge['fee'],
             'stop': (plan or {}).get('stop'), 'target': (plan or {}).get('target'),
             'stop_now': (plan or {}).get('stop'), 'mark': price, 'mark_day': day,
-            'order_type': 'lot' if shares % 1000 == 0 else 'odd_lot', 'plan': plan or {}}
+            'order_type': charge['order_type'], 'orders': charge['orders'], 'plan': plan or {}}
         self.trades.append({
             'id': uuid.uuid4().hex, 'at': at, 'day': day, 'symbol': symbol, 'name': name,
             'side': 'buy', 'shares': shares, 'price': price, 'value': charge['value'],
             'fee': charge['fee'], 'tax': 0.0, 'cash': -charge['cash'],
-            'order_type': 'lot' if shares % 1000 == 0 else 'odd_lot',
+            'order_type': charge['order_type'], 'orders': charge['orders'],
             'stop': (plan or {}).get('stop'), 'target': (plan or {}).get('target'),
             'cash_after': self.cash})
         return self.positions[symbol]
@@ -119,7 +119,8 @@ class Book:
             'id': uuid.uuid4().hex, 'at': at, 'day': day, 'symbol': symbol,
             'name': position['name'], 'side': 'sell', 'shares': shares, 'price': price,
             'value': proceeds['value'], 'fee': proceeds['fee'], 'tax': proceeds['tax'],
-            'cash': proceeds['cash'], 'order_type': position['order_type'], 'reason': reason,
+            'cash': proceeds['cash'], 'order_type': proceeds['order_type'],
+            'orders': proceeds['orders'], 'reason': reason,
             'profit': trip['profit'], 'return_pct': trip['return_pct'],
             'settles_on': release_day, 'cash_after': self.cash})
         return record

@@ -9,7 +9,7 @@ from .domain import TW
 
 
 def build_radar_json(*, instruments, quotes, decisions, valuations, research,
-                     health, mode='live', now=None) -> dict:
+                     health, mode='live', now=None, paper=None) -> dict:
     """
     instruments: list of universe dicts (symbol/name/kind/market/...)
     quotes: {symbol: quote_dict or None}
@@ -144,4 +144,8 @@ def build_radar_json(*, instruments, quotes, decisions, valuations, research,
         },
         'health': health,
         'items': items,
+        # The simulated account. Absent when it has not been started. tools/public_export.py removes
+        # this before anything reaches the public page: it is the user's own account record, and whether
+        # it is published is their decision, not a side effect of the export running.
+        'paper': paper,
     }

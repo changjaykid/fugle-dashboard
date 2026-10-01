@@ -136,7 +136,8 @@ def orders_from(picks, settings):
     return out
 
 
-def run(store, settings=None, from_index=None, verbose=False, data=None, picks=None):
+def run(store, settings=None, from_index=None, verbose=False, data=None, picks=None,
+        source='replay', to_index=None):
     settings = {**strategy.SETTINGS, **(settings or {})}
     data = data or inputs(store)
     days = data['days']
@@ -145,7 +146,10 @@ def run(store, settings=None, from_index=None, verbose=False, data=None, picks=N
     picks = picks if picks is not None else scan(data, start)
     book = paper.Book(settings.get('starting_cash', 100000), started_day=days[start])
     orders, log = [], []
-    for k in range(start, len(days)):
+    # `to_index` lets the replay stop short of the newest bar, so the live driver has a day left to
+    # advance against real data -- which is the only way to test the live path end to end.
+    stop = len(days) if to_index is None else min(to_index + 1, len(days))
+    for k in range(start, stop):
         day = days[k]
         bars = data['prices'][k][1]
         at = f'{day}T13:30:00+08:00'
@@ -169,11 +173,14 @@ def run(store, settings=None, from_index=None, verbose=False, data=None, picks=N
             shares, why = strategy.size_for(book.equity(), book.available(), fill, order['stop'], settings)
             if not shares:
                 continue
-            book.buy(order['symbol'], order['name'], order['kind'], shares, fill, day, at,
-                     plan={'stop': order['stop'], 'target': order['target'],
-                           'support': order['support'], 'fair': order['fair'],
-                           'r_multiple': order['r_multiple'], 'band': order['band']},
-                     entry_index=k)
+            position = book.buy(order['symbol'], order['name'], order['kind'], shares, fill, day, at,
+                                plan={'stop': order['stop'], 'target': order['target'],
+                                      'support': order['support'], 'fair': order['fair'],
+                                      'r_multiple': order['r_multiple'], 'band': order['band'],
+                                      'exit_mode': order.get('exit_mode')},
+                                entry_index=k)
+            position['source'] = source
+            book.trades[-1]['source'] = source
             log.append((day, 'buy', order['symbol'], fill, shares))
         orders = []
 
@@ -184,20 +191,22 @@ def run(store, settings=None, from_index=None, verbose=False, data=None, picks=N
                 continue
             position = book.positions[symbol]
             position['stop_now'] = strategy.ratchet(position, bar, settings)
-            leave = strategy.exit_check(position, bar, k, settings)
+            leave = strategy.exit_check(position, bar, k - position['entry_index'], settings)
             if leave:
                 release = days[min(k + paper.SETTLEMENT_DAYS, len(days) - 1)]
                 record = book.sell(symbol, leave['price'], day, at, leave['reason'],
                                    release_day=release, exit_index=k)
+                record['source'] = source
+                book.trades[-1]['source'] = source
                 log.append((day, 'sell:' + leave['reason'], symbol, leave['price'], record['profit']))
 
         # 3. Mark, then build tomorrow's list.
         book.mark(bars, day)
-        if len(book.positions) < settings['max_positions'] and k + 1 < len(days):
+        if len(book.positions) < settings['max_positions'] and k + 1 < stop:
             orders = orders_from(picks.get(k, []), settings)
         if verbose and (k - start) % 20 == 0:
             print(f'  {day}  淨值 {book.net_equity():,.0f}  持倉 {len(book.positions)}  已結 {len(book.closed)}')
-    return book, log, days[start], days[-1]
+    return book, log, days[start], days[stop - 1]
 
 
 def report(book, first, last, settings):

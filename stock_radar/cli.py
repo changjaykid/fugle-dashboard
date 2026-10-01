@@ -514,9 +514,27 @@ def cmd_export(args):
             }
         if not any(quotes.values()):
             health.append({'name': '報價', 'status': 'blocked', 'detail': '尚無任何已同步報價', 'as_of': None})
+        paper_state = None
+        if store.meta('paper_runner'):
+            from .paper import Book, performance
+            from . import paper_runner
+            book = Book.load(store)
+            if book:
+                paper_state = {
+                    'started_day': book.started_day,
+                    'settings': (store.meta('paper_runner') or {}).get('settings'),
+                    'strategy_version': (store.meta('paper_runner') or {}).get('strategy_version'),
+                    'seeded_from': (store.meta('paper_runner') or {}).get('seeded_from'),
+                    'performance': performance(book),
+                    'benchmark': paper_runner.benchmark(store, book.started_day),
+                    'positions': list(book.positions.values()),
+                    'unrealised': book.unrealised(),
+                    'trades': book.trades,
+                    'closed': book.closed,
+                }
         out = build_radar_json(instruments=target, quotes=quotes, decisions=decisions,
                                valuations=valuations, research=research, health=health,
-                               mode=args.mode, now=now)
+                               mode=args.mode, now=now, paper=paper_state)
         # Self-check the payload we're about to publish BEFORE writing it,
         # using the exact same verify_radar.verify() gate a human would run
         # manually -- catches a schema/contract regression at export time

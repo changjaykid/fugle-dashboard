@@ -98,6 +98,11 @@ def main():
             print(run([PY,'-m','stock_radar.intraday','--db',str(D/'prod.db'),'--send']).strip())
         elif a.task in ('weekly','outlook'):
             run([PY,'-m','stock_radar.weekend',a.task,'--send'])
+            # One model call a week, on Saturday, to argue about the rules the account traded. It can
+            # only propose: applying a proposal is a human editing strategy.SETTINGS.
+            if a.task=='weekly':
+                secondary([PY,'-m','stock_radar.strategy_review','--db',str(D/'prod.db'),'--send'],
+                          'strategy_review')
         elif a.task in ('refresh','close'):
             sys.path.insert(0,str(R))
             from stock_radar.store import Store as _Store
@@ -129,6 +134,11 @@ def main():
                 ran=ran or (told.exists() and json.loads(told.read_text()).get('date')==str(now.date()))
                 if not ran:alert(f"台股系統｜{now:%m/%d %H:%M}\n【系統異常】今天是交易日，但沒有送出盤前建議（08:55 未執行或發送失敗）。請檢查舊 Mac 的排程。\nhttps://changjaykid.github.io/fugle-dashboard/")
                 secondary([PY,'-m','stock_radar.research_llm','--db',str(D/'prod.db')],'research')
+                # The simulated account advances on closing bars, before the review that reports it.
+                # It is secondary: a failure here must not cost the day's review, and the status line
+                # now says when it happened.
+                secondary([PY,'-m','stock_radar.paper_runner','--db',str(D/'prod.db'),
+                           '--out',str(D/'paper-latest.json')],'paper_runner')
                 secondary([PY,'-m','stock_radar.close_review','--db',str(D/'prod.db'),'--send'],'close_review')
                 # A researched price that lapses needs a person, and nothing else would say so: the
                 # screen only takes over after the grace window, and until then the symbol is invisible.

@@ -63,6 +63,25 @@ def text(summary):
     lines.append('當日漲跌不代表這些判斷長期正確；5／20／60 日成效仍以追蹤紀錄為準。')
     return '\n'.join(lines)
 
+
+def paper_section(day, folder=None):
+    """The simulated account's own day, appended to the close review rather than sent separately.
+
+    One message a day was the whole point of the 08:55 rework; the account's result is part of the same
+    answer, not a second notification. Stale or missing output is skipped silently -- paper_runner runs
+    as a secondary step and its failure is already reported by the service's own status line."""
+    folder = folder or (Path.home() / 'kid-agent-data/stock-radar')
+    path = folder / 'paper-latest.json'
+    if not path.is_file():
+        return []
+    try:
+        body = json.loads(path.read_text())
+    except (ValueError, OSError):
+        return []
+    if body.get('day') != day or body.get('status') != 'ok' or not body.get('text'):
+        return []
+    return ['', body['text']]
+
 def run(s,now,send=False):
     from .buy_plan import last_completed_day
     day=str(last_completed_day(now,s.meta('trading_calendar')))
@@ -71,6 +90,12 @@ def run(s,now,send=False):
     s.set_meta('close_review',{'at':now.isoformat(),**{k:v for k,v in summary.items() if k!='missed'},
                                'missed':[x['symbol'] for x in summary['missed']]})
     body=text(summary)
+    extra=paper_section(day)
+    if extra:
+        candidate='\n'.join([body]+extra)
+        # Discord takes one message; the review is the answer and the account is the detail, so the
+        # account is what gets dropped if the two together do not fit.
+        if len(candidate)<=1900:body=candidate
     if send:
         from .cli import _bot_token,_send_with_outbox
         from .discord import channel_for

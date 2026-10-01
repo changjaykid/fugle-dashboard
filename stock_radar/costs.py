@@ -28,9 +28,33 @@ TAX_RATE = {'stock': 0.003, 'etf_equity': 0.001, 'etf_other': 0.001}
 MIN_ORDER_VALUE = round(FEE_FLOOR / (FEE_RATE * FEE_DISCOUNT), 2)
 
 
+LOT = 1000
+
+
 def fee(value, discount=FEE_DISCOUNT, floor=FEE_FLOOR):
-    """Brokerage on one side. Taiwan brokers truncate to the dollar, so this does too."""
+    """Brokerage on ONE order. Taiwan brokers truncate to the dollar, so this does too."""
     return max(float(floor), float(int(value * FEE_RATE * discount)))
+
+
+def order_split(shares):
+    """The orders a share count really becomes. Round lots and odd lots trade in separate books.
+
+    2,034 shares is not one order: it is two round lots and 34 odd shares, placed separately, and the
+    NT$20 floor applies to each. The 34-share tail of a NT$10 stock is NT$340 of stock paying NT$20 of
+    fee, which is 5.9% -- so this is not a labelling detail, it is the difference between a position that
+    can pay for itself and one that cannot."""
+    lots, odd = divmod(int(shares), LOT)
+    return [n for n in (lots * LOT, odd) if n]
+
+
+def fee_for(shares, price, **kw):
+    """Brokerage for a position of `shares`, across however many orders that really is."""
+    return sum(fee(n * price, **kw) for n in order_split(shares))
+
+
+def order_type(shares):
+    lots, odd = divmod(int(shares), LOT)
+    return 'lot' if lots and not odd else 'odd_lot' if odd and not lots else 'mixed'
 
 
 def tax(value, kind):
@@ -42,15 +66,17 @@ def tax(value, kind):
 def buy_cost(shares, price, **kw):
     """Cash leaving the account to acquire `shares`: consideration plus fee. No tax on the buy side."""
     value = shares * price
-    return {'value': round(value, 2), 'fee': fee(value, **kw), 'tax': 0.0,
-            'cash': round(value + fee(value, **kw), 2)}
+    f = fee_for(shares, price, **kw)
+    return {'value': round(value, 2), 'fee': f, 'tax': 0.0, 'cash': round(value + f, 2),
+            'orders': order_split(shares), 'order_type': order_type(shares)}
 
 
 def sell_cost(shares, price, kind, **kw):
     """Cash arriving: consideration less fee and transaction tax."""
     value = shares * price
-    f, t = fee(value, **kw), tax(value, kind)
-    return {'value': round(value, 2), 'fee': f, 'tax': t, 'cash': round(value - f - t, 2)}
+    f, t = fee_for(shares, price, **kw), tax(value, kind)
+    return {'value': round(value, 2), 'fee': f, 'tax': t, 'cash': round(value - f - t, 2),
+            'orders': order_split(shares), 'order_type': order_type(shares)}
 
 
 def round_trip(shares, entry, exit_price, kind, **kw):
@@ -63,12 +89,15 @@ def round_trip(shares, entry, exit_price, kind, **kw):
             'gross_pct': round((exit_price / entry - 1) * 100, 4)}
 
 
-def rate_at(value, kind='stock', **kw):
-    """The real round-trip cost of an order of this size, as a percentage. Used for sizing, and for
-    saying why an order was refused rather than silently placing one that cannot win."""
+def rate_at(value, kind='stock', shares=None, **kw):
+    """The real round-trip cost of a position of this size, as a percentage. Used for sizing, and for
+    saying why an order was refused rather than silently placing one that cannot win.
+
+    Given `shares` it accounts for the position really being two orders; without it, it assumes one."""
     if value <= 0:
         return float('inf')
-    return round((fee(value, **kw) * 2 + tax(value, kind)) / value * 100, 4)
+    charge = (fee_for(shares, value / shares, **kw) if shares else fee(value, **kw)) * 2
+    return round((charge + tax(value, kind)) / value * 100, 4)
 
 
 def breakeven_move(value, kind='stock', **kw):

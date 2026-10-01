@@ -13,6 +13,18 @@ class CostTests(unittest.TestCase):
         self.assertGreater(costs.rate_at(5000), costs.rate_at(50000))
         self.assertAlmostEqual(costs.MIN_ORDER_VALUE, 20 / 0.001425, places=1)
 
+    def test_a_position_above_one_lot_is_two_orders_and_pays_two_floors(self):
+        # Round lots and odd lots trade in separate books, so 2,034 shares is 2,000 + 34.
+        self.assertEqual(costs.order_split(2034), [2000, 34])
+        self.assertEqual(costs.order_split(1000), [1000])
+        self.assertEqual(costs.order_split(34), [34])
+        self.assertEqual(costs.order_type(2034), 'mixed')
+        self.assertEqual(costs.order_type(2000), 'lot')
+        self.assertEqual(costs.order_type(34), 'odd_lot')
+        # The 34-share tail of a NT$10 stock is NT$340 of stock paying its own NT$20 floor.
+        self.assertEqual(costs.fee_for(2034, 10), costs.fee(20000) + 20.0)
+        self.assertGreater(costs.fee_for(2034, 10), costs.fee(20340))
+
     def test_tax_is_sell_side_only_and_lower_for_etfs(self):
         self.assertEqual(costs.buy_cost(1000, 50)['tax'], 0.0)
         self.assertEqual(costs.sell_cost(1000, 50, 'stock')['tax'], float(int(50000 * 0.003)))
@@ -55,9 +67,23 @@ class StrategyTests(unittest.TestCase):
         self.assertIsNone(why)
         self.assertNotEqual(odd % 1000, 0)
         self.assertGreater(odd, 0)
-        none, why = strategy.size_for(100000, 3000, 100, 92)
+
+    def test_sizing_is_gated_on_the_cost_rate_not_the_order_value(self):
+        # A NT$10 stock sizes to a mixed order. Keeping the tail costs about the same rate as dropping it
+        # and buys far more position, so the exact count is what gets placed.
+        shares, why = strategy.size_for(100000, 100000, 10, 9.2)
+        self.assertIsNone(why)
+        self.assertGreater(shares, costs.LOT)
+        self.assertLessEqual(costs.rate_at(shares * 10, 'stock', shares=shares),
+                             strategy.SETTINGS['max_cost_rate'] * 100)
+        # Under one lot there is no tail: the odd lot is the position and stays exact.
+        odd, why = strategy.size_for(100000, 100000, 600, 552)
+        self.assertIsNone(why)
+        self.assertLess(odd, costs.LOT)
+        # Too little cash to clear the ceiling at all: refused, and the reason names the rate.
+        none, why = strategy.size_for(100000, 2500, 100, 92)
         self.assertEqual(none, 0)
-        self.assertIn('低於', why)
+        self.assertIn('來回成本', why)
 
     def test_a_bar_spanning_both_levels_is_resolved_as_a_stop(self):
         position = {'entry': 100, 'stop': 92, 'stop_now': 92, 'target': 112, 'entry_index': 0,

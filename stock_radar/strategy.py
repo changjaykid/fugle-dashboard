@@ -46,14 +46,23 @@ SETTINGS = {
     # cut down until it does not. At the measured median stop (4.22%) a 20% position risks 0.84%, so
     # this binds only on the wide-stop tail rather than on ordinary entries.
     'max_risk_fraction': 0.015,
+    # The most a position may pay to get in and out again. At a 1.5R target on an 8% stop the trade is
+    # playing for a 12% move, and even a coin-flip win rate on that is about +2% a trade gross, so a 1%
+    # round trip takes half of it -- that is the limit of what is worth placing. Below this the order is
+    # refused and the reason names the rate, rather than a value that would hide why.
+    'max_cost_rate': 0.01,
     # --- Stop -------------------------------------------------------------------------------------
     # The structural stop is the 20-day low, which is the same level buy_plan already calls `support`
     # and already treats as invalidation. These two bound it.
-    # Floor: at an 18,000 order the real round trip is 0.58%, so a 4% stop keeps costs under a seventh
-    # of the risk. Below that the fees, not the thesis, decide the outcome.
-    'min_stop_fraction': 0.04,
-    # Ceiling: wider than this and equal weight breaches max_risk_fraction, so the entry is refused
-    # rather than quietly resized into something too small to be worth placing.
+    # Floor: chosen from how far these entries actually go against you before working, measured over 872
+    # of them on 2026-10-01. Within 20 trading days the adverse excursion exceeds 4% on 40% of entries,
+    # 6% on 29%, 8% on 23%, 10% on 16% and 12% on 11%. A 4% stop is therefore hit by ordinary noise two
+    # times in five, and each hit pays the round trip. 8% is where the stop stops being an accident
+    # without becoming the whole position. This is a measurement of the entries, not of the returns.
+    'min_stop_fraction': 0.08,
+    # Ceiling: the p90 of that same 20-day adverse excursion is 12.4%. Past it the stop is wider than
+    # almost all noise, and equal weight would breach max_risk_fraction, so the entry is refused rather
+    # than quietly resized into something too small to place.
     'max_stop_fraction': 0.12,
     # --- Target -----------------------------------------------------------------------------------
     # How a position is left. This is a structural choice, not a number, and the replay over
@@ -63,8 +72,11 @@ SETTINGS = {
     #   'trail'       sell at fair, but give back no more than `trail_fraction` from the peak.
     #   'hold'        never sell. Diagnostic only: it measures the entry rule on its own.
     'exit_mode': 'target_stop',
-    # A multiple of the risk actually taken, for 'target_stop'.
-    'target_r_multiple': 2.0,
+    # A multiple of the risk actually taken, for 'target_stop'. At an 8% stop this asks for a 12% move,
+    # against a measured median distance to fair value of 33% -- so it is reachable, which larger
+    # multiples are not. The replay's best cell also sits here; that is a coincidence and not evidence,
+    # because the cell next to it (1.75) returns -1.4% on 22 trades.
+    'target_r_multiple': 1.5,
     # For 'trail': how much of the best price reached may be given back before leaving.
     'trail_fraction': 0.10,
     # The valuation's own fair value is a ceiling on the target: this agent does not forecast above it.
@@ -73,8 +85,14 @@ SETTINGS = {
     # Dead capital is a cost that no stop measures. 0 disables the time stop.
     'max_holding_days': 60,
     # Once a position has gained this much, the stop moves up to the entry plus its round-trip cost, so
-    # a winner cannot become a loser. 0 disables it.
-    'breakeven_after_gain': 0.08,
+    # a winner cannot become a loser. Off: across the 108-cell replay, 0.08 was actively worse than
+    # either neighbour (median +2.54% against +7.40% off and +8.61% at 0.15), and off is
+    # indistinguishable from 0.15, so the ratchet earns nothing and costs a moving part.
+    'breakeven_after_gain': 0,
+    # Starting capital for the simulated account. The user's first real deposit is NT$100,000, so the
+    # simulation runs the same size: a strategy that only works at a size you will not fund is not a
+    # result. Every other size in this file is a fraction of current equity, so the account scales.
+    'starting_cash': 100000,
 }
 
 
@@ -138,7 +156,7 @@ def plan_for(entry, support, fair=None, settings=None):
             'target_capped_at_fair': target['capped_at_fair'], 'exit_mode': s['exit_mode']}, None
 
 
-def size_for(equity, cash, entry, stop_price, settings=None):
+def size_for(equity, cash, entry, stop_price, settings=None, kind='stock'):
     """Shares to buy, or 0 with the reason none can be.
 
     Equal weight, reduced to respect the risk ceiling, clipped to the cash actually available, and
@@ -164,14 +182,23 @@ def size_for(equity, cash, entry, stop_price, settings=None):
         shares -= 1
     if shares < 1:
         return 0, f"現金 {cash:,.0f} 元不足一股"
-    value = shares * entry
-    if value < costs.MIN_ORDER_VALUE:
-        return 0, (f"下單金額 {value:,.0f} 元低於 {costs.MIN_ORDER_VALUE:,.0f} 元，"
-                   f"手續費低標會讓來回成本變成 {costs.rate_at(value):.2f}%")
-    return shares, None
+    # The test is the round-trip cost RATE, not the order value, because a position above one lot is two
+    # orders and pays the NT$20 floor twice. 1,875 shares of a NT$10 stock costs 0.73% and buys NT$18,750;
+    # dropping the 875-share tail to make it one order costs 0.70% and buys NT$10,000 -- nearly the same
+    # rate for 47% less position, so the value test would have chosen worse. Whole lots are tried only as
+    # a fallback, and if neither clears the ceiling the entry is refused with the rate that failed.
+    lots, odd = divmod(shares, costs.LOT)
+    ceiling = s['max_cost_rate'] * 100
+    for count in [shares] + ([lots * costs.LOT] if lots and odd else []):
+        rate = costs.rate_at(count * entry, kind, shares=count)
+        if rate <= ceiling:
+            return count, None
+    worst = costs.rate_at(shares * entry, kind, shares=shares)
+    return 0, (f"下單 {shares} 股（{shares * entry:,.0f} 元）來回成本 {worst:.2f}%，"
+               f"超過上限 {ceiling:.2f}%；手續費低標 {costs.FEE_FLOOR:.0f} 元在這個金額下決定一切")
 
 
-def exit_check(position, bar, day_index, settings=None):
+def exit_check(position, bar, held_days, settings=None):
     """Why this position should be closed today, or None to hold. Checked against one day's own bar.
 
     Order matters and is deliberately pessimistic: when a bar spans both the stop and the target there
@@ -190,10 +217,11 @@ def exit_check(position, bar, day_index, settings=None):
     if target and high >= target:
         return {'reason': 'target', 'price': max(target, bar[0]),
                 'why': f"達到目標 {target:g}"}
-    held = day_index - position['entry_index']
-    if s['max_holding_days'] and held >= s['max_holding_days']:
+    # Trading days, counted from the calendar rather than an index into a rolling cache: the live
+    # account outlives the 250-day price cache, so a position's age cannot be a cache offset.
+    if s['max_holding_days'] and held_days is not None and held_days >= s['max_holding_days']:
         return {'reason': 'time', 'price': bar[3],
-                'why': f"持有 {held} 個交易日未達目標也未停損，資金另有用途"}
+                'why': f"持有 {held_days} 個交易日未達目標也未停損，資金另有用途"}
     return None
 
 
