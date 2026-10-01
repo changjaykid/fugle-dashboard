@@ -9,3 +9,30 @@
 .plan-card h3{margin:12px 0}.plan-price strong{font-size:32px;letter-spacing:-1px}.plan-card small{color:var(--muted,#666);line-height:1.6}.plan-card{border-top:3px solid #267467}
 
 #radar-section{scroll-margin-top:20px}.scope-tabs{display:flex;gap:8px;margin:18px 0}.scope-tabs button{padding:10px 20px;border:1px solid #c9d5d0;border-radius:8px;background:white;color:#304c42;cursor:pointer}.scope-tabs button[aria-pressed=true]{background:#294f43;color:white}.favorite{background:none;border:0;color:#987322;font-size:23px;padding:4px 8px;cursor:pointer}.favorite:focus-visible{outline:2px solid #294f43}.buy-reasons{background:#f1f6f2;border-radius:8px;padding:12px 16px;margin:12px 0}.buy-reasons h4{margin:0 0 8px}.buy-reasons li{line-height:1.7;margin-bottom:5px}.buy-reasons ul{padding-left:20px}.fundamentals{border:1px solid #d8e3dc;padding:16px;border-radius:10px;margin:20px 0}
+
+/* Unlock gate. The payload is AES-GCM ciphertext; nothing renders until it is opened. */
+.lock{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:var(--bg,#f7f7f8);padding:16px}
+.lock[hidden]{display:none}
+.lock-card{width:min(360px,100%);display:grid;gap:12px;padding:28px 24px;border-radius:14px;background:#fff;box-shadow:0 10px 40px rgba(0,0,0,.10);text-align:center}
+.lock-card h1{margin:0;font-size:1.05rem;letter-spacing:.14em}
+.lock-note{margin:0;font-size:.82rem;line-height:1.5;color:#5b6166}
+.lock-field input{width:100%;box-sizing:border-box;padding:11px 12px;font-size:1.05rem;text-align:center;letter-spacing:.3em;border:1px solid #d6d9dd;border-radius:9px}
+.lock-field input:focus{outline:2px solid #2d6cdf;outline-offset:1px}
+.lock-hint{margin:0;font-size:.78rem;color:#7a8189}
+.lock-card button{padding:11px 12px;font-size:.92rem;border:0;border-radius:9px;background:#1d2025;color:#fff;cursor:pointer}
+.lock-card button[disabled]{opacity:.55;cursor:progress}
+.lock-error{margin:0;font-size:.8rem;color:#b3261e}
+.lock-error[hidden]{display:none}
+/* Simulated account */
+.paper-head{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:baseline;margin:2px 0 10px}
+.paper-equity{font-size:1.5rem;font-weight:650;letter-spacing:-.01em}
+.paper-gain{font-size:1rem;font-weight:600}
+.paper-up{color:#0f7a3d}.paper-down{color:#b3261e}
+.paper-bench{font-size:.84rem;color:#5b6166}
+.paper-table{width:100%;border-collapse:collapse;margin:10px 0 4px;font-size:.84rem}
+.paper-table th,.paper-table td{padding:6px 8px;text-align:right;border-bottom:1px solid #eceef0;white-space:nowrap}
+.paper-table th:first-child,.paper-table td:first-child{text-align:left}
+.paper-table thead th{font-weight:600;color:#5b6166;border-bottom:1px solid #d6d9dd}
+.paper-sub{margin:14px 0 2px;font-size:.88rem;font-weight:600}
+.paper-tag{display:inline-block;padding:1px 6px;margin-left:6px;border-radius:5px;font-size:.7rem;background:#eef1f4;color:#5b6166}
+.paper-scroll{overflow-x:auto}

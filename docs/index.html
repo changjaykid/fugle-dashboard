@@ -8,12 +8,25 @@
 </head>
 <body>
 <header class="masthead"><a class="brand" href="./"><span class="brand-mark" aria-hidden="true">R</span><span>STOCK RADAR<small>台股・開盤前決策</small></span></a><div class="header-end"><a class="quiet" href="https://discord.com/channels/1492215198549807134/1493898877970153532" target="_blank" rel="noopener">開啟股票通知 ↗</a><span id="market-date">台北時間</span><button id="refresh" class="quiet">重新整理 <span aria-hidden="true">↻</span></button></div></header>
-<main>
+<div id="lock" class="lock" role="dialog" aria-modal="true" aria-labelledby="lock-title">
+  <form id="lock-form" class="lock-card" autocomplete="off">
+    <h1 id="lock-title">STOCK RADAR</h1>
+    <p class="lock-note">這個頁面的資料是加密的。輸入密碼才會解開。</p>
+    <label class="lock-field"><span class="sr-only">密碼</span>
+      <input id="lock-input" type="password" inputmode="numeric" placeholder="密碼" aria-describedby="lock-hint" autocomplete="new-password" autofocus>
+    </label>
+    <p id="lock-hint" class="lock-hint">提示：發發發</p>
+    <button type="submit" id="lock-go">解鎖</button>
+    <p id="lock-error" class="lock-error" role="alert" hidden></p>
+  </form>
+</div>
+<main hidden>
 <section id="verdict" class="verdict" aria-live="polite" aria-label="今天的結論"></section>
 <section class="intro"><nav class="scope-tabs" aria-label="快速查看"><button id="browse-market">全市場 ↓</button><button id="browse-favorites">我的關注 ↓</button></nav><div class="scan-stamp"><span class="dot" aria-hidden="true"></span><span id="last-scan">正在讀取掃描結果</span></div></section>
 <div id="notice" class="notice" role="status" aria-live="polite">正在讀取資料…</div>
 <section class="stats" aria-label="今日機會總覽" id="stats"></section>
 <section id="candidates-section" class="system-section" aria-labelledby="candidates-title"><h2 id="candidates-title">買進計畫</h2><div id="candidates" class="health-grid" aria-live="polite">正在檢查資料與價位…</div><a href="#radar-title">查看完整清單與四格篩選 ↓</a></section>
+<section id="paper-section" class="system-section" aria-labelledby="paper-title" hidden><div class="section-top"><div><h2 id="paper-title">模擬帳戶</h2></div><span id="paper-stamp" class="muted"></span></div><div id="paper-head" class="paper-head"></div><div id="paper-stats" class="stats"></div><div id="paper-open"></div><div id="paper-closed"></div><p id="paper-note" class="muted"></p></section>
 <section class="system-section research-section" aria-labelledby="research-title"><div class="section-top"><div><h2 id="research-title">我的關注</h2></div><span class="muted"><button id="show-my-stocks" class="quiet">在清單中查看我的關注 ↓</button></span></div><div id="research-cards" class="research-cards" aria-live="polite"></div></section>
 <section id="radar-section" class="radar-section" aria-labelledby="radar-title">
 <div class="section-top"><div><h2 id="radar-title" tabindex="-1">全市場</h2></div><span id="result-count" class="muted" aria-live="polite"></span></div>
