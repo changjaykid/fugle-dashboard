@@ -77,7 +77,7 @@ def benchmark(store, since):
             'median_pct': round(moves[len(moves) // 2] * 100, 2)}
 
 
-def advance(store, book, day, bars, orders, settings, source, schedule, data, index):
+def advance(store, book, day, bars, orders, settings, source, schedule, scan):
     """One trading day against one day's real bars. Returns what happened and tomorrow's orders."""
     at = f'{day}T13:30:00+08:00'
     out = {'day': day, 'settled': [], 'bought': [], 'sold': [], 'stale_marks': [], 'queued': []}
@@ -104,7 +104,7 @@ def advance(store, book, day, bars, orders, settings, source, schedule, data, in
         position = book.buy(order['symbol'], order['name'], order['kind'], shares, fill, day, at,
                             plan={k: order.get(k) for k in
                                   ('stop', 'target', 'support', 'fair', 'r_multiple', 'band',
-                                   'exit_mode')})
+                                   'exit_mode', 'setup', 'score')})
         position['source'] = source
         book.trades[-1]['source'] = source
         out['bought'].append({'symbol': order['symbol'], 'name': order['name'], 'shares': shares,
@@ -133,15 +133,22 @@ def advance(store, book, day, bars, orders, settings, source, schedule, data, in
                             'profit': record['profit'], 'return_pct': record['return_pct'],
                             'held_days': held})
 
-    # 3. Mark, then queue tomorrow.
+    # 3. Mark, then queue tomorrow from the Strategy v1 scan.
     out['stale_marks'] = book.mark(bars, day)
     next_orders = []
-    if len(book.positions) < settings['max_positions']:
-        next_orders = [{k: o.get(k) for k in ('symbol', 'name', 'kind', 'entry', 'stop', 'target',
-                                              'support', 'fair', 'band', 'r_multiple', 'exit_mode')}
-                       for o in backtest.orders_from(backtest.picks_on(data, index), settings)]
+    if len(book.positions) < settings['max_positions'] and scan and scan.get('day') == day:
+        # Only the scan built for THIS day. On a caught-up day there is no scan to read, and inventing
+        # orders from a later day's candidates would be reading the future into a record whose whole
+        # purpose is to be believable.
+        next_orders = [{'symbol': c['symbol'], 'name': c['name'], 'kind': 'stock',
+                        'entry': c['entry'], 'stop': c['stop'], 'target': c['target'],
+                        'support': c['stop'], 'fair': None, 'band': c['grade'],
+                        'r_multiple': c['rr'], 'exit_mode': 'structural',
+                        'setup': c['setup'], 'score': c['total']}
+                       for c in scan.get('candidates', [])][:settings['max_positions']]
         out['queued'] += [{'symbol': o['symbol'], 'name': o['name'], 'entry': o['entry'],
-                           'stop': o['stop'], 'target': o['target']} for o in next_orders]
+                           'stop': o['stop'], 'target': o['target'], 'score': o['score'],
+                           'setup': o['setup']} for o in next_orders]
     return out, next_orders
 
 
@@ -171,13 +178,16 @@ def session(store, now, settings=None, source='live'):
                 'last_day': last}
 
     book = paper.Book.load(store) or paper.Book(settings['starting_cash'], started_day=pending[0])
-    data = backtest.inputs(store)
+    # Strategy v1's scan is read only when `use_v1` is set, and it is not. It was measured at 19 of 80
+    # against random draws from its own universe, so trading it would fill the forward record with a rule
+    # already known to be worse than chance -- which is the opposite of what the record is for.
+    scan = (store.meta('v1_candidates') or {}) if settings.get('use_v1') else {}
     orders = state.get('orders') or []
     steps = []
     for day in pending:
         index = days.index(day)
         result, orders = advance(store, book, day, prices[index][1], orders, settings, source,
-                                 schedule, data, index)
+                                 schedule, scan)
         steps.append(result)
 
     merge = lambda key: [item for step in steps for item in step[key]]

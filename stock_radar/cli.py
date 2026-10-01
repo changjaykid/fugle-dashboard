@@ -534,7 +534,8 @@ def cmd_export(args):
                 }
         out = build_radar_json(instruments=target, quotes=quotes, decisions=decisions,
                                valuations=valuations, research=research, health=health,
-                               mode=args.mode, now=now, paper=paper_state)
+                               mode=args.mode, now=now, paper=paper_state,
+                               v1=store.meta('v1_candidates') or None)
         # Self-check the payload we're about to publish BEFORE writing it,
         # using the exact same verify_radar.verify() gate a human would run
         # manually -- catches a schema/contract regression at export time

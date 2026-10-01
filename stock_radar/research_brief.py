@@ -97,6 +97,51 @@ def fit(lines,limit=1900):
     if len(text)>limit:lines=[l for l in lines if not l.strip().startswith('另有 ')];text='\n'.join(lines)
     return text[:limit]
 
+def v1_morning(s,now,quotes=None):
+    """The pre-open message, from Strategy v1. Answer first, reasoning under it, nothing else.
+
+    It reports the scan built from last night's close. The prices are the levels the plan was made at;
+    08:55's trial price decides whether they are still reachable, which is what `quotes` carries when the
+    pre-open check has run."""
+    payload=s.meta('v1_candidates') or {}
+    head=f"台股盤前 {now.month}/{now.day}（{WEEKDAYS[now.weekday()]}）{now:%H:%M}"
+    if not payload:
+        return '\n'.join([head,'','⚠️ 昨晚沒有產生掃描結果，今天不提供買點。這不是「不進場」的判斷，請勿依此下單。',SITE])
+    picks=payload.get('candidates') or []
+    t=payload.get('tally') or {}
+    lines=[head,'']
+    if picks:
+        lines.append(f"✅ 今天可以買 {len(picks)} 檔（限價掛單，買不到就不追）")
+        for n,c in enumerate(picks[:MAX_STOCKS],1):
+            kind='突破' if c['setup']=='breakout' else '回檔'
+            lines.append('')
+            lines.append(f"{n}. {c['name']} {c['symbol']} ── 進場 {c['entry']:g}，停損 {c['stop']:g}，目標 {c['target']:g}")
+            lines.append(f"   {kind}型態，{c['total']:.0f} 分（{c['grade']} 級），風報比 {c['rr']:.1f}")
+            lines.append(f"   {c['stop_reason']}")
+            # The plan was made on last night's close; this morning decides whether it is still reachable.
+            q=(quotes or {}).get(c['symbol'])
+            trial=positive((q or {}).get('trial_price') if (q or {}).get('is_trial') else (q or {}).get('price'))
+            if trial:
+                if trial>c['entry']:
+                    lines.append(f"   ⚠️ 試撮 {trial:g} 已高於進場價，今天不追")
+                elif trial<=c['stop']:
+                    lines.append(f"   ⚠️ 試撮 {trial:g} 已跌破停損，型態失效")
+        lines+=['',f"價格以 {payload['day']} 收盤規劃；停損是結構失效點，不是固定百分比。是否下單由你決定。"]
+    else:
+        lines.append('⛔ 今天不進場')
+        waits=payload.get('waits') or []
+        if waits:
+            best=waits[0]
+            lines.append(f"沒有標的同時通過選股、進場與風報比。最接近的是 {best['name']} {best['symbol']}"
+                         f"（{best['total']:.0f} 分）－{best['wait_reason']}")
+        else:
+            lines.append('沒有任何標的形成可辨識的型態。')
+    lines.append(f"掃描上市普通股 {t.get('universe',0)} 檔：硬性排除 {t.get('filtered',0)}、"
+                 f"無型態 {t.get('no_setup',0)}、突破 {t.get('breakout',0)}、回檔 {t.get('pullback',0)}"
+                 f"｜下單門檻 {payload.get('min_score')} 分")
+    lines.append(SITE)
+    return fit(lines)
+
 def morning(s,radar,now):
     """The 08:55 message: the one message of the trading day, answer in the first two lines, detail on the site."""
     from .discord import _revalidate_signal
@@ -135,11 +180,16 @@ def morning(s,radar,now):
     return ('【測試資料，非即時交易建議】\n' if radar.get('mode')!='live' else '')+fit(lines)
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--db',type=Path,required=True);p.add_argument('--import-file',type=Path);p.add_argument('--sync-close',action='store_true');p.add_argument('--send',action='store_true');p.add_argument('--morning-radar',type=Path);p.add_argument('--out',type=Path);p.add_argument('--alert');p.add_argument('--edit-id');a=p.parse_args();now=datetime.now(TW);s=Store(a.db)
+    p=argparse.ArgumentParser();p.add_argument('--db',type=Path,required=True);p.add_argument('--import-file',type=Path);p.add_argument('--sync-close',action='store_true');p.add_argument('--send',action='store_true');p.add_argument('--morning-radar',type=Path);p.add_argument('--v1-morning',action='store_true');p.add_argument('--quotes',type=Path);p.add_argument('--out',type=Path);p.add_argument('--alert');p.add_argument('--edit-id');a=p.parse_args();now=datetime.now(TW);s=Store(a.db)
     try:
         if a.import_file:install(s,json.loads(a.import_file.read_text()),now)
         if a.sync_close:sync_close(s,now)
-        text=a.alert if a.alert else morning(s,json.loads(a.morning_radar.read_text()),now) if a.morning_radar else build(s,now)
+        if a.alert:text=a.alert
+        elif a.v1_morning:
+            quotes={i['symbol']:i.get('quote') for i in json.loads(a.quotes.read_text())['items']} if a.quotes else None
+            text=v1_morning(s,now,quotes)
+        elif a.morning_radar:text=morning(s,json.loads(a.morning_radar.read_text()),now)
+        else:text=build(s,now)
         if a.out:atomic_json(a.out,{'generated_at':now.isoformat(),'text':text})
         if a.send:
             from .cli import _bot_token,_send_with_outbox
