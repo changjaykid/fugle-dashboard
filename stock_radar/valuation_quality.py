@@ -1,5 +1,16 @@
 """Model applicability, separate from price freshness and whether a stock is expensive."""
-from .domain import positive
+from datetime import timedelta
+
+from .domain import positive, stamp
+
+# How long a lapsed research price keeps outranking the screen. The original rule was "expired research
+# must be renewed by research, never replaced by a screen", which assumed someone renews it. Nothing
+# does: research_llm writes narrative facts only and never republishes an anchor, and it cannot even wake
+# a symbol whose plan has gone stale, so an unrenewed anchor removed its symbol from the system for good
+# (2454 would have gone on 2026-10-05). The grace window keeps the original intent -- research gets first
+# refusal, and the lapse is announced so a person can renew it -- without the permanent trap. Nothing is
+# recommended during the window either way: an expired valuation already fails validate_valuation.
+ANCHOR_GRACE = timedelta(days=7)
 
 def assess(inst, valuation, technical=None, review=None):
     if not valuation or inst.get('kind') != 'stock':
@@ -27,3 +38,24 @@ def researched_anchor(v):
     required = ('financials', 'outlook', 'valuation_basis', 'price_structure', 'risks')
     return bool(v and not v.get('review_mode', '').startswith('rule-engine') and
                 all((v.get('analysis_review') or {}).get(k) is True for k in required))
+
+
+def anchor_protected(v, now):
+    """Whether this researched price may still not be replaced by the rule engine.
+
+    True while it is valid and through the grace window after it expires. An anchor with no readable
+    `valid_until` stays protected, because an unreadable date is not evidence that it lapsed."""
+    if not researched_anchor(v):
+        return False
+    until = stamp(v.get('valid_until'))
+    return not until or now < until + ANCHOR_GRACE
+
+
+def anchor_state(v, now):
+    """'live', 'grace' or 'lapsed' for a researched anchor; None when there is no anchor."""
+    if not researched_anchor(v):
+        return None
+    until = stamp(v.get('valid_until'))
+    if not until or now < until:
+        return 'live'
+    return 'grace' if now < until + ANCHOR_GRACE else 'lapsed'

@@ -20,18 +20,46 @@ def run(args,cwd=R):
         raise RuntimeError('Command failed: '+step+' ('+category+')')
     return p.stdout
 
+FAILED=[]
 def secondary(args,step):
-    # Secondary steps log a failure but never block the report or the site.
+    # Secondary steps still never block the report or the site. What changed: the failure is carried
+    # into the task's own status line. `track evaluate`, `research` and `close_review` all run here, so
+    # for twelve days close.log printed a bare {"status":"ok"} that proved only the main line had run.
     try:run(args)
-    except (RuntimeError,subprocess.TimeoutExpired) as e:print(json.dumps({'status':'secondary_failed','step':step,'error_type':type(e).__name__}),file=sys.stderr,flush=True)
+    except (RuntimeError,subprocess.TimeoutExpired) as e:
+        FAILED.append(step)
+        print(json.dumps({'status':'secondary_failed','step':step,'error_type':type(e).__name__}),file=sys.stderr,flush=True)
 
 def track(args):
     secondary([PY,'-m','stock_radar.track','--db',str(D/'prod.db')]+args,'track '+args[0])
+
+SITE='https://changjaykid.github.io/fugle-dashboard/'
 
 def alert(text):
     # A silent morning looks like "nothing to buy"; say plainly that the system failed instead.
     try:run([PY,'-m','stock_radar.research_brief','--db',str(D/'prod.db'),'--alert',text,'--send'])
     except Exception:pass
+
+def announce_anchors(now):
+    """A hand-researched price can only be renewed by a person, so its expiry has to reach one.
+
+    Until the grace window ends the symbol has no buy price at all, and after it ends the screen replaces
+    the researched price with a different number. Neither is something to discover by noticing an absence."""
+    sys.path.insert(0,str(R))
+    from stock_radar.store import Store,atomic_json
+    s=Store(D/'prod.db')
+    try:states=(s.meta('research_anchors') or {}).get('states') or {}
+    finally:s.close()
+    due={k:v for k,v in states.items() if v in ('grace','lapsed')}
+    seen=D/'anchor-alert.json'
+    told=json.loads(seen.read_text()) if seen.exists() else {}
+    if not due or told.get('states')==due:return
+    grace=[k for k,v in due.items() if v=='grace'];lapsed=[k for k,v in due.items() if v=='lapsed']
+    lines=[f"台股系統｜{now:%m/%d %H:%M}",'【研究價位到期】']
+    if grace:lines.append(f"{'、'.join(sorted(grace))} 的個股研究價位已到期，寬限期內暫時沒有買點；續期研究後才會重新出現。")
+    if lapsed:lines.append(f"{'、'.join(sorted(lapsed))} 已超過寬限期，改由規則估值接手。規則價位不等於原研究價位。")
+    alert('\n'.join(lines+[SITE]))
+    atomic_json(seen,{'at':now.isoformat(),'states':due})
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('task',choices=['refresh','notify','recheck','close','weekly','outlook','intraday']);p.add_argument('--manual',action='store_true');a=p.parse_args();now=datetime.datetime.now(ZoneInfo('Asia/Taipei'))
@@ -102,6 +130,18 @@ def main():
                 if not ran:alert(f"台股系統｜{now:%m/%d %H:%M}\n【系統異常】今天是交易日，但沒有送出盤前建議（08:55 未執行或發送失敗）。請檢查舊 Mac 的排程。\nhttps://changjaykid.github.io/fugle-dashboard/")
                 secondary([PY,'-m','stock_radar.research_llm','--db',str(D/'prod.db')],'research')
                 secondary([PY,'-m','stock_radar.close_review','--db',str(D/'prod.db'),'--send'],'close_review')
+                # A researched price that lapses needs a person, and nothing else would say so: the
+                # screen only takes over after the grace window, and until then the symbol is invisible.
+                announce_anchors(now)
+                # A secondary step that fails silently makes every number downstream of it stale --
+                # `track evaluate` is how the only evidence of whether this agent works gets updated.
+                if FAILED:
+                    seen=D/'secondary-alert.json'
+                    done=json.loads(seen.read_text()) if seen.exists() else {}
+                    if done.get('date')!=str(now.date()) or sorted(done.get('steps') or [])!=sorted(FAILED):
+                        alert(f"台股系統｜{now:%m/%d %H:%M}\n【流程不完整】主線完成，但這些步驟失敗："
+                              f"{'、'.join(FAILED)}。報表與追蹤數字可能停在上一次成功的版本。\n{SITE}")
+                        from stock_radar.store import atomic_json as _aj;_aj(seen,{'date':str(now.date()),'steps':FAILED})
             run(cli+['export','--out','docs/radar.json','--mode','live'])
             run([PY,'-m','stock_radar.daily_report','--db',str(D/'prod.db'),'--out','docs/research-summary.json'])
             run(cli+['backup','--out',str(D/('backup-'+now.strftime('%Y%m%d-%H%M%S')+'.db'))])
@@ -158,7 +198,9 @@ def main():
                         from stock_radar.store import atomic_json as _aj;_aj(sent,{'date':str(now.date()),'message_id':r['message_id']})
             from stock_radar.store import atomic_json
             atomic_json(prev,state)
-        print(json.dumps({'at':now.isoformat(),'task':a.task,'status':'ok'}))
+        done={'at':now.isoformat(),'task':a.task,'status':'ok' if not FAILED else 'ok_with_failures'}
+        if FAILED:done['failed_steps']=FAILED
+        print(json.dumps(done))
 if __name__=='__main__':
     try:main()
     except Exception as e:

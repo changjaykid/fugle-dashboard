@@ -17,6 +17,15 @@ URL='https://www.twse.com.tw/exchangeReport/BWIBBU'
 HEADERS={'User-Agent':'Mozilla/5.0 (compatible; StockRadar/1.0)'}
 # Above this median P/E, earnings are too thin relative to price for a P/E band to be stable.
 MAX_FAIR_PE=50
+# ...and the P/B band is not the escape hatch. Measured over the 238 active P/B valuations on 2026-10-01,
+# the three routes into this method have different natures: the policy route (financials and declared
+# cyclicals) has a median fair P/B of 1.19 and a p90 of 2.54; the no-usable-P/E route (losses) 1.89 and
+# 4.98; the thin-earnings route 3.89 with a p80 of 14.46 and a tail to 30.16. A "fair value" of 30x book
+# is a record of what speculators paid, not a valuation, and the band is circular -- it judges the price
+# by the price's own history. So a company priced above MAX_FAIR_PE gets no valuation at all rather than
+# a book-based one (8033 was recommended at 11.35x book while its own median P/E was 207x), and the two
+# remaining routes carry a ceiling. Both numbers are safety-margin policy, not backtested optima.
+MAX_FAIR_PB=5
 # Per the stock skill: financials are valued on book (P/B), and cyclicals are not valued on the P/E of
 # the current cycle -- peak earnings make them look cheap exactly when they are not. Both use the P/B band.
 BOOK_INDUSTRIES={'金融保險業':'金融業以淨值（P/B）評價','航運業':'景氣循環股','鋼鐵工業':'景氣循環股','塑膠工業':'景氣循環股','水泥工業':'景氣循環股',
@@ -87,10 +96,18 @@ def compute(inst,close,fin,history):
         reason=(f"過去四季 EPS {ttm:.2f} 元（收盤 {px:g} ÷ 本益比 {_num(today[3]):g}）× 過去一年本益比中位數 {fair_pe:.2f} 倍（四分位 {lo:.1f}～{hi:.1f}）＝ 合理價 {fair:.2f} 元。"
                 f"成長不另外加價：歷史本益比已含市場對成長的預期，實際成長會在新季報提高 EPS 後反映。景氣循環股在獲利高峰時本益比會偏低，看似便宜未必是真便宜。"+(f"參考：營收年增 {'、'.join(growth)}。" if growth else ''))
         v={'method':'pe_band','inputs':{'ttm_eps':round(ttm,4),'forward_eps':round(ttm,4),'fair_pe':round(fair_pe,4),'pe_today':_num(today[3]),'pe_q1':round(lo,2),'pe_q3':round(hi,2),'samples':len(pes),'revenue_ytd_yoy':None if ytd is None else round(ytd,4),'revenue_month_yoy':None if month is None else round(month,4)}}
+    elif thin and not book:
+        # Priced above MAX_FAIR_PE on earnings the market is ignoring. Book would only re-describe the
+        # same price history at a different multiple, so neither method can price it: say so instead.
+        return None,(f"過去一年本益比中位數 {statistics.median(pes):.0f} 倍，獲利無法支撐股價；"
+                     '淨值法只會換個倍數複製同一段價格史，兩種方法都不適用，不提供買點。')
     elif _num(today[4]) and len(pbs)>=MIN_SAMPLES:
         bvps=px/_num(today[4]);fair_pb=statistics.median(pbs);fair=bvps*fair_pb
-        why=(f"{book}，獲利高低會隨景氣或利率大幅波動，不用當期本益比" if book and book.startswith('景氣') else book) if book else f"過去一年本益比中位數 {statistics.median(pes):.0f} 倍，獲利相對股價太薄，本益比估值不穩定" if thin else '過去一年多數時間沒有可用本益比（虧損或無資料）'
-        reason=f"{why}，改用淨值：每股淨值 {bvps:.2f} 元（收盤 {px:g} ÷ 股價淨值比 {_num(today[4]):g}）× 過去一年股價淨值比中位數 {fair_pb:.2f} 倍 ＝ 合理價 {fair:.2f} 元。"
+        if fair_pb>MAX_FAIR_PB:
+            return None,(f"過去一年股價淨值比中位數 {fair_pb:.1f} 倍（上限 {MAX_FAIR_PB} 倍），"
+                         '淨值已無法解釋股價，淨值法不適用，不提供買點。')
+        why=(f"{book}，獲利高低會隨景氣或利率大幅波動，不用當期本益比" if book and book.startswith('景氣') else book) if book else '過去一年多數時間沒有可用本益比（虧損或無資料）'
+        reason=f"{why}，改用淨值：每股淨值 {bvps:.2f} 元（收盤 {px:g} ÷ 股價淨值比 {_num(today[4]):g}）× 過去一年股價淨值比中位數 {fair_pb:.2f} 倍 ＝ 合理價 {fair:.2f} 元。此為淨值基準，不是獲利基準。"
         v={'method':'pb_band','inputs':{'book_value_per_share':round(bvps,4),'fair_pb':round(fair_pb,4),'pb_today':_num(today[4]),'samples':len(pbs)}}
     else:return None,f'過去一年本益比／淨值比樣本不足 {MIN_SAMPLES} 筆'
     v.update(fair=round(fair,2),**{k:floor_tick(fair*b,inst['kind']) for k,b in zip(('sweet','add','buy'),BANDS)})
@@ -115,21 +132,28 @@ def build(s,inst,now):
 
 def publish_all(s,now,built):
     """built: [(inst, valuation or None, reason)]. Republish only when prices change or validity runs short."""
-    out=[]
+    out=[];anchors={}
     for inst,v,why in built:
         if not v:out.append((inst['symbol'],'skip',why));continue
         old=s.active(inst['symbol']);left=stamp((old or {}).get('valid_until'))
-        from .valuation_quality import researched_anchor
-        if researched_anchor(old):
-            # Expired research must be renewed by research, never silently replaced by a screen.
-            out.append((inst['symbol'],'skip','保留個股研究價位；到期後等待研究更新'));continue
+        from .valuation_quality import anchor_protected,anchor_state
+        state=anchor_state(old,now)
+        if state:anchors[inst['symbol']]=state
+        if anchor_protected(old,now):
+            # Research gets first refusal on its own symbols. A lapsed anchor no longer holds the symbol
+            # hostage (see valuation_quality.ANCHOR_GRACE); the handover is audited and announced.
+            out.append((inst['symbol'],'skip','研究價位仍在效期內，保留' if state=='live' else '研究價位已到期，寬限期內等待研究更新'));continue
         # Same prices and the same basis (method and the reason's leading clause) need no new version.
         basis=lambda x:(x.get('method'),(x.get('reason') or '').split('：')[0])
         if old and old.get('review_mode')==v['review_mode'] and all(old.get(k)==v[k] for k in ('sweet','add','buy')) and basis(old)==basis(v) and not old.get('analysis_review') and left and left-now>timedelta(hours=36):
             out.append((inst['symbol'],'same',v['buy']));continue
         # One bad symbol must not stop the others; its previous valuation simply expires.
-        try:s.publish_rule_valuation(s.propose(inst['symbol'],v,now=now),now=now);out.append((inst['symbol'],'published',v['buy']))
+        try:
+            s.publish_rule_valuation(s.propose(inst['symbol'],v,now=now),now=now)
+            out.append((inst['symbol'],'handover' if anchors.get(inst['symbol'])=='lapsed' else 'published',v['buy']))
         except (ValueError,PermissionError) as e:out.append((inst['symbol'],'error',str(e)))
+    # So a person can see which researched prices need renewing before the screen takes them over.
+    if anchors:s.set_meta('research_anchors',{'at':now.isoformat(),'states':anchors})
     return out
 
 def publish(s,now):

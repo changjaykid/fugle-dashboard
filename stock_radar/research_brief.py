@@ -54,10 +54,12 @@ def _why(v,price=None):
     if (v or {}).get('method')=='etf_band' and positive(i.get('median')):
         p=price or i.get('price_today');tier='最便宜 10%' if p<=i['p10'] else '最便宜 25%' if p<=i['p25'] else '低於一年中位數'
         return f"價格 {p:g} 在過去一年{tier}（中位數 {i['median']:.2f}）；價格位置，不是估值"
-    for today,norm,name in (('pe_today','fair_pe','本益比'),('pb_today','fair_pb','股價淨值比')):
+    # The P/B line names its basis: "cheap against its own one-year norm" is a weaker claim on book than
+    # on earnings, and the morning message is the only place most of these are ever read.
+    for today,norm,name,basis in (('pe_today','fair_pe','本益比',''),('pb_today','fair_pb','股價淨值比','；以淨值為基準，不是獲利')):
         if positive(i.get(today)) and positive(i.get(norm)):
             gap=1-i[today]/i[norm]
-            return f"{name} {i[today]:g}，{'比一年常態 '+format(i[norm],'.1f')+' 便宜 '+format(gap,'.0%') if gap>0 else '高於一年常態 '+format(i[norm],'.1f')}"
+            return f"{name} {i[today]:g}，{'比一年常態 '+format(i[norm],'.1f')+' 便宜 '+format(gap,'.0%') if gap>0 else '高於一年常態 '+format(i[norm],'.1f')}{basis}"
     return (v or {}).get('thesis') or '估值依據請見網站'
 
 def researched(s,inst,now):

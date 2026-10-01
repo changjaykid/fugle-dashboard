@@ -23,8 +23,22 @@ class ComputeTests(unittest.TestCase):
   self.assertEqual(a['fair'],b['fair']);self.assertIn('營收年增 今年累計 +100.0%',a['reason']);self.assertIn('成長不另外加價',a['reason'])
  def test_stock_at_its_normal_multiple_is_not_a_buy(self):
   v,_=ve.compute(INST,CLOSE,rev(),history(pe_today='20'));self.assertLess(v['buy'],CLOSE['close'])
- def test_very_high_normal_pe_uses_book_value(self):
-  v,_=ve.compute(INST,CLOSE,rev(),history(pe='80',pe_today='70'));self.assertEqual(v['method'],'pb_band');self.assertIn('獲利相對股價太薄',v['reason'])
+ def test_very_high_normal_pe_gets_no_valuation_rather_than_a_book_one(self):
+  # Book is not the escape hatch for a stock the market prices above MAX_FAIR_PE: its P/B band is the
+  # same price history at a different multiple. 8033 was recommended at 11.35x book on a median P/E of 207.
+  v,why=ve.compute(INST,CLOSE,rev(),history(pe='80',pe_today='70'))
+  self.assertIsNone(v);self.assertIn('本益比中位數 80 倍',why);self.assertIn('兩種方法都不適用',why)
+ def test_thin_earnings_still_uses_book_for_financials_and_cyclicals(self):
+  # The policy route is unaffected: these are valued on book by design, whatever their P/E does.
+  v,_=ve.compute({**INST,'industry_code':'金融保險業'},CLOSE,rev(),history(pe='80',pe_today='70'))
+  self.assertEqual(v['method'],'pb_band')
+ def test_book_band_above_its_ceiling_gets_no_valuation(self):
+  # A median of 6x book (above MAX_FAIR_PB=5) no longer explains the price, so there is no buy price.
+  v,why=ve.compute(INST,CLOSE,rev(),history(pe_today='-',pb='6',pb_today='5'))
+  self.assertIsNone(v);self.assertIn('股價淨值比中位數 6.0 倍',why);self.assertIn('淨值法不適用',why)
+ def test_book_band_at_its_ceiling_is_still_published(self):
+  v,_=ve.compute(INST,CLOSE,rev(),history(pe_today='-',pb='5',pb_today='4'))
+  self.assertEqual(v['method'],'pb_band');self.assertIn('此為淨值基準，不是獲利基準',v['reason'])
  def test_financials_and_cyclicals_use_book_value(self):
   for ind,word in (('金融保險業','P/B'),('航運業','景氣循環股')):
    v,_=ve.compute({**INST,'industry_code':ind},CLOSE,rev(),history());self.assertEqual(v['method'],'pb_band');self.assertIn(word,v['reason'])

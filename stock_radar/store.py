@@ -227,9 +227,15 @@ class Store:
             inst = json.loads(self.db.execute('SELECT payload FROM instruments WHERE symbol=?', (r['symbol'],)).fetchone()[0])
             validate_valuation(payload, now, kind=inst.get('kind'))
             old = self.active(r['symbol'])
-            from .valuation_quality import researched_anchor
-            if researched_anchor(old):
+            from .valuation_quality import researched_anchor, anchor_protected
+            if anchor_protected(old, now):
                 raise ValueError('規則掃描不得覆蓋個股研究價位')
+            if researched_anchor(old):
+                # The protection has lapsed: this is a recorded handover from research to the screen,
+                # not a screen quietly outranking research. See valuation_quality.anchor_protected.
+                self.audit('valuation_anchor_handover',
+                           {'symbol': r['symbol'], 'from': old.get('id'), 'to': proposal_id,
+                            'anchor_valid_until': old.get('valid_until')})
             if (old['id'] if old else None) != r['parent_id']:
                 raise ValueError('基準版本已改變，需重新計算')
             self.db.execute("UPDATE valuations SET status='superseded' WHERE symbol=? AND status='active'", (r['symbol'],))
