@@ -65,9 +65,9 @@ def sanitize(r,s,now):
     r['research_coverage']=research_coverage(s,now)
     r['health']=[h for h in r.get('health',[]) if h.get('name') not in ('試撮','報價','公開頁範圍','公開收盤')]
     r['health'].append({'name':'公開收盤','status':'ok' if counts['public_closes'] else 'blocked','detail':'證交所開放資料；每筆顯示實際交易日，不是即時行情。','as_of':(s.meta('public_close_sync') or {}).get('at')})
-    # The simulated account never reaches the public page. Publishing someone's own trading record is
-    # their decision, and this file's job is to decide nothing.
-    r.pop('paper',None)
+    # The simulated account travels to the page (user decision, 2026-10-01) -- but only inside the
+    # encrypted payload. tools/encrypt_payload.py is what makes that safe to say: the plaintext
+    # radar.json is no longer published at all, so this is not a public file any more.
     r['health'].append({'name':'研究涵蓋','status':'partial','detail':f"觀察 {counts['watched']} 檔；研究 {counts['research']} 檔；以收盤資料建立買進計畫；即時掛價由盤前通知確認。母表不是已完成分析數量。",'as_of':r['generated_at']})
     return r
 

@@ -159,9 +159,23 @@ def main():
             for old in sorted(D.glob('backup-*.db'))[:-14]:old.unlink()
             for old in (D/'snapshots').glob('*.json'):
                 if now.timestamp()-old.stat().st_mtime>120*86400:old.unlink()
-            (W/'docs/radar.json').write_text(run([PY,'tools/public_export.py']))
+            # The site is GitHub Pages: anything published answers 200 to anyone with the URL. So the
+            # payload is encrypted before it is committed (tools/encrypt_payload.py) and the plaintext
+            # radar.json is no longer published at all -- it is removed from the repo on the first run
+            # that gets here. The password lives in a 600 file outside both repositories.
+            staging=D/'radar-public.json'
+            staging.write_text(run([PY,'tools/public_export.py']))
+            run([PY,'tools/encrypt_payload.py','--in',str(staging),
+                 '--out',str(W/'docs/radar.enc.json'),
+                 '--password-file',str(D/'site-password')])
+            staging.unlink(missing_ok=True)
+            plain=W/'docs/radar.json'
+            if plain.exists():
+                plain.unlink()
+                run(['git','rm','--cached','--ignore-unmatch','docs/radar.json'],W)
             (W/'docs/research-summary.json').write_bytes((R/'docs/research-summary.json').read_bytes())
-            run(['git','add','docs/radar.json','docs/research-summary.json'],W)
+            run(['git','add','docs/radar.enc.json','docs/research-summary.json','docs/index.html',
+                 'docs/radar.js','docs/radar.css'],W)
             dirty=run(['git','diff','--cached','--name-only'],W)
             if dirty:run(['git','commit','-m','Refresh public stock research '+now.strftime('%Y-%m-%d')],W)
             run(['git','push','origin','HEAD:main'],W)
