@@ -106,6 +106,71 @@ def load(s,kind,n=None,since=None):
     rows=s.db.execute(where,tuple(args)).fetchall()
     return [(r[0],json.loads(r[1])) for r in reversed(rows)]
 
+# Taiwan limits a day's move to 10% of the reference price, so anything past that is a corporate action.
+# But not every corporate action should be removed, and the difference decides whether these numbers mean
+# anything. On an ex-dividend day the reference price is cut by the dividend and the holder receives the
+# cash: the drop is a real price return, and a high-yield Taiwan stock routinely shows -12% to -15% from
+# the previous close. A split or a capital reduction hands over no cash at all -- 0050 went 188.65 to
+# 47.57 on 2025-06-18 on a 1:4 split -- and leaving that in makes a held position look like a 75% loss,
+# the benchmark wrong in any window containing it, and the stock sit at the bottom of its own 60-day
+# range. So only the unambiguous ones are removed, and dividends are left in for the strategy and the
+# benchmark alike, which keeps every comparison a price-return comparison.
+SPLIT_RATIO=(0.60,1.60)
+
+def split_adjust(prices):
+    """Return a copy of `prices` with splits and capital reductions removed from the series.
+
+    0050 went 188.65 -> 47.57 on 2025-06-18, a 1:4 split, and the stored prices are as filed. Left alone
+    that is a -74.8% day: it makes the benchmark wrong in any window containing it, it makes a position
+    held across it look like a catastrophic loss, and it drops the stock to the bottom of its own 60-day
+    range so the structure reads as a collapse. Nine symbols do this in five years.
+
+    Detection is unambiguous because the exchange's own limit is 10%: a move past 11% cannot be a price
+    change. Prices BEFORE the event are scaled so the series is continuous, which is the convention that
+    keeps every return computed across the event correct. Volume is scaled the other way so turnover in
+    dollars is unchanged. Ex-dividend drops are inside the limit and are left alone: they are real price
+    returns, and this agent compares price returns throughout."""
+    days=[d for d,_ in prices]
+    series={}
+    for k,(d,table) in enumerate(prices):
+        for sym,bar in table.items():
+            if bar and bar[3]:series.setdefault(sym,[]).append((k,bar))
+    factors={}
+    for sym,rows in series.items():
+        events=[]
+        for (ka,a),(kb,b) in zip(rows,rows[1:]):
+            if a[3] and b[3]:
+                ratio=b[3]/a[3]
+                if ratio<SPLIT_RATIO[0] or ratio>SPLIT_RATIO[1]:
+                    events.append((kb,ratio))
+        if events:factors[sym]=events
+    if not factors:return prices
+    out=[(d,dict(t)) for d,t in prices]
+    for sym,events in factors.items():
+        # Walk back from the newest event so each one scales everything before it.
+        for kb,ratio in reversed(events):
+            for k in range(0,kb):
+                bar=out[k][1].get(sym)
+                if bar:
+                    out[k][1][sym]=[None if x is None else x*ratio for x in bar[:4]]+[
+                        (bar[4]/ratio if bar[4] else bar[4])]
+    return out
+
+def corporate_actions(prices):
+    """{symbol: [(day, ratio)]} for every break split_adjust would remove. For reporting, not for maths."""
+    days=[d for d,_ in prices];found={}
+    series={}
+    for k,(d,table) in enumerate(prices):
+        for sym,bar in table.items():
+            if bar and bar[3]:series.setdefault(sym,[]).append((k,bar))
+    for sym,rows in series.items():
+        for (ka,a),(kb,b) in zip(rows,rows[1:]):
+            if a[3] and b[3]:
+                ratio=b[3]/a[3]
+                if ratio<SPLIT_RATIO[0] or ratio>SPLIT_RATIO[1]:
+                    found.setdefault(sym,[]).append((days[kb],round(ratio,4)))
+    return found
+
 def liquidity(prices,days=LIQUIDITY_DAYS):
     """Average daily lots over the last `days` sessions; a session without trades counts as zero."""
     recent=prices[-days:];out={}

@@ -378,3 +378,68 @@ def score(f, kind, breadth=None, settings=None):
     grade = next((g for cut, g in GRADES if total >= cut), 'Ignore')
     return {'version': VERSION, 'setup': kind, 'total': round(total, 1), 'grade': grade,
             'scored_out_of': round(available, 1), 'missing': missing, 'components': components}
+
+
+# --- entry, stop and target (document sections 10, 12, 14, 15) --------------------------------------
+
+TRADE = {
+    # Stop is structural, not a fixed percentage: it sits where the reason for the trade is wrong.
+    # The buffer keeps ordinary noise from hitting a level that has not actually broken.
+    'stop_buffer_atr': 0.5,
+    # 8%, not 3%. The structure sometimes offers a stop two or three percent away, and measured over 872
+    # real entries on 2026-10-01 the adverse excursion within twenty trading days exceeds 4% on 40% of
+    # them, 8% on 23% and 12% on 11%. A 3% structural stop is inside ordinary noise, so it is not a stop
+    # on the thesis, it is a toll. Where the structure is tighter than noise, noise sets the floor.
+    'min_stop_fraction': 0.08,
+    'max_stop_fraction': 0.15,
+    'min_rr': 2.0,                 # section 15's starting value, to be argued with by paper results
+    'initial_fraction': 0.35,      # section 11: the first tranche, not the whole plan
+}
+
+
+def trade_plan(f, kind, settings=None):
+    """Entry, structural stop and structure-based target, or None with the reason it is a WAIT.
+
+    Selection says the stock is worth owning; this says whether it can be bought here. A 92-point stock
+    that has run 8% past its invalidation is a WAIT, and that is the whole point of keeping them apart."""
+    t = {**TRADE, **(settings or {})}
+    entry, atr = f['close'], f['atr']
+    if not atr or not entry:
+        return None, '沒有 ATR，無法定出結構停損'
+
+    # Stop: the level that says the setup failed. A breakout that loses the level it broke is wrong;
+    # a pullback that loses the low it bounced from is wrong.
+    if kind == 'breakout':
+        level = f.get('base_high')
+        label = '跌回整理區上緣'
+    else:
+        lows = [p for _, p in f['swing_lows'][-2:]]
+        level = min(lows) if lows else f['ma20']
+        label = '跌破回檔低點'
+    if not level:
+        return None, '找不到結構失效位置'
+    stop = level - atr * t['stop_buffer_atr']
+    fraction = (entry - stop) / entry
+    if fraction < t['min_stop_fraction']:
+        stop = entry * (1 - t['min_stop_fraction'])
+        fraction = t['min_stop_fraction']
+    if fraction > t['max_stop_fraction']:
+        return None, f"結構停損距離 {fraction:.1%} 過遠，風險報酬不可能合格"
+
+    # Target: the next structural resistance. The 60-day high for a pullback that has not made a new
+    # one; for a breakout, the measured move of the base it left, capped by that high when it is further.
+    if kind == 'breakout' and f.get('base_high') and f.get('base_low'):
+        measured = f['base_high'] + (f['base_high'] - f['base_low'])
+        target = max(measured, f['high_60'])
+    else:
+        target = f['high_60']
+    if not target or target <= entry:
+        return None, '上方沒有可辨識的結構目標'
+
+    rr = (target - entry) / (entry - stop)
+    if rr < t['min_rr']:
+        return None, f"風險報酬 {rr:.2f} 低於 {t['min_rr']}（目標 {target:g}、停損 {stop:.2f}）"
+    return {'entry': round(entry, 4), 'stop': round(stop, 4), 'target': round(target, 4),
+            'stop_fraction': round(fraction, 5), 'rr': round(rr, 2),
+            'stop_reason': f"{label} {level:g}，加 {t['stop_buffer_atr']} ATR 緩衝",
+            'initial_fraction': t['initial_fraction']}, None

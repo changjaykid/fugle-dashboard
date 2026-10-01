@@ -29,7 +29,7 @@ class EtfTests(unittest.TestCase):
   self.assertIsNone(ms.etf_valuation({'symbol':'00999','kind':'etf_equity'},{'close':10,'trade_date':ds[-1]},prices)[0])
 
 class ScanTests(unittest.TestCase):
- def test_liquidity_is_the_first_gate_and_decaying_etfs_are_excluded(self):
+ def test_liquidity_is_the_first_gate_and_etfs_are_not_scanned(self):
   d=tempfile.TemporaryDirectory();s=Store(Path(d.name)/'t.db');now=datetime(2026,9,18,17,tzinfo=TW)
   s.set_meta('analysis_authority',{'decision':'user-confirmed-2026-09-14','autonomous_research':True})
   syms={'LIQ':'stock','THIN':'stock','0050':'etf_equity','00632R':'etf_other'}
@@ -43,9 +43,13 @@ class ScanTests(unittest.TestCase):
   s.db.commit()
   for k in syms:s.set_fact(k,'public_close',{'close':100 if k!='0050' else 119.9,'trade_date':ds[-1]})
   r=ms.scan(s,now)
-  self.assertEqual((r['listed'],r['liquid'],r['published']),(3,2,2))
-  self.assertEqual(s.active('LIQ')['method'],'pe_band');self.assertEqual(s.active('0050')['method'],'etf_band')
-  self.assertIsNone(s.active('THIN'));self.assertIsNone(s.active('00632R'))
+  # Ordinary shares only (2026-10-02). ETFs are a basket of the same stocks, so an ETF beside its
+  # constituents is one bet counted twice; they get their own strategy or none. Here that leaves LIQ
+  # and THIN as the listed universe, and only LIQ clears the liquidity gate.
+  self.assertEqual((r['listed'],r['liquid'],r['published']),(2,1,1))
+  self.assertEqual(s.active('LIQ')['method'],'pe_band')
+  self.assertIsNone(s.active('0050'));self.assertIsNone(s.active('00632R'))
+  self.assertIsNone(s.active('THIN'))
   self.assertEqual(s.meta('liquidity')['lots']['THIN'],200.0);self.assertIsNotNone(s.fact('LIQ','technical'))
   s.close();d.cleanup()
 

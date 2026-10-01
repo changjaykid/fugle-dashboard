@@ -51,7 +51,7 @@ def _roc(ds):
 
 def inputs(store):
     """Everything the replay needs, read once: bars, ratio rows per symbol, instruments, financials."""
-    prices = market.load(store, 'prices')
+    prices = market.split_adjust(market.load(store, 'prices'))
     ratios = market.load(store, 'ratios')
     days = [d for d, _ in prices]
     insts = {i['symbol']: i for i in store.instruments()

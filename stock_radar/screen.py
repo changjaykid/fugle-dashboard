@@ -65,8 +65,13 @@ def breadth_by_industry(prices, insts, k):
     return out
 
 
-def run(store, prices, flows, k, settings=None, fundamentals=True):
-    """Every stock the scan can judge on day k: hard filter, setup, score. Returns rows and a tally."""
+def run(store, prices, flows, k, settings=None, fundamentals=True, risk_facts=True):
+    """Every stock the scan can judge on day k: hard filter, setup, score. Returns rows and a tally.
+
+    `fundamentals` and `risk_facts` exist to be turned OFF in a backtest. Both read facts that hold only
+    today's value -- this quarter's EPS, today's disposition status -- so scoring a day in 2022 with them
+    would be reading the future. With them off the score renormalises over the points that remain, which
+    is the whole reason it renormalises."""
     insts = universe(store, prices, k)
     market_index = _index(prices, list(insts), k, 61)
     breadth = breadth_by_industry(prices, insts, k)
@@ -97,7 +102,7 @@ def run(store, prices, flows, k, settings=None, fundamentals=True):
         if not f:
             tally['filtered'] += 1
             continue
-        why = selection.hard_filter(f, store.fact(sym, 'risk'), settings)
+        why = selection.hard_filter(f, store.fact(sym, 'risk') if risk_facts else None, settings)
         if why:
             tally['filtered'] += 1
             continue

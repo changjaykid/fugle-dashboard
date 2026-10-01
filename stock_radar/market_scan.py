@@ -90,10 +90,17 @@ def candidates(s,liquid,now):
     return order[:CANDIDATE_CAP]
 
 def scan(s,now):
-    prices=market.load(s,'prices',market.SCAN_DAYS);ratios=market.load(s,'ratios',market.SCAN_DAYS);flows=market.load(s,'flows',5)
+    # Splits are removed before anything reads a price. 0050's 1:4 on 2025-06-18 is a -74.8% day in the
+    # filed data, which would put it at the bottom of its own 60-day range and make every level this scan
+    # computes wrong for sixty sessions. Dividends are left in: the holder received the cash.
+    prices=market.split_adjust(market.load(s,'prices',market.SCAN_DAYS));ratios=market.load(s,'ratios',market.SCAN_DAYS);flows=market.load(s,'flows',5)
     if not prices:return {'error':'尚無全市場價格資料'}
     liq=market.liquidity(prices);s.set_meta('liquidity',{'as_of':prices[-1][0],'min_lots':market.LIQUIDITY_LOTS,'lots':liq})
-    targets=[i for i in s.instruments() if i.get('market')=='TSE' and (i['kind']=='stock' or (i['kind'] in ETF_KINDS and not i['symbol'].endswith(DECAYING_SUFFIX)))]
+    # Ordinary shares only (user decision, 2026-10-02). An equity ETF is a basket of the same stocks, so
+    # holding one beside its constituents is one bet a risk engine counts as two; its band is a price
+    # position rather than a valuation; and it has neither a base to break out of nor relative strength
+    # against a market it largely is. ETFs get their own strategy or none.
+    targets=[i for i in s.instruments() if i.get('market')=='TSE' and i['kind']=='stock']
     liquid=[i for i in targets if liq.get(i['symbol'],0)>=market.LIQUIDITY_LOTS]
     built=[]
     for inst in liquid:
