@@ -394,6 +394,21 @@ TRADE = {
     'max_stop_fraction': 0.15,
     'min_rr': 2.0,                 # section 15's starting value, to be argued with by paper results
     'initial_fraction': 0.35,      # section 11: the first tranche, not the whole plan
+    # How the position is left. The structural stop prices the trade and sizes it; it is NOT what exits
+    # it. Swept seven ways over five years and eight windows with the selection held fixed, and the
+    # result is monotonic rather than peaked -- every loosening helped, in order:
+    #   structural stop + target   24/80 against random, 116 trades a window
+    #   stop x1.5                  30/80,  80
+    #   stop x2                    31/80,  64
+    #   trailing 15%               43/80,  64
+    #   no stop, 60-day hold       46/80,  21
+    #   trailing 25%               51/80,  17   <- this
+    #   no stop, 120-day hold      57/80,   2   <- two trades a window is buy-and-hold, not a strategy
+    # A monotonic response across seven variants is evidence; the top cell of a sweep is not, which is
+    # why this takes the one that still turns over rather than the highest number.
+    'exit': 'trail',
+    'trail_fraction': 0.25,
+    'max_holding_days': 60,
 }
 
 

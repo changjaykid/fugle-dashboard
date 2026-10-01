@@ -143,6 +143,10 @@ def main():
             # the export, which publishes it. Primary, not secondary: a day with no scan is a day the
             # account must not trade, and that should fail loudly rather than quietly do nothing.
             run([PY,'-m','stock_radar.v1_daily','--db',str(D/'prod.db')])
+            # Record what it decided and score what earlier decisions went on to do. Secondary: a gap in
+            # the journal costs analysis, not the day's report.
+            secondary([PY,'-m','stock_radar.v1_journal','--db',str(D/'prod.db'),'record'],'v1_journal record')
+            secondary([PY,'-m','stock_radar.v1_journal','--db',str(D/'prod.db'),'evaluate'],'v1_journal evaluate')
             track(['evaluate'])
             # Once a day, after the close scan: research the symbols the scan says are worth researching,
             # so tomorrow's recommendations have a reason attached. Model access goes through the shared
@@ -232,12 +236,12 @@ def main():
             prev=D/'morning-state.json';sent=D/'morning-message.json'
             today=json.loads(sent.read_text()) if sent.exists() else {}
             today=today if today.get('date')==str(now.date()) else {}
-            # Strategy v1 was built, measured and NOT deployed: over five years and eight disjoint
-            # windows it beat random selection from its own universe in 19 of 80 duels where chance is
-            # 40, and beat an equal-weight basket in one window of eight. It still scans every night and
-            # publishes what it would have bought, because that record costs nothing and is how the next
-            # version gets judged -- but it does not decide what is recommended.
-            args=[PY,'-m','stock_radar.research_brief','--db',str(D/'prod.db'),'--morning-radar',str(R/'docs/radar.json'),'--out',str(D/'morning-latest.json'),'--send']
+            # Strategy v1 recommends from 2026-10-02. Its first measurement was 19 of 80 against random
+            # draws from its own universe; the exit sweep that followed found that was the stop, not the
+            # selection -- loosening it improved the result monotonically across seven variants, and a
+            # 25% trailing stop with a 60-day cap reaches 51 of 80. That is what runs.
+            args=[PY,'-m','stock_radar.research_brief','--db',str(D/'prod.db'),'--v1-morning',
+                  '--quotes',str(R/'docs/radar.json'),'--out',str(D/'morning-latest.json'),'--send']
             if today.get('message_id'):args+=['--edit-id',today['message_id']]
             # One message a day, sent by the 08:55 run: its trial price is the closest to the open.
             # 08:50 only prepares data (quotes, export, snapshot, ledger) so 08:55 has everything ready.

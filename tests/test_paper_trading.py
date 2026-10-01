@@ -63,26 +63,26 @@ class StrategyTests(unittest.TestCase):
         self.assertTrue(capped['capped_at_fair'])
 
     def test_size_is_equal_weight_capped_by_risk_and_refused_under_the_fee_floor(self):
-        shares, why = strategy.size_for(100000, 100000, 100, 92)
+        shares, why = strategy.size_for(100000, 100000, 100, 92, {'max_positions': 5})
         self.assertIsNone(why)
         self.assertLessEqual(shares * 100, 100000 * strategy.SETTINGS['max_position_fraction'])
         self.assertLessEqual((shares * 100) * 0.08, 100000 * strategy.SETTINGS['max_risk_fraction'] + 1)
         # Odd lots are the point: a 20,000 budget cannot buy a lot of a 600 dollar stock.
-        odd, why = strategy.size_for(100000, 100000, 600, 552)
+        odd, why = strategy.size_for(100000, 100000, 600, 552, {'max_positions': 5})
         self.assertIsNone(why)
         self.assertNotEqual(odd % 1000, 0)
         self.assertGreater(odd, 0)
 
     def test_sizing_is_gated_on_the_cost_rate_not_the_order_value(self):
-        # A NT$10 stock sizes to a mixed order. Keeping the tail costs about the same rate as dropping it
-        # and buys far more position, so the exact count is what gets placed.
-        shares, why = strategy.size_for(100000, 100000, 10, 9.2)
+        # A NT$10 stock at five slots sizes to a mixed order: keeping the odd-lot tail costs about the
+        # same rate as dropping it and buys far more position, so the exact count is what gets placed.
+        shares, why = strategy.size_for(100000, 100000, 10, 9.2, {'max_positions': 5})
         self.assertIsNone(why)
         self.assertGreater(shares, costs.LOT)
         self.assertLessEqual(costs.rate_at(shares * 10, 'stock', shares=shares),
                              strategy.SETTINGS['max_cost_rate'] * 100)
         # Under one lot there is no tail: the odd lot is the position and stays exact.
-        odd, why = strategy.size_for(100000, 100000, 600, 552)
+        odd, why = strategy.size_for(100000, 100000, 600, 552, {'max_positions': 5})
         self.assertIsNone(why)
         self.assertLess(odd, costs.LOT)
         # Small odd-lot orders are now viable, which is what lets the account hold many names: a

@@ -186,6 +186,20 @@ class ReviewTests(unittest.TestCase):
                             'proposals': [],
                             'evidence_gaps': ['樣本不足，需要更多已結交易']}, ensure_ascii=False)}
 
+            # The review now reads the decision journal, not the handful of fills: seed enough scored
+            # decisions for it to have something to look at.
+            import json as _json
+            with store.transaction():
+                for i in range(60):
+                    key = f'2026-04-01:S{i}'
+                    store.db.execute('INSERT INTO v1_journal VALUES(?,?,?,?)', (
+                        key, '2026-04-01', f'S{i}', _json.dumps({
+                            'day': '2026-04-01', 'symbol': f'S{i}', 'name': f'股{i}',
+                            'decision': 'buy' if i % 2 else 'wait', 'setup': 'breakout',
+                            'total': 70 + i % 20, 'grade': 'B',
+                            'components': {'structure': 15.0},
+                            'forward': {'5': {'own': 1.0, 'market': 0.5, 'excess': 0.5}}},
+                            ensure_ascii=False)))
             out = strategy_review.review(store, NOW, caller=fake)
             self.assertEqual(out['status'], 'ok')
             self.assertEqual(out['proposals'], [])
@@ -207,6 +221,7 @@ class ReviewTests(unittest.TestCase):
             self.assertEqual(strategy_review.review(store, NOW)['status'], 'no_account')
             paper.Book(100000, started_day='2026-04-01').save(store)
             store.set_meta('paper_runner', {'last_day': '2026-04-01', 'settings': {}})
+            # An empty journal is too early regardless of how many fills there are.
             self.assertEqual(strategy_review.review(store, NOW)['status'], 'too_early')
             store.close()
         finally:

@@ -97,13 +97,44 @@ def evidence(store, now, weeks=1):
         '進場價到合理價距離中位數百分比': 33.22,
         '進場規則20日中位數超額百分比': -2.55,
         '進場規則勝過市場的比例百分比': 45,
+        # The journal is the evidence base: every candidate scored, bought or not, and what the market
+        # did about it. Five to thirty fills a month cannot answer the twelve questions; 800 scored
+        # decisions can.
+        **journal_evidence(store),
     }
+
+
+def journal_evidence(store):
+    from . import v1_journal
+    st = v1_journal.stats(store, horizon=5)
+    if not st.get('observations'):
+        return {'決策日誌觀測數': 0}
+    out = {'決策日誌觀測數': st['observations'], '決策日誌交易日數': st['days'],
+           '全部候選5日中位數超額': st['all']['median_excess'],
+           '全部候選勝過市場比例': st['all']['beat_market_pct']}
+    for key, label in (('buy', '可下單'), ('wait', '不下單')):
+        g = st['by_decision'].get(key)
+        if g:
+            out[f'{label}中位數超額'] = g['median_excess']
+            out[f'{label}筆數'] = g['n']
+    for key, label in (('breakout', '突破型'), ('pullback', '回檔型')):
+        g = st['by_setup'].get(key)
+        if g:
+            out[f'{label}中位數超額'] = g['median_excess']
+            out[f'{label}筆數'] = g['n']
+    if st.get('by_score'):
+        out['分數低三分之一中位數超額'] = st['by_score']['bottom_third']['median_excess']
+        out['分數高三分之一中位數超額'] = st['by_score']['top_third']['median_excess']
+    if st.get('by_component'):
+        out['各分項與超額相關性'] = {k: v['correlation'] for k, v in st['by_component'].items()}
+    return out
 
 
 def prompt(data):
     return ('你是這個台股交易規則的每週檢討者。只能使用下列已量測的數字，不得引入任何其他數字、'
             '事件或新聞；沒有證據就寫在 evidence_gaps。全部使用繁體中文，只輸出 JSON。\n'
-            'summary：這週規則做了什麼、哪裡有效哪裡無效，100～300 字，必須提到超額百分點。\n'
+            'summary：這 10 個交易日規則做了什麼、哪裡有效哪裡無效，100～300 字，'
+            '必須同時提到帳戶的超額百分點與決策日誌的中位數超額。\n'
             f"proposals：對設定的具體修改建議，0～4 項，setting 只能是 {'、'.join(TUNABLE)} 其中之一；"
             'from_value 與 to_value 都寫成字串；why 要指向下列的某個數字；'
             'what_would_disprove_it 寫清楚什麼結果會證明這個建議是錯的。\n'
@@ -187,8 +218,9 @@ def review(store, now, caller=call, weeks=1):
     data = evidence(store, now, weeks)
     if not data:
         return {'status': 'no_account', 'reason': '模擬帳戶尚未開立'}
-    if data['已結交易數'] < 1:
-        return {'status': 'too_early', 'reason': '尚無已結交易，沒有東西可檢討'}
+    if data['決策日誌觀測數'] < 50:
+        return {'status': 'too_early',
+                'reason': f"決策日誌只有 {data['決策日誌觀測數']} 個已評估觀測，不足以檢討"}
     log = store.meta('stock_review_attempts') or {}
     key = f'{now:%Y%W}'
     used = log.get(key, 0)

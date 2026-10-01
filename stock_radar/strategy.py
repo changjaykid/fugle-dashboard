@@ -38,7 +38,7 @@ SETTINGS = {
     # --- Size -------------------------------------------------------------------------------------
     # 100,000 / 14,035 = 7.1 fee-efficient positions, so five leaves headroom and keeps each position
     # large enough to matter. Raising this makes every order smaller and the fee floor bite sooner.
-    'max_positions': 5,
+    'max_positions': 20,
     # Equal weight: each new position targets equity / max_positions.
     # The ceiling a single name may reach including gains, so one winner cannot become the account.
     'max_position_fraction': 0.30,
@@ -73,14 +73,14 @@ SETTINGS = {
     #   'time'        no stop and no target: the position is held for max_holding_days and then sold.
     #                 This is how the cost of the stop gets separated from the cost of the selection.
     #   'hold'        never sell. Diagnostic only: it measures the entry rule on its own.
-    'exit_mode': 'target_stop',
+    'exit_mode': 'trail',
     # A multiple of the risk actually taken, for 'target_stop'. At an 8% stop this asks for a 12% move,
     # against a measured median distance to fair value of 33% -- so it is reachable, which larger
     # multiples are not. The replay's best cell also sits here; that is a coincidence and not evidence,
     # because the cell next to it (1.75) returns -1.4% on 22 trades.
     'target_r_multiple': 1.5,
     # For 'trail': how much of the best price reached may be given back before leaving.
-    'trail_fraction': 0.10,
+    'trail_fraction': 0.25,
     # The valuation's own fair value is a ceiling on the target: this agent does not forecast above it.
     'cap_target_at_fair': True,
     # --- Hold -------------------------------------------------------------------------------------

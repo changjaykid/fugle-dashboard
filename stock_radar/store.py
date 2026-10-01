@@ -47,6 +47,12 @@ CREATE TABLE IF NOT EXISTS paper_trades(id TEXT PRIMARY KEY, at TEXT NOT NULL, d
  symbol TEXT NOT NULL, side TEXT NOT NULL, payload TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS paper_positions(symbol TEXT PRIMARY KEY, payload TEXT NOT NULL);
 CREATE INDEX IF NOT EXISTS paper_trades_day ON paper_trades(day);
+-- Every candidate the scanner scored, bought or not, with what the market did next. The account
+-- records five to thirty fills a month; this records the eighty-odd decisions a day that the fills
+-- were chosen from, which is what makes a month of data answerable rather than anecdotal.
+CREATE TABLE IF NOT EXISTS v1_journal(id TEXT PRIMARY KEY, day TEXT NOT NULL, symbol TEXT NOT NULL,
+ payload TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS v1_journal_day ON v1_journal(day);
 '''
 
 

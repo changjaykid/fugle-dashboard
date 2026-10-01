@@ -105,6 +105,8 @@ def advance(store, book, day, bars, orders, settings, source, schedule, scan):
                             plan={k: order.get(k) for k in
                                   ('stop', 'target', 'support', 'fair', 'r_multiple', 'band',
                                    'exit_mode', 'setup', 'score')})
+        if position is not None:
+            position['peak'] = position['entry']
         position['source'] = source
         book.trades[-1]['source'] = source
         out['bought'].append({'symbol': order['symbol'], 'name': order['name'], 'shares': shares,
@@ -143,7 +145,7 @@ def advance(store, book, day, bars, orders, settings, source, schedule, scan):
         next_orders = [{'symbol': c['symbol'], 'name': c['name'], 'kind': 'stock',
                         'entry': c['entry'], 'stop': c['stop'], 'target': c['target'],
                         'support': c['stop'], 'fair': None, 'band': c['grade'],
-                        'r_multiple': c['rr'], 'exit_mode': 'structural',
+                        'r_multiple': c['rr'], 'exit_mode': 'trail',
                         'setup': c['setup'], 'score': c['total']}
                        for c in scan.get('candidates', [])][:settings['max_positions']]
         out['queued'] += [{'symbol': o['symbol'], 'name': o['name'], 'entry': o['entry'],
@@ -181,7 +183,7 @@ def session(store, now, settings=None, source='live'):
     # Strategy v1's scan is read only when `use_v1` is set, and it is not. It was measured at 19 of 80
     # against random draws from its own universe, so trading it would fill the forward record with a rule
     # already known to be worse than chance -- which is the opposite of what the record is for.
-    scan = (store.meta('v1_candidates') or {}) if settings.get('use_v1') else {}
+    scan = (store.meta('v1_candidates') or {}) if settings.get('use_v1', True) else {}
     orders = state.get('orders') or []
     steps = []
     for day in pending:
