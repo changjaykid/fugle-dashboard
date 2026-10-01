@@ -131,9 +131,10 @@ def plan_for(entry, support, fair=None, settings=None):
     """Entry, stop and target together, or None with the reason it cannot be traded."""
     s = {**SETTINGS, **(settings or {})}
     if s['exit_mode'] in ('fair', 'trail', 'hold'):
-        # No stop below the entry, so there is no stop distance to refuse an entry for. The target is
-        # the valuation's own fair value; without one there is nothing to aim at.
-        if s['exit_mode'] != 'hold' and not (fair and fair > entry):
+        # No stop below the entry, so there is no stop distance to refuse an entry for. 'fair' aims at
+        # the valuation's fair value and needs one; a trailing stop needs no target at all, and demanding
+        # one silently bought nothing at all under the strength entry model, which has no fair value.
+        if s['exit_mode'] == 'fair' and not (fair and fair > entry):
             return None, '沒有高於進場價的合理價，無法設定出場'
         return {'entry': entry, 'stop': None, 'target': fair if fair else None,
                 'stop_fraction': None, 'stop_widened': False,

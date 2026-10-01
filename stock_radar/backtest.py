@@ -68,6 +68,31 @@ def inputs(store):
             'insts': insts, 'fins': fins}
 
 
+def strength_picks_on(data, k, settings=None):
+    """The strength model's list for day k: the whole liquid universe ranked by range position.
+
+    Deliberately not valued. The scan that produced this model ranked on price structure alone, and
+    adding a valuation gate on top would be testing a third thing while claiming to test the second."""
+    from . import entry as entry_model
+    prices, days = data['prices'], data['days']
+    window = prices[:k + 1]
+    liquid = market.liquidity(window)
+    out = []
+    for sym, inst in data['insts'].items():
+        if liquid.get(sym, 0) < market.LIQUIDITY_LOTS:
+            continue
+        bars = [prices[j][1].get(sym) for j in range(max(0, k - 59), k + 1)]
+        if not bars or not bars[-1]:
+            continue
+        pick, why = entry_model.strength_candidate(sym, inst.get('name') or sym, inst['kind'],
+                                                   bars, settings)
+        if pick:
+            out.append({**pick, 'band': 'strength', 'discount': pick['rank']})
+    out.sort(key=lambda x: -x['rank'])
+    slots = {**entry_model.SETTINGS, **(settings or {})}['slots']
+    return out[:slots]
+
+
 def picks_on(data, k):
     """What the close of day k put in the buy zone, cheapest first. Independent of the exit settings.
 
@@ -112,8 +137,10 @@ def picks_on(data, k):
             + [x for x in out if x['kind'] != 'stock'][:ETF_SLOTS])
 
 
-def scan(data, start, cache=None):
-    """Every day's buy-zone list, computed once. Written to `cache` so a sweep reuses it."""
+def scan(data, start, cache=None, model='value_band', settings=None):
+    """Every day's candidate list, computed once. Written to `cache` so a sweep reuses it."""
+    if model == 'strength':
+        return {k: strength_picks_on(data, k, settings) for k in range(start, len(data['days']))}
     if cache and Path(cache).is_file():
         stored = json.loads(Path(cache).read_text())
         if stored.get('days') == data['days'][start:]:
@@ -132,7 +159,7 @@ def orders_from(picks, settings):
     for pick in picks:
         geometry, _ = strategy.plan_for(pick['entry'], pick['support'], pick.get('fair'), settings)
         if geometry:
-            out.append({**pick, **geometry})
+            out.append({**pick, **geometry, 'fill': pick.get('fill', 'limit')})
     return out
 
 
@@ -143,7 +170,7 @@ def run(store, settings=None, from_index=None, verbose=False, data=None, picks=N
     days = data['days']
     # The first day the P/E median can be built from the required number of samples.
     start = from_index if from_index is not None else 120
-    picks = picks if picks is not None else scan(data, start)
+    picks = picks if picks is not None else scan(data, start, model=settings.get('entry_model', 'value_band'))
     book = paper.Book(settings.get('starting_cash', 100000), started_day=days[start])
     orders, log = [], []
     # `to_index` lets the replay stop short of the newest bar, so the live driver has a day left to
@@ -167,7 +194,8 @@ def run(store, settings=None, from_index=None, verbose=False, data=None, picks=N
             # Production's 08:55 recheck blocks a pick that has already broken its support.
             if bar[0] and bar[0] < order['support']:
                 continue
-            fill = book.fill_price(bar, order['entry'], 'buy')
+            # A market-on-open order pays the open; a limit waits for the price to come to it.
+            fill = bar[0] if order.get('fill') == 'open' and bar[0] else book.fill_price(bar, order['entry'], 'buy')
             if fill is None:
                 continue
             shares, why = strategy.size_for(book.equity(), book.available(), fill, order['stop'], settings)
