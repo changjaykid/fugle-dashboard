@@ -83,7 +83,8 @@ def run(store, kinds=('prices', 'ratios'), years=5, pause=PAUSE, http=None, log=
             added[kind] += 1
             got_any = True
         empty_run = 0 if got_any else empty_run + 1
-        if added['prices'] and added['prices'] % 50 == 0 and got_any:
+        first = kinds[0]
+        if added[first] and added[first] % 50 == 0 and got_any:
             log(json.dumps({'status': 'progress', 'at': day, **added}, ensure_ascii=False), flush=True)
         cursor -= timedelta(days=1)
     log(json.dumps({'status': 'done', 'stopped_at': str(cursor), 'added': added,

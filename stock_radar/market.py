@@ -20,7 +20,9 @@ PARAMS={'prices':{'type':'ALLBUT0999'},'ratios':{'selectType':'ALL'},'flows':{'s
 # sync() deletes everything past these counts, so lowering them throws history away.
 # What this does NOT change: production still reads only the recent window it needs (SCAN_DAYS), so the
 # nightly scan does not get slower as the archive grows.
-KEEP={'prices':2200,'ratios':2200,'flows':10}
+# flows joins prices and ratios at full depth: Strategy v1 scores institutional flow at 15 of 100
+# points, and ten days cannot be backtested against anything.
+KEEP={'prices':2200,'ratios':2200,'flows':2200}
 # The window the live pipeline reads. A year of ratios is what valuation_engine's median needs, plus
 # slack for missed sessions; research loads the whole archive instead by passing no limit.
 SCAN_DAYS=270
