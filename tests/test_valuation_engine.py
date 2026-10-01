@@ -28,6 +28,29 @@ class ComputeTests(unittest.TestCase):
   # same price history at a different multiple. 8033 was recommended at 11.35x book on a median P/E of 207.
   v,why=ve.compute(INST,CLOSE,rev(),history(pe='80',pe_today='70'))
   self.assertIsNone(v);self.assertIn('本益比中位數 80 倍',why);self.assertIn('兩種方法都不適用',why)
+ def test_an_inapplicable_method_retires_the_price_it_already_published(self):
+  # Refusing to recompute is not enough: the old buy price stays live for its four-day validity, so
+  # 8033 and 3715 were still being recommended two days after the engine decided it could not value
+  # them. A refusal about the company retires the price; a refusal about today's data does not.
+  from stock_radar.valuation_engine import Inapplicable,publish_all
+  now=datetime(2026,9,21,10,tzinfo=TW)
+  with tempfile.TemporaryDirectory() as td:
+   s=Store(Path(td)/'db');inst={'symbol':'T','kind':'stock','name':'測試'};s.upsert_instruments([inst])
+   s.set_meta('analysis_authority',{'decision':'user-confirmed-2026-09-14','autonomous_research':True})
+   v={'sweet':70,'add':80,'buy':90,'method':'pb_band','thesis':'t','reason':'r','review_mode':'rule-engine-v1',
+      'as_of':now.isoformat(),'valid_until':(now+timedelta(days=4)).isoformat(),'evidence_reviewed':True,
+      'sources':[{'url':'https://example.com','as_of':now.isoformat()}]}
+   s.publish_rule_valuation(s.propose('T',v,now=now),now=now)
+   self.assertIsNotNone(s.active('T'))
+   # A late fetch leaves the published price alone.
+   self.assertEqual(publish_all(s,now,[(inst,None,'缺少本益比資料')])[0][1],'skip')
+   self.assertIsNotNone(s.active('T'))
+   # A method that does not fit the company takes it out of service.
+   row=publish_all(s,now,[(inst,None,Inapplicable('本益比中位數 207 倍，兩種方法都不適用'))])[0]
+   self.assertEqual(row[1],'retired')
+   self.assertIsNone(s.active('T'))
+   self.assertIn('retire_valuation',[r[0] for r in s.db.execute('SELECT action FROM audit')])
+   s.close()
  def test_thin_earnings_still_uses_book_for_financials_and_cyclicals(self):
   # The policy route is unaffected: these are valued on book by design, whatever their P/E does.
   v,_=ve.compute({**INST,'industry_code':'金融保險業'},CLOSE,rev(),history(pe='80',pe_today='70'))

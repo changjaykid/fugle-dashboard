@@ -33,6 +33,20 @@ BOOK_INDUSTRIES={'金融保險業':'金融業以淨值（P/B）評價','航運�
 # 4 days: one missed session (holiday, late TWSE file, failed run) must not expire a valuation.
 MONTHS=13;MIN_SAMPLES=120;BANDS=(.65,.75,.85);VALID_DAYS=4;PAUSE=2.0
 
+class Inapplicable(str):
+    """A refusal that says the method does not fit this stock, not that today's data is late.
+
+    The difference decides what happens to the price already published. A missing ratio row or a failed
+    fetch is why valuations last four days: the old one stands and the next run fixes it. But "its median
+    P/E is 207 so neither earnings nor book can price it" is a judgement about the company, and leaving
+    last week's buy price live for four more days means recommending a price the engine has just said it
+    cannot justify -- which is what 8033 and 3715 did on 2026-10-01, two days after the rule changed.
+
+    It is a str so every existing caller keeps printing and storing it unchanged; publish_all is the only
+    thing that looks for the flag."""
+    retire = True
+
+
 def _num(v):
     try:n=float(str(v).replace(',',''))
     except (TypeError,ValueError):return None
@@ -99,13 +113,13 @@ def compute(inst,close,fin,history):
     elif thin and not book:
         # Priced above MAX_FAIR_PE on earnings the market is ignoring. Book would only re-describe the
         # same price history at a different multiple, so neither method can price it: say so instead.
-        return None,(f"過去一年本益比中位數 {statistics.median(pes):.0f} 倍，獲利無法支撐股價；"
-                     '淨值法只會換個倍數複製同一段價格史，兩種方法都不適用，不提供買點。')
+        return None,Inapplicable(f"過去一年本益比中位數 {statistics.median(pes):.0f} 倍，獲利無法支撐股價；"
+                                 '淨值法只會換個倍數複製同一段價格史，兩種方法都不適用，不提供買點。')
     elif _num(today[4]) and len(pbs)>=MIN_SAMPLES:
         bvps=px/_num(today[4]);fair_pb=statistics.median(pbs);fair=bvps*fair_pb
         if fair_pb>MAX_FAIR_PB:
-            return None,(f"過去一年股價淨值比中位數 {fair_pb:.1f} 倍（上限 {MAX_FAIR_PB} 倍），"
-                         '淨值已無法解釋股價，淨值法不適用，不提供買點。')
+            return None,Inapplicable(f"過去一年股價淨值比中位數 {fair_pb:.1f} 倍（上限 {MAX_FAIR_PB} 倍），"
+                                     '淨值已無法解釋股價，淨值法不適用，不提供買點。')
         why=(f"{book}，獲利高低會隨景氣或利率大幅波動，不用當期本益比" if book and book.startswith('景氣') else book) if book else '過去一年多數時間沒有可用本益比（虧損或無資料）'
         reason=f"{why}，改用淨值：每股淨值 {bvps:.2f} 元（收盤 {px:g} ÷ 股價淨值比 {_num(today[4]):g}）× 過去一年股價淨值比中位數 {fair_pb:.2f} 倍 ＝ 合理價 {fair:.2f} 元。此為淨值基準，不是獲利基準。"
         v={'method':'pb_band','inputs':{'book_value_per_share':round(bvps,4),'fair_pb':round(fair_pb,4),'pb_today':_num(today[4]),'samples':len(pbs)}}
@@ -134,7 +148,17 @@ def publish_all(s,now,built):
     """built: [(inst, valuation or None, reason)]. Republish only when prices change or validity runs short."""
     out=[];anchors={}
     for inst,v,why in built:
-        if not v:out.append((inst['symbol'],'skip',why));continue
+        if not v:
+            # A method that does not fit must not leave its own old price standing for four more days.
+            if getattr(why,'retire',False) and s.active(inst['symbol']):
+                from .valuation_quality import anchor_protected
+                if anchor_protected(s.active(inst['symbol']),now):
+                    out.append((inst['symbol'],'skip','研究價位受保護，不因規則不適用而退役'))
+                else:
+                    s.retire_valuation(inst['symbol'],str(why),now=now)
+                    out.append((inst['symbol'],'retired',str(why)))
+                continue
+            out.append((inst['symbol'],'skip',why));continue
         old=s.active(inst['symbol']);left=stamp((old or {}).get('valid_until'))
         from .valuation_quality import anchor_protected,anchor_state
         state=anchor_state(old,now)

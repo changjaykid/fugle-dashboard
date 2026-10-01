@@ -249,6 +249,23 @@ class Store:
             self.db.execute("UPDATE valuations SET status='active',applied_at=?,applied_by=? WHERE id=?", (now.isoformat(), 'rule-engine', proposal_id))
             self.audit('publish_rule_valuation', {'id': proposal_id, 'authority': authority['decision']})
 
+    def retire_valuation(self, symbol, reason, *, now=None):
+        """Take a published valuation out of service because its method no longer fits the stock.
+
+        Not a correction and not a replacement: afterwards the symbol has no active valuation at all and
+        is simply not priced, which is the honest state when the engine cannot value it. Recorded, like
+        every other change to a published price."""
+        now = now or datetime.now(TW)
+        with self.transaction():
+            row = self.db.execute(
+                "SELECT id,payload FROM valuations WHERE symbol=? AND status='active'", (symbol,)).fetchone()
+            if not row:
+                return None
+            self.db.execute("UPDATE valuations SET status='retired' WHERE id=?", (row['id'],))
+            self.audit('retire_valuation', {'symbol': symbol, 'id': row['id'], 'reason': reason,
+                                            'at': now.isoformat()})
+            return row['id']
+
     def meta(self, key):
         r = self.db.execute('SELECT payload FROM metadata WHERE key=?', (key,)).fetchone()
         return json.loads(r[0]) if r else {}
