@@ -406,9 +406,13 @@ TRADE = {
     #   no stop, 120-day hold      57/80,   2   <- two trades a window is buy-and-hold, not a strategy
     # A monotonic response across seven variants is evidence; the top cell of a sweep is not, which is
     # why this takes the one that still turns over rather than the highest number.
+    #   trailing 25%, no cap       51/80, 5 of 8 windows   <- deployed
+    # The cap was the error: trailing 25% WITH a 60-day cap was never in the sweep, and measured
+    # afterwards it is 40/80 and 3 of 8, because capping doubles the turnover and the costs take the
+    # difference. What is deployed is what was measured.
     'exit': 'trail',
     'trail_fraction': 0.25,
-    'max_holding_days': 60,
+    'max_holding_days': 0,
 }
 
 

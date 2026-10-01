@@ -96,7 +96,15 @@ def advance(store, book, day, bars, orders, settings, source, schedule, scan):
         fill = book.fill_price(bar, order['entry'], 'buy')
         if fill is None:
             continue
-        shares, why = strategy.size_for(book.equity(), book.available(), fill, order.get('stop'),
+        # Size against the distance that actually ends the trade, not the one that priced it. The
+        # structural stop (8-12%) sets the entry and the R:R; a 25% trailing stop is what the position
+        # is really exposed to, and sizing on the smaller number would claim a risk the plan does not
+        # run. At twenty slots equal weight binds first so the number is the same either way today --
+        # which is exactly why the calculation has to be right before the slot count changes.
+        risk_stop = order.get('stop')
+        if (order.get('exit_mode') or settings.get('exit_mode')) == 'trail':
+            risk_stop = fill * (1 - settings.get('trail_fraction', strategy.SETTINGS['trail_fraction']))
+        shares, why = strategy.size_for(book.equity(), book.available(), fill, risk_stop,
                                         settings, order.get('kind', 'stock'))
         if not shares:
             out['queued'].append({'symbol': order['symbol'], 'skipped': why})

@@ -84,8 +84,11 @@ SETTINGS = {
     # The valuation's own fair value is a ceiling on the target: this agent does not forecast above it.
     'cap_target_at_fair': True,
     # --- Hold -------------------------------------------------------------------------------------
-    # Dead capital is a cost that no stop measures. 0 disables the time stop.
-    'max_holding_days': 60,
+    # Off. The 25% trailing stop is the only thing that ends a position, which is the configuration
+    # that was actually measured: 51 of 80 against random draws, 5 of 8 windows. Adding a 60-day cap to
+    # it was never tested and came out at exactly chance (40 of 80, 3 of 8) -- the cap doubles the
+    # turnover and spends the edge on costs. Deployed on the user's decision with that difference stated.
+    'max_holding_days': 0,
     # Once a position has gained this much, the stop moves up to the entry plus its round-trip cost, so
     # a winner cannot become a loser. Off: across the 108-cell replay, 0.08 was actively worse than
     # either neighbour (median +2.54% against +7.40% off and +8.61% at 0.15), and off is
