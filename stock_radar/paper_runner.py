@@ -77,31 +77,14 @@ def benchmark(store, since):
             'median_pct': round(moves[len(moves) // 2] * 100, 2)}
 
 
-def session(store, now, settings=None, source='live'):
-    """Advance the account to the last completed trading day. Returns what happened, for the report."""
-    settings = {**strategy.SETTINGS, **(settings or {})}
-    schedule = store.meta('trading_calendar')
-    day = str(buy_plan.last_completed_day(now, schedule))
-    state = store.meta('paper_runner') or {}
-    if state.get('last_day') and state['last_day'] >= day:
-        return {'status': 'already_done', 'day': day, 'last_day': state['last_day']}
-
-    prices = market.load(store, 'prices')
-    if not prices or prices[-1][0] != day:
-        # Acting on stale bars would invent fills. The account simply does not move today.
-        return {'status': 'no_bars', 'day': day,
-                'have': prices[-1][0] if prices else None}
-    bars = prices[-1][1]
+def advance(store, book, day, bars, orders, settings, source, schedule, data, index):
+    """One trading day against one day's real bars. Returns what happened and tomorrow's orders."""
     at = f'{day}T13:30:00+08:00'
-    book = paper.Book.load(store) or paper.Book(settings['starting_cash'], started_day=day)
-
-    out = {'status': 'ok', 'day': day, 'source': source, 'settled': [], 'bought': [], 'sold': [],
-           'stale_marks': [], 'queued': []}
-
+    out = {'day': day, 'settled': [], 'bought': [], 'sold': [], 'stale_marks': [], 'queued': []}
     out['settled'] = [p['symbol'] for p in book.settle(day)]
 
     # 1. Yesterday's orders, against today's real bar.
-    for order in state.get('orders') or []:
+    for order in orders:
         if len(book.positions) >= settings['max_positions'] or order['symbol'] in book.positions:
             continue
         bar = bars.get(order['symbol'])
@@ -113,7 +96,8 @@ def session(store, now, settings=None, source='live'):
         fill = book.fill_price(bar, order['entry'], 'buy')
         if fill is None:
             continue
-        shares, why = strategy.size_for(book.equity(), book.available(), fill, order.get('stop'), settings)
+        shares, why = strategy.size_for(book.equity(), book.available(), fill, order.get('stop'),
+                                        settings, order.get('kind', 'stock'))
         if not shares:
             out['queued'].append({'symbol': order['symbol'], 'skipped': why})
             continue
@@ -122,6 +106,7 @@ def session(store, now, settings=None, source='live'):
                                   ('stop', 'target', 'support', 'fair', 'r_multiple', 'band',
                                    'exit_mode')})
         position['source'] = source
+        book.trades[-1]['source'] = source
         out['bought'].append({'symbol': order['symbol'], 'name': order['name'], 'shares': shares,
                               'price': fill, 'value': round(shares * fill, 2),
                               'order_type': position['order_type'],
@@ -141,6 +126,8 @@ def session(store, now, settings=None, source='live'):
         record = book.sell(symbol, leave['price'], day, at, leave['reason'],
                            release_day=next_trading_day(day, schedule, paper.SETTLEMENT_DAYS))
         record['held_days'] = held
+        record['source'] = source
+        book.trades[-1]['source'] = source
         out['sold'].append({'symbol': symbol, 'name': record['name'], 'shares': record['shares'],
                             'price': leave['price'], 'reason': leave['reason'], 'why': leave['why'],
                             'profit': record['profit'], 'return_pct': record['return_pct'],
@@ -148,23 +135,65 @@ def session(store, now, settings=None, source='live'):
 
     # 3. Mark, then queue tomorrow.
     out['stale_marks'] = book.mark(bars, day)
-    orders = []
+    next_orders = []
     if len(book.positions) < settings['max_positions']:
-        data = backtest.inputs(store)
-        picks = backtest.picks_on(data, len(data['days']) - 1)
-        orders = [{k: o.get(k) for k in ('symbol', 'name', 'kind', 'entry', 'stop', 'target',
-                                         'support', 'fair', 'band', 'r_multiple', 'exit_mode')}
-                  for o in backtest.orders_from(picks, settings)]
+        next_orders = [{k: o.get(k) for k in ('symbol', 'name', 'kind', 'entry', 'stop', 'target',
+                                              'support', 'fair', 'band', 'r_multiple', 'exit_mode')}
+                       for o in backtest.orders_from(backtest.picks_on(data, index), settings)]
         out['queued'] += [{'symbol': o['symbol'], 'name': o['name'], 'entry': o['entry'],
-                           'stop': o['stop'], 'target': o['target']} for o in orders]
+                           'stop': o['stop'], 'target': o['target']} for o in next_orders]
+    return out, next_orders
+
+
+def session(store, now, settings=None, source='live'):
+    """Advance the account through every cached trading day it has not processed yet.
+
+    Not just the newest one. On 2026-10-01 the close job died on its first step (sync-universe, a
+    ConnectionReset from the exchange) and never fetched that day's bars; the next close would have
+    found two unprocessed days in the cache and silently acted on only the later one, losing a day of
+    fills and exits. A simulation that skips days is not simulating anything, so missed days are caught
+    up in order, each against its own bars."""
+    settings = {**strategy.SETTINGS, **(settings or {})}
+    schedule = store.meta('trading_calendar')
+    today = str(buy_plan.last_completed_day(now, schedule))
+    state = store.meta('paper_runner') or {}
+    last = state.get('last_day')
+    if last and last >= today:
+        return {'status': 'already_done', 'day': today, 'last_day': last}
+
+    prices = market.load(store, 'prices')
+    days = [d for d, _ in prices]
+    pending = [d for d in days if (not last or d > last) and d <= today]
+    if not pending:
+        # Acting on stale bars would invent fills. The account simply does not move.
+        return {'status': 'no_bars', 'day': today, 'have': days[-1] if days else None,
+                'last_day': last}
+
+    book = paper.Book.load(store) or paper.Book(settings['starting_cash'], started_day=pending[0])
+    data = backtest.inputs(store)
+    orders = state.get('orders') or []
+    steps = []
+    for day in pending:
+        index = days.index(day)
+        result, orders = advance(store, book, day, prices[index][1], orders, settings, source,
+                                 schedule, data, index)
+        steps.append(result)
+
+    merge = lambda key: [item for step in steps for item in step[key]]
+    out = {'status': 'ok', 'day': pending[-1], 'source': source, 'days': pending,
+           'caught_up': pending[:-1], 'settled': merge('settled'), 'bought': merge('bought'),
+           'sold': merge('sold'), 'stale_marks': steps[-1]['stale_marks'],
+           'queued': steps[-1]['queued'],
+           # The cache may still be behind the market when an upstream fetch failed earlier.
+           'behind': None if pending[-1] == today else today}
 
     book.save(store)
-    store.set_meta('paper_runner', {'at': now.isoformat(), 'last_day': day, 'orders': orders,
+    store.set_meta('paper_runner', {'at': now.isoformat(), 'last_day': pending[-1], 'orders': orders,
                                     'source': source, 'strategy_version': strategy.VERSION,
                                     'settings': {k: settings[k] for k in sorted(strategy.SETTINGS)}})
     out['performance'] = paper.performance(book)
     out['benchmark'] = benchmark(store, book.started_day)
-    store.set_meta('paper_performance', {'at': now.isoformat(), 'day': day, **out['performance'],
+    store.set_meta('paper_performance', {'at': now.isoformat(), 'day': pending[-1], **out['performance'],
                                          'benchmark': out['benchmark'],
                                          'started_day': book.started_day,
                                          'seeded_from': (store.meta('paper_runner') or {}).get('seeded_from')})
@@ -178,7 +207,9 @@ def text(result, store=None):
         return f"模擬帳戶 {result['day']}：{reason.get(result['status'], result['status'])}"
     p = result['performance']
     sign = '+' if p['total_return_pct'] >= 0 else ''
-    lines = [f"模擬帳戶 {result['day']}（起始 {p['starting_cash']:,.0f} 元）",
+    caught = result.get('caught_up') or []
+    lines = [f"模擬帳戶 {result['day']}（起始 {p['starting_cash']:,.0f} 元）"
+             + (f"｜補跑 {len(caught) + 1} 個交易日：{'、'.join(result['days'])}" if caught else ''),
              f"淨值 {p['net_equity']:,.0f} 元（{sign}{p['total_return_pct']:.2f}%，已扣手續費與證交稅）"]
     bench = result.get('benchmark')
     if bench:
@@ -208,6 +239,8 @@ def text(result, store=None):
             lines.append('明天掛單：' + '、'.join(f"{q['name']} {q['entry']:g}" for q in ready[:5]))
     if result['stale_marks']:
         lines.append('無當日行情、沿用前一標價：' + '、'.join(result['stale_marks']))
+    if result.get('behind'):
+        lines.append(f"注意：{result['behind']} 的收盤 K 線尚未入庫，帳戶只推進到 {result['day']}。")
     return '\n'.join(lines)
 
 

@@ -1,5 +1,5 @@
 """Old-Mac launchd worker: public filings only; never invokes OpenClaw or an LLM."""
-import argparse,datetime,fcntl,json,os,pathlib,subprocess,sys
+import argparse,datetime,fcntl,json,os,pathlib,subprocess,sys,time
 from zoneinfo import ZoneInfo
 H=pathlib.Path.home(); R=H/'kid-agent-os/services/stock-radar'; W=H/'kid-agent-os/services/stock-web'; D=H/'kid-agent-data/stock-radar'; PY='/usr/local/bin/python3'
 os.umask(0o077)
@@ -21,6 +21,24 @@ def run(args,cwd=R):
     return p.stdout
 
 FAILED=[]
+def resilient(args,step,attempts=3,pause=20):
+    """Retry a network step before giving up on the whole evening.
+
+    2026-10-01 18:02: the close job died on its first command, `sync-universe`, with a ConnectionReset
+    from the exchange, and so never fetched that day's bars, never advanced the simulated account, never
+    sent the close review and never published. The same command succeeded by hand forty minutes later,
+    so one reset from the other end had cost a whole trading day. The four opening syncs are the only
+    steps that depend on someone else's server being reachable at an exact minute, so they are the ones
+    that get another go."""
+    for attempt in range(1,attempts+1):
+        try:return run(args)
+        except (RuntimeError,subprocess.TimeoutExpired) as e:
+            if attempt==attempts:raise
+            print(json.dumps({'at':datetime.datetime.now(ZoneInfo('Asia/Taipei')).isoformat(),
+                'status':'retrying','step':step,'attempt':attempt,'error_type':type(e).__name__}),
+                file=sys.stderr,flush=True)
+            time.sleep(pause)
+
 def secondary(args,step):
     # Secondary steps still never block the report or the site. What changed: the failure is carried
     # into the task's own status line. `track evaluate`, `research` and `close_review` all run here, so
@@ -111,7 +129,7 @@ def main():
             try:trading_today=bool(_s.meta('trading_calendar')) and _trading(now.date(),_s.meta('trading_calendar'))
             except Exception:trading_today=False
             finally:_s.close()
-            for cmd in ['sync-universe','sync-calendar','sync-financials','sync-risk']:run(cli+[cmd])
+            for cmd in ['sync-universe','sync-calendar','sync-financials','sync-risk']:resilient(cli+[cmd],cmd)
             run([PY,str(R/'tools/initialize_watchlist.py')])
             run([PY,'-m','stock_radar.research_brief','--db',str(D/'prod.db'),'--sync-close'])
             # Watched-only legacy structure (keeps hand-research anchors); the full-market scan covers the rest.

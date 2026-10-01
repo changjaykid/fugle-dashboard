@@ -26,15 +26,54 @@ def store_with(days, bars_by_day):
 
 
 class RunnerTests(unittest.TestCase):
-    def test_it_refuses_to_act_on_bars_it_does_not_have(self):
-        # Acting on a stale cache would invent a fill. The account simply does not move.
+    def test_it_runs_the_days_it_has_and_says_it_is_behind(self):
+        # Each day is processed against its own bars, so nothing is invented -- but a cache that stops
+        # short of today does not stop the account, it just means the account is behind and says so.
         days = ['2026-04-01']
         store, folder = store_with(days, {'2026-04-01': {'2330': [600, 610, 595, 605, 100]}})
         try:
             out = paper_runner.session(store, NOW)
+            self.assertEqual(out['status'], 'ok')
+            self.assertEqual(out['day'], '2026-04-01')
+            self.assertEqual(out['behind'], '2026-04-03')
+            self.assertIn('尚未入庫', paper_runner.text(out))
+        finally:
+            store.close()
+            shutil.rmtree(folder)
+
+    def test_nothing_to_process_is_reported_not_guessed(self):
+        store, folder = store_with([], {})
+        try:
+            out = paper_runner.session(store, NOW)
             self.assertEqual(out['status'], 'no_bars')
-            self.assertEqual(out['have'], '2026-04-01')
             self.assertIsNone(paper.Book.load(store))
+        finally:
+            store.close()
+            shutil.rmtree(folder)
+
+    def test_a_missed_day_is_caught_up_against_its_own_bars(self):
+        # 2026-10-01: the close job died on sync-universe and never fetched that day. The next close
+        # found two unprocessed days and must act on both, in order, each on its own bar -- not on the
+        # later day's bar, and not by skipping the earlier one.
+        bars = {'2026-04-02': {'2330': [600, 610, 580, 585, 100]},
+                '2026-04-03': {'2330': [585, 700, 584, 695, 100]}}
+        store, folder = store_with(['2026-04-02', '2026-04-03'], bars)
+        try:
+            store.set_meta('paper_runner', {'last_day': '2026-04-01', 'orders': [
+                {'symbol': '2330', 'name': '台積電', 'kind': 'stock', 'entry': 590,
+                 'stop': 542.8, 'target': 660.8, 'support': 560, 'fair': 700,
+                 'band': 'buy', 'r_multiple': 1.5, 'exit_mode': 'target_stop'}]})
+            out = paper_runner.session(store, NOW)
+            self.assertEqual(out['status'], 'ok')
+            self.assertEqual(out['days'], ['2026-04-02', '2026-04-03'])
+            self.assertEqual(out['caught_up'], ['2026-04-02'])
+            # Bought on 04-02 (its low reached 590) and taken out at target on 04-03 (its high did).
+            self.assertEqual([x['symbol'] for x in out['bought']], ['2330'])
+            self.assertEqual(out['bought'][0]['price'], 590)
+            self.assertEqual([x['reason'] for x in out['sold']], ['target'])
+            self.assertEqual(out['sold'][0]['price'], 660.8)
+            self.assertEqual(out['sold'][0]['held_days'], 1)
+            self.assertIn('補跑 2 個交易日', paper_runner.text(out))
         finally:
             store.close()
             shutil.rmtree(folder)
