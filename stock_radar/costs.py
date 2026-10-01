@@ -20,12 +20,20 @@ looks profitable and is not. Set it to the broker's actual factor (e.g. 0.28 for
 """
 FEE_RATE = 0.001425
 FEE_DISCOUNT = 1.0
-FEE_FLOOR = 20.0
+# Fugle (user-confirmed 2026-10-01): NT$20 a round-lot order, NT$1 an odd-lot order. The difference is
+# not a detail. A NT$20 floor made every position under NT$14,035 pay more than its rate, which is why
+# a NT$100,000 account could hold about seven names; at NT$1 that threshold is NT$702, so it can hold as
+# many as it can sensibly follow. The concentration this agent was stuck with -- five names, unable to
+# catch a return distribution whose mean is made by a few large winners -- was a consequence of a fee
+# floor that does not apply to how it would actually trade.
+FEE_FLOOR = 20.0        # round lots, and after-hours fixed-price orders
+FEE_FLOOR_ODD = 1.0     # odd lots (盤中零股)
 TAX_RATE = {'stock': 0.003, 'etf_equity': 0.001, 'etf_other': 0.001}
 
 # The consideration at which the rate finally exceeds the floor. Below it, every extra dollar of
 # position is free, so an order smaller than this is paying for nothing.
 MIN_ORDER_VALUE = round(FEE_FLOOR / (FEE_RATE * FEE_DISCOUNT), 2)
+MIN_ODD_ORDER_VALUE = round(FEE_FLOOR_ODD / (FEE_RATE * FEE_DISCOUNT), 2)
 
 
 LOT = 1000
@@ -48,8 +56,16 @@ def order_split(shares):
 
 
 def fee_for(shares, price, **kw):
-    """Brokerage for a position of `shares`, across however many orders that really is."""
-    return sum(fee(n * price, **kw) for n in order_split(shares))
+    """Brokerage for a position of `shares`, across however many orders that really is.
+
+    Each component carries its own floor: the round-lot part NT$20, the odd-lot part NT$1. A 2,034-share
+    position is two orders and pays both, which is NT$21 rather than the NT$40 a single floor implied."""
+    floor = kw.pop('floor', None)
+    total = 0.0
+    for n in order_split(shares):
+        own = floor if floor is not None else (FEE_FLOOR if n % LOT == 0 else FEE_FLOOR_ODD)
+        total += fee(n * price, floor=own, **kw)
+    return total
 
 
 def order_type(shares):
@@ -93,7 +109,8 @@ def rate_at(value, kind='stock', shares=None, **kw):
     """The real round-trip cost of a position of this size, as a percentage. Used for sizing, and for
     saying why an order was refused rather than silently placing one that cannot win.
 
-    Given `shares` it accounts for the position really being two orders; without it, it assumes one."""
+    Given `shares` it accounts for the position really being two orders, each with its own floor;
+    without it, it assumes a single round-lot order, which is the conservative reading."""
     if value <= 0:
         return float('inf')
     charge = (fee_for(shares, value / shares, **kw) if shares else fee(value, **kw)) * 2

@@ -21,9 +21,14 @@ class CostTests(unittest.TestCase):
         self.assertEqual(costs.order_type(2034), 'mixed')
         self.assertEqual(costs.order_type(2000), 'lot')
         self.assertEqual(costs.order_type(34), 'odd_lot')
-        # The 34-share tail of a NT$10 stock is NT$340 of stock paying its own NT$20 floor.
-        self.assertEqual(costs.fee_for(2034, 10), costs.fee(20000) + 20.0)
-        self.assertGreater(costs.fee_for(2034, 10), costs.fee(20340))
+        # Fugle charges NT$20 a round-lot order and NT$1 an odd-lot order, so the 34-share tail costs
+        # NT$1, not another NT$20. That difference is why the account can hold twenty names: the
+        # fee-efficient minimum order falls from NT$14,035 to NT$702.
+        self.assertEqual(costs.fee_for(2034, 10), costs.fee(20000, floor=costs.FEE_FLOOR) + 1.0)
+        self.assertAlmostEqual(costs.MIN_ODD_ORDER_VALUE, 1 / 0.001425, places=1)
+        # An odd-lot position of NT$5,000 pays its rate, not a floor.
+        self.assertEqual(costs.fee_for(100, 50), float(int(5000 * 0.001425)))
+        self.assertLess(costs.rate_at(5000, 'stock', shares=100), 0.7)
 
     def test_tax_is_sell_side_only_and_lower_for_etfs(self):
         self.assertEqual(costs.buy_cost(1000, 50)['tax'], 0.0)
@@ -80,10 +85,21 @@ class StrategyTests(unittest.TestCase):
         odd, why = strategy.size_for(100000, 100000, 600, 552)
         self.assertIsNone(why)
         self.assertLess(odd, costs.LOT)
-        # Too little cash to clear the ceiling at all: refused, and the reason names the rate.
-        none, why = strategy.size_for(100000, 2500, 100, 92)
+        # Small odd-lot orders are now viable, which is what lets the account hold many names: a
+        # NT$2,500 position pays its rate and is accepted, where a NT$20 floor would have refused it.
+        small, why = strategy.size_for(100000, 2500, 100, 92)
+        self.assertIsNone(why)
+        self.assertGreater(small, 0)
+        # The gate is the cost rate, and with a NT$1 odd-lot floor that only bites on a genuinely tiny
+        # order: NT$100 of stock pays NT$1 each way against NT$0 of tax, which is 2%.
+        none, why = strategy.size_for(100000, 150, 100, 92)
         self.assertEqual(none, 0)
         self.assertIn('來回成本', why)
+        # What keeps positions meaningful is max_positions, not the fee: equal weight over twenty slots
+        # is NT$5,000 of a NT$100,000 account, and the fee stopped being the reason to hold fewer.
+        twenty, why = strategy.size_for(100000, 100000, 50, 46, {'max_positions': 20})
+        self.assertIsNone(why)
+        self.assertLessEqual(twenty * 50, 100000 / 20 + 1)
 
     def test_a_bar_spanning_both_levels_is_resolved_as_a_stop(self):
         position = {'entry': 100, 'stop': 92, 'stop_now': 92, 'target': 112, 'entry_index': 0,

@@ -32,9 +32,9 @@ def record(s,radar,day,at):
 
 def evaluate(s):
     """Fill in outcomes from stored daily bars. Results are kept once known, so the rolling 60-bar cache is enough."""
-    from .market import load
+    from .market import load,SCAN_DAYS
     market={}
-    for d,day in load(s,'prices'):
+    for d,day in load(s,'prices',SCAN_DAYS):
         for sym,r in day.items():market.setdefault(sym,[]).append([f"{int(d[:4])-1911}/{d[5:7]}/{d[8:]}",'','','','',str(r[2]),str(r[3])])
     changed=0
     with s.transaction():

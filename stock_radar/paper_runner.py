@@ -60,7 +60,7 @@ def benchmark(store, since):
     returned +27.92% over the same days, and the 108-cell sweep's median returned +5.71% against the
     same +27.92% -- the comparison is the only thing that distinguishes a strategy from a rising market,
     so it travels with every number this account reports."""
-    prices = market.load(store, 'prices')
+    prices = market.load(store, 'prices', since=since)
     start = next((k for k, (d, _) in enumerate(prices) if d >= since), None)
     if start is None or start >= len(prices) - 1:
         return None
@@ -161,7 +161,8 @@ def session(store, now, settings=None, source='live'):
     if last and last >= today:
         return {'status': 'already_done', 'day': today, 'last_day': last}
 
-    prices = market.load(store, 'prices')
+    # Enough to cover any run of missed sessions without reading the whole archive.
+    prices = market.load(store, 'prices', market.SCAN_DAYS)
     days = [d for d, _ in prices]
     pending = [d for d in days if (not last or d > last) and d <= today]
     if not pending:

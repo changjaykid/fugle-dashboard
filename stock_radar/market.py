@@ -13,7 +13,17 @@ from .store import Store,dumps
 
 URLS={'prices':'https://www.twse.com.tw/exchangeReport/MI_INDEX','ratios':'https://www.twse.com.tw/exchangeReport/BWIBBU_d','flows':'https://www.twse.com.tw/fund/T86'}
 PARAMS={'prices':{'type':'ALLBUT0999'},'ratios':{'selectType':'ALL'},'flows':{'selectType':'ALLBUT0999'}}
-KEEP={'prices':250,'ratios':250,'flows':10}
+# How many trading days of each dataset to retain. prices and ratios hold years rather than one year
+# because the entry-rule research of 2026-10-01 could not tell a signal from a single market regime:
+# 250 days covered 2026-03 to 09, in which 0050 returned 47% and the median liquid stock 13%. Momentum
+# wins in a trend and value loses in one, so a factor measured only there has been measured once.
+# sync() deletes everything past these counts, so lowering them throws history away.
+# What this does NOT change: production still reads only the recent window it needs (SCAN_DAYS), so the
+# nightly scan does not get slower as the archive grows.
+KEEP={'prices':2200,'ratios':2200,'flows':10}
+# The window the live pipeline reads. A year of ratios is what valuation_engine's median needs, plus
+# slack for missed sessions; research loads the whole archive instead by passing no limit.
+SCAN_DAYS=270
 HEADERS={'User-Agent':'Mozilla/5.0 (compatible; StockRadar/1.0)'}
 LIQUIDITY_LOTS=1000;LIQUIDITY_DAYS=20;PAUSE=2.5;LOOKBACK_DAYS=420
 
@@ -81,9 +91,17 @@ def sync(s,now,http=None,pause=PAUSE,keep=KEEP):
             with s.transaction():s.db.executemany('DELETE FROM market_days WHERE kind=? AND day=?',[(kind,x) for x in days])
     return failed
 
-def load(s,kind,n=None):
-    """[(day, {symbol: row})] oldest first, the last n stored trading days."""
-    rows=s.db.execute('SELECT day,payload FROM market_days WHERE kind=? ORDER BY day DESC'+(' LIMIT ?' if n else ''),(kind,n) if n else (kind,)).fetchall()
+def load(s,kind,n=None,since=None):
+    """[(day, {symbol: row})] oldest first: the last n stored trading days, or everything from `since`.
+
+    Pass one of them. The archive now holds years rather than one year, and a daily job that loads all
+    of it parses tens of megabytes of JSON for the sake of the last twenty days -- so every caller in the
+    live pipeline bounds what it asks for, and only research loads the lot."""
+    where='SELECT day,payload FROM market_days WHERE kind=?';args=[kind]
+    if since:where+=' AND day>=?';args.append(since)
+    where+=' ORDER BY day DESC'
+    if n:where+=' LIMIT ?';args.append(n)
+    rows=s.db.execute(where,tuple(args)).fetchall()
     return [(r[0],json.loads(r[1])) for r in reversed(rows)]
 
 def liquidity(prices,days=LIQUIDITY_DAYS):

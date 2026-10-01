@@ -70,6 +70,8 @@ SETTINGS = {
     #   'target_stop' a fixed target at a multiple of the risk, with the structural stop below.
     #   'fair'        no stop below the entry; sell when the price reaches the valuation's fair value.
     #   'trail'       sell at fair, but give back no more than `trail_fraction` from the peak.
+    #   'time'        no stop and no target: the position is held for max_holding_days and then sold.
+    #                 This is how the cost of the stop gets separated from the cost of the selection.
     #   'hold'        never sell. Diagnostic only: it measures the entry rule on its own.
     'exit_mode': 'target_stop',
     # A multiple of the risk actually taken, for 'target_stop'. At an 8% stop this asks for a 12% move,
@@ -130,7 +132,7 @@ def target_for(entry, stop_price, fair=None, settings=None):
 def plan_for(entry, support, fair=None, settings=None):
     """Entry, stop and target together, or None with the reason it cannot be traded."""
     s = {**SETTINGS, **(settings or {})}
-    if s['exit_mode'] in ('fair', 'trail', 'hold'):
+    if s['exit_mode'] in ('fair', 'trail', 'hold', 'time'):
         # No stop below the entry, so there is no stop distance to refuse an entry for. 'fair' aims at
         # the valuation's fair value and needs one; a trailing stop needs no target at all, and demanding
         # one silently bought nothing at all under the strength entry model, which has no fair value.
@@ -210,11 +212,14 @@ def exit_check(position, bar, held_days, settings=None):
     high, low = bar[1], bar[2]
     if mode == 'hold':
         return None
-    stop = position.get('stop_now') or position.get('stop')
+    if mode == 'time':
+        # Nothing but the clock. Falls through to the holding check below.
+        pass
+    stop = None if mode == 'time' else (position.get('stop_now') or position.get('stop'))
     if stop and low <= stop:
         return {'reason': 'stop' if mode == 'target_stop' else 'trail',
                 'price': min(stop, bar[0]), 'why': f"跌破停損 {stop:g}"}
-    target = position.get('target')
+    target = None if mode == 'time' else position.get('target')
     if target and high >= target:
         return {'reason': 'target', 'price': max(target, bar[0]),
                 'why': f"達到目標 {target:g}"}
@@ -233,6 +238,8 @@ def ratchet(position, bar, settings=None):
     'trail' keeps it a fixed distance under the best price the position has seen."""
     s = {**SETTINGS, **(settings or {})}
     mode = position.get('plan', {}).get('exit_mode') or s['exit_mode']
+    if mode in ('hold', 'time'):
+        return None
     entry = position['entry']
     current = position.get('stop_now') or position.get('stop')
     position['peak'] = max(position.get('peak') or entry, bar[1])

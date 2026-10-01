@@ -90,7 +90,7 @@ def candidates(s,liquid,now):
     return order[:CANDIDATE_CAP]
 
 def scan(s,now):
-    prices=market.load(s,'prices');ratios=market.load(s,'ratios');flows=market.load(s,'flows',5)
+    prices=market.load(s,'prices',market.SCAN_DAYS);ratios=market.load(s,'ratios',market.SCAN_DAYS);flows=market.load(s,'flows',5)
     if not prices:return {'error':'尚無全市場價格資料'}
     liq=market.liquidity(prices);s.set_meta('liquidity',{'as_of':prices[-1][0],'min_lots':market.LIQUIDITY_LOTS,'lots':liq})
     targets=[i for i in s.instruments() if i.get('market')=='TSE' and (i['kind']=='stock' or (i['kind'] in ETF_KINDS and not i['symbol'].endswith(DECAYING_SUFFIX)))]

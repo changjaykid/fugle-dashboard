@@ -16,7 +16,7 @@ SHOW=3
 def session(s,day):
     """{symbol: [open,high,low,close,lots]} for one trading day, from the full-market cache."""
     from .market import load
-    for stamp,rows in reversed(load(s,'prices')):
+    for stamp,rows in reversed(load(s,'prices',40)):
         if stamp==day:return rows
     return {}
 
