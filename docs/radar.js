@@ -299,6 +299,16 @@
     if(!p||!p.performance){section.hidden=true;return;}
     section.hidden=false;
     const f=p.performance,b=p.benchmark;
+    // An account that has been started and has not traded yet is a real state, not a missing one.
+    // Hiding it made a deliberate reset look like a broken export.
+    if(!f.closed_trades&&!f.open_positions&&f.net_equity===f.starting_cash){
+      $('paper-stamp').textContent=`${p.started_day} 起｜起始 ${money(f.starting_cash)} 元`;
+      $('paper-head').innerHTML=`<span class="paper-equity">${money(f.net_equity)} 元</span>`+
+        `<span class="paper-bench">帳戶已重置，尚未有任何交易。第一筆會在掃描出符合條件的標的後產生。</span>`;
+      $('paper-stats').innerHTML='';$('paper-open').innerHTML='';$('paper-closed').innerHTML='';
+      $('paper-note').textContent=`策略參數：${JSON.stringify(p.settings||{})}`;
+      return;
+    }
     const excess=b?f.total_return_pct-b.equal_weight_pct:null;
     $('paper-stamp').textContent=`${p.started_day} 起｜起始 ${money(f.starting_cash)} 元`;
     $('paper-head').innerHTML=
