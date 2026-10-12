@@ -36,3 +36,8 @@
 .paper-sub{margin:14px 0 2px;font-size:.88rem;font-weight:600}
 .paper-tag{display:inline-block;padding:1px 6px;margin-left:6px;border-radius:5px;font-size:.7rem;background:#eef1f4;color:#5b6166}
 .paper-scroll{overflow-x:auto}
+
+/* The account's strategy settings are printed as one JSON string with no break opportunity, and on a
+   phone it pushed the whole page sideways (1,763px against 375). Now that the account is the page's
+   main content rather than a section below the fold, that matters. Break it anywhere. */
+#paper-note{overflow-wrap:anywhere;word-break:break-word}
