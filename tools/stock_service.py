@@ -56,7 +56,15 @@ SITE='https://changjaykid.github.io/fugle-dashboard/'
 def alert(text):
     # A silent morning looks like "nothing to buy"; say plainly that the system failed instead.
     try:run([PY,'-m','stock_radar.research_brief','--db',str(D/'prod.db'),'--alert',text,'--send'])
-    except Exception:pass
+    except Exception as e:
+        # This is the one path whose entire purpose is to make a failure visible,
+        # and it swallowed its own. Every 系統異常 and 流程不完整 notice goes
+        # through here, so when it fails the absence of a warning reads as the
+        # absence of a problem -- the exact confusion this function exists to
+        # prevent. It still must not raise: a caller is mid-report.
+        print(json.dumps({'at':datetime.datetime.now(ZoneInfo('Asia/Taipei')).isoformat(),
+                          'status':'alert_undelivered','error_type':type(e).__name__}),
+              file=sys.stderr,flush=True)
 
 def announce_anchors(now):
     """A hand-researched price can only be renewed by a person, so its expiry has to reach one.
@@ -93,9 +101,32 @@ def main():
     # Kill switch (no LLM, no network): `touch ~/kid-agent-data/stock-radar/PAUSED` stops every stock job; rm resumes.
     if (D/'PAUSED').exists():
         print(json.dumps({'at':now.isoformat(),'task':a.task,'status':'paused'}));return
+    # Two jobs can be scheduled on the same minute. intraday gained a 10:00 slot
+    # on 2026-09-26; the Saturday weekly review has been at 10:00 since 09-14.
+    # They take this lock, and the loser used to return without a word --
+    # weekly.log holds exactly two lines, 09-19 and 09-26, for that reason. The
+    # only model call this agent makes went twelve days unmade and nothing said
+    # so, because a skipped run and a run with nothing to do left the same trace:
+    # none.
+    #
+    # A review of a week that has already ended is not sensitive to the minute,
+    # so it waits. Intraday work is about this minute and must not be made late
+    # by waiting, so it still gives up at once -- but it says so either way,
+    # because "this run was skipped" is not "there was nothing to do".
+    patient = a.task in ('weekly','outlook','close','refresh')
     with (D/'service.lock').open('w') as lock:
-        try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
-        except BlockingIOError:return
+        deadline = time.monotonic() + (180 if patient else 0)
+        while True:
+            try:
+                fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+                break
+            except BlockingIOError:
+                if time.monotonic() >= deadline:
+                    print(json.dumps({'at':now.isoformat(),'task':a.task,'status':'skipped',
+                                      'reason':'another_stock_job_held_the_lock',
+                                      'waited_seconds':180 if patient else 0}),flush=True)
+                    return
+                time.sleep(5)
         cli=[PY,'-m','stock_radar.cli','--db',str(D/'prod.db')]
         if a.task=='intraday':
             # The 09:05 run is the first thing after the only pre-open send, so it is where a missing
