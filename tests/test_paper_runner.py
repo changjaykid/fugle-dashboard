@@ -110,6 +110,43 @@ class RunnerTests(unittest.TestCase):
             store.close()
             shutil.rmtree(folder)
 
+    def test_a_gap_that_leaves_the_stop_too_close_is_not_entered(self):
+        """6691: planned at 789 with its stop 8% away, filled four days later at
+        733 after a 7.1% gap, with the stop 0.97% under the price paid."""
+        bars = {'2026-04-03': {'2330': [733, 775, 730, 747, 100]}}
+        store, folder = store_with(['2026-04-03'], bars)
+        try:
+            store.set_meta('paper_runner', {'last_day': '2026-04-02', 'orders': [
+                {'symbol': '2330', 'name': '台積電', 'kind': 'stock', 'entry': 789,
+                 'stop': 725.88, 'target': 942, 'support': None, 'fair': None,
+                 'band': 'B', 'r_multiple': 2.42, 'exit_mode': 'trail'}]})
+            out = paper_runner.session(store, NOW)
+            self.assertEqual(out['bought'], [])
+            skipped = [q for q in out['queued'] if q.get('skipped')]
+            self.assertEqual(skipped[0]['skipped'], 'stop_too_close_after_gap')
+            self.assertEqual(paper.Book.load(store).available(), strategy.SETTINGS['starting_cash'])
+        finally:
+            store.close()
+            shutil.rmtree(folder)
+
+    def test_a_fill_at_the_planned_entry_keeps_its_full_stop_and_is_entered(self):
+        # Exactly 8% of room -- the boundary the selection itself produces -- is
+        # not refused by a rounding error in the check.
+        bars = {'2026-04-03': {'2330': [800, 810, 785, 795, 100]}}
+        store, folder = store_with(['2026-04-03'], bars)
+        try:
+            store.set_meta('paper_runner', {'last_day': '2026-04-02', 'orders': [
+                {'symbol': '2330', 'name': '台積電', 'kind': 'stock', 'entry': 789,
+                 'stop': 789 * (1 - strategy.SETTINGS['min_stop_fraction']), 'target': 942,
+                 'support': None, 'fair': None, 'band': 'B', 'r_multiple': 2.42,
+                 'exit_mode': 'trail'}]})
+            out = paper_runner.session(store, NOW)
+            self.assertEqual(len(out['bought']), 1)
+            self.assertEqual(out['bought'][0]['price'], 789)
+        finally:
+            store.close()
+            shutil.rmtree(folder)
+
     def test_an_order_whose_price_the_day_never_reached_does_not_fill(self):
         bars = {'2026-04-03': {'2330': [600, 610, 595, 605, 100]}}
         store, folder = store_with(['2026-04-03'], bars)

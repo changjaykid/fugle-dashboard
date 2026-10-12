@@ -96,6 +96,26 @@ def advance(store, book, day, bars, orders, settings, source, schedule, scan):
         fill = book.fill_price(bar, order['entry'], 'buy')
         if fill is None:
             continue
+        # The stop is a fixed price, set when the plan was priced at the entry with
+        # at least min_stop_fraction of room under it. A fill below the entry -- the
+        # market gapped past the limit -- keeps that stop and shrinks the room.
+        #
+        # 6691 was planned at 789 with its stop 8% away at 725.88. Across a
+        # holiday and a weekend it opened 7.1% lower, filled at 733, and the stop
+        # sat 0.97% under the price paid: ordinary noise takes that out. A gap that
+        # size below a breakout's entry is the breakout failing, which is exactly
+        # why the selection refuses a 4.5% gap on the day it chooses -- but that
+        # rule ran when the plan was made, and nothing asked again when money was
+        # committed four days later.
+        #
+        # So the strategy's own rule, that the stop is never closer than
+        # min_stop_fraction, has to hold at the price actually paid. A fill at or
+        # below the stop is caught by the same test, as it should be.
+        stop = order.get('stop')
+        if stop and fill > 0 and (fill - stop) / fill + 1e-9 < settings['min_stop_fraction']:
+            out['queued'].append({'symbol': order['symbol'], 'skipped': 'stop_too_close_after_gap',
+                                  'fill': fill, 'stop': stop})
+            continue
         # Size against the distance that actually ends the trade, not the one that priced it. The
         # structural stop (8-12%) sets the entry and the R:R; a 25% trailing stop is what the position
         # is really exposed to, and sizing on the smaller number would claim a risk the plan does not
