@@ -66,27 +66,6 @@ def alert(text):
                           'status':'alert_undelivered','error_type':type(e).__name__}),
               file=sys.stderr,flush=True)
 
-def announce_anchors(now):
-    """A hand-researched price can only be renewed by a person, so its expiry has to reach one.
-
-    Until the grace window ends the symbol has no buy price at all, and after it ends the screen replaces
-    the researched price with a different number. Neither is something to discover by noticing an absence."""
-    sys.path.insert(0,str(R))
-    from stock_radar.store import Store,atomic_json
-    s=Store(D/'prod.db')
-    try:states=(s.meta('research_anchors') or {}).get('states') or {}
-    finally:s.close()
-    due={k:v for k,v in states.items() if v in ('grace','lapsed')}
-    seen=D/'anchor-alert.json'
-    told=json.loads(seen.read_text()) if seen.exists() else {}
-    if not due or told.get('states')==due:return
-    grace=[k for k,v in due.items() if v=='grace'];lapsed=[k for k,v in due.items() if v=='lapsed']
-    lines=[f"台股系統｜{now:%m/%d %H:%M}",'【研究價位到期】']
-    if grace:lines.append(f"{'、'.join(sorted(grace))} 的個股研究價位已到期，寬限期內暫時沒有買點；續期研究後才會重新出現。")
-    if lapsed:lines.append(f"{'、'.join(sorted(lapsed))} 已超過寬限期，改由規則估值接手。規則價位不等於原研究價位。")
-    alert('\n'.join(lines+[SITE]))
-    atomic_json(seen,{'at':now.isoformat(),'states':due})
-
 def main():
     p=argparse.ArgumentParser();p.add_argument('task',choices=['refresh','notify','recheck','close','weekly','outlook','intraday']);p.add_argument('--manual',action='store_true');a=p.parse_args();now=datetime.datetime.now(ZoneInfo('Asia/Taipei'))
     # launchd can catch up a calendar event after wake: do not send a late morning report.
@@ -198,9 +177,11 @@ def main():
                 secondary([PY,'-m','stock_radar.paper_runner','--db',str(D/'prod.db'),
                            '--out',str(D/'paper-latest.json')],'paper_runner')
                 secondary([PY,'-m','stock_radar.close_review','--db',str(D/'prod.db'),'--send'],'close_review')
-                # A researched price that lapses needs a person, and nothing else would say so: the
-                # screen only takes over after the grace window, and until then the symbol is invisible.
-                announce_anchors(now)
+                # The research-anchor expiry notice is gone. It reported on the valuation
+                # engine, which decides nothing the account trades or the morning list
+                # shows -- both are Strategy v1 -- so a lapsed research price reached the
+                # channel sounding like a trading change when no trading rule had moved.
+                # One set of entry and exit rules speaks to the reader; this was a second.
                 # A secondary step that fails silently makes every number downstream of it stale --
                 # `track evaluate` is how the only evidence of whether this agent works gets updated.
                 if FAILED:
