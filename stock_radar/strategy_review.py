@@ -245,6 +245,41 @@ def review(store, now, caller=call, weeks=1):
             'cost_usd': usage.get('estimated_cost_usd')}
 
 
+# What the channel hears when there is no review this week, by reason. The
+# reasons review() returns are already plain Chinese; these say what each one
+# means for the reader, which is the part a bare reason leaves out.
+DECLINED = {
+    'too_early': '還沒有足夠的資料可以判斷規則好不好，這不是「規則沒問題」。',
+    'no_account': '模擬帳戶還沒開始，沒有可以檢討的交易。',
+    'attempts_exhausted': '本週的檢討次數已用完，下週會再試。',
+}
+
+
+def declined_text(out):
+    """The message for a week with no review, so the absence is said.
+
+    It was not. review() declining -- too early, no account, attempts used, or
+    the model call failing -- printed its reason to stdout and returned 0, and
+    the scheduler surfaces output only from a command that fails. So the reason
+    went nowhere. The first Saturday this ran after the lock collision was
+    fixed, it declined with 40 evaluated observations against a floor of 50:
+    the right decision, and the channel heard nothing at all, which reads
+    exactly like a review that ran and found nothing to change.
+
+    A model failure says so by name, because "the model was not reachable" and
+    "there was nothing to review" call for different things from the reader.
+    """
+    status = out.get('status') or 'failed'
+    reason = out.get('reason') or status
+    lines = ['【台股每週策略檢討】本週沒有檢討', '原因：' + str(reason)]
+    meaning = DECLINED.get(status)
+    if meaning:
+        lines.append(meaning)
+    elif status != 'ok':
+        lines.append('模型檢討沒有完成（%s），本週的數據仍照常記錄。' % status)
+    return '\n'.join(lines)
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -261,6 +296,12 @@ def main(argv=None):
         out = review(s, now)
         if out['status'] != 'ok':
             print(json.dumps(out, ensure_ascii=False))
+            if a.send:
+                from .cli import _bot_token, _send_with_outbox
+                from .discord import channel_for
+                print(json.dumps(_send_with_outbox(s, _bot_token(), declined_text(out),
+                                                   channel=channel_for('review'), now=now,
+                                                   max_attempts=1), ensure_ascii=False))
             return
         if a.send:
             from .cli import _bot_token, _send_with_outbox

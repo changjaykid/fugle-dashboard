@@ -226,3 +226,33 @@ class ReviewTests(unittest.TestCase):
             store.close()
         finally:
             shutil.rmtree(folder)
+
+
+
+class DeclinedReviewIsSaidTests(unittest.TestCase):
+    """A week with no review was silent.
+
+    review() declining printed to stdout and returned 0, and the scheduler only
+    surfaces output from a command that fails. The first Saturday after the
+    lock fix it declined with 40 observations against 50 -- correct -- and the
+    channel heard nothing, which reads like a review that found nothing.
+    """
+
+    def test_too_early_says_why_and_what_it_means(self):
+        body = strategy_review.declined_text(
+            {'status': 'too_early', 'reason': '決策日誌只有 40 個已評估觀測，不足以檢討'})
+        self.assertIn('本週沒有檢討', body)
+        self.assertIn('40 個已評估觀測', body)
+        self.assertIn('不是「規則沒問題」', body)
+
+    def test_a_failed_model_call_is_named_as_one(self):
+        body = strategy_review.declined_text({'status': 'failed', 'reason': 'timeout'})
+        self.assertIn('模型檢討沒有完成', body)
+        self.assertIn('timeout', body)
+
+    def test_every_decline_review_can_return_has_a_message(self):
+        for status in ('too_early', 'no_account', 'attempts_exhausted', 'failed', 'unknown'):
+            with self.subTest(status=status):
+                body = strategy_review.declined_text({'status': status})
+                self.assertIn('本週沒有檢討', body)
+                self.assertGreater(len(body.splitlines()), 2)
