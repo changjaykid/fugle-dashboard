@@ -3,7 +3,7 @@ from pathlib import Path
 from datetime import datetime,timedelta
 from stock_radar.domain import TW
 from stock_radar.store import Store
-from stock_radar.research_brief import parse_closes,install,build,morning
+from stock_radar.research_brief import parse_closes,install,build,scan_morning
 
 class ResearchTests(unittest.TestCase):
  def test_close_dates_and_not_intraday(self):
@@ -21,42 +21,41 @@ class ResearchTests(unittest.TestCase):
    self.assertEqual(sum(len(s.versions(r['symbol'])) for r in doc['items']),1)
    self.assertTrue(all(s.active(r['symbol']) is None for r in doc['items']))
    text=build(s,now);self.assertLessEqual(len(text),1900);self.assertIn('目前沒有資料完整的承接計畫',text)
-   text=morning(s,{'mode':'live','items':[]},now);self.assertIn('⚠️ 無法確認',text);self.assertNotIn('今天不進場',text)
-   s.set_meta('morning_candidates',{'as_of':(now-timedelta(hours=2)).isoformat(),'symbols':[]});s.set_meta('last_quote_sync',{'at':now.isoformat(),'source':'fugle','requested':10,'received':10})
-   text=morning(s,{'mode':'live','items':[]},now);self.assertLessEqual(len(text),1900);self.assertIn('⛔ 今天不進場',text)
    self.assertNotIn('提案買進上限',build(s,now+timedelta(days=31)))
    s.close()
 
-class MorningTests(unittest.TestCase):
- def test_go_message_puts_answer_first_with_price_cap_reason_and_clock_time(self):
-  now=datetime(2026,9,21,8,50,tzinfo=TW)
-  item={'symbol':'3706','name':'神達','kind':'stock','watched':True,'valuation':{'buy':82.8,'inputs':{'pe_today':14.38,'fair_pe':17.42},'valid_until':(now+timedelta(days=2)).isoformat(),'evidence_reviewed':True},
-        'signal':{'status':'buy','suggested':77.6,'valid_until':(now+timedelta(minutes=2)).isoformat(),'calculated_at':now.isoformat()},'quote':{'as_of':now.isoformat(),'trade_date':'2026-09-21','is_trial':True,'trial_price':78}}
-  with tempfile.TemporaryDirectory() as d:
-   s=Store(Path(d)/'t.db');s.set_fact('3706','research_detail',{'thesis':'看好理由','risks':['主要風險'],'as_of':(now-timedelta(days=1)).isoformat(),'valid_until':(now+timedelta(days=10)).isoformat()});text=morning(s,{'mode':'live','items':[item]},now);s.close()
-  lines=text.split('\n')
-  self.assertEqual(lines[0],'台股盤前 9/21（一）08:50');self.assertTrue(lines[2].startswith('✅ 今天可以買 1 檔'))
-  self.assertIn('神達 3706 ── 掛 77.6，最高 82.8',text);self.assertIn('本益比 14.38，比一年常態 17.4 便宜 17%',text)
-  self.assertIn('09:00 開盤前參考',text);self.assertNotIn('T08:5',text);self.assertIn('風險：主要風險',text)
-
-class MarketMorningTests(unittest.TestCase):
- def test_cheapest_five_stocks_then_etfs_in_their_own_section(self):
-  now=datetime(2026,9,21,8,50,tzinfo=TW)
-  def item(sym,kind,pe_today,fair=20.0):
-   inputs={'pe_today':pe_today,'fair_pe':fair} if kind=='stock' else {'median':100,'p25':95,'p10':90,'price_today':94}
-   return {'symbol':sym,'name':'名'+sym,'kind':kind,'valuation':{'buy':120,'method':'pe_band' if kind=='stock' else 'etf_band','inputs':inputs,'valid_until':(now+timedelta(days=2)).isoformat(),'evidence_reviewed':True},
-           'signal':{'status':'buy','suggested':94.0,'valid_until':(now+timedelta(minutes=2)).isoformat(),'calculated_at':now.isoformat()},'quote':{'as_of':now.isoformat(),'trade_date':'2026-09-21','is_trial':True,'trial_price':95}}
-  items=[item(f'S{k}','stock',20-k) for k in range(7)]+[item('0050','etf_equity',None),item('U','stock',1)]
+class ScanMorningTests(unittest.TestCase):
+ NOW=datetime(2026,10,14,8,55,tzinfo=TW)
+ def scan(self,**over):
+  c={'symbol':'2330','name':'台積電','close':1000.0,'limit':960.0,'target':1060.0,'stop':864.0,'middle':1010.0,
+     'target_pct':10.42,'below_close_pct':4.0,'why':'上升趨勢中回檔 5.0%、貼近月線','flow_share':0.03,'flow_lots':900,'relative_volume':0.8}
+  base={'version':'swing-v1','day':'2026-10-13','market_open':True,'tally':{'universe':1000,'judged':900,'buy':1},
+        'candidates':[c],'held_back':[],'near':[]}
+  base.update(over);return base
+ def run_with(self,payload,quotes=None):
   with tempfile.TemporaryDirectory() as d:
    s=Store(Path(d)/'t.db')
-   for k in range(7):s.set_fact(f'S{k}','research_detail',{'thesis':'看好理由','risks':['主要風險'],'as_of':(now-timedelta(days=1)).isoformat(),'valid_until':(now+timedelta(days=10)).isoformat()})
-   s.set_meta('morning_candidates',{'as_of':now.isoformat(),'symbols':['S0']});s.set_meta('last_quote_sync',{'at':now.isoformat(),'source':'fugle','requested':9,'received':9})
-   text=morning(s,{'mode':'live','items':items},now);s.close()
-  self.assertIn('✅ 今天可以買 6 檔',text);self.assertIn('（ETF）',text);self.assertEqual(text.count('── 掛 94，最高 120'),6)
-  self.assertIn('名U U ──',text)  # the rules decide the picks; research only adds a 深度 line
-  self.assertIn('深度：看好理由',text);self.assertEqual(text.count('深度：'),4)
-  self.assertLess(text.index('名S6'),text.index('名S5'));self.assertNotIn('名S0 ',text);self.assertNotIn('名S1 ',text)
-  self.assertIn('最便宜 25%',text);self.assertLessEqual(len(text),1900)
+   if payload is not None:s.set_meta('daily_scan',payload)
+   text=scan_morning(s,self.NOW,quotes);s.close()
+  return text
+ def test_the_order_leads_with_the_limit_the_band_and_the_stop(self):
+  text=self.run_with(self.scan())
+  self.assertEqual(text.split('\n')[0],'台股盤前 10/14（三）08:55')
+  self.assertIn('✅ 今天掛單 1 檔',text)
+  self.assertIn('台積電 2330 ── 掛 960（收盤 1000，低 4.0%）',text)
+  self.assertIn('先看布林上緣 1060（+10.4%），碰到後續抱、自高點回落 3% 賣；停損 864',text)
+  self.assertLessEqual(len(text),1900)
+ def test_a_weak_market_places_nothing_and_says_why(self):
+  text=self.run_with(self.scan(market_open=False,candidates=[]))
+  self.assertIn('0050 在 120 日線之下',text);self.assertNotIn('✅',text)
+ def test_no_candidate_names_the_nearest_miss(self):
+  text=self.run_with(self.scan(candidates=[],near=[{'symbol':'2317','name':'鴻海','why':'回檔量能 1.4 倍，賣壓未縮'}]))
+  self.assertIn('今天沒有符合條件的標的',text);self.assertIn('鴻海 2317－回檔量能 1.4 倍',text)
+ def test_a_missing_scan_is_not_read_as_no_trade(self):
+  self.assertIn('這不是「不進場」的判斷',self.run_with(None))
+ def test_a_trial_price_under_the_stop_cancels_the_order(self):
+  text=self.run_with(self.scan(),{'2330':{'is_trial':True,'trial_price':850}})
+  self.assertIn('試撮 850 已在停損之下，今天不買',text)
 
 class HonestyTests(unittest.TestCase):
  def check(self,**q):

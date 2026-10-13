@@ -7,16 +7,16 @@ become the strategy.
 
 So this file can propose and nothing else. `review()` returns text and a list of proposals; the
 proposals are stored under `strategy_proposals` and labelled 「建議，未套用」. Applying one is a human
-editing strategy.SETTINGS, which is a commit with a diff.
+editing swing.SETTINGS or strategy.SETTINGS, which is a commit with a diff.
 
 What it is given is only what this repo measured: the account's own trades, its benchmark, and the
 geometry of its entries. It is told not to introduce numbers, and a reply that states a figure the
 evidence does not contain is rejected before it is stored -- the same guard research_llm uses, for the
 same reason.
 
-The review is deliberately told the awkward things too: the replay's result against the benchmark, and
-the event study that says the entry rule has no median edge. A review that is only shown the account's
-equity curve will propose exit tweaks for ever, because that is the only lever it can see.
+The review is told what the rule was chosen on -- its replay over 2022-08 .. 2026-07 and what random
+entries did under the same exits -- next to what the journal has seen since, so it can say whether the
+measured edge is holding rather than tuning parameters against a few weeks of fills.
 """
 import argparse
 import json
@@ -27,15 +27,18 @@ from pathlib import Path
 
 from .domain import TW, stamp
 from .store import Store
-from . import paper, paper_runner, strategy
+from . import journal, paper, paper_runner, strategy, swing
 
-VERSION = 'stock-review-v1'
+VERSION = 'stock-review-v2'
 RUNTIME = Path('/Users/kid/kid-ai-agent-os')
 PYTHON = '/usr/local/bin/python3'
 ATTEMPTS = 2
-TUNABLE = ('min_stop_fraction', 'max_stop_fraction', 'target_r_multiple', 'exit_mode',
-           'trail_fraction', 'max_holding_days', 'breakeven_after_gain', 'max_positions',
-           'max_position_fraction', 'max_risk_fraction', 'max_cost_rate')
+TUNABLE = ('pullback_min', 'pullback_max', 'near_average', 'max_relative_volume', 'order_days',
+           'stop_fraction', 'give_back', 'max_holding_days', 'picks', 'max_positions')
+# What the rule was chosen on (STOCK_FLOW_REVIEW.md section 12, tools/swing_replay.py).
+MEASURED = {'回測期間': '2022-08 ~ 2026-07', '回測每筆平均淨報酬百分比': 2.0, '回測勝率百分比': 62.3,
+            '回測平均持有交易日': 18.7, '回測筆數': 1283, '隨機進場同樣出場每筆平均百分比': 0.11,
+            '回測各年每筆平均百分比': {'2023': 2.29, '2024': 0.24, '2025': 2.45, '2026': 7.05}}
 
 SCHEMA = {'type': 'object', 'additionalProperties': False,
           'required': ['summary', 'proposals', 'evidence_gaps'],
@@ -68,8 +71,9 @@ def evidence(store, now, weeks=1):
     return {
         '帳戶起始日': book.started_day,
         '資料來源': runner.get('source'),
-        '回放起點': runner.get('seeded_from'),
-        '目前設定': {k: runner.get('settings', {}).get(k, strategy.SETTINGS[k]) for k in TUNABLE},
+        '規則版本': swing.VERSION,
+        '目前設定': {k: runner.get('settings', {}).get(k, {**strategy.SETTINGS, **swing.SETTINGS}[k])
+                    for k in TUNABLE},
         '起始資金': performance['starting_cash'],
         '目前淨值': performance['net_equity'],
         '總報酬百分比': performance['total_return_pct'],
@@ -89,44 +93,19 @@ def evidence(store, now, weeks=1):
         '持倉檔數': performance['open_positions'],
         '現金': performance['cash'],
         '未交割': performance['unsettled'],
-        # The two measurements that bound what any exit change can achieve, from
-        # audits/STOCK_STRATEGY_EVIDENCE_20261001.md. Without these the review can only ever
-        # propose exit tweaks, because the account's own numbers are the only thing it would see.
-        '進場後20日逆向幅度中位數百分比': 2.3,
-        '停損被打到的比例': {'4%': 40, '6%': 29, '8%': 23, '10%': 16, '12%': 11},
-        '進場價到合理價距離中位數百分比': 33.22,
-        '進場規則20日中位數超額百分比': -2.55,
-        '進場規則勝過市場的比例百分比': 45,
-        # The journal is the evidence base: every candidate scored, bought or not, and what the market
-        # did about it. Five to thirty fills a month cannot answer the twelve questions; 800 scored
-        # decisions can.
+        '選定規則時的回測': MEASURED,
         **journal_evidence(store),
     }
 
 
 def journal_evidence(store):
-    from . import v1_journal
-    st = v1_journal.stats(store, horizon=5)
-    if not st.get('observations'):
-        return {'決策日誌觀測數': 0}
-    out = {'決策日誌觀測數': st['observations'], '決策日誌交易日數': st['days'],
-           '全部候選5日中位數超額': st['all']['median_excess'],
-           '全部候選勝過市場比例': st['all']['beat_market_pct']}
-    for key, label in (('buy', '可下單'), ('wait', '不下單')):
-        g = st['by_decision'].get(key)
-        if g:
-            out[f'{label}中位數超額'] = g['median_excess']
-            out[f'{label}筆數'] = g['n']
-    for key, label in (('breakout', '突破型'), ('pullback', '回檔型')):
-        g = st['by_setup'].get(key)
-        if g:
-            out[f'{label}中位數超額'] = g['median_excess']
-            out[f'{label}筆數'] = g['n']
-    if st.get('by_score'):
-        out['分數低三分之一中位數超額'] = st['by_score']['bottom_third']['median_excess']
-        out['分數高三分之一中位數超額'] = st['by_score']['top_third']['median_excess']
-    if st.get('by_component'):
-        out['各分項與超額相關性'] = {k: v['correlation'] for k, v in st['by_component'].items()}
+    st = journal.stats(store)
+    out = {'決策日誌提出筆數': st['proposed'], '決策日誌已結筆數': st['closed'],
+           '決策日誌未成交筆數': st['unfilled'], '決策日誌持有中筆數': st['open']}
+    if st['closed']:
+        out.update({'決策日誌每筆平均百分比': st['mean_pct'], '決策日誌中位數百分比': st['median_pct'],
+                    '決策日誌勝率百分比': st['win_pct'], '決策日誌平均持有交易日': st['held'],
+                    '決策日誌出場方式次數': st['exits']})
     return out
 
 
@@ -134,7 +113,7 @@ def prompt(data):
     return ('你是這個台股交易規則的每週檢討者。只能使用下列已量測的數字，不得引入任何其他數字、'
             '事件或新聞；沒有證據就寫在 evidence_gaps。全部使用繁體中文，只輸出 JSON。\n'
             'summary：這 10 個交易日規則做了什麼、哪裡有效哪裡無效，100～300 字，'
-            '必須同時提到帳戶的超額百分點與決策日誌的中位數超額。\n'
+            '必須比較決策日誌的每筆平均與勝率和選定規則時的回測數字，說明優勢是否還在。\n'
             f"proposals：對設定的具體修改建議，0～4 項，setting 只能是 {'、'.join(TUNABLE)} 其中之一；"
             'from_value 與 to_value 都寫成字串；why 要指向下列的某個數字；'
             'what_would_disprove_it 寫清楚什麼結果會證明這個建議是錯的。\n'
@@ -218,9 +197,9 @@ def review(store, now, caller=call, weeks=1):
     data = evidence(store, now, weeks)
     if not data:
         return {'status': 'no_account', 'reason': '模擬帳戶尚未開立'}
-    if data['決策日誌觀測數'] < 50:
+    if data['決策日誌已結筆數'] < 30:
         return {'status': 'too_early',
-                'reason': f"決策日誌只有 {data['決策日誌觀測數']} 個已評估觀測，不足以檢討"}
+                'reason': f"新規則的決策日誌只有 {data['決策日誌已結筆數']} 筆已結，不足以檢討"}
     log = store.meta('stock_review_attempts') or {}
     key = f'{now:%Y%W}'
     used = log.get(key, 0)

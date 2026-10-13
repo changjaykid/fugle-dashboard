@@ -127,7 +127,7 @@ def main():
         elif a.task in ('weekly','outlook'):
             run([PY,'-m','stock_radar.weekend',a.task,'--send'])
             # One model call a week, on Saturday, to argue about the rules the account traded. It can
-            # only propose: applying a proposal is a human editing strategy.SETTINGS.
+            # only propose: applying a proposal is a human editing swing.SETTINGS.
             if a.task=='weekly':
                 secondary([PY,'-m','stock_radar.strategy_review','--db',str(D/'prod.db'),'--send'],
                           'strategy_review')
@@ -148,15 +148,15 @@ def main():
             # and the ranked 08:50 candidates -- all before anything is exported.
             run([PY,'-m','stock_radar.market','--db',str(D/'prod.db')])
             run([PY,'-m','stock_radar.market_scan','--db',str(D/'prod.db')])
-            # Strategy v1 decides what gets recommended and what the simulated account buys
-            # (2026-10-02). It must run before paper_runner, which reads the scan it writes, and before
+            # The scan (swing.py) decides what gets recommended and what the simulated account orders
+            # (2026-10-13). It must run before paper_runner, which reads the scan it writes, and before
             # the export, which publishes it. Primary, not secondary: a day with no scan is a day the
             # account must not trade, and that should fail loudly rather than quietly do nothing.
-            run([PY,'-m','stock_radar.v1_daily','--db',str(D/'prod.db')])
-            # Record what it decided and score what earlier decisions went on to do. Secondary: a gap in
-            # the journal costs analysis, not the day's report.
-            secondary([PY,'-m','stock_radar.v1_journal','--db',str(D/'prod.db'),'record'],'v1_journal record')
-            secondary([PY,'-m','stock_radar.v1_journal','--db',str(D/'prod.db'),'evaluate'],'v1_journal evaluate')
+            run([PY,'-m','stock_radar.daily_scan','--db',str(D/'prod.db')])
+            # Record what it proposed and follow what earlier proposals did. Secondary: a gap in the
+            # journal costs analysis, not the day's report.
+            secondary([PY,'-m','stock_radar.journal','--db',str(D/'prod.db'),'record'],'journal record')
+            secondary([PY,'-m','stock_radar.journal','--db',str(D/'prod.db'),'evaluate'],'journal evaluate')
             track(['evaluate'])
             # Once a day, after the close scan: research the symbols the scan says are worth researching,
             # so tomorrow's recommendations have a reason attached. Model access goes through the shared
@@ -179,7 +179,7 @@ def main():
                 secondary([PY,'-m','stock_radar.close_review','--db',str(D/'prod.db'),'--send'],'close_review')
                 # The research-anchor expiry notice is gone. It reported on the valuation
                 # engine, which decides nothing the account trades or the morning list
-                # shows -- both are Strategy v1 -- so a lapsed research price reached the
+                # shows -- both are the scan -- so a lapsed research price reached the
                 # channel sounding like a trading change when no trading rule had moved.
                 # One set of entry and exit rules speaks to the reader; this was a second.
                 # A secondary step that fails silently makes every number downstream of it stale --
@@ -248,11 +248,8 @@ def main():
             prev=D/'morning-state.json';sent=D/'morning-message.json'
             today=json.loads(sent.read_text()) if sent.exists() else {}
             today=today if today.get('date')==str(now.date()) else {}
-            # Strategy v1 recommends from 2026-10-02. Its first measurement was 19 of 80 against random
-            # draws from its own universe; the exit sweep that followed found that was the stop, not the
-            # selection -- loosening it improved the result monotonically across seven variants, and a
-            # 25% trailing stop with a 60-day cap reaches 51 of 80. That is what runs.
-            args=[PY,'-m','stock_radar.research_brief','--db',str(D/'prod.db'),'--v1-morning',
+            # The morning list is the scan's orders (swing.py, 2026-10-13): limits at the lower band.
+            args=[PY,'-m','stock_radar.research_brief','--db',str(D/'prod.db'),'--scan-morning',
                   '--quotes',str(R/'docs/radar.json'),'--out',str(D/'morning-latest.json'),'--send']
             if today.get('message_id'):args+=['--edit-id',today['message_id']]
             # One message a day, sent by the 08:55 run: its trial price is the closest to the open.

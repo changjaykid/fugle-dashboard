@@ -97,98 +97,51 @@ def fit(lines,limit=1900):
     if len(text)>limit:lines=[l for l in lines if not l.strip().startswith('另有 ')];text='\n'.join(lines)
     return text[:limit]
 
-def v1_morning(s,now,quotes=None):
-    """The pre-open message, from Strategy v1. Answer first, reasoning under it, nothing else.
+def scan_morning(s,now,quotes=None):
+    """The pre-open message: tonight's orders from swing.py. Answer first, the levels under it, nothing else.
 
-    It reports the scan built from last night's close. The prices are the levels the plan was made at;
-    08:55's trial price decides whether they are still reachable, which is what `quotes` carries when the
-    pre-open check has run."""
-    payload=s.meta('v1_candidates') or {}
+    The levels come from last night's close. 08:55's trial price says whether the limit is still below the
+    market, which is what `quotes` carries when the pre-open check has run."""
+    payload=s.meta('daily_scan') or {}
     head=f"台股盤前 {now.month}/{now.day}（{WEEKDAYS[now.weekday()]}）{now:%H:%M}"
     if not payload:
         return '\n'.join([head,'','⚠️ 昨晚沒有產生掃描結果，今天不提供買點。這不是「不進場」的判斷，請勿依此下單。',SITE])
     picks=payload.get('candidates') or []
     t=payload.get('tally') or {}
     lines=[head,'']
-    if picks:
-        lines.append(f"✅ 今天可以買 {len(picks)} 檔（限價掛單，買不到就不追）")
+    if not payload.get('market_open'):
+        lines.append('⛔ 今天不掛新單：0050 在 120 日線之下，大盤走弱時這套規則不進場。')
+    elif picks:
+        lines.append(f"✅ 今天掛單 {len(picks)} 檔（限價掛在相對低點，跌到才買，最多掛 5 個交易日）")
         for n,c in enumerate(picks[:MAX_STOCKS],1):
-            kind='突破' if c['setup']=='breakout' else '回檔'
             lines.append('')
-            lines.append(f"{n}. {c['name']} {c['symbol']} ── 進場 {c['entry']:g}，停損 {c['stop']:g}，目標 {c['target']:g}")
-            lines.append(f"   {kind}型態，{c['total']:.0f} 分（{c['grade']} 級），風報比 {c['rr']:.1f}")
-            lines.append(f"   {c['stop_reason']}")
-            # The plan was made on last night's close; this morning decides whether it is still reachable.
+            lines.append(f"{n}. {c['name']} {c['symbol']} ── 掛 {c['limit']:g}（收盤 {c['close']:g}，低 {c['below_close_pct']:.1f}%）")
+            lines.append(f"   先看布林上緣 {c['target']:g}（+{c['target_pct']:.1f}%），碰到後續抱、自高點回落 3% 賣；停損 {c['stop']:g}")
+            lines.append(f"   {c['why']}")
             q=(quotes or {}).get(c['symbol'])
             trial=positive((q or {}).get('trial_price') if (q or {}).get('is_trial') else (q or {}).get('price'))
-            if trial:
-                if trial>c['entry']:
-                    lines.append(f"   ⚠️ 試撮 {trial:g} 已高於進場價，今天不追")
-                elif trial<=c['stop']:
-                    lines.append(f"   ⚠️ 試撮 {trial:g} 已跌破停損，型態失效")
-        lines+=['',f"價格以 {payload['day']} 收盤規劃；停損是結構失效點，不是固定百分比。是否下單由你決定。"]
+            if trial and trial<=c['stop']:
+                lines.append(f"   ⚠️ 試撮 {trial:g} 已在停損之下，今天不買")
+        if len(picks)>MAX_STOCKS:lines+=['',f"另有 {len(picks)-MAX_STOCKS} 檔見網站。"]
+        lines+=['',f"價位以 {payload['day']} 收盤計算。是否下單由你決定。"]
     else:
-        lines.append('⛔ 今天不進場')
-        waits=payload.get('waits') or []
-        if waits:
-            best=waits[0]
-            lines.append(f"沒有標的同時通過選股、進場與風報比。最接近的是 {best['name']} {best['symbol']}"
-                         f"（{best['total']:.0f} 分）－{best['wait_reason']}")
-        else:
-            lines.append('沒有任何標的形成可辨識的型態。')
-    lines.append(f"掃描上市普通股 {t.get('universe',0)} 檔：硬性排除 {t.get('filtered',0)}、"
-                 f"無型態 {t.get('no_setup',0)}、突破 {t.get('breakout',0)}、回檔 {t.get('pullback',0)}"
-                 f"｜下單門檻 {payload.get('min_score')} 分")
+        lines.append('⛔ 今天沒有符合條件的標的，不掛新單')
+        near=(payload.get('near') or [])[:1]
+        if near:
+            lines.append(f"最接近：{near[0]['name']} {near[0]['symbol']}－{near[0]['why']}")
+    lines.append(f"掃描上市普通股 {t.get('universe',0)} 檔，可判斷 {t.get('judged',0)}，符合 {t.get('buy',0)}")
     lines.append(SITE)
     return fit(lines)
 
-def morning(s,radar,now):
-    """The 08:55 message: the one message of the trading day, answer in the first two lines, detail on the site."""
-    from .discord import _revalidate_signal
-    from .buy_plan import store_plan
-    from .market_scan import discount
-    head=f"台股盤前 {now.month}/{now.day}（{WEEKDAYS[now.weekday()]}）{now:%H:%M}"
-    valued=[i for i in radar['items'] if i.get('valuation')]
-    checked=[(i,_revalidate_signal(i,now)) for i in valued]
-    go=sorted([(i,g) for i,g in checked if g['status'] in ('sweet','add','buy')],key=lambda x:-(discount(x[0]['valuation'],x[1].get('suggested')) or 0))
-    picks=[x for x in go if x[0].get('kind')=='stock'][:MAX_STOCKS]+[x for x in go if x[0].get('kind','').startswith('etf')][:MAX_ETFS]
-    plans={i['symbol']:store_plan(s,i,now) for i in valued}
-    names=lambda st:[i['name'] for i in sorted(valued,key=lambda i:-(discount(i['valuation'],(i.get('public_close') or {}).get('close')) or 0)) if plans[i['symbol']]['status']==st]
-    def block(n,i,g):
-        r=s.fact(i['symbol'],'research_detail') or {};etf='（ETF）' if i.get('kind','').startswith('etf') else ''
-        out=['',f"{n}. {i['name']} {i['symbol']}{etf} ── 掛 {g['suggested']:g}，最高 {i['valuation']['buy']:g}",f"   {_why(i['valuation'],g.get('suggested'))}"]
-        if researched(s,i,now) and r.get('thesis'):out.append(f"   深度：{r['thesis'][:80]}")
-        if r.get('risks'):out.append(f"   風險：{r['risks'][0]}")
-        return out
-    lines=[head,'']
-    if picks:
-        lines.append(f"✅ 今天可以買 {len(picks)} 檔（限價掛單，買不到就不追）")
-        for n,(i,g) in enumerate(picks,1):lines+=block(n,i,g)
-        lines+=['',f"價格以 {now:%H:%M} 試撮價計算，09:00 開盤前參考；開盤後請重新確認。超過最高價不追，是否下單由你決定。"]
-    elif (problem:=quotes_checked(s,now)) and radar.get('mode')=='live':
-        lines+=[f"⚠️ 無法確認：{problem}","今天不提供買點。這不是「不進場」的判斷，請勿依此下單。"]
-    else:
-        lines.append('⛔ 今天不進場')
-        near=[f"{_names(names(st))}（{label}）" for st,label in (('wait_stabilize','已進買進區，等止穩'),('conditional','估值符合，盤前行情未通過'),('waiting','估值符合，等承接位置')) if names(st)]
-        lines.append('沒有標的通過全部條件。'+('最接近：'+'；'.join(near) if near else ''))
-    watched=[i['name'] for i in valued if i.get('watched') and plans[i['symbol']]['status']=='overvalued']
-    if watched:lines.append(f"你的關注中評價過高：{_names(watched)}")
-    scan=s.meta('market_scan') or {}
-    tail=[f"掃描上市 {scan['listed']} 檔，成交量達標 {scan['liquid']} 檔" if scan.get('liquid') else '',research_coverage(s,now).rstrip('。')]
-    lines.append('｜'.join(x for x in tail if x))
-    lines.append(SITE)
-    return ('【測試資料，非即時交易建議】\n' if radar.get('mode')!='live' else '')+fit(lines)
-
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--db',type=Path,required=True);p.add_argument('--import-file',type=Path);p.add_argument('--sync-close',action='store_true');p.add_argument('--send',action='store_true');p.add_argument('--morning-radar',type=Path);p.add_argument('--v1-morning',action='store_true');p.add_argument('--quotes',type=Path);p.add_argument('--out',type=Path);p.add_argument('--alert');p.add_argument('--edit-id');a=p.parse_args();now=datetime.now(TW);s=Store(a.db)
+    p=argparse.ArgumentParser();p.add_argument('--db',type=Path,required=True);p.add_argument('--import-file',type=Path);p.add_argument('--sync-close',action='store_true');p.add_argument('--send',action='store_true');p.add_argument('--scan-morning',action='store_true');p.add_argument('--quotes',type=Path);p.add_argument('--out',type=Path);p.add_argument('--alert');p.add_argument('--edit-id');a=p.parse_args();now=datetime.now(TW);s=Store(a.db)
     try:
         if a.import_file:install(s,json.loads(a.import_file.read_text()),now)
         if a.sync_close:sync_close(s,now)
         if a.alert:text=a.alert
-        elif a.v1_morning:
+        elif a.scan_morning:
             quotes={i['symbol']:i.get('quote') for i in json.loads(a.quotes.read_text())['items']} if a.quotes else None
-            text=v1_morning(s,now,quotes)
-        elif a.morning_radar:text=morning(s,json.loads(a.morning_radar.read_text()),now)
+            text=scan_morning(s,now,quotes)
         else:text=build(s,now)
         if a.out:atomic_json(a.out,{'generated_at':now.isoformat(),'text':text})
         if a.send:

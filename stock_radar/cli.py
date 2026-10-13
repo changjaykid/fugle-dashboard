@@ -524,10 +524,10 @@ def cmd_export(args):
                     'started_day': book.started_day,
                     'settings': (store.meta('paper_runner') or {}).get('settings'),
                     'strategy_version': (store.meta('paper_runner') or {}).get('strategy_version'),
-                    'seeded_from': (store.meta('paper_runner') or {}).get('seeded_from'),
                     'performance': performance(book),
                     'benchmark': paper_runner.benchmark(store, book.started_day),
                     'positions': list(book.positions.values()),
+                    'orders': (store.meta('paper_runner') or {}).get('orders') or [],
                     'unrealised': book.unrealised(),
                     'trades': book.trades,
                     'closed': book.closed,
@@ -535,7 +535,7 @@ def cmd_export(args):
         out = build_radar_json(instruments=target, quotes=quotes, decisions=decisions,
                                valuations=valuations, research=research, health=health,
                                mode=args.mode, now=now, paper=paper_state,
-                               v1=store.meta('v1_candidates') or None)
+                               scan=store.meta('daily_scan') or None)
         # Self-check the payload we're about to publish BEFORE writing it,
         # using the exact same verify_radar.verify() gate a human would run
         # manually -- catches a schema/contract regression at export time

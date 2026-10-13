@@ -1,10 +1,9 @@
-"""A simulated account that keeps real money's constraints. One engine, two drivers.
+"""A simulated account that keeps real money's constraints.
 
-The point of this file is that the backtest and the live paper account are the same code. A backtest
-that uses different accounting from the thing it is meant to predict is a story, and the user asked for
-no stories: "不要幻想、不要做假資料". So `Book` holds plain state and knows nothing about where it came
-from -- the backtest drives it over stored history in memory, the daily close job loads it from the
-database, advances it one day, and saves it back.
+The user asked for no stories: "不要幻想、不要做假資料". So `Book` holds plain state and knows nothing
+about where it came from: the daily close job (paper_runner) loads it from the database, advances it one
+day against real bars, and saves it back. The fills and exits it is asked to make come from swing.py,
+the same functions the replay and the journal use.
 
 What it refuses to pretend:
 

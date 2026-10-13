@@ -46,22 +46,7 @@ class CostTests(unittest.TestCase):
         self.assertLess(up['return_pct'], up['gross_pct'])
 
 
-class StrategyTests(unittest.TestCase):
-    def test_stop_is_widened_to_the_floor_and_refused_past_the_ceiling(self):
-        # Measured 2026-10-01: 14 of 106 real entries sat under 1% above the 20-day low, so the raw
-        # level is sometimes indistinguishable from costs.
-        tight = strategy.stop_for(100, 99.5)
-        self.assertTrue(tight['widened'])
-        self.assertAlmostEqual(tight['fraction'], strategy.SETTINGS['min_stop_fraction'])
-        self.assertIsNone(strategy.stop_for(100, 80))   # 20% away, past max_stop_fraction
-
-    def test_target_never_exceeds_fair_value(self):
-        plain = strategy.target_for(100, 92, None)
-        self.assertAlmostEqual(plain['price'], 100 + 8 * strategy.SETTINGS['target_r_multiple'])
-        capped = strategy.target_for(100, 92, 105)
-        self.assertEqual(capped['price'], 105)
-        self.assertTrue(capped['capped_at_fair'])
-
+class SizingTests(unittest.TestCase):
     def test_size_is_equal_weight_capped_by_risk_and_refused_under_the_fee_floor(self):
         shares, why = strategy.size_for(100000, 100000, 100, 92, {'max_positions': 5})
         self.assertIsNone(why)
@@ -100,27 +85,6 @@ class StrategyTests(unittest.TestCase):
         twenty, why = strategy.size_for(100000, 100000, 50, 46, {'max_positions': 20})
         self.assertIsNone(why)
         self.assertLessEqual(twenty * 50, 100000 / 20 + 1)
-
-    def test_a_bar_spanning_both_levels_is_resolved_as_a_stop(self):
-        position = {'entry': 100, 'stop': 92, 'stop_now': 92, 'target': 112, 'entry_index': 0,
-                    'shares': 100, 'plan': {'exit_mode': 'target_stop'}}
-        both = (100, 115, 90, 110)
-        self.assertEqual(strategy.exit_check(position, both, 1)['reason'], 'stop')
-
-    def test_trail_mode_only_ratchets_upwards(self):
-        s = {'exit_mode': 'trail', 'trail_fraction': 0.10}
-        position = {'entry': 100, 'stop': None, 'stop_now': None, 'target': 150, 'entry_index': 0,
-                    'shares': 100, 'plan': {'exit_mode': 'trail'}}
-        position['stop_now'] = strategy.ratchet(position, (100, 120, 99, 118), s)
-        self.assertAlmostEqual(position['stop_now'], 108.0)
-        position['stop_now'] = strategy.ratchet(position, (118, 119, 110, 112), s)
-        self.assertAlmostEqual(position['stop_now'], 108.0)   # peak did not move, stop did not fall
-
-    def test_hold_mode_never_exits(self):
-        position = {'entry': 100, 'stop': None, 'stop_now': None, 'target': None, 'entry_index': 0,
-                    'shares': 100, 'plan': {'exit_mode': 'hold'}}
-        self.assertIsNone(strategy.exit_check(position, (100, 10, 1, 2), 500,
-                                              {'exit_mode': 'hold', 'max_holding_days': 0}))
 
 
 class BookTests(unittest.TestCase):
