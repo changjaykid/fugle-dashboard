@@ -143,8 +143,10 @@ def cmd_sync_quotes(args):
             wanted={x.strip() for x in args.symbols.split(',') if x.strip()}
             instruments=[i for i in instruments if i['symbol'] in wanted]
         if args.candidates:
-            # The nightly full-market scan's ranked list: plans that passed on the close, cheapest first.
-            wanted = (store.meta('morning_candidates') or {}).get('symbols') or []
+            # What the rules are acting on: tonight's orders and what the account holds (intraday.watched),
+            # so the pre-open message can check each limit and stop against the trial price.
+            from .intraday import watched_symbols
+            wanted = watched_symbols(store)
             by_symbol = {i['symbol']: i for i in instruments}
             instruments = [by_symbol[s] for s in wanted if s in by_symbol]
         if not instruments:

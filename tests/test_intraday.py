@@ -3,61 +3,48 @@ from datetime import datetime,timedelta
 from pathlib import Path
 from stock_radar.domain import TW
 from stock_radar.store import Store
-from stock_radar import intraday
+from stock_radar import intraday, paper
 
 NOW=datetime(2026,9,29,10,0,tzinfo=TW)
 
-def valuation(now):
-    return {'sweet':60.0,'add':70.0,'buy':82.8,'fair':97.5,'method':'pe_band','reason':'r','thesis':'t',
-            'inputs':{'pe_today':14.38,'fair_pe':17.42},'as_of':(now-timedelta(hours=4)).isoformat(),
-            'valid_until':(now+timedelta(days=3)).isoformat(),'evidence_reviewed':True,'review_mode':'rule-engine-v1',
-            'sources':[{'url':'https://example.com','as_of':(now-timedelta(hours=4)).isoformat()}]}
 
 class IntradayTests(unittest.TestCase):
-    """The morning call is not the whole day, but an unchanged situation must stay silent."""
+    """It watches the rules' own orders and stops, and an unchanged situation stays silent."""
 
     def setUp(self):
         self.dir=tempfile.TemporaryDirectory();self.s=Store(Path(self.dir.name)/'t.db')
-        self.s.set_meta('analysis_authority',{'decision':'user-confirmed-2026-09-14','autonomous_research':True})
         self.s.set_meta('trading_calendar',{'roc_years':[115],'closed_dates':{}})
-        self.s.set_meta('morning_candidates',{'symbols':['3706']})
-        self.s.upsert_instruments([{'symbol':'3706','name':'神達','kind':'stock','market':'TSE'}])
-        self.s.publish_rule_valuation(self.s.propose('3706',valuation(NOW),now=NOW),now=NOW)
-        self.s.set_fact('3706','public_close',{'close':80.5,'trade_date':'2026-09-28'})
-        self.s.set_fact('3706','technical',{'as_of':'2026-09-28','flow_as_of':'2026-09-28','support':77.6,
-                                            'supports':[77.6,79.0],'low_60d':77.6,'high_60d':95.8,'ma20':82.0,
-                                            'resistance':95.8,'foreign_5d_lots':1.0,'trust_5d_lots':1.0,
-                                            'requires_stabilization':False})
-        self.s.set_fact('3706','risk',{'cleared':True,'events':[],'checked_at':(NOW-timedelta(hours=4)).isoformat()})
+        self.s.set_meta('paper_runner',{'last_day':'2026-09-28','orders':[
+            {'symbol':'3706','name':'神達','limit':79.0,'target':88.0,'stop':71.1,'placed':'2026-09-28','left':5}]})
+        book=paper.Book(100000,started_day='2026-09-01')
+        book.buy('2330','台積電','stock',10,1000,'2026-09-20','2026-09-20T13:30:00+08:00',plan={'stop':900.0})
+        book.save(self.s)
 
     def tearDown(self):self.s.close();self.dir.cleanup()
 
-    def quote(self,price):return lambda:{'3706':{'symbol':'3706','price':price}}
+    def quote(self,**prices):return lambda:{k:{'symbol':k,'price':v} for k,v in prices.items()}
 
-    def test_reaching_the_entry_is_reported_once_a_day(self):
-        out=intraday.run(self.s,NOW,fetch=self.quote(79.0))
-        self.assertEqual(out['events'],1);self.assertIn('觸及承接參考價',out['text'])
-        self.assertIn('不是新的掛價建議',out['text'])
-        self.assertEqual(intraday.run(self.s,NOW+timedelta(hours=1),fetch=self.quote(79.0))['status'],'quiet')
+    def test_a_reached_limit_is_reported_once_a_day(self):
+        out=intraday.run(self.s,NOW,fetch=self.quote(**{'3706':78.5,'2330':1010}))
+        self.assertEqual(out['status'],'built')
+        self.assertIn('神達 3706｜掛單價到了（現價 78.5，掛單 79）',out['text'])
+        self.assertEqual(intraday.run(self.s,NOW+timedelta(hours=1),fetch=self.quote(**{'3706':78}))['status'],'quiet')
 
-    def test_losing_support_is_reported_and_not_repeated(self):
-        out=intraday.run(self.s,NOW,fetch=self.quote(70.0))
-        self.assertEqual(out['events'],1);self.assertIn('跌破支撐',out['text'])
-        self.assertEqual(intraday.run(self.s,NOW+timedelta(minutes=5),fetch=self.quote(68.0))['status'],'quiet')
+    def test_a_stop_breaking_is_reported(self):
+        out=intraday.run(self.s,NOW,fetch=self.quote(**{'3706':85,'2330':890}))
+        self.assertIn('台積電 2330｜跌破停損（現價 890，停損 900）',out['text'])
 
-    def test_only_one_intraday_message_a_day(self):
-        first=intraday.run(self.s,NOW,fetch=self.quote(79.0))
-        self.assertEqual(first['events'],1)
-        self.assertEqual(intraday.run(self.s,NOW+timedelta(hours=2),fetch=self.quote(60.0))['status'],'quiet')
-
-    def test_falling_back_into_range_alone_is_not_worth_a_message(self):
-        self.s.set_fact('3706','public_close',{'close':95.0,'trade_date':'2026-09-28'})  # closed above the cap
-        out=intraday.run(self.s,NOW,fetch=self.quote(82.0))  # back under buy_max, nothing broken
-        self.assertEqual(out['status'],'quiet')
-
-    def test_a_price_above_the_plan_says_nothing(self):
-        self.assertEqual(intraday.run(self.s,NOW,fetch=self.quote(120.0))['status'],'quiet')
+    def test_prices_above_every_level_say_nothing(self):
+        self.assertEqual(intraday.run(self.s,NOW,fetch=self.quote(**{'3706':85,'2330':1010}))['status'],'quiet')
 
     def test_a_non_trading_day_never_runs(self):
-        self.s.set_meta('trading_calendar',{'roc_years':[115],'closed_dates':{'2026-09-29':'測試休市'}})
-        self.assertEqual(intraday.run(self.s,NOW,fetch=self.quote(79.0))['status'],'closed')
+        self.s.set_meta('trading_calendar',{'roc_years':[115],'closed_dates':{'2026-09-29':'假日'}})
+        self.assertEqual(intraday.run(self.s,NOW,fetch=self.quote(**{'3706':78}))['status'],'closed')
+
+    def test_nothing_held_and_nothing_ordered_is_not_an_error(self):
+        self.s.set_meta('paper_runner',{'orders':[]});paper.Book(100000,started_day='2026-09-01').save(self.s)
+        self.assertEqual(intraday.run(self.s,NOW,fetch=self.quote())['status'],'no_candidates')
+
+
+if __name__=='__main__':
+    unittest.main()

@@ -1,62 +1,54 @@
-"""Intraday re-check: the morning conclusion is not the whole day (STOCK_AGENT.md 8). No LLM.
+"""Intraday re-check of the orders and positions the rules hold. No LLM.
 
-During the session the trial-price problem disappears -- TWSE's free feed carries real traded prices --
-so this runs on mis.twse.com.tw and never spends Fugle quota or tokens. It speaks only when the day's
-own facts changed: a name reaching its entry, a recommended name losing its support, or a name newly
-entering the buy zone. Nothing new means no message.
+During the session TWSE's free feed carries real traded prices, so this runs on mis.twse.com.tw and never
+spends Fugle quota or tokens. It watches exactly two things, both set by swing.py and both visible on the
+page and in the pre-open message: a resting order's limit being reached, and a held position falling
+through its stop. Nothing else -- the valuation band no longer speaks to the user, and a second set of
+levels arriving at lunchtime would be a second set of rules. Nothing new means no message.
 """
 import argparse,json
 from datetime import datetime
 from pathlib import Path
 from .domain import TW,positive
 from .store import Store
+from . import paper
 
-DROP=.02  # below the researched support by this much is a real breakdown, not a tick
-SHOW=4
-# The user reads one message a day, so only a broken plan or a reached entry is worth interrupting for;
-# a name merely falling back into range can wait for tomorrow's pre-open list.
-URGENT=('support_lost','reached_entry')
+LABELS={'stop_hit':'跌破停損','reached_entry':'掛單價到了'}
+
+def watched(s):
+    """{symbol: (kind, level, name)}: every resting limit and every held position's stop."""
+    out={}
+    scan=s.meta('daily_scan') or {}
+    for o in list((s.meta('paper_runner') or {}).get('orders') or [])+list(scan.get('candidates') or []):
+        out.setdefault(o['symbol'],('reached_entry',o['limit'],o['name']))
+    book=paper.Book.load(s)
+    for sym,p in (book.positions if book else {}).items():
+        if p.get('stop'):out[sym]=('stop_hit',p['stop'],p.get('name') or sym)
+    return out
 
 def watched_symbols(s):
-    """The morning candidate list plus anything already recommended today; both are bounded."""
-    meta=s.meta('morning_candidates') or {}
-    return list(dict.fromkeys(meta.get('symbols') or []))
+    return list(watched(s))
 
-def state(s,now,quotes):
-    """Compare live prices with today's plans; return only the changes worth a message."""
-    from .buy_plan import store_plan
+def state(s,quotes):
     events=[]
-    for inst in s.instruments():
-        sym=inst['symbol'];quote=quotes.get(sym)
-        if not quote:continue
-        price=positive(quote.get('price'))
-        plan=store_plan(s,inst,now)
-        if not price or not plan.get('buy_max'):continue
-        entry=positive(plan.get('entry'));support=positive(plan.get('support'))
-        if support and price<support*(1-DROP):
-            events.append({'kind':'support_lost','symbol':sym,'name':inst.get('name'),'price':price,'level':support})
-        elif entry and price<=entry:
-            events.append({'kind':'reached_entry','symbol':sym,'name':inst.get('name'),'price':price,'level':entry})
-        elif price<=plan['buy_max'] and plan['status']=='no_chase':
-            events.append({'kind':'entered_zone','symbol':sym,'name':inst.get('name'),'price':price,'level':plan['buy_max']})
+    for sym,(kind,level,name) in watched(s).items():
+        price=positive((quotes.get(sym) or {}).get('price'))
+        if price and price<=level:
+            events.append({'kind':kind,'symbol':sym,'name':name,'price':price,'level':level})
     return events
 
 def new_events(s,events,now):
     """At most one intraday message a day, carrying everything worth acting on at that moment."""
     seen=s.meta('intraday_seen') or {};today=str(now.date())
-    if seen.get(today):return []
-    urgent=[e for e in events if e['kind'] in URGENT]
-    if not urgent:return []
+    if seen.get(today) or not events:return []
     s.set_meta('intraday_seen',{today:sorted({f"{e['kind']}:{e['symbol']}" for e in events})})
     return events
 
-LABELS={'support_lost':'跌破支撐，原買點失效','reached_entry':'觸及承接參考價','entered_zone':'回落進入買進區'}
-
 def text(events,now):
     lines=[f"台股盤中更新 {now:%m/%d %H:%M}",'']
-    for e in sorted(events,key=lambda e:e['kind']):
-        lines.append(f"{e['name']} {e['symbol']}｜{LABELS[e['kind']]}（現價 {e['price']:g}，參考 {e['level']:g}）")
-    lines.append('今天只會有這一則盤中提醒。盤中價格會變動，這是事實提醒，不是新的掛價建議；是否下單由你決定。')
+    for e in sorted(events,key=lambda e:e['kind'],reverse=True):
+        lines.append(f"{e['name']} {e['symbol']}｜{LABELS[e['kind']]}（現價 {e['price']:g}，{'掛單' if e['kind']=='reached_entry' else '停損'} {e['level']:g}）")
+    lines.append('今天只會有這一則盤中提醒。這是事實提醒，不是新的價位；是否下單由你決定。')
     return '\n'.join(lines)
 
 def run(s,now,send=False,fetch=None):
@@ -69,7 +61,7 @@ def run(s,now,send=False,fetch=None):
         by_symbol={i['symbol']:i for i in s.instruments()}
         fetch=lambda: fetch_quotes([by_symbol[x] for x in symbols if x in by_symbol])
     quotes=fetch()
-    events=new_events(s,state(s,now,quotes),now)
+    events=new_events(s,state(s,quotes),now)
     if not events:return {'status':'quiet','checked':len(quotes)}
     body=text(events,now)
     if send:
