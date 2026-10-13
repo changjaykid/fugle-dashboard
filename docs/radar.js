@@ -7,10 +7,9 @@
   let data = null, busy = false;
 
   function system() {
-    // Data status only. The coverage line used to count valuations and research, which no longer
-    // reach this page; what selects is Strategy v1, so its own scan is what this reports.
-    const t=(data.v1&&data.v1.tally)||{};
-    $('coverage').textContent=t.universe?`v1 掃描上市普通股 ${t.universe.toLocaleString()} 檔`:'';
+    // Data status only: what the scan covered.
+    const t=(data.scan&&data.scan.tally)||{};
+    $('coverage').textContent=t.universe?`掃描上市普通股 ${t.universe.toLocaleString()} 檔`:'';
     const health=data.health?.length?data.health:[{name:'資料來源',status:'pending',detail:'等待主機提供完整資料狀態'}];
     $('health').innerHTML=health.map(h=>`<article class="health-card"><div class="health-title">${esc(h.name)}<span class="tag ${h.status==='ok'?'sweet':h.status==='blocked'||h.status==='error'?'blocked':''}">${esc({ok:'正常',blocked:'受阻',error:'異常',pending:'待確認',stale:'過期',partial:'部分完成'}[h.status]||'待確認')}</span></div><p>${esc(h.detail||'尚未提供說明')}</p>${h.as_of?`<p>${clockText(h.as_of)}</p>`:''}</article>`).join('');
   }
@@ -70,8 +69,8 @@
     // the payload is dropped and everything drawn from it is blanked.
     data=null;
     ['health','coverage','paper-head','paper-stats','paper-open','paper-closed','paper-note','paper-stamp',
-     'v1-picks','v1-waits','v1-tally','v1-stamp'].forEach(id=>{const n=$(id);if(n)n.innerHTML='';});
-    $('paper-section').hidden=true;$('v1-section').hidden=true;
+     'paper-orders','scan-picks','scan-near','scan-tally','scan-stamp'].forEach(id=>{const n=$(id);if(n)n.innerHTML='';});
+    $('paper-section').hidden=true;$('scan-section').hidden=true;
     $('lock').hidden=false;document.querySelector('main').hidden=true;
     const err=$('lock-error');
     if(message){err.hidden=false;err.textContent=message;}else{err.hidden=true;}
@@ -89,40 +88,40 @@
     if(!rows.length)return '';
     return `<div class="paper-scroll"><table class="paper-table"><thead><tr>${head.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
   }
-  // --- Strategy v1 -------------------------------------------------------------------------------
-  // The one set of entry and exit rules. The valuation band that used to sit above this -- buy
-  // prices, the four-box filters, research cards -- was a second answer to "should I buy this", it
-  // decided nothing the account traded, and the user asked for one set of rules. It is gone, not
-  // hidden: a page that still carried it would still say two things.
-  function v1() {
-    const d=data.v1, box=$('v1-section');
+  // --- Tonight's scan (swing.py) ---------------------------------------------------------------
+  // The one set of entry and exit rules: buy a pullback at the lower Bollinger band, aim at the upper
+  // band, let it run once it gets there and sell when it gives back 3% from its best price.
+  function scan() {
+    const d=data.scan, box=$('scan-section');
     if(!d||!d.candidates){box.hidden=true;return;}
     box.hidden=false;
     const t=d.tally||{};
-    $('v1-stamp').textContent=`${d.day} 收盤掃描｜下單門檻 ${d.min_score} 分`;
-    const kind=x=>x==='breakout'?'突破':'回檔';
-    if(d.candidates.length){
-      $('v1-picks').innerHTML=`<div class="paper-scroll"><table class="paper-table"><thead><tr>`+
-        ['標的','型態','分數','進場','停損','目標','風報比','失效點'].map(h=>`<th>${esc(h)}</th>`).join('')+
+    $('scan-stamp').textContent=`${d.day} 收盤掃描`;
+    const num=n=>n==null?'—':Number(n).toLocaleString('zh-TW',{maximumFractionDigits:2});
+    if(!d.market_open){
+      $('scan-picks').innerHTML='<p class="muted">0050 在 120 日線之下：大盤走弱時這套規則不掛新單。</p>';
+    } else if(d.candidates.length){
+      $('scan-picks').innerHTML=`<div class="paper-scroll"><table class="paper-table"><thead><tr>`+
+        ['標的','收盤','掛單價（相對低點）','先看（相對高點）','停損','為什麼現在算相對低點'].map(h=>`<th>${esc(h)}</th>`).join('')+
         `</tr></thead><tbody>`+d.candidates.map(c=>
-          `<tr><td>${esc(c.name)} ${esc(c.symbol)}</td><td>${esc(kind(c.setup))}</td>`+
-          `<td>${c.total.toFixed(0)} <span class="paper-tag">${esc(c.grade)}</span></td>`+
-          `<td>${c.entry}</td><td>${c.stop}</td><td>${c.target}</td>`+
-          `<td>${c.rr.toFixed(1)}</td><td>${esc(c.stop_reason||'')}</td></tr>`).join('')+
+          `<tr><td>${esc(c.name)} ${esc(c.symbol)}</td><td>${num(c.close)}</td>`+
+          `<td>${num(c.limit)}<span class="paper-tag">低 ${c.below_close_pct.toFixed(1)}%</span></td>`+
+          `<td>${num(c.target)}<span class="paper-tag">+${c.target_pct.toFixed(1)}%</span></td>`+
+          `<td>${num(c.stop)}</td><td style="text-align:left">${esc(c.why)}</td></tr>`).join('')+
         `</tbody></table></div>`;
     } else {
-      $('v1-picks').innerHTML='<p class="muted">今天沒有標的同時通過選股、進場與風報比，不交易。</p>';
+      $('scan-picks').innerHTML='<p class="muted">今天沒有符合條件的標的，不掛新單。</p>';
     }
-    const waits=(d.waits||[]).slice(0,8);
-    $('v1-waits').innerHTML=waits.length
-      ? `<h3 class="paper-sub">分數夠高但不下單</h3><div class="paper-scroll"><table class="paper-table"><thead><tr>`+
-        ['標的','型態','分數','不下單的理由'].map(h=>`<th>${esc(h)}</th>`).join('')+`</tr></thead><tbody>`+
-        waits.map(c=>`<tr><td>${esc(c.name)} ${esc(c.symbol)}</td><td>${esc(kind(c.setup))}</td>`+
-          `<td>${c.total.toFixed(0)}</td><td style="text-align:left">${esc(c.wait_reason||'')}</td></tr>`).join('')+
-        `</tbody></table></div>`
+    const near=(d.near||[]).slice(0,8);
+    $('scan-near').innerHTML=near.length
+      ? `<h3 class="paper-sub">接近但不買</h3><div class="paper-scroll"><table class="paper-table"><thead><tr>`+
+        ['標的','收盤','差在哪裡'].map(h=>`<th>${esc(h)}</th>`).join('')+`</tr></thead><tbody>`+
+        near.map(c=>`<tr><td>${esc(c.name)} ${esc(c.symbol)}</td><td>${num(c.close)}</td>`+
+          `<td style="text-align:left">${esc(c.why)}</td></tr>`).join('')+`</tbody></table></div>`
       : '';
-    $('v1-tally').textContent=`掃描上市普通股 ${t.universe||0} 檔：硬性排除 ${t.filtered||0}、無型態 ${t.no_setup||0}、`+
-      `突破 ${t.breakout||0}、回檔 ${t.pullback||0}。選股與進場分開判斷：分數高不代表現在能買。`;
+    $('scan-tally').textContent=`掃描上市普通股 ${t.universe||0} 檔，可判斷 ${t.judged||0} 檔，符合 ${t.buy||0} 檔。`+
+      `限價掛在布林通道下緣（近 20 日波動的相對低點），跌到才買、最多掛 5 個交易日；`+
+      `碰到上緣後續抱，自最高點回落 3% 收盤賣出；停損為買進價下 10%，最多持有 40 個交易日。`;
   }
 
   function paper() {
@@ -137,8 +136,8 @@
       $('paper-stamp').textContent=`${p.started_day} 起｜起始 ${money(f.starting_cash)} 元`;
       $('paper-head').innerHTML=`<span class="paper-equity">${money(f.net_equity)} 元</span>`+
         `<span class="paper-bench">帳戶已重置，尚未有任何交易。第一筆會在掃描出符合條件的標的後產生。</span>`;
-      $('paper-stats').innerHTML='';$('paper-open').innerHTML='';$('paper-closed').innerHTML='';
-      $('paper-note').textContent=`策略參數：${JSON.stringify(p.settings||{})}`;
+      $('paper-stats').innerHTML='';$('paper-open').innerHTML='';$('paper-closed').innerHTML='';$('paper-orders').innerHTML='';
+      $('paper-note').textContent='';
       return;
     }
     const excess=b?f.total_return_pct-b.equal_weight_pct:null;
@@ -162,12 +161,12 @@
       return `<tr><td>${esc(x.name||x.symbol)} ${esc(x.symbol)}<span class="paper-tag">${esc({lot:'整股',odd_lot:'零股',mixed:'整股+零股'}[x.order_type]||x.order_type||'')}</span></td>`+
         `<td>${esc(x.entry_day||'')}</td><td>${x.shares.toLocaleString('zh-TW')}</td><td>${x.entry}</td><td>${x.mark}</td>`+
         `<td class="${swing(u.profit)}">${money(u.profit)}</td><td class="${swing(u.return_pct)}">${pct(u.return_pct)}</td>`+
-        `<td>${x.stop_now??x.stop??'—'}</td><td>${x.target??'—'}</td></tr>`;
+        `<td>${x.stop??'—'}</td><td>${x.armed?`已碰上緣，跌破 ${(x.peak*0.97).toFixed(2)} 賣`:(x.target??'—')}</td></tr>`;
     });
     $('paper-open').innerHTML=open.length
-      ? `<h3 class="paper-sub">目前持倉</h3>`+paperTable(['標的','買進日','股數','成本','現價','未實現','報酬','停損','目標'],open)
+      ? `<h3 class="paper-sub">目前持倉</h3>`+paperTable(['標的','買進日','股數','成本','現價','未實現','報酬','停損','賣出點'],open)
       : `<h3 class="paper-sub">目前持倉</h3><p class="muted">沒有持倉。</p>`;
-    const why={stop:'停損',target:'達標',time:'時間到',trail:'移動停損'};
+    const why={stop:'停損',target:'碰上緣後回落賣出',time:'時間到'};
     const closed=(p.closed||[]).slice().sort((a,b2)=>(b2.exit_day||'').localeCompare(a.exit_day||'')).map(x=>
       `<tr><td>${esc(x.name||x.symbol)} ${esc(x.symbol)}<span class="paper-tag">${esc(x.source==='live'?'實際':'回放')}</span></td>`+
       `<td>${esc(x.entry_day||'')} → ${esc(x.exit_day||'')}</td><td>${x.shares.toLocaleString('zh-TW')}</td>`+
@@ -177,22 +176,25 @@
     $('paper-closed').innerHTML=closed.length
       ? `<h3 class="paper-sub">已結交易</h3>`+paperTable(['標的','進出日期','股數','進出價','損益','報酬','原因','持有'],closed)
       : '';
-    const seeded=p.seeded_from?`${p.seeded_from} 起的部分是用已儲存的歷史 K 線回放，標「回放」；之後每天收盤實際推進的標「實際」。`:'';
+    const orders=(p.orders||[]);
+    $('paper-orders').innerHTML=orders.length
+      ? `<h3 class="paper-sub">掛單中</h3>`+paperTable(['標的','掛單價','先看','停損','掛單日','剩餘交易日'],
+          orders.map(o=>`<tr><td>${esc(o.name)} ${esc(o.symbol)}</td><td>${o.limit}</td><td>${o.target}</td><td>${o.stop}</td><td>${esc(o.placed)}</td><td>${o.left}</td></tr>`))
+      : '';
     $('paper-note').textContent=`這是模擬帳戶，沒有真實下單。報酬是以投入現金計算，已扣手續費 0.1425%／邊與賣出證交稅；`+
-      `限價單只在當日最低真的觸及時才算成交。${seeded}策略參數：${JSON.stringify(p.settings||{})}`;
+      `限價單只在當日最低真的觸及時才算成交。`;
   }
 
   function draw(){
     $('last-scan').textContent=`最後掃描 ${clockText(data.generated_at)}`;
     $('market-date').textContent=`${new Date().toLocaleDateString('zh-TW',{timeZone:'Asia/Taipei'})} · 台北`;
     $('notice').hidden=true;
-    v1();paper();system();
+    scan();paper();system();
   }
-  // The page no longer needs the valuation rows, so it no longer requires them. It needs the schema,
-  // a known mode, and the v1 scan -- without which there is nothing to say.
+  // It needs the schema, a known mode, and tonight's scan -- without which there is nothing to say.
   function accept(next){
     if(next.schema_version!==1||!['live','simulation','initializing'].includes(next.mode))throw new Error('資料格式不相容，等待主機更新');
-    if(!next.v1||!Array.isArray(next.v1.candidates))throw new Error('今天的 v1 掃描資料不完整');
+    if(!next.scan||!Array.isArray(next.scan.candidates))throw new Error('今天的掃描資料不完整');
     return next;
   }
 
