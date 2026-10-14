@@ -59,6 +59,8 @@ class RuleTests(unittest.TestCase):
         p = swing.plan(f)
         self.assertLessEqual(p['limit'], f['close'])
         self.assertEqual(p['stop'], swing.tick(p['limit'] * 0.9))
+        self.assertAlmostEqual(p['stop_pct'], round((1 - p['stop'] / p['limit']) * 100, 2))
+        self.assertAlmostEqual(p['reward_risk'], round((p['target'] - p['limit']) / (p['limit'] - p['stop']), 2))
         self.assertGreater(p['target'], f['close'])
 
     def test_selling_by_the_institutions_rules_it_out(self):
@@ -93,6 +95,9 @@ class RuleTests(unittest.TestCase):
                             [(d, {'2330': [50, 10]}) for d in days], names)
         self.assertTrue(strong['market_open'])
         self.assertEqual([c['symbol'] for c in strong['candidates']], ['2330'])
+        row = strong['candidates'][0]
+        self.assertEqual((row['foreign_lots'], row['trust_lots']), (50 * 5, 10 * 5))
+        self.assertGreater(row['vs_market_60_pct'], 0)
 
 
 class ExitTests(unittest.TestCase):

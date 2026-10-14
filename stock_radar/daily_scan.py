@@ -14,7 +14,7 @@ from pathlib import Path
 
 from .domain import TW
 from .store import Store
-from . import buy_plan, market, swing
+from . import buy_plan, market, strategy, swing
 
 
 def run(store, now, settings=None):
@@ -30,6 +30,46 @@ def run(store, now, settings=None):
     store.set_meta('daily_scan', {**result, 'at': now.isoformat()})
     return {'status': 'ok', 'day': day, 'market_open': result['market_open'],
             'candidates': len(result['candidates']), 'tally': result['tally']}
+
+
+def annotate(store, payload):
+    """The scan with what a person needs to decide on each order, for the page and the morning message.
+
+    The user asked on 2026-10-15 for what helps decide an order rather than why the rule fired: what
+    the company is and does, what the order risks and aims at, how much of the account it takes, who
+    has been buying, and the few fundamentals that say whether there is anything behind the price.
+    Everything here is read from facts already on file; nothing is fetched."""
+    if not payload:
+        return payload
+    from . import profile
+    ratios = (market.load(store, 'ratios', 1) or [(None, {})])[-1][1]
+    performance = store.meta('paper_performance') or {}
+    equity = performance.get('net_equity') or strategy.SETTINGS['starting_cash']
+    budget = min(equity / strategy.SETTINGS['max_positions'],
+                 equity * strategy.SETTINGS['max_position_fraction'])
+    out = dict(payload)
+    for key in ('candidates', 'held_back', 'near'):
+        rows = []
+        for row in payload.get(key) or []:
+            row = dict(row)
+            fin = store.fact(row['symbol'], 'financials') or {}
+            ratio = ratios.get(row['symbol']) or [None, None, None]
+            row.update(business=profile.business(store, row['symbol']),
+                       revenue_yoy_pct=(fin.get('revenue') or {}).get('yoy_pct'),
+                       revenue_month=(fin.get('revenue') or {}).get('period_roc_ym'),
+                       eps=(fin.get('income') or {}).get('eps_basic'),
+                       pe=ratio[0], dividend_yield=ratio[2])
+            if row.get('limit'):
+                shares = int(budget / row['limit'])
+                row.update(suggested_shares=shares, suggested_amount=round(shares * row['limit']))
+            rows.append(row)
+        out[key] = rows
+    out['budget_per_position'] = round(budget)
+    from .strategy_review import MEASURED
+    out['rule_record'] = {'trades': MEASURED['回測筆數'], 'win_pct': MEASURED['回測勝率百分比'],
+                          'mean_pct': MEASURED['回測每筆平均淨報酬百分比'],
+                          'held_days': MEASURED['回測平均持有交易日'], 'period': MEASURED['回測期間']}
+    return out
 
 
 def text(store):

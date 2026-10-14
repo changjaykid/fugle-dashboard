@@ -42,9 +42,20 @@ class ScanMorningTests(unittest.TestCase):
   text=self.run_with(self.scan())
   self.assertEqual(text.split('\n')[0],'台股盤前 10/14（三）08:55')
   self.assertIn('✅ 今天掛單 1 檔',text)
-  self.assertIn('台積電 2330 ── 掛 960（收盤 1000，低 4.0%）',text)
-  self.assertIn('先看布林上緣 1060（+10.4%），碰到後續抱、自高點回落 3% 賣；停損 864',text)
+  self.assertIn('台積電 2330（產業未知）── 掛 960（收盤 1000，低 4.0%）',text)
+  self.assertIn('先看 1060（+10.4%）／停損 864',text)
+  self.assertIn('自高點回落 3% 賣',text)
+  self.assertNotIn('上升趨勢中回檔',text)
   self.assertLessEqual(len(text),1900)
+ def test_the_order_carries_what_helps_decide_it(self):
+  c=self.scan()['candidates'][0]|{'industry':'半導體業','stop_pct':10.0,'reward_risk':1.04,
+     'foreign_lots':1200,'trust_lots':-35,'return_60_pct':12.0,'vs_market_60_pct':8.5}
+  text=self.run_with(self.scan(candidates=[c]))
+  self.assertIn('台積電 2330（半導體業）',text)
+  self.assertIn('先看 1060（+10.4%）／停損 864（−10.0%）',text)
+  self.assertNotIn('報酬風險比',text)
+  self.assertIn('外資 +1,200 張｜投信 -35 張',text)
+  self.assertIn('這套規則回測',text)
  def test_a_weak_market_places_nothing_and_says_why(self):
   text=self.run_with(self.scan(market_open=False,candidates=[]))
   self.assertIn('0050 在 120 日線之下',text);self.assertNotIn('✅',text)

@@ -153,6 +153,9 @@ def main():
             # the export, which publishes it. Primary, not secondary: a day with no scan is a day the
             # account must not trade, and that should fail loudly rather than quietly do nothing.
             run([PY,'-m','stock_radar.daily_scan','--db',str(D/'prod.db')])
+            # What each company does, for the page and the morning message (MOPS, cached ninety days).
+            # Secondary: a missing description costs a line of text, not the day.
+            secondary([PY,'-m','stock_radar.profile','--db',str(D/'prod.db')],'profile')
             # Record what it proposed and follow what earlier proposals did. Secondary: a gap in the
             # journal costs analysis, not the day's report.
             secondary([PY,'-m','stock_radar.journal','--db',str(D/'prod.db'),'record'],'journal record')

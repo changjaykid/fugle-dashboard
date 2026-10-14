@@ -102,7 +102,8 @@ def scan_morning(s,now,quotes=None):
 
     The levels come from last night's close. 08:55's trial price says whether the limit is still below the
     market, which is what `quotes` carries when the pre-open check has run."""
-    payload=s.meta('daily_scan') or {}
+    from .daily_scan import annotate
+    payload=annotate(s,s.meta('daily_scan')) or {}
     head=f"台股盤前 {now.month}/{now.day}（{WEEKDAYS[now.weekday()]}）{now:%H:%M}"
     if not payload:
         return '\n'.join([head,'','⚠️ 昨晚沒有產生掃描結果，今天不提供買點。這不是「不進場」的判斷，請勿依此下單。',SITE])
@@ -115,15 +116,27 @@ def scan_morning(s,now,quotes=None):
         lines.append(f"✅ 今天掛單 {len(picks)} 檔（限價掛在相對低點，跌到才買，最多掛 5 個交易日）")
         for n,c in enumerate(picks[:MAX_STOCKS],1):
             lines.append('')
-            lines.append(f"{n}. {c['name']} {c['symbol']} ── 掛 {c['limit']:g}（收盤 {c['close']:g}，低 {c['below_close_pct']:.1f}%）")
-            lines.append(f"   先看布林上緣 {c['target']:g}（+{c['target_pct']:.1f}%），碰到後續抱、自高點回落 3% 賣；停損 {c['stop']:g}")
-            lines.append(f"   {c['why']}")
+            lines.append(f"{n}. {c['name']} {c['symbol']}（{c.get('industry') or '產業未知'}）── 掛 {c['limit']:g}（收盤 {c['close']:g}，低 {c['below_close_pct']:.1f}%）")
+            if c.get('business'):lines.append(f"   {c['business'][:40]}")
+            size=f"｜約 {c['suggested_shares']} 股 {c['suggested_amount']:,} 元" if c.get('suggested_shares') else ''
+            # No reward/risk here: the target is where the trail starts, not where the trade ends, so a
+            # ratio against it reads 0.8 for a rule that has averaged +2.0% a trade. The rule's own record
+            # is stated once, under the list.
+            lines.append(f"   先看 {c['target']:g}（+{c['target_pct']:.1f}%）／停損 {c['stop']:g}"
+                         +(f"（−{c['stop_pct']:.1f}%）" if c.get('stop_pct') else '')+size)
+            facts=[f"外資 {c['foreign_lots']:+,} 張",f"投信 {c['trust_lots']:+,} 張"] if 'foreign_lots' in c else []
+            if c.get('revenue_yoy_pct') is not None:facts.append(f"營收年增 {c['revenue_yoy_pct']:+.0f}%")
+            if c.get('pe'):facts.append(f"本益比 {c['pe']:g}")
+            if facts:lines.append('   '+'｜'.join(facts))
             q=(quotes or {}).get(c['symbol'])
             trial=positive((q or {}).get('trial_price') if (q or {}).get('is_trial') else (q or {}).get('price'))
             if trial and trial<=c['stop']:
                 lines.append(f"   ⚠️ 試撮 {trial:g} 已在停損之下，今天不買")
         if len(picks)>MAX_STOCKS:lines+=['',f"另有 {len(picks)-MAX_STOCKS} 檔見網站。"]
-        lines+=['',f"價位以 {payload['day']} 收盤計算。是否下單由你決定。"]
+        r=payload.get('rule_record') or {}
+        lines+=['',f"價位以 {payload['day']} 收盤計算；碰到目標後續抱、自高點回落 3% 賣。"
+                   +(f"這套規則回測 {r['trades']} 筆：勝率 {r['win_pct']:.0f}%、平均每筆 {r['mean_pct']:+.1f}%、持有約 {r['held_days']:.0f} 天。" if r else '')
+                   +"是否下單由你決定。"]
     else:
         lines.append('⛔ 今天沒有符合條件的標的，不掛新單')
         near=(payload.get('near') or [])[:1]

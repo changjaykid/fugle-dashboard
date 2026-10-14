@@ -122,7 +122,9 @@ def features(bars, flows):
     prior = lots[-21:-1]
     median_prior = statistics.median(prior) if prior else 0
     recent = [f for f in flows[-SETTINGS['flow_days']:]]
-    bought = sum(((f[0] or 0) + (f[1] or 0)) for f in recent if f)
+    foreign = sum((f[0] or 0) for f in recent if f)
+    trust = sum((f[1] or 0) for f in recent if f)
+    bought = foreign + trust
     traded = sum(lots[-SETTINGS['flow_days']:])
     highs = [b[1] for b in bars[-20:] if b and b[1]]
     band = bands(closes)
@@ -136,6 +138,8 @@ def features(bars, flows):
         'dollar_volume_20': statistics.fmean(turnover) if turnover else 0.0,
         'relative_volume': (lots[-1] / median_prior) if median_prior else None,
         'flow_lots': bought,
+        'foreign_lots': foreign,
+        'trust_lots': trust,
         'flow_share': (bought / traded) if traded else None,
         'band': band,
     }
@@ -200,9 +204,11 @@ def plan(f, settings=None):
     lower, middle, upper = f['band']
     limit = tick(min(lower, f['close']))
     target = tick(upper, down=False)
-    return {'limit': limit, 'target': target, 'middle': round(middle, 2),
-            'stop': tick(limit * (1 - s['stop_fraction'])),
+    stop = tick(limit * (1 - s['stop_fraction']))
+    return {'limit': limit, 'target': target, 'middle': round(middle, 2), 'stop': stop,
             'target_pct': round((target / limit - 1) * 100, 2),
+            'stop_pct': round((1 - stop / limit) * 100, 2),
+            'reward_risk': round((target - limit) / (limit - stop), 2) if limit > stop else None,
             'below_close_pct': round((1 - limit / f['close']) * 100, 2)}
 
 
@@ -272,6 +278,10 @@ def scan(prices, flows, instruments, risk=lambda symbol: None, settings=None):
         row = {'symbol': sym, 'name': inst.get('name') or sym,
                'industry': inst.get('industry_code') or inst.get('industry') or '',
                'close': f['close'], 'why': why, 'flow_lots': f['flow_lots'],
+               'foreign_lots': round(f['foreign_lots']), 'trust_lots': round(f['trust_lots']),
+               'return_60_pct': round(f['return_60'] * 100, 1),
+               'vs_market_60_pct': (round((f['return_60'] - market_60) * 100, 1)
+                                    if market_60 is not None else None),
                'flow_share': f['flow_share'], 'relative_volume': f['relative_volume'], 'reached': reached}
         if ok:
             buys.append({**row, **plan(f, s)})

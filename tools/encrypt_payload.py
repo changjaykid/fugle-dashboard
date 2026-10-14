@@ -41,7 +41,7 @@ def derive(password, salt, iterations=ITERATIONS):
     return hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, iterations, dklen=32)
 
 
-def encrypt(plaintext, password, iterations=ITERATIONS):
+def encrypt(plaintext, password, iterations=ITERATIONS, salt=None):
     """Returns the published envelope. The tag is appended to the ciphertext, as WebCrypto expects.
 
     Compressed first, because ciphertext cannot be compressed afterwards: the host gzips text responses,
@@ -49,7 +49,7 @@ def encrypt(plaintext, password, iterations=ITERATIONS):
     and make every page load pay for it. The browser inflates it with DecompressionStream."""
     from Crypto.Cipher import AES
     body_in = gzip.compress(plaintext, 9)
-    salt, iv = os.urandom(SALT_BYTES), os.urandom(IV_BYTES)
+    salt, iv = salt or os.urandom(SALT_BYTES), os.urandom(IV_BYTES)
     cipher = AES.new(derive(password, salt, iterations), AES.MODE_GCM, nonce=iv)
     body, tag = cipher.encrypt_and_digest(body_in)
     b64 = lambda raw: base64.b64encode(raw).decode('ascii')
@@ -83,6 +83,25 @@ def read_password(path):
     return password
 
 
+def read_salt(password_file):
+    """The salt kept beside the password, created once.
+
+    A fresh salt on every publish gave the same password a different key twice a day, so the key a
+    browser kept from this morning could not open tonight's file and the page came up blank until the
+    tab was closed and the password typed again -- the user's complaint on 2026-10-15. A salt exists to
+    stop one precomputation serving many passwords; this site has one password, so one salt costs
+    nothing, while the IV, which must never repeat, is still drawn fresh every time."""
+    path = Path(str(Path(password_file).expanduser()) + '.salt')
+    if not path.is_file():
+        fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        with os.fdopen(fd, 'wb') as f:
+            f.write(os.urandom(SALT_BYTES))
+    salt = path.read_bytes()
+    if len(salt) != SALT_BYTES:
+        raise SystemExit(f'鹽值檔 {path} 長度不對。')
+    return salt
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -92,7 +111,7 @@ def main(argv=None):
     p.add_argument('--iterations', type=int, default=ITERATIONS)
     a = p.parse_args(argv)
     plaintext = a.source.read_bytes()
-    envelope = encrypt(plaintext, read_password(a.password_file), a.iterations)
+    envelope = encrypt(plaintext, read_password(a.password_file), a.iterations, read_salt(a.password_file))
     # Never publish an envelope that has not been opened again: a payload nobody can decrypt is worse
     # than one that was never locked, because the failure only shows up when someone needs to read it.
     if decrypt(envelope, read_password(a.password_file)) != plaintext:
