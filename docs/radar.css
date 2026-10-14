@@ -41,3 +41,18 @@
    phone it pushed the whole page sideways (1,763px against 375). Now that the account is the page's
    main content rather than a section below the fold, that matters. Break it anywhere. */
 #paper-note{overflow-wrap:anywhere;word-break:break-word}
+/* Tonight's orders, one card each: what the company is, what the order risks and aims at, how much of
+   the account it takes, who has been buying, and the few fundamentals that say whether there is
+   anything behind the price. */
+.picks{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:12px;margin:10px 0}
+.pick{background:#fff;border:1px solid #e3e8ea;border-radius:12px;padding:14px 16px}
+.pick-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.pick-name{font-size:1.05rem;font-weight:650}
+.pick-industry{font-size:.78rem;color:#5b6166;white-space:nowrap}
+.pick-business{margin:4px 0 10px;font-size:.8rem;line-height:1.45;color:#5b6166}
+.pick-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 10px;margin:0}
+.pick-grid div{min-width:0}
+.pick-grid dt{font-size:.7rem;color:#7a8189}
+.pick-grid dd{margin:1px 0 0;font-size:.92rem;font-weight:600;font-variant-numeric:tabular-nums}
+.pick-grid dd small{display:block;font-size:.72rem;font-weight:400;color:#5b6166}
+.pick-record{margin:6px 0 2px;font-size:.8rem;color:#5b6166}

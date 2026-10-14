@@ -45,23 +45,30 @@
     if(!res.ok)throw new Error(`雷達資料讀取失敗 (${res.status})`);
     return res.json();
   }
-  // The derived key is kept for the tab's session so a refresh neither re-asks nor repeats a one-second
-  // key derivation. It goes when the tab closes.
+  // The derived key is kept on this device for thirty days, so neither a refresh nor closing the tab
+  // asks for the password again (the user, 2026-10-15). It works across publishes because the payload
+  // is now encrypted with one fixed salt; before that, every publish changed the key and a kept key
+  // opened nothing, which showed as a blank page. A key that no longer opens the file is dropped and
+  // the password asked for, never a blank page.
+  const KEY_DAYS=30;
+  function forget(){vaultKey=null;try{localStorage.removeItem(KEY_CACHE);sessionStorage.removeItem(KEY_CACHE);}catch(e){}}
   async function cachedKey(){
     if(vaultKey)return vaultKey;
-    const stored=sessionStorage.getItem(KEY_CACHE);
-    if(!stored)return null;
+    let stored=null;
+    try{stored=JSON.parse(localStorage.getItem(KEY_CACHE)||'null');}catch(e){stored=null;}
+    if(!stored||!stored.k||!(stored.until>Date.now())){forget();return null;}
     try{
-      vaultKey=await crypto.subtle.importKey('raw',b64bytes(stored),{name:'AES-GCM',length:256},true,['decrypt']);
+      vaultKey=await crypto.subtle.importKey('raw',b64bytes(stored.k),{name:'AES-GCM',length:256},true,['decrypt']);
       return vaultKey;
-    }catch(e){sessionStorage.removeItem(KEY_CACHE);return null;}
+    }catch(e){forget();return null;}
   }
   async function unlock(password){
     const envelope=await fetchEnvelope();
     const key=await deriveKey(password,b64bytes(envelope.salt),envelope.iterations);
     const payload=await openEnvelope(envelope,key);   // throws on a wrong password: GCM authenticates
     vaultKey=key;
-    try{sessionStorage.setItem(KEY_CACHE,bytesb64(await crypto.subtle.exportKey('raw',key)));}catch(e){}
+    try{localStorage.setItem(KEY_CACHE,JSON.stringify({k:bytesb64(await crypto.subtle.exportKey('raw',key)),
+                                                        until:Date.now()+KEY_DAYS*86400000}));}catch(e){}
     return payload;
   }
   function showLocked(message){
@@ -95,33 +102,44 @@
     const d=data.scan, box=$('scan-section');
     if(!d||!d.candidates){box.hidden=true;return;}
     box.hidden=false;
-    const t=d.tally||{};
+    const t=d.tally||{}, r=d.rule_record;
     $('scan-stamp').textContent=`${d.day} 收盤掃描`;
     const num=n=>n==null?'—':Number(n).toLocaleString('zh-TW',{maximumFractionDigits:2});
+    const signed=(n,unit)=>n==null?'—':`${n>0?'+':''}${Number(n).toLocaleString('zh-TW',{maximumFractionDigits:1})}${unit}`;
+    const cell=(label,value,note)=>`<div><dt>${esc(label)}</dt><dd>${value}${note?`<small>${esc(note)}</small>`:''}</dd></div>`;
+    const card=c=>`<article class="pick"><div class="pick-head"><span class="pick-name">${esc(c.name)} ${esc(c.symbol)}</span>`+
+      `<span class="pick-industry">${esc(c.industry||'')}</span></div>`+
+      `<p class="pick-business">${esc(c.business||'主要業務資料尚未取得')}</p><dl class="pick-grid">`+
+      cell('掛單價',num(c.limit),c.below_close_pct!=null?`比收盤低 ${c.below_close_pct.toFixed(1)}%`:'')+
+      cell('先看目標',num(c.target),c.target_pct!=null?`+${c.target_pct.toFixed(1)}%`:'')+
+      cell('停損',num(c.stop),c.stop_pct!=null?`−${c.stop_pct.toFixed(1)}%`:'')+
+      cell('建議買進',c.suggested_shares?`${num(c.suggested_shares)} 股`:'—',c.suggested_amount?`約 ${num(c.suggested_amount)} 元`:'')+
+      cell('近60日 vs 大盤',signed(c.vs_market_60_pct,'%'))+
+      cell('外資 5日',signed(c.foreign_lots,' 張'))+
+      cell('投信 5日',signed(c.trust_lots,' 張'))+
+      cell('月營收年增',signed(c.revenue_yoy_pct,'%'),c.revenue_month?`${String(c.revenue_month).slice(0,3)}/${String(c.revenue_month).slice(3)}`:'')+
+      cell('本益比',num(c.pe))+
+      cell('殖利率',c.dividend_yield!=null?`${num(c.dividend_yield)}%`:'—')+
+      cell('EPS（近一季）',num(c.eps))+
+      `</dl></article>`;
     if(!d.market_open){
       $('scan-picks').innerHTML='<p class="muted">0050 在 120 日線之下：大盤走弱時這套規則不掛新單。</p>';
     } else if(d.candidates.length){
-      $('scan-picks').innerHTML=`<div class="paper-scroll"><table class="paper-table"><thead><tr>`+
-        ['標的','收盤','掛單價（相對低點）','先看（相對高點）','停損','為什麼現在算相對低點'].map(h=>`<th>${esc(h)}</th>`).join('')+
-        `</tr></thead><tbody>`+d.candidates.map(c=>
-          `<tr><td>${esc(c.name)} ${esc(c.symbol)}</td><td>${num(c.close)}</td>`+
-          `<td>${num(c.limit)}<span class="paper-tag">低 ${c.below_close_pct.toFixed(1)}%</span></td>`+
-          `<td>${num(c.target)}<span class="paper-tag">+${c.target_pct.toFixed(1)}%</span></td>`+
-          `<td>${num(c.stop)}</td><td style="text-align:left">${esc(c.why)}</td></tr>`).join('')+
-        `</tbody></table></div>`;
+      $('scan-picks').innerHTML=(r?`<p class="pick-record">這套規則回測 ${esc(r.period)}，${num(r.trades)} 筆：勝率 ${r.win_pct}%、平均每筆 ${signed(r.mean_pct,'%')}、平均持有 ${Math.round(r.held_days)} 個交易日。`+
+        `限價掛在相對低點，跌到才買、最多掛 5 個交易日；碰到目標後續抱，自最高點回落 3% 賣；停損為買進價下 10%。</p>`:'')+
+        `<div class="picks">${d.candidates.map(card).join('')}</div>`;
     } else {
       $('scan-picks').innerHTML='<p class="muted">今天沒有符合條件的標的，不掛新單。</p>';
     }
     const near=(d.near||[]).slice(0,8);
     $('scan-near').innerHTML=near.length
       ? `<h3 class="paper-sub">接近但不買</h3><div class="paper-scroll"><table class="paper-table"><thead><tr>`+
-        ['標的','收盤','差在哪裡'].map(h=>`<th>${esc(h)}</th>`).join('')+`</tr></thead><tbody>`+
-        near.map(c=>`<tr><td>${esc(c.name)} ${esc(c.symbol)}</td><td>${num(c.close)}</td>`+
+        ['標的','產業','收盤','差在哪裡'].map(h=>`<th>${esc(h)}</th>`).join('')+`</tr></thead><tbody>`+
+        near.map(c=>`<tr><td>${esc(c.name)} ${esc(c.symbol)}</td><td>${esc(c.industry||'')}</td><td>${num(c.close)}</td>`+
           `<td style="text-align:left">${esc(c.why)}</td></tr>`).join('')+`</tbody></table></div>`
       : '';
     $('scan-tally').textContent=`掃描上市普通股 ${t.universe||0} 檔，可判斷 ${t.judged||0} 檔，符合 ${t.buy||0} 檔。`+
-      `限價掛在布林通道下緣（近 20 日波動的相對低點），跌到才買、最多掛 5 個交易日；`+
-      `碰到上緣後續抱，自最高點回落 3% 收盤賣出；停損為買進價下 10%，最多持有 40 個交易日。`;
+      (d.budget_per_position?`建議買進以模擬帳戶每檔約 ${num(d.budget_per_position)} 元計。`:'');
   }
 
   function paper() {
@@ -203,7 +221,10 @@
     try {
       const key=await cachedKey();
       if(!key){showLocked();return;}
-      data=accept(await openEnvelope(await fetchEnvelope(),key));
+      let opened;
+      try{opened=await openEnvelope(await fetchEnvelope(),key);}
+      catch(e){if(e&&e.name==='OperationError'){forget();showLocked('資料已更新，請重新輸入一次密碼。');return;}throw e;}
+      data=accept(opened);
       draw();
     } catch(e) {
       $('notice').hidden=false;$('notice').className='notice error';
