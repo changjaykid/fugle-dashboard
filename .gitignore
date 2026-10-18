@@ -23,3 +23,5 @@ node_modules/
 stock_radar.db
 stock_radar.db-*
 _state/
+docs/radar.json
+docs/research-summary.json
