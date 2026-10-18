@@ -65,7 +65,7 @@ def _trading(d,schedule):
 def sync(s,now,http=None,pause=PAUSE,keep=KEEP):
     """Fetch every missing trading day up to the last completed session, newest first; returns failures."""
     import requests
-    from .buy_plan import last_completed_day
+    from .calendar import last_completed_day
     http=http or requests;schedule=s.meta('trading_calendar') or {};end=last_completed_day(now,schedule);failed=[]
     closed=stored(s,'closed')
     for kind,n in keep.items():

@@ -90,3 +90,13 @@ def is_trading_day(d: date, schedule: dict) -> bool:
     if d.weekday() >= 5:  # Saturday=5, Sunday=6
         return False
     return d.isoformat() not in schedule.get('closed_dates', {})
+
+
+def last_completed_day(now, schedule):
+    """The latest session whose close has happened by `now` (the close is taken as 14:00)."""
+    d = now.date() if now.hour >= 14 else now.date() - timedelta(days=1)
+    for _ in range(16):
+        if is_trading_day(d, schedule):
+            return d
+        d -= timedelta(days=1)
+    raise ValueError('交易日曆無法確認最近收盤日')

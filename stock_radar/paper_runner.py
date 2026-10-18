@@ -29,7 +29,7 @@ from pathlib import Path
 from .calendar import is_trading_day
 from .domain import TW
 from .store import Store
-from . import buy_plan, market, paper, strategy, swing
+from . import calendar, market, paper, strategy, swing
 
 
 def trading_days_between(start, end, schedule):
@@ -161,7 +161,7 @@ def session(store, now, settings=None, source='live'):
     order, each against its own bars."""
     settings = {**strategy.SETTINGS, **swing.SETTINGS, **(settings or {})}
     schedule = store.meta('trading_calendar')
-    today = str(buy_plan.last_completed_day(now, schedule))
+    today = str(calendar.last_completed_day(now, schedule))
     state = store.meta('paper_runner') or {}
     last = state.get('last_day')
     if last and last >= today:

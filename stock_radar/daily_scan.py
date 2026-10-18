@@ -14,12 +14,12 @@ from pathlib import Path
 
 from .domain import TW
 from .store import Store
-from . import buy_plan, market, strategy, swing
+from . import calendar, market, strategy, swing
 
 
 def run(store, now, settings=None):
     schedule = store.meta('trading_calendar')
-    day = str(buy_plan.last_completed_day(now, schedule))
+    day = str(calendar.last_completed_day(now, schedule))
     prices = market.split_adjust(market.load(store, 'prices', market.SCAN_DAYS))
     if not prices or prices[-1][0] != day:
         return {'status': 'no_bars', 'day': day, 'have': prices[-1][0] if prices else None}
