@@ -31,6 +31,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 from .domain import TW, decide
+from . import strategy, swing
 from .store import Store, atomic_json, normalize_iso, dumps
 from .universe import build_universe, equity_universe
 from .quotes import fetch_quotes, fetch_daily_close_all, fetch_etf_navs
@@ -78,14 +79,14 @@ DEFAULT_DB = DEMO_DB  # kept as the argparse default so existing dev/test invoca
 # claim full-market real-time coverage anywhere, and this cap is what
 # keeps that claim honest in code, not just in a doc comment someone could
 # drift away from.
-# 30-symbol cap matches stock_radar.fugle.fetch_quotes()'s own max_symbols
-# default (Codex's v2 FugleClient adapter, 2026-09-10): one ticker+quote
-# call pair per symbol at a fixed 1.1s-between-requests pace (enforced
-# inside FugleClient itself, not by a session wrapper here -- see below),
-# so 30 candidates is roughly 66s per sync-quotes tick. Kept in sync with
-# fugle.py's own default rather than silently drifting to a different
-# number in two places.
-FUGLE_CANDIDATE_CAP = 30
+# The cap is what the rule can hold at once: every position plus every resting order (swing places up
+# to `picks` orders a session, each resting `order_days` sessions). The 30 it replaced was a guess at an
+# undocumented free-tier quota, and on 2026-10-20 the 08:50 sync refused 32 candidates -- 26 orders and
+# 6 holdings -- so no pre-open message went out. The quota is protected by pace rather than count:
+# FugleClient spaces requests 1.1s apart (a ticker and a quote call per symbol, about 54 a minute), so
+# the full 70 is about two and a half minutes per sync.
+FUGLE_CANDIDATE_CAP = (strategy.SETTINGS['max_positions']
+                       + swing.SETTINGS['picks'] * swing.SETTINGS['order_days'])
 FUGLE_LOCK_PATH = Path(__file__).parent.parent / '_state' / 'fugle_sync.lock'
 # Recommended production runtime path: outside any git worktree, inside
 # the durable OpenClaw workspace root (survives worktree add/remove and is
@@ -169,8 +170,8 @@ def cmd_sync_quotes(args):
                 # discovered later as "why did we only get some quotes".
                 raise SystemExit(
                     f'--source fugle requested for {len(instruments)} instruments, above the '
-                    f'{FUGLE_CANDIDATE_CAP}-symbol candidate cap (Fugle free-tier quota is '
-                    f'undocumented; see FUGLE_CANDIDATE_CAP comment in cli.py). Use '
+                    f'{FUGLE_CANDIDATE_CAP}-symbol candidate cap (the most positions plus resting '
+                    f'orders the rule can hold; see FUGLE_CANDIDATE_CAP comment in cli.py). Use '
                     f'--watchlist-only to scope to your candidate list, or pass '
                     f'--allow-full-market-fugle if you have confirmed your plan can handle this.'
                 )
@@ -845,7 +846,7 @@ def main(argv=None):
     p.add_argument('--fugle-key-file', type=Path, default=None,
                    help='path to a local file containing the Fugle API key; defaults to fugle-dashboard/engine/config.json api_key')
     p.add_argument('--allow-full-market-fugle', action='store_true',
-                   help=f'Override the {FUGLE_CANDIDATE_CAP}-symbol Fugle candidate cap (undocumented free-tier quota; use only with a confirmed plan)')
+                   help=f'Override the {FUGLE_CANDIDATE_CAP}-symbol Fugle candidate cap (what the rule can hold at once; use only with a confirmed plan)')
     p.set_defaults(func=cmd_sync_quotes)
 
     sub.add_parser('sync-financials').set_defaults(func=cmd_sync_financials)

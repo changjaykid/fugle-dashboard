@@ -236,7 +236,7 @@ def main():
             run(cli+['sync-quotes','--source','fugle','--candidates'])
             run(cli+['export','--out','docs/radar.json','--mode','live'])
             radar=json.loads((R/'docs/radar.json').read_text())
-            # The first pass quotes 30 candidates over ~a minute, so the picks carry the oldest prices.
+            # The first pass quotes every candidate (up to cli.FUGLE_CANDIDATE_CAP) over a minute or two, so the picks carry the oldest prices.
             # Re-quote just the picks so the price in the message is seconds old, then re-export.
             picks=[i['symbol'] for i in radar['items'] if (i.get('signal') or {}).get('status') in ('sweet','add','buy')][:8]
             if picks:

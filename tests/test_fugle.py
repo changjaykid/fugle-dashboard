@@ -83,11 +83,11 @@ class TestBatch(unittest.TestCase):
         from stock_radar.fugle import fetch_quotes
         from unittest.mock import Mock
         c=Mock();c.quote.return_value={'symbol':'0050'}
-        self.assertEqual(fetch_quotes([{'symbol':'0050'},{'symbol':'0050'}], 'test',client=c),{'0050':{'symbol':'0050'}})
+        self.assertEqual(fetch_quotes([{'symbol':'0050'},{'symbol':'0050'}], 'test',client=c,max_symbols=1),{'0050':{'symbol':'0050'}})
         c.quote.assert_called_once_with('0050');c.close.assert_not_called()
     def test_batch_rejects_over_quota_before_network(self):
         from stock_radar.fugle import fetch_quotes
         with self.assertRaises(FugleError):
-            fetch_quotes([{'symbol':str(1000+i)} for i in range(31)], 'test')
+            fetch_quotes([{'symbol':str(1000+i)} for i in range(31)], 'test', max_symbols=30)
 
 if __name__=='__main__':unittest.main()

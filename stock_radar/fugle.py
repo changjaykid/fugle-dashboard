@@ -153,11 +153,12 @@ class FugleClient:
         self._session.close()
 
 
-def fetch_quotes(instruments, api_key, *, client=None, max_symbols=30):
+def fetch_quotes(instruments, api_key, *, max_symbols, client=None):
     """One bounded candidate batch. Reuse client across polling rounds.
 
     This is NOT a full-market realtime scanner. First pass needs two
-    requests/symbol; 30 candidates fit roughly 66 seconds at free quota.
+    requests/symbol at the client's 1.1s pace, so N candidates take about
+    2.2N seconds. The bound is the caller's (cli.FUGLE_CANDIDATE_CAP).
     Failure propagates; callers must record unhealthy state, never stamp
     old data as fresh or mistake a fallback feed for confirmed trial data.
     """
