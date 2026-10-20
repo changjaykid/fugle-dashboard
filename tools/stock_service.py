@@ -272,8 +272,9 @@ def main():
 if __name__=='__main__':
     try:main()
     except Exception as e:
-        print(json.dumps({'status':'failed','error_type':type(e).__name__}),flush=True)
         task=sys.argv[1] if len(sys.argv)>1 else '';t=datetime.datetime.now(ZoneInfo('Asia/Taipei'));why=f"{type(e).__name__}: {str(e)[:80]}"
+        # Same fields as a success line, so the last line of the log says which run failed and when.
+        print(json.dumps({'at':t.isoformat(),'task':task,'status':'failed','error_type':type(e).__name__}),flush=True)
         what={'notify':'今天盤前流程失敗，沒有產生建議。這不是「不進場」的判斷，請勿依此下單。',
               'intraday':'盤中重新判斷失敗，本輪沒有檢查；下一輪會再試。',
               'recheck':'今天 08:55 盤前流程失敗，沒有送出當日建議。這不是「不進場」的判斷，請勿依此下單。',
