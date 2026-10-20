@@ -40,16 +40,13 @@ def resilient(args,step,attempts=3,pause=20):
             time.sleep(pause)
 
 def secondary(args,step):
-    # Secondary steps still never block the report or the site. What changed: the failure is carried
-    # into the task's own status line. `track evaluate`, `research` and `close_review` all run here, so
-    # for twelve days close.log printed a bare {"status":"ok"} that proved only the main line had run.
+    # Secondary steps never block the report or the site, but a failure is carried into the task's own
+    # status line: for twelve days close.log printed a bare {"status":"ok"} that proved only the main
+    # line had run.
     try:run(args)
     except (RuntimeError,subprocess.TimeoutExpired) as e:
         FAILED.append(step)
         print(json.dumps({'status':'secondary_failed','step':step,'error_type':type(e).__name__}),file=sys.stderr,flush=True)
-
-def track(args):
-    secondary([PY,'-m','stock_radar.track','--db',str(D/'prod.db')]+args,'track '+args[0])
 
 SITE='https://changjaykid.github.io/fugle-dashboard/'
 
@@ -142,12 +139,8 @@ def main():
             for cmd in ['sync-universe','sync-calendar','sync-financials','sync-risk']:resilient(cli+[cmd],cmd)
             run([PY,str(R/'tools/initialize_watchlist.py')])
             run([PY,'-m','stock_radar.research_brief','--db',str(D/'prod.db'),'--sync-close'])
-            # Watched-only legacy structure (keeps hand-research anchors); the full-market scan covers the rest.
-            secondary([PY,'-m','stock_radar.price_structure','--db',str(D/'prod.db')],'price_structure')
-            # Full market: add the latest session (a few requests), then liquidity gate, structure, valuation
-            # and the ranked 08:50 candidates -- all before anything is exported.
+            # Full market: add the latest session (a few requests) for the scan.
             run([PY,'-m','stock_radar.market','--db',str(D/'prod.db')])
-            run([PY,'-m','stock_radar.market_scan','--db',str(D/'prod.db')])
             # The scan (swing.py) decides what gets recommended and what the simulated account orders
             # (2026-10-13). It must run before paper_runner, which reads the scan it writes, and before
             # the export, which publishes it. Primary, not secondary: a day with no scan is a day the
@@ -160,12 +153,7 @@ def main():
             # journal costs analysis, not the day's report.
             secondary([PY,'-m','stock_radar.journal','--db',str(D/'prod.db'),'record'],'journal record')
             secondary([PY,'-m','stock_radar.journal','--db',str(D/'prod.db'),'evaluate'],'journal evaluate')
-            track(['evaluate'])
-            # Once a day, after the close scan: research the symbols the scan says are worth researching,
-            # so tomorrow's recommendations have a reason attached. Model access goes through the shared
-            # runtime's budgeted CLI; a failure here must never block the site or the report.
-            # Data refreshes every day, but reviewing and researching a session that already ended would
-            # repeat yesterday's report and spend tokens for nothing: both are trading-day only.
+            # Reviewing a session that already ended would repeat yesterday's report: trading days only.
             if a.task=='close' and trading_today:
                 # A job that never starts is silent, and silence looks exactly like "no opportunities".
                 # The close run is the last one of the day, so it is where a missing morning shows up.
@@ -173,7 +161,6 @@ def main():
                 ran=posted.exists() and json.loads(posted.read_text()).get('date')==str(now.date())
                 ran=ran or (told.exists() and json.loads(told.read_text()).get('date')==str(now.date()))
                 if not ran:alert(f"台股系統｜{now:%m/%d %H:%M}\n【系統異常】今天是交易日，但沒有送出盤前建議（08:55 未執行或發送失敗）。請檢查舊 Mac 的排程。\nhttps://changjaykid.github.io/fugle-dashboard/")
-                secondary([PY,'-m','stock_radar.research_llm','--db',str(D/'prod.db')],'research')
                 # The simulated account advances on closing bars, before the review that reports it.
                 # It is secondary: a failure here must not cost the day's review, and the status line
                 # now says when it happened.
@@ -185,8 +172,7 @@ def main():
                 # shows -- both are the scan -- so a lapsed research price reached the
                 # channel sounding like a trading change when no trading rule had moved.
                 # One set of entry and exit rules speaks to the reader; this was a second.
-                # A secondary step that fails silently makes every number downstream of it stale --
-                # `track evaluate` is how the only evidence of whether this agent works gets updated.
+                # A secondary step that fails silently makes every number downstream of it stale.
                 if FAILED:
                     seen=D/'secondary-alert.json'
                     done=json.loads(seen.read_text()) if seen.exists() else {}
@@ -195,12 +181,9 @@ def main():
                               f"{'、'.join(FAILED)}。報表與追蹤數字可能停在上一次成功的版本。\n{SITE}")
                         from stock_radar.store import atomic_json as _aj;_aj(seen,{'date':str(now.date()),'steps':FAILED})
             run(cli+['export','--out','docs/radar.json','--mode','live'])
-            run([PY,'-m','stock_radar.daily_report','--db',str(D/'prod.db'),'--out','docs/research-summary.json'])
             run(cli+['backup','--out',str(D/('backup-'+now.strftime('%Y%m%d-%H%M%S')+'.db'))])
-            # Retention: newest 14 database backups, 120 days of morning snapshots (weekly review and tracking read far less).
+            # Retention: newest 14 database backups.
             for old in sorted(D.glob('backup-*.db'))[:-14]:old.unlink()
-            for old in (D/'snapshots').glob('*.json'):
-                if now.timestamp()-old.stat().st_mtime>120*86400:old.unlink()
             # The site is GitHub Pages: anything published answers 200 to anyone with the URL. So the
             # payload is encrypted before it is committed (tools/encrypt_payload.py) and the plaintext
             # radar.json is no longer published at all -- it is removed from the repo on the first run
@@ -215,8 +198,7 @@ def main():
             if plain.exists():
                 plain.unlink()
                 run(['git','rm','--cached','--ignore-unmatch','docs/radar.json'],W)
-            (W/'docs/research-summary.json').write_bytes((R/'docs/research-summary.json').read_bytes())
-            run(['git','add','docs/radar.enc.json','docs/research-summary.json','docs/index.html',
+            run(['git','add','docs/radar.enc.json','docs/index.html',
                  'docs/radar.js','docs/radar.css'],W)
             dirty=run(['git','diff','--cached','--name-only'],W)
             if dirty:run(['git','commit','-m','Refresh public stock research '+now.strftime('%Y-%m-%d')],W)
@@ -235,20 +217,7 @@ def main():
             finally:s.close()
             run(cli+['sync-quotes','--source','fugle','--candidates'])
             run(cli+['export','--out','docs/radar.json','--mode','live'])
-            radar=json.loads((R/'docs/radar.json').read_text())
-            # The first pass quotes every candidate (up to cli.FUGLE_CANDIDATE_CAP) over a minute or two, so the picks carry the oldest prices.
-            # Re-quote just the picks so the price in the message is seconds old, then re-export.
-            picks=[i['symbol'] for i in radar['items'] if (i.get('signal') or {}).get('status') in ('sweet','add','buy')][:8]
-            if picks:
-                secondary(cli+['sync-quotes','--source','fugle','--symbols',','.join(picks)],'requote picks')
-                run(cli+['export','--out','docs/radar.json','--mode','live'])
-                radar=json.loads((R/'docs/radar.json').read_text())
-            snapshots=D/'snapshots';snapshots.mkdir(exist_ok=True)
-            snapshot=snapshots/(now.strftime('%Y%m%d-%H%M%S')+'.json')
-            with snapshot.open('xb') as f:f.write((R/'docs/radar.json').read_bytes())
-            track(['record','--radar',str(snapshot)])
-            state={'date':str(now.date()),'items':{i['symbol']:{k:i.get('signal',{}).get(k) for k in ('status','suggested','reason')} for i in radar['items'] if i.get('watched') or i.get('signal',{}).get('status') in ('sweet','add','buy')}}
-            prev=D/'morning-state.json';sent=D/'morning-message.json'
+            sent=D/'morning-message.json'
             today=json.loads(sent.read_text()) if sent.exists() else {}
             today=today if today.get('date')==str(now.date()) else {}
             # The morning list is the scan's orders (swing.py, 2026-10-13): limits at the lower band.
@@ -256,7 +225,7 @@ def main():
                   '--quotes',str(R/'docs/radar.json'),'--out',str(D/'morning-latest.json'),'--send']
             if today.get('message_id'):args+=['--edit-id',today['message_id']]
             # One message a day, sent by the 08:55 run: its trial price is the closest to the open.
-            # 08:50 only prepares data (quotes, export, snapshot, ledger) so 08:55 has everything ready.
+            # 08:50 only prepares data (quotes, export) so 08:55 has everything ready.
             if a.task=='recheck' or today.get('message_id'):
                 out=run(args)
                 for line in out.splitlines():
@@ -264,8 +233,6 @@ def main():
                     except ValueError:continue
                     if r.get('message_id') and r.get('status')!='edit_failed':
                         from stock_radar.store import atomic_json as _aj;_aj(sent,{'date':str(now.date()),'message_id':r['message_id']})
-            from stock_radar.store import atomic_json
-            atomic_json(prev,state)
         done={'at':now.isoformat(),'task':a.task,'status':'ok' if not FAILED else 'ok_with_failures'}
         if FAILED:done['failed_steps']=FAILED
         print(json.dumps(done))

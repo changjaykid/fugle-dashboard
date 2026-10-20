@@ -89,38 +89,3 @@ def gate_signal(signal,plan,quote=None):
         if current and positive(plan.get('support')) and current<plan['support']:
             return {**signal,'status':'blocked','status_label':'暫停','suggested':None,'conservative':None,'extreme':None,'valid_until':None,'reason':'當日價格已跌破研究支撐，暫停掛價','action':'當日價格已跌破研究支撐，暫停掛價'}
     return signal
-
-def format_plans(s,now):
-    """Closing-price plan over the whole scanned market (Sunday outlook, manual runs): cheapest first,
-    five stocks and three ETFs at most, then where the user's own watchlist stands."""
-    from .market_scan import discount
-    from .research_brief import _why,_names,researched,research_coverage
-    pairs=[(i,store_plan(s,i,now)) for i in s.instruments() if s.active(i['symbol'])]
-    def cheap(ip):
-        return -(discount(s.active(ip[0]['symbol']),(s.fact(ip[0]['symbol'],'public_close') or {}).get('close')) or 0)
-    ready=sorted([x for x in pairs if x[1]['status']=='conditional'],key=cheap)
-    stocks=[x for x in ready if x[0]['kind']=='stock'][:5];etfs=[x for x in ready if x[0]['kind']!='stock'][:3]
-    wait=sorted([x for x in pairs if x[1]['status']=='wait_stabilize'],key=cheap)
-    lines=['台股買進計畫｜'+now.strftime('%Y-%m-%d'),'以最近完成交易日收盤規劃；08:55 再確認當日行情。']
-    def block(n,i,p):
-        r=s.fact(i['symbol'],'research_detail') or {}
-        out=['',f"{'①②③④⑤'[n-1]} {i['name']} {i['symbol']}｜承接 {p['entry']:g} 元／最高 {p['buy_max']:g} 元",f"價位：{_why(s.active(i['symbol']),p['entry'])}"]
-        if researched(s,i,now) and r.get('thesis'):out.append(f"深度：{r['thesis'][:100]}")
-        if r.get('risks'):out.append(f"風險：{r['risks'][0]}")
-        return out
-    if not stocks:lines.append('\n個股：目前沒有標的進入買進區。')
-    for n,(i,p) in enumerate(stocks,1):lines+=block(n,i,p)
-    if etfs:
-        lines+=['','— ETF —']
-        for n,(i,p) in enumerate(etfs,1):lines+=block(n,i,p)
-    if not ready:lines.append('目前沒有資料完整的承接計畫：收盤已進入買進區、且技術面符合的標的為 0。')
-    if wait:lines.append('\n已進買進區，先等止穩：'+_names([i['name'] for i,_ in wait])+'。')
-    mine=[f"{i['name']} {p['label']}" for i,p in pairs if i.get('watched')]
-    if mine:lines.append('\n你的關注：'+'；'.join(mine)+'。')
-    dates=sorted({p['close_date'] for i,p in pairs if p['close_date']})
-    if dates:lines.append('價格依據：'+dates[-1]+' 收盤；承接參考不是即時掛價。')
-    lines.append(research_coverage(s,now))
-    lines.append('https://changjaykid.github.io/fugle-dashboard/')
-    text='\n'.join(lines)
-    if len(text)>1900:raise ValueError('通知內容超過長度限制')
-    return text
