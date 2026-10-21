@@ -1,6 +1,6 @@
 """Unit tests for stock_radar.cli — network calls mocked, DB is real (tmp
 SQLite file per test), so this exercises the actual Store/domain wiring
-without hitting live TWSE endpoints."""
+without hitting live TWSE or Discord."""
 import sys
 import json
 import tempfile
@@ -16,19 +16,6 @@ from stock_radar import cli
 from stock_radar.calendar import fetch_holiday_schedule
 from stock_radar.domain import TW
 from stock_radar.store import Store
-
-
-def make_valuation(now, **overrides):
-    v = {
-        'sweet': 100.0, 'add': 110.0, 'buy': 120.0,
-        'method': 'forward_pe', 'reason': '測試', 'thesis': '測試',
-        'as_of': (now - timedelta(hours=1)).isoformat(),
-        'valid_until': (now + timedelta(days=30)).isoformat(),
-        'sources': [{'url': 'https://example.com', 'as_of': (now - timedelta(hours=1)).isoformat(), 'title': 'x'}],
-        'evidence_reviewed': True,
-    }
-    v.update(overrides)
-    return v
 
 
 class CliTestBase(unittest.TestCase):
@@ -62,26 +49,12 @@ class TestSyncUniverse(CliTestBase):
 
 
 class TestSyncQuotes(CliTestBase):
-    def test_watchlist_only_filters(self):
-        fake_items = [
-            {'symbol': '2330', 'kind': 'stock', 'watched': True},
-            {'symbol': '9999', 'kind': 'stock', 'watched': False},
-        ]
-        with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
-            self.run_cli('sync-universe')
-        with mock.patch('stock_radar.cli.fetch_quotes', return_value={'2330': {
-            'symbol': '2330', 'as_of': datetime.now(TW).isoformat(), 'price': 100.0,
-        }}) as fake_fetch:
-            self.run_cli('sync-quotes', '--watchlist-only')
-        called_instruments = fake_fetch.call_args[0][0]
-        self.assertEqual(len(called_instruments), 1)
-        self.assertEqual(called_instruments[0]['symbol'], '2330')
 
     def test_no_instruments_does_not_crash(self):
         self.run_cli('sync-quotes')  # empty DB, should print message not raise
 
     def test_source_fugle_uses_fugle_fetcher_when_key_available(self):
-        fake_items = [{'symbol': '2330', 'kind': 'stock', 'watched': True}]
+        fake_items = [{'symbol': '2330', 'kind': 'stock'}]
         with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
             self.run_cli('sync-universe')
         keyfile = Path(self.tmpdir) / 'key.txt'
@@ -94,7 +67,7 @@ class TestSyncQuotes(CliTestBase):
         fake_mis.assert_not_called()
 
     def test_source_fugle_without_key_refuses(self):
-        fake_items = [{'symbol': '2330', 'kind': 'stock', 'watched': True}]
+        fake_items = [{'symbol': '2330', 'kind': 'stock'}]
         with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
             self.run_cli('sync-universe')
         with mock.patch('stock_radar.cli._fugle_api_key', return_value=None):
@@ -102,7 +75,7 @@ class TestSyncQuotes(CliTestBase):
                 self.run_cli('sync-quotes', '--source', 'fugle')
 
     def test_source_fugle_failure_falls_back_to_mis(self):
-        fake_items = [{'symbol': '2330', 'kind': 'stock', 'watched': True}]
+        fake_items = [{'symbol': '2330', 'kind': 'stock'}]
         with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
             self.run_cli('sync-universe')
         keyfile = Path(self.tmpdir) / 'key.txt'
@@ -115,7 +88,7 @@ class TestSyncQuotes(CliTestBase):
         fake_mis.assert_called_once()
 
     def test_default_source_is_mis_untouched(self):
-        fake_items = [{'symbol': '2330', 'kind': 'stock', 'watched': True}]
+        fake_items = [{'symbol': '2330', 'kind': 'stock'}]
         with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
             self.run_cli('sync-universe')
         with mock.patch('stock_radar.cli.fetch_quotes', return_value={'2330': {
@@ -132,7 +105,7 @@ class TestSyncQuotes(CliTestBase):
         """Regression (Codex review 2026-09-10): --source fugle against more
         than FUGLE_CANDIDATE_CAP symbols must refuse loudly (undocumented
         free-tier quota), not silently fetch a partial/truncated result."""
-        fake_items = [{'symbol': str(1000 + i), 'kind': 'stock', 'watched': True}
+        fake_items = [{'symbol': str(1000 + i), 'kind': 'stock'}
                      for i in range(cli.FUGLE_CANDIDATE_CAP + 1)]
         with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
             self.run_cli('sync-universe')
@@ -145,7 +118,7 @@ class TestSyncQuotes(CliTestBase):
         fake_fugle.assert_not_called()
 
     def test_fugle_above_cap_allowed_with_explicit_override(self):
-        fake_items = [{'symbol': str(1000 + i), 'kind': 'stock', 'watched': True}
+        fake_items = [{'symbol': str(1000 + i), 'kind': 'stock'}
                      for i in range(cli.FUGLE_CANDIDATE_CAP + 1)]
         with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
             self.run_cli('sync-universe')
@@ -161,7 +134,7 @@ class TestSyncQuotes(CliTestBase):
         by asserting a second concurrent call to the same lock path is
         rejected while the first is 'in progress' (simulated by holding
         the lock manually before calling sync-quotes)."""
-        fake_items = [{'symbol': '2330', 'kind': 'stock', 'watched': True}]
+        fake_items = [{'symbol': '2330', 'kind': 'stock'}]
         with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
             self.run_cli('sync-universe')
         keyfile = Path(self.tmpdir) / 'key.txt'
@@ -177,40 +150,6 @@ class TestSyncQuotes(CliTestBase):
                 self.run_cli('sync-quotes', '--source', 'fugle', '--fugle-key-file', str(keyfile))
         fake_fugle.assert_not_called()  # lock was busy -> never even attempted the HTTP calls
         fake_mis.assert_called_once()   # fell back cleanly
-
-
-class TestProposeApply(CliTestBase):
-    def setUp(self):
-        super().setUp()
-        fake_items = [{'symbol': '2330', 'kind': 'stock', 'name': '台積電'}]
-        with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
-            self.run_cli('sync-universe')
-
-    def test_propose_then_apply_round_trip(self):
-        now = datetime.now(TW)
-        v = make_valuation(now)
-        vfile = Path(self.tmpdir) / 'v.json'
-        vfile.write_text(json.dumps(v))
-        # capture printed proposal id via direct store call for determinism
-        store = Store(self.db_path)
-        pid = store.propose('2330', v)
-        store.close()
-        self.run_cli('apply', pid, '--actor', cli.ALLOWED_ACTORS[0], '--channel', cli.DISCORD_CHANNEL)
-        store = Store(self.db_path)
-        try:
-            active = store.active('2330')
-            self.assertIsNotNone(active)
-            self.assertEqual(active['buy'], 120.0)
-        finally:
-            store.close()
-
-    def test_apply_rejects_unauthorized_actor_via_cli(self):
-        now = datetime.now(TW)
-        store = Store(self.db_path)
-        pid = store.propose('2330', make_valuation(now))
-        store.close()
-        with self.assertRaises(PermissionError):
-            self.run_cli('apply', pid, '--actor', '000000', '--channel', cli.DISCORD_CHANNEL)
 
 
 class TestSyncRisk(CliTestBase):
@@ -236,147 +175,72 @@ class TestSyncRisk(CliTestBase):
 
 
 class TestExport(CliTestBase):
-    def test_export_writes_valid_json_with_no_quotes(self):
-        fake_items = [{'symbol': '2330', 'kind': 'stock', 'name': '台積電', 'market': 'TSE'}]
-        with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
-            self.run_cli('sync-universe')
+    """The page payload: the scan, the account and data health -- nothing else."""
+
+    def export(self, mode='simulation'):
         out_path = Path(self.tmpdir) / 'radar.json'
-        self.run_cli('export', '--out', str(out_path), '--mode', 'simulation')
-        data = json.loads(out_path.read_text())
-        self.assertEqual(data['mode'], 'simulation')
-        self.assertEqual(data['coverage']['universe'], 1)
-        self.assertEqual(data['coverage']['quotes'], 0)
-        # No quotes synced -> health must flag it, not silently look healthy
-        self.assertTrue(any(h['status'] == 'blocked' for h in data['health']))
+        self.run_cli('export', '--out', str(out_path), '--mode', mode)
+        return json.loads(out_path.read_text())
 
-    def test_export_never_crashes_with_empty_db(self):
-        out_path = Path(self.tmpdir) / 'radar.json'
-        self.run_cli('export', '--out', str(out_path))
-        data = json.loads(out_path.read_text())
-        self.assertEqual(data['items'], [])
+    def test_an_empty_database_exports_no_scan_and_says_the_data_is_missing(self):
+        data = self.export()
+        self.assertEqual(set(data), {'schema_version', 'mode', 'generated_at', 'market_date', 'health', 'paper', 'scan'})
+        self.assertIsNone(data['scan']);self.assertIsNone(data['paper'])
+        health = {h['name']: h['status'] for h in data['health']}
+        self.assertEqual(health, {'交易日曆': 'blocked', '公開收盤': 'blocked'})
 
-
-class TestResearchAndHistoryWiring(CliTestBase):
-    """Regression (Codex review 2026-09-10): export must read research/
-    valuation_history from the real DB, not pass a hardcoded {} through."""
-
-    def setUp(self):
-        super().setUp()
-        fake_items = [{'symbol': '3661', 'kind': 'stock', 'name': '世芯-KY', 'market': 'TSE'}]
-        with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
-            self.run_cli('sync-universe')
-
-    def test_research_command_writes_fact_and_export_surfaces_it(self):
-        notes_file = Path(self.tmpdir) / 'notes.json'
-        notes_file.write_text(json.dumps({
-            'why_now': '訂單能見度提升', 'chips': '外資連續課買',
-            'catalysts': ['Q3財報'], 'risks': ['客戶集中度高'],
-        }))
-        self.run_cli('research', '3661', '--file', str(notes_file))
-        out_path = Path(self.tmpdir) / 'radar.json'
-        self.run_cli('export', '--out', str(out_path), '--mode', 'simulation')
-        data = json.loads(out_path.read_text())
-        item = next(i for i in data['items'] if i['symbol'] == '3661')
-        self.assertEqual(item['research']['why_now'], '訂單能見度提升')
-        self.assertEqual(item['research']['catalysts'], ['Q3財報'])
-        self.assertEqual(item['research']['risks'], ['客戶集中度高'])
-
-    def test_research_command_rejects_unknown_fields(self):
-        notes_file = Path(self.tmpdir) / 'notes.json'
-        notes_file.write_text(json.dumps({'made_up_field': 'x'}))
-        with self.assertRaises(SystemExit):
-            self.run_cli('research', '3661', '--file', str(notes_file))
-
-    def test_active_valuation_thesis_and_sources_surface_in_research(self):
-        now = datetime.now(TW)
+    def test_the_scan_and_the_public_close_reach_the_page(self):
         store = Store(self.db_path)
         try:
-            proposal_id = store.propose('3661', make_valuation(now, thesis='高成長颱帳销'))
+            store.set_meta('trading_calendar', {'roc_years': [datetime.now(TW).year - 1911], 'closed_dates': {}})
+            store.set_meta('public_close_sync', {'at': '2026-10-20T14:30:00+08:00', 'count': 1})
+            store.set_meta('daily_scan', {'version': 'swing-v1', 'day': '2026-10-20', 'market_open': True,
+                                          'candidates': [], 'held_back': [], 'near': [], 'tally': {}})
         finally:
             store.close()
-        self.run_cli('apply', proposal_id, '--actor', cli.ALLOWED_ACTORS[0], '--channel', cli.DISCORD_CHANNEL)
-        out_path = Path(self.tmpdir) / 'radar.json'
-        self.run_cli('export', '--out', str(out_path), '--mode', 'simulation')
-        data = json.loads(out_path.read_text())
-        item = next(i for i in data['items'] if i['symbol'] == '3661')
-        self.assertEqual(item['research']['thesis'], '高成長颱帳销')
-        self.assertTrue(len(item['research']['sources']) > 0)
+        data = self.export()
+        self.assertEqual(data['scan']['version'], 'swing-v1')
+        self.assertEqual([h['name'] for h in data['health']], ['公開收盤'])
 
-    def test_valuation_history_populated_from_store_versions(self):
-        now = datetime.now(TW)
+
+class TestOutbox(CliTestBase):
+    NOW = datetime(2026, 9, 29, 8, 55, tzinfo=TW)
+
+    def send(self, store, **kw):
+        return cli._send_with_outbox(store, 't', 'hello', channel='c', now=self.NOW, sleep=lambda s: None, **kw)
+
+    def test_a_skipped_duplicate_still_reports_the_original_message_id(self):
+        """The morning heartbeat asks "did today's message go out?". A duplicate means it did,
+        so the id of the message already in the channel must come back with the skip."""
         store = Store(self.db_path)
         try:
-            proposal_id = store.propose('3661', make_valuation(now))
+            with mock.patch('stock_radar.cli.send_message', return_value={'id': '999'}):
+                first = self.send(store)
+            second = self.send(store)
         finally:
             store.close()
-        self.run_cli('apply', proposal_id, '--actor', cli.ALLOWED_ACTORS[0], '--channel', cli.DISCORD_CHANNEL)
-        out_path = Path(self.tmpdir) / 'radar.json'
-        self.run_cli('export', '--out', str(out_path), '--mode', 'simulation')
-        data = json.loads(out_path.read_text())
-        item = next(i for i in data['items'] if i['symbol'] == '3661')
-        self.assertEqual(len(item['valuation_history']), 1)
-        self.assertEqual(item['valuation_history'][0]['status'], 'active')
-        self.assertEqual(item['valuation_history'][0]['payload']['buy'], 120.0)
+        self.assertEqual(first['status'], 'sent')
+        self.assertEqual(second['status'], 'skipped_duplicate')
+        self.assertEqual(second['message_id'], '999')
 
+    def test_a_transient_failure_is_retried(self):
+        store = Store(self.db_path)
+        try:
+            with mock.patch('stock_radar.cli.send_message', side_effect=[RuntimeError('503'), {'id': '7'}]):
+                r = self.send(store)
+        finally:
+            store.close()
+        self.assertEqual((r['status'], r['attempts'], r['message_id']), ('sent', 2, '7'))
 
-class TestQuoteSourceHealth(CliTestBase):
-    """Regression (Codex review 2026-09-10): health must reflect the ACTUAL
-    last sync-quotes outcome, never a hardcoded '401' string."""
-
-    def setUp(self):
-        super().setUp()
-        fake_items = [{'symbol': '2330', 'kind': 'stock', 'name': '台積電', 'market': 'TSE'}]
-        with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
-            self.run_cli('sync-universe')
-
-    def test_no_sync_yet_is_pending_not_blocked(self):
-        out_path = Path(self.tmpdir) / 'radar.json'
-        self.run_cli('export', '--out', str(out_path), '--mode', 'simulation')
-        data = json.loads(out_path.read_text())
-        h = next(x for x in data['health'] if x['name'] == '試撮')
-        self.assertEqual(h['status'], 'pending')
-
-    def test_successful_mis_sync_is_blocked_not_hardcoded_401(self):
-        fake_quotes = {'2330': {'symbol': '2330', 'as_of': datetime.now(TW).isoformat(),
-                                'price': 100.0, 'is_trial': None}}
-        with mock.patch('stock_radar.cli.fetch_quotes', return_value=fake_quotes):
-            self.run_cli('sync-quotes')
-        out_path = Path(self.tmpdir) / 'radar.json'
-        self.run_cli('export', '--out', str(out_path), '--mode', 'simulation')
-        data = json.loads(out_path.read_text())
-        h = next(x for x in data['health'] if x['name'] == '試撮')
-        self.assertEqual(h['status'], 'blocked')
-        self.assertNotIn('401', h['detail'])
-        self.assertIn('未嘗試 Fugle', h['detail'])
-
-    def test_successful_fugle_sync_is_ok_status(self):
-        fake_quotes = {'2330': {'symbol': '2330', 'as_of': datetime.now(TW).isoformat(),
-                                'price': 100.0, 'is_trial': True, 'trial_price': 100.0}}
-        with mock.patch('stock_radar.cli.fetch_fugle_quotes', return_value=fake_quotes):
-            self.run_cli('sync-quotes', '--source', 'fugle', '--fugle-key-file', self._fake_key_file())
-        out_path = Path(self.tmpdir) / 'radar.json'
-        self.run_cli('export', '--out', str(out_path), '--mode', 'simulation')
-        data = json.loads(out_path.read_text())
-        h = next(x for x in data['health'] if x['name'] == '試撮')
-        self.assertEqual(h['status'], 'ok')
-
-    def test_fugle_failure_then_mis_fallback_shows_actual_error_not_generic_401(self):
-        with mock.patch('stock_radar.cli.fetch_fugle_quotes', side_effect=RuntimeError('403 Forbidden')), \
-             mock.patch('stock_radar.cli.fetch_quotes', return_value={
-                 '2330': {'symbol': '2330', 'as_of': datetime.now(TW).isoformat(), 'price': 100.0, 'is_trial': None}}):
-            self.run_cli('sync-quotes', '--source', 'fugle', '--fugle-key-file', self._fake_key_file())
-        out_path = Path(self.tmpdir) / 'radar.json'
-        self.run_cli('export', '--out', str(out_path), '--mode', 'simulation')
-        data = json.loads(out_path.read_text())
-        h = next(x for x in data['health'] if x['name'] == '試撮')
-        self.assertEqual(h['status'], 'blocked')
-        self.assertIn('403', h['detail'])
-
-    def _fake_key_file(self):
-        p = Path(self.tmpdir) / 'key.txt'
-        p.write_text('fake-key')
-        return str(p)
-
+    def test_failure_on_every_attempt_raises(self):
+        store = Store(self.db_path)
+        try:
+            with mock.patch('stock_radar.cli.send_message', side_effect=RuntimeError('503')) as fake:
+                with self.assertRaises(RuntimeError):
+                    self.send(store, max_attempts=3)
+        finally:
+            store.close()
+        self.assertEqual(fake.call_count, 3)
 
 class TestDemoDbGuard(unittest.TestCase):
     """Regression (Codex review 2026-09-10): --mode live must never be
@@ -386,16 +250,13 @@ class TestDemoDbGuard(unittest.TestCase):
         with self.assertRaises(SystemExit):
             cli.main(['--db', str(cli.DEMO_DB), 'export', '--out', '/tmp/x.json', '--mode', 'live'])
 
+
     def test_live_mode_against_explicit_other_db_allowed(self):
-        tmpdir = tempfile.mkdtemp(prefix='radar-proddb-test-')
+        tmpdir = tempfile.mkdtemp(prefix='radar-demodb-live-test-')
         try:
-            db_path = Path(tmpdir) / 'prod.db'
             out_path = Path(tmpdir) / 'radar.json'
-            # No --assume-market-open in live mode either -- this should
-            # succeed (empty DB, no instruments) without the demo-db guard
-            # firing, proving the guard is path-specific, not mode-specific.
-            cli.main(['--db', str(db_path), 'export', '--out', str(out_path), '--mode', 'live'])
-            self.assertTrue(out_path.exists())
+            cli.main(['--db', str(Path(tmpdir) / 'prod.db'), 'export', '--out', str(out_path), '--mode', 'live'])
+            self.assertEqual(json.loads(out_path.read_text())['mode'], 'live')
         finally:
             shutil.rmtree(tmpdir, ignore_errors=True)
 
@@ -420,78 +281,6 @@ class TestSyncCalendar(CliTestBase):
         store = Store(self.db_path)
         try:
             self.assertEqual(store.meta('trading_calendar'), fake_schedule)
-        finally:
-            store.close()
-
-
-class TestExportCalendarGating(CliTestBase):
-    """Regression (2026-09-10): --assume-market-open used to be the ONLY
-    way to unblock export; now export reads the real cached calendar via
-    sync-calendar and only needs the manual flag for testing/override."""
-
-    def setUp(self):
-        super().setUp()
-        fake_items = [{'symbol': '2330', 'kind': 'stock', 'name': '台積電', 'market': 'TSE'}]
-        with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
-            self.run_cli('sync-universe')
-
-    def test_no_calendar_synced_fails_closed_not_open(self):
-        out_path = Path(self.tmpdir) / 'radar.json'
-        self.run_cli('export', '--out', str(out_path), '--mode', 'simulation')
-        data = json.loads(out_path.read_text())
-        self.assertTrue(any(h['name'] == '交易日曆' and h['status'] == 'blocked' for h in data['health']))
-
-    def test_calendar_synced_for_open_day_unblocks_market_open_gate(self):
-        now = datetime.now(TW)
-        fake_schedule = {'closed_dates': {}, 'roc_years': [now.year - 1911]}
-        with mock.patch('stock_radar.cli.fetch_holiday_schedule', return_value=fake_schedule):
-            self.run_cli('sync-calendar')
-        out_path = Path(self.tmpdir) / 'radar.json'
-        self.run_cli('export', '--out', str(out_path), '--mode', 'simulation')
-        data = json.loads(out_path.read_text())
-        self.assertFalse(any(h['name'] == '交易日曆' for h in data['health']))
-
-    def test_assume_market_open_still_bypasses_calendar_entirely(self):
-        out_path = Path(self.tmpdir) / 'radar.json'
-        self.run_cli('export', '--out', str(out_path), '--mode', 'simulation', '--assume-market-open')
-        data = json.loads(out_path.read_text())
-        self.assertFalse(any(h['name'] == '交易日曆' for h in data['health']))
-
-    def test_assume_market_open_forbidden_in_live_mode(self):
-        """Regression (Codex review 2026-09-10): --assume-market-open must
-        never be usable to fake an open market in a LIVE export -- only
-        for --mode simulation research/testing runs."""
-        out_path = Path(self.tmpdir) / 'radar.json'
-        with self.assertRaises(SystemExit):
-            self.run_cli('export', '--out', str(out_path), '--mode', 'live', '--assume-market-open')
-
-    def test_missing_calendar_produces_unverified_not_false_market_open(self):
-        """Regression: an unpopulated calendar must feed market_open=None
-        into decide(), not a bare False -- verified via the signal reason
-        text differing from a positively-confirmed holiday/closed day. A
-        valuation + risk-clear fact are set up first so decide() actually
-        reaches the market_open branch instead of stopping earlier at
-        'no valuation' / 'no risk check'."""
-        now = datetime.now(TW)
-        proposal_id = self.run_cli_capture_proposal('2330', now)
-        self.run_cli('apply', proposal_id, '--actor', cli.ALLOWED_ACTORS[0], '--channel', cli.DISCORD_CHANNEL)
-        store = Store(self.db_path)
-        try:
-            store.set_fact('2330', 'risk', {'cleared': True, 'checked_at': now.isoformat(), 'events': []})
-        finally:
-            store.close()
-        out_path = Path(self.tmpdir) / 'radar.json'
-        self.run_cli('export', '--out', str(out_path), '--mode', 'simulation')
-        data = json.loads(out_path.read_text())
-        item = next(i for i in data['items'] if i['symbol'] == '2330')
-        self.assertIn('未確認', item['signal']['reason'])
-
-    def run_cli_capture_proposal(self, symbol, now):
-        vfile = Path(self.tmpdir) / 'v.json'
-        vfile.write_text(json.dumps(make_valuation(now)))
-        store = Store(self.db_path)
-        try:
-            return store.propose(symbol, json.loads(vfile.read_text()))
         finally:
             store.close()
 
@@ -528,342 +317,6 @@ class TestBackup(CliTestBase):
         # self.db_path already exists and is non-empty from sync-universe above
         with self.assertRaises(FileExistsError):
             self.run_cli('restore', '--backup', str(backup_path), '--target', str(self.db_path))
-
-
-class TestNotifySummary(CliTestBase):
-    def make_radar(self, mode='simulation'):
-        p = Path(self.tmpdir) / 'radar.json'
-        p.write_text(json.dumps({
-            'generated_at': '2026-09-10T08:50:00+08:00', 'market_date': '2026-09-10',
-            'mode': mode, 'coverage': {'universe': 1, 'stocks': 1, 'etfs': 0, 'quotes': 0, 'valued': 0},
-            'health': [], 'items': [],
-        }))
-        return p
-
-    def test_dry_run_prints_without_sending(self):
-        p = self.make_radar()
-        self.run_cli('notify-summary', '--radar-json', str(p), '--test', '--dry-run')
-
-    def test_simulation_mode_without_test_flag_still_marks_test_in_output(self, capsys=None):
-        """format_daily_summary forces the 🧪 marker itself from mode=simulation,
-        so this must NOT raise even without --test, and the emitted text
-        must still be test-marked (no longer a CLI-level refusal)."""
-        p = self.make_radar(mode='simulation')
-        self.run_cli('notify-summary', '--radar-json', str(p), '--dry-run')
-
-    def test_live_mode_without_test_flag_allowed_dry_run(self):
-        p = self.make_radar(mode='live')
-        self.run_cli('notify-summary', '--radar-json', str(p), '--dry-run')
-
-    def test_actual_send_calls_discord_with_token(self):
-        p = self.make_radar()
-        with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \
-             mock.patch('stock_radar.cli.send_message', return_value={'id': '123'}) as fake_send:
-            self.run_cli('notify-summary', '--radar-json', str(p), '--test')
-        fake_send.assert_called_once()
-        self.assertEqual(fake_send.call_args[0][0], 'fake-token')
-
-    def test_duplicate_send_within_same_day_is_skipped_via_outbox(self):
-        """Regression (item 6): a second identical notify-summary run on
-        the same day (e.g. an overlapping cron tick, a restart-recovery
-        re-run) must not double-post -- the outbox dedup by content_hash
-        must catch it, even across two separate CLI invocations sharing
-        the same DB."""
-        p = self.make_radar()
-        with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \
-             mock.patch('stock_radar.cli.send_message', return_value={'id': '123'}) as fake_send:
-            self.run_cli('notify-summary', '--radar-json', str(p), '--test')
-            self.run_cli('notify-summary', '--radar-json', str(p), '--test')
-        fake_send.assert_called_once()  # second run skipped as a duplicate
-
-    def test_a_skipped_duplicate_still_reports_the_original_message_id(self):
-        """The morning heartbeat asks "did today's message go out?". A duplicate means it did,
-        so the id of the message already in the channel must come back with the skip."""
-        from stock_radar.cli import _send_with_outbox
-        from stock_radar.store import Store
-        from datetime import datetime
-        from stock_radar.domain import TW
-        db = Path(self.tmpdir) / "dup.db"
-        store = Store(db)
-        try:
-            now = datetime(2026, 9, 29, 8, 55, tzinfo=TW)
-            with mock.patch('stock_radar.cli.send_message', return_value={'id': '999'}):
-                first = _send_with_outbox(store, 't', 'hello', channel='c', now=now)
-            second = _send_with_outbox(store, 't', 'hello', channel='c', now=now)
-        finally:
-            store.close()
-        self.assertEqual(first['status'], 'sent')
-        self.assertEqual(second['status'], 'skipped_duplicate')
-        self.assertEqual(second['message_id'], '999')
-
-    def test_send_failure_retries_up_to_max_attempts_then_raises(self):
-        p = self.make_radar()
-        with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \
-             mock.patch('stock_radar.cli.send_message', side_effect=RuntimeError('503')) as fake_send, \
-             mock.patch('stock_radar.cli._time.sleep'):
-            with self.assertRaises(RuntimeError):
-                self.run_cli('notify-summary', '--radar-json', str(p), '--test')
-        self.assertEqual(fake_send.call_count, 3)  # default max_attempts
-
-    def test_send_succeeds_after_transient_failure(self):
-        p = self.make_radar()
-        with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \
-             mock.patch('stock_radar.cli.send_message',
-                       side_effect=[RuntimeError('503'), {'id': 'ok'}]) as fake_send, \
-             mock.patch('stock_radar.cli._time.sleep'):
-            self.run_cli('notify-summary', '--radar-json', str(p), '--test')
-        self.assertEqual(fake_send.call_count, 2)
-        store = Store(self.db_path)
-        try:
-            rows = store.db.execute('SELECT state FROM deliveries ORDER BY at').fetchall()
-            self.assertEqual([r['state'] for r in rows], ['failed', 'sent'])
-        finally:
-            store.close()
-
-
-class TestNotifyChanges(CliTestBase):
-    _radar_counter = 0
-
-    def make_radar(self, items, mode='simulation'):
-        TestNotifyChanges._radar_counter += 1
-        p = Path(self.tmpdir) / f'radar_changes_{TestNotifyChanges._radar_counter}.json'
-        p.write_text(json.dumps({
-            'generated_at': '2026-09-10T08:55:00+08:00', 'market_date': '2026-09-10',
-            'mode': mode, 'coverage': {'universe': len(items), 'stocks': len(items), 'etfs': 0,
-                                       'quotes': 0, 'valued': 0},
-            'health': [], 'items': items,
-        }))
-        return p
-
-    def make_item(self, symbol, status, suggested=None):
-        now_iso = datetime.now(TW).isoformat()
-        return {
-            'symbol': symbol, 'name': symbol,
-            # quote.as_of must be TODAY for _revalidate_signal (mirrors
-            # docs/radar.js's own gate, Codex review 2026-09-10) to treat
-            # this as fresh instead of downgrading to 'stale'.
-            'quote': {'previous_close': 100.0, 'trial_price': None, 'as_of': now_iso},
-            # valuation must have a positive 'buy' >= suggested,
-            # evidence_reviewed=True, and a future valid_until, or
-            # _revalidate_signal downgrades any sweet/add/buy status to
-            # 'stale' regardless of the raw status field under test (which
-            # would make the two test runs' rendered text identical and
-            # mask the diff-detection under test).
-            'valuation': {'buy': (suggested or 0) + 100, 'evidence_reviewed': True,
-                         'valid_until': '2099-01-01T00:00:00+08:00'},
-            'signal': {'status': status, 'status_label': status, 'suggested': suggested,
-                      'conservative': None, 'extreme': None,
-                      'valid_until': '2099-01-01T00:00:00+08:00',  # far future so
-                      # _revalidate_signal in discord.format_status_line does not
-                      # downgrade every item to 'stale' regardless of status
-                      # (which would make the two test runs' rendered text
-                      # identical and mask the diff-detection under test).
-                      # calculated_at must also be TODAY (not a hardcoded
-                      # past date) for the same reason.
-                      'calculated_at': now_iso, 'action': ''},
-        }
-
-    def test_first_run_with_no_actionable_items_sends_nothing(self):
-        p = self.make_radar([self.make_item('2330', 'pending')])
-        with mock.patch('stock_radar.cli.send_message') as fake_send:
-            self.run_cli('notify-changes', '--radar-json', str(p), '--test')
-        fake_send.assert_not_called()
-
-    def test_new_actionable_item_triggers_send(self):
-        p = self.make_radar([self.make_item('2330', 'sweet', suggested=100.0)])
-        with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \
-             mock.patch('stock_radar.cli.send_message', return_value={'id': '1'}) as fake_send:
-            self.run_cli('notify-changes', '--radar-json', str(p), '--test')
-        fake_send.assert_called_once()
-
-    def test_unchanged_signal_on_second_run_sends_nothing(self):
-        item = self.make_item('2330', 'sweet', suggested=100.0)
-        p = self.make_radar([item])
-        with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \
-             mock.patch('stock_radar.cli.send_message', return_value={'id': '1'}) as fake_send:
-            self.run_cli('notify-changes', '--radar-json', str(p), '--test')
-            self.run_cli('notify-changes', '--radar-json', str(p), '--test')
-        fake_send.assert_called_once()  # second run: no change -> no send
-
-    def test_status_change_on_second_run_triggers_send_again(self):
-        p1 = self.make_radar([self.make_item('2330', 'sweet', suggested=100.0)])
-        p2 = self.make_radar([self.make_item('2330', 'buy', suggested=95.0)])
-        with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \
-             mock.patch('stock_radar.cli.send_message', return_value={'id': '1'}) as fake_send:
-            self.run_cli('notify-changes', '--radar-json', str(p1), '--test')
-            self.run_cli('notify-changes', '--radar-json', str(p2), '--test')
-        self.assertEqual(fake_send.call_count, 2)
-
-    def test_dry_run_does_not_call_discord(self):
-        p = self.make_radar([self.make_item('2330', 'sweet', suggested=100.0)])
-        with mock.patch('stock_radar.cli.send_message') as fake_send:
-            self.run_cli('notify-changes', '--radar-json', str(p), '--test', '--dry-run')
-        fake_send.assert_not_called()
-
-    def test_vanished_actionable_symbol_triggers_revocation_notice(self):
-        """Regression (Codex review 2026-09-10): a symbol that was
-        actionable in the last-notified snapshot but is entirely absent
-        from the next run's radar.json (not merely downgraded) must still
-        trigger a send, with an explicit revocation line -- not silence."""
-        p1 = self.make_radar([self.make_item('2330', 'sweet', suggested=100.0)])
-        p2 = self.make_radar([])  # 2330 gone entirely, e.g. dropped by a later sync-universe
-        with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \
-             mock.patch('stock_radar.cli.send_message', return_value={'id': '1'}) as fake_send:
-            self.run_cli('notify-changes', '--radar-json', str(p1), '--test')
-            self.run_cli('notify-changes', '--radar-json', str(p2), '--test')
-        self.assertEqual(fake_send.call_count, 2)
-        second_call_text = fake_send.call_args_list[1][0][1]
-        self.assertIn('2330', second_call_text)
-        self.assertIn('撤回', second_call_text)
-
-    def test_revocation_alone_with_no_other_changes_still_sends(self):
-        p1 = self.make_radar([self.make_item('2330', 'sweet', suggested=100.0),
-                              self.make_item('0050', 'pending')])
-        p2 = self.make_radar([self.make_item('0050', 'pending')])  # 0050 unchanged, 2330 vanished
-        with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \
-             mock.patch('stock_radar.cli.send_message', return_value={'id': '1'}) as fake_send:
-            self.run_cli('notify-changes', '--radar-json', str(p1), '--test')
-            self.run_cli('notify-changes', '--radar-json', str(p2), '--test')
-        self.assertEqual(fake_send.call_count, 2)
-
-
-class TestDiscordLookup(CliTestBase):
-    def setUp(self):
-        super().setUp()
-        fake_items = [{'symbol': '3661', 'kind': 'stock', 'name': '世芯-KY', 'market': 'TSE'}]
-        with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
-            self.run_cli('sync-universe')
-        self.radar_path = Path(self.tmpdir) / 'radar.json'
-        self.radar_path.write_text(json.dumps({
-            'items': [{
-                'symbol': '3661', 'name': '世芯-KY',
-                'quote': {'previous_close': 3905.0, 'trial_price': None},
-                'valuation': None,
-                'signal': {'status': 'pending', 'status_label': '待估值', 'suggested': None, 'action': ''},
-            }],
-        }))
-
-    def test_lookup_without_post_does_not_call_discord(self):
-        with mock.patch('stock_radar.cli.send_message') as fake_send:
-            self.run_cli('discord-lookup', '3661', '--radar-json', str(self.radar_path), '--test')
-        fake_send.assert_not_called()
-
-    def test_lookup_with_post_calls_discord(self):
-        with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \
-             mock.patch('stock_radar.cli.send_message', return_value={'id': '1'}) as fake_send:
-            self.run_cli('discord-lookup', '3661', '--radar-json', str(self.radar_path), '--test', '--post')
-        fake_send.assert_called_once()
-
-    def test_simulation_mode_radar_json_auto_marks_test_without_test_flag(self, capsys=None):
-        """Regression (Codex review 2026-09-10): a lookup against a
-        simulation-mode radar.json must render the 🧪 marker even if the
-        caller forgets --test -- mirrors format_daily_summary's own
-        mode-driven auto-marking, via discord.is_test_mode()."""
-        sim_path = Path(self.tmpdir) / 'radar_sim.json'
-        payload = json.loads(self.radar_path.read_text())
-        payload['mode'] = 'simulation'
-        sim_path.write_text(json.dumps(payload))
-        import io, contextlib
-        buf = io.StringIO()
-        with contextlib.redirect_stdout(buf):
-            self.run_cli('discord-lookup', '3661', '--radar-json', str(sim_path))
-        self.assertIn('🧪', buf.getvalue())
-
-    def test_live_mode_radar_json_without_test_flag_not_marked(self):
-        live_path = Path(self.tmpdir) / 'radar_live.json'
-        payload = json.loads(self.radar_path.read_text())
-        payload['mode'] = 'live'
-        live_path.write_text(json.dumps(payload))
-        import io, contextlib
-        buf = io.StringIO()
-        with contextlib.redirect_stdout(buf):
-            self.run_cli('discord-lookup', '3661', '--radar-json', str(live_path))
-        self.assertNotIn('🧪', buf.getvalue())
-
-
-class TestDiscordPoll(CliTestBase):
-    def setUp(self):
-        super().setUp()
-        fake_items = [{'symbol': '3661', 'kind': 'stock', 'name': '世芯-KY', 'market': 'TSE'}]
-        with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
-            self.run_cli('sync-universe')
-        self.radar_path = Path(self.tmpdir) / 'radar_poll.json'
-        self.radar_path.write_text(json.dumps({
-            'mode': 'simulation',
-            'items': [{
-                'symbol': '3661', 'name': '世芯-KY',
-                'quote': {'previous_close': 3905.0, 'trial_price': None},
-                'valuation': None,
-                'signal': {'status': 'pending', 'status_label': '待估值', 'suggested': None, 'action': ''},
-            }],
-        }))
-
-    def test_triggered_query_gets_a_threaded_reply(self):
-        messages = [{'id': '100', 'content': '$3661', 'author': {'bot': False}}]
-        with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \
-             mock.patch('stock_radar.cli.fetch_new_messages', return_value=messages), \
-             mock.patch('stock_radar.cli.send_message', return_value={'id': '101'}) as fake_send:
-            self.run_cli('discord-poll', '--radar-json', str(self.radar_path), '--test')
-        fake_send.assert_called_once()
-        _, kwargs = fake_send.call_args
-        self.assertEqual(kwargs.get('reply_to_message_id'), '100')
-
-    def test_non_triggered_message_is_ignored(self):
-        messages = [{'id': '100', 'content': 'just chatting about 3661 today', 'author': {'bot': False}}]
-        with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \
-             mock.patch('stock_radar.cli.fetch_new_messages', return_value=messages), \
-             mock.patch('stock_radar.cli.send_message') as fake_send:
-            self.run_cli('discord-poll', '--radar-json', str(self.radar_path), '--test')
-        fake_send.assert_not_called()
-
-    def test_bot_own_message_is_ignored(self):
-        messages = [{'id': '100', 'content': '$3661', 'author': {'bot': True}}]
-        with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \
-             mock.patch('stock_radar.cli.fetch_new_messages', return_value=messages), \
-             mock.patch('stock_radar.cli.send_message') as fake_send:
-            self.run_cli('discord-poll', '--radar-json', str(self.radar_path), '--test')
-        fake_send.assert_not_called()
-
-    def test_cursor_advances_and_is_passed_to_next_poll(self):
-        messages = [{'id': '100', 'content': '$3661', 'author': {'bot': False}}]
-        with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \
-             mock.patch('stock_radar.cli.fetch_new_messages', return_value=messages) as fake_fetch, \
-             mock.patch('stock_radar.cli.send_message', return_value={'id': '101'}):
-            self.run_cli('discord-poll', '--radar-json', str(self.radar_path), '--test')
-            self.run_cli('discord-poll', '--radar-json', str(self.radar_path), '--test')
-        second_call_kwargs = fake_fetch.call_args_list[1].kwargs
-        self.assertEqual(second_call_kwargs.get('after_id'), '100')
-
-    def test_dry_run_does_not_send_or_advance_cursor(self):
-        messages = [{'id': '100', 'content': '$3661', 'author': {'bot': False}}]
-        with mock.patch('stock_radar.cli._bot_token', return_value='fake-token'), \
-             mock.patch('stock_radar.cli.fetch_new_messages', return_value=messages) as fake_fetch, \
-             mock.patch('stock_radar.cli.send_message') as fake_send:
-            self.run_cli('discord-poll', '--radar-json', str(self.radar_path), '--test', '--dry-run')
-            self.run_cli('discord-poll', '--radar-json', str(self.radar_path), '--test', '--dry-run')
-        fake_send.assert_not_called()
-        second_call_kwargs = fake_fetch.call_args_list[1].kwargs
-        self.assertIsNone(second_call_kwargs.get('after_id'))  # cursor never advanced
-
-
-class TestLookup(CliTestBase):
-    def setUp(self):
-        super().setUp()
-        fake_items = [
-            {'symbol': '3661', 'kind': 'stock', 'name': '世芯-KY', 'market': 'TSE'},
-            {'symbol': '0050', 'kind': 'etf_equity', 'name': '元大台灣50', 'market': 'TSE'},
-        ]
-        with mock.patch('stock_radar.cli.build_universe', return_value=fake_items):
-            self.run_cli('sync-universe')
-
-    def test_lookup_by_symbol(self):
-        self.run_cli('lookup', '3661')  # should not raise; output goes to stdout
-
-    def test_lookup_by_partial_name(self):
-        self.run_cli('lookup', '世芯')
-
-    def test_lookup_no_match_does_not_crash(self):
-        self.run_cli('lookup', 'nonexistent-xyz')
 
 
 if __name__ == '__main__':

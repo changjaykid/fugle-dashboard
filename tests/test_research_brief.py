@@ -24,7 +24,8 @@ class ScanMorningTests(unittest.TestCase):
   with tempfile.TemporaryDirectory() as d:
    s=Store(Path(d)/'t.db')
    if payload is not None:s.set_meta('daily_scan',payload)
-   text=scan_morning(s,self.NOW,quotes);s.close()
+   for symbol,q in (quotes or {}).items():s.observe({'symbol':symbol,'as_of':self.NOW.isoformat()}|q)
+   text=scan_morning(s,self.NOW);s.close()
   return text
  def test_the_order_leads_with_the_limit_the_band_and_the_stop(self):
   text=self.run_with(self.scan())
@@ -55,6 +56,9 @@ class ScanMorningTests(unittest.TestCase):
  def test_a_trial_price_under_the_stop_cancels_the_order(self):
   text=self.run_with(self.scan(),{'2330':{'is_trial':True,'trial_price':850}})
   self.assertIn('試撮 850 已在停損之下，今天不買',text)
+ def test_yesterdays_price_is_not_this_mornings_trial(self):
+  stale={'2330':{'is_trial':True,'trial_price':850,'as_of':(self.NOW-timedelta(days=1)).isoformat()}}
+  self.assertNotIn('試撮',self.run_with(self.scan(),stale))
 
 class HonestyTests(unittest.TestCase):
  def test_fit_keeps_the_answer_and_drops_detail_first(self):

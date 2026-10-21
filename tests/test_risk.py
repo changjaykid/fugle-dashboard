@@ -104,7 +104,7 @@ class TestBuildRiskFacts(unittest.TestCase):
 
     def test_disposed_symbol_cleared_true_but_has_event(self):
         """cleared=True means 'the check ran', not 'no problems' -- the
-        event itself is what blocks decide() downstream."""
+        event itself is what blocks swing.judge() downstream."""
         instruments = [{'symbol': '2455', 'market': 'TSE'}]
         out = build_risk_facts(instruments, session=self.session,
                                now=__import__('datetime').datetime(2026, 9, 10, tzinfo=__import__('stock_radar.risk', fromlist=['TW']).TW))
@@ -119,54 +119,7 @@ class TestBuildRiskFacts(unittest.TestCase):
         self.assertFalse(out['6488']['cleared'])
         self.assertTrue(len(out['6488']['events']) > 0)
 
-    def test_decide_actually_unblocks_for_a_cleared_clean_symbol(self):
-        """End-to-end: feed a risk fact built by this module into decide()
-        and confirm a clean TSE symbol with a valid quote+valuation is no
-        longer stuck at 'blocked' for lack of a risk check."""
-        from datetime import datetime, timedelta
-        from stock_radar.domain import TW, decide
-        now = datetime(2026, 9, 10, 10, 0, 0, tzinfo=TW)
-        instruments = [{'symbol': '2330', 'market': 'TSE', 'kind': 'stock'}]
-        risk = build_risk_facts(instruments, session=self.session, now=now)['2330']
-        valuation = {
-            'sweet': 100.0, 'add': 110.0, 'buy': 120.0, 'method': 'forward_pe',
-            'reason': 'x', 'thesis': 'y', 'as_of': (now-timedelta(hours=1)).isoformat(),
-            'valid_until': (now+timedelta(days=1)).isoformat(),
-            'sources': [{'url': 'https://x', 'as_of': now.isoformat(), 'title': 't'}],
-            'evidence_reviewed': True,
-        }
-        quote = {
-            'as_of': now.isoformat(), 'trade_date': now.date().isoformat(), 'is_trial': False,
-            'price': 105.0, 'previous_close': 100.0, 'reference_price': 100.0,
-            'limit_up': 130.0, 'limit_down': 70.0, 'book_as_of': now.isoformat(),
-            'bids': [{'price': 104.5, 'size': 10}], 'asks': [{'price': 105.5, 'size': 10}],
-            'halted': False, 'disposition': False,
-        }
-        result = decide(instruments[0], quote, valuation, now=now, market_open=True, risk=risk)
-        self.assertNotEqual(result['status'], 'blocked')
 
-    def test_decide_still_blocks_for_disposed_symbol(self):
-        from datetime import datetime, timedelta
-        from stock_radar.domain import TW, decide
-        now = datetime(2026, 9, 10, 10, 0, 0, tzinfo=TW)
-        instruments = [{'symbol': '2455', 'market': 'TSE', 'kind': 'stock'}]
-        risk = build_risk_facts(instruments, session=self.session, now=now)['2455']
-        valuation = {
-            'sweet': 100.0, 'add': 110.0, 'buy': 120.0, 'method': 'forward_pe',
-            'reason': 'x', 'thesis': 'y', 'as_of': (now-timedelta(hours=1)).isoformat(),
-            'valid_until': (now+timedelta(days=1)).isoformat(),
-            'sources': [{'url': 'https://x', 'as_of': now.isoformat(), 'title': 't'}],
-            'evidence_reviewed': True,
-        }
-        quote = {
-            'as_of': now.isoformat(), 'trade_date': now.date().isoformat(), 'is_trial': False,
-            'price': 105.0, 'previous_close': 100.0, 'reference_price': 100.0,
-            'limit_up': 130.0, 'limit_down': 70.0, 'book_as_of': now.isoformat(),
-            'bids': [{'price': 104.5, 'size': 10}], 'asks': [{'price': 105.5, 'size': 10}],
-        }
-        result = decide(instruments[0], quote, valuation, now=now, market_open=True, risk=risk)
-        self.assertEqual(result['status'], 'blocked')
-        self.assertIn('處置', result['reason'])
 
 
 if __name__ == '__main__':

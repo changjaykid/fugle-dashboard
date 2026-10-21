@@ -67,11 +67,7 @@ except ImportError as exc:  # pragma: no cover - hard dependency, fail loud
 ISIN_URL = 'https://isin.twse.com.tw/isin/C_public.jsp'
 
 # Section header (as printed verbatim on the page) -> instrument kind.
-# Only 'stock' and 'etf_equity' are currently eligible for radar valuation
-# per STOCK_RADAR_SPEC.md; everything else is kept in the universe table
-# for completeness/search but marked with its own kind so decide() will
-# correctly refuse to produce a live signal for it (kind not in
-# ('stock', 'etf_equity')).
+# The scan trades 'stock' only; everything else is kept in the universe table under its own kind.
 SECTION_KIND = {
     '股票': 'stock',
     '創新板': 'stock',

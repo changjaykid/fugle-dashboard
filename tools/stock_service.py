@@ -137,7 +137,6 @@ def main():
             except Exception:trading_today=False
             finally:_s.close()
             for cmd in ['sync-universe','sync-calendar','sync-financials','sync-risk']:resilient(cli+[cmd],cmd)
-            run([PY,str(R/'tools/initialize_watchlist.py')])
             run([PY,'-m','stock_radar.research_brief','--db',str(D/'prod.db'),'--sync-close'])
             # Full market: add the latest session (a few requests) for the scan.
             run([PY,'-m','stock_radar.market','--db',str(D/'prod.db')])
@@ -180,24 +179,18 @@ def main():
                         alert(f"台股系統｜{now:%m/%d %H:%M}\n【流程不完整】主線完成，但這些步驟失敗："
                               f"{'、'.join(FAILED)}。報表與追蹤數字可能停在上一次成功的版本。\n{SITE}")
                         from stock_radar.store import atomic_json as _aj;_aj(seen,{'date':str(now.date()),'steps':FAILED})
-            run(cli+['export','--out','docs/radar.json','--mode','live'])
             run(cli+['backup','--out',str(D/('backup-'+now.strftime('%Y%m%d-%H%M%S')+'.db'))])
             # Retention: newest 14 database backups.
             for old in sorted(D.glob('backup-*.db'))[:-14]:old.unlink()
-            # The site is GitHub Pages: anything published answers 200 to anyone with the URL. So the
-            # payload is encrypted before it is committed (tools/encrypt_payload.py) and the plaintext
-            # radar.json is no longer published at all -- it is removed from the repo on the first run
-            # that gets here. The password lives in a 600 file outside both repositories.
+            # The site is GitHub Pages: anything published answers 200 to anyone with the URL, so the
+            # payload is encrypted before it is committed (tools/encrypt_payload.py). The password lives in
+            # a 600 file outside both repositories.
             staging=D/'radar-public.json'
-            staging.write_text(run([PY,'tools/public_export.py']))
+            run(cli+['export','--out',str(staging),'--mode','live'])
             run([PY,'tools/encrypt_payload.py','--in',str(staging),
                  '--out',str(W/'docs/radar.enc.json'),
                  '--password-file',str(D/'site-password')])
             staging.unlink(missing_ok=True)
-            plain=W/'docs/radar.json'
-            if plain.exists():
-                plain.unlink()
-                run(['git','rm','--cached','--ignore-unmatch','docs/radar.json'],W)
             run(['git','add','docs/radar.enc.json','docs/index.html',
                  'docs/radar.js','docs/radar.css'],W)
             dirty=run(['git','diff','--cached','--name-only'],W)
@@ -216,16 +209,15 @@ def main():
                 if at>now or now-at>datetime.timedelta(hours=30):raise RuntimeError('Financial refresh is stale')
             finally:s.close()
             run(cli+['sync-quotes','--source','fugle','--candidates'])
-            run(cli+['export','--out','docs/radar.json','--mode','live'])
             sent=D/'morning-message.json'
             today=json.loads(sent.read_text()) if sent.exists() else {}
             today=today if today.get('date')==str(now.date()) else {}
             # The morning list is the scan's orders (swing.py, 2026-10-13): limits at the lower band.
             args=[PY,'-m','stock_radar.research_brief','--db',str(D/'prod.db'),'--scan-morning',
-                  '--quotes',str(R/'docs/radar.json'),'--out',str(D/'morning-latest.json'),'--send']
+                  '--out',str(D/'morning-latest.json'),'--send']
             if today.get('message_id'):args+=['--edit-id',today['message_id']]
             # One message a day, sent by the 08:55 run: its trial price is the closest to the open.
-            # 08:50 only prepares data (quotes, export) so 08:55 has everything ready.
+            # 08:50 only fetches the quotes so 08:55 has everything ready.
             if a.task=='recheck' or today.get('message_id'):
                 out=run(args)
                 for line in out.splitlines():

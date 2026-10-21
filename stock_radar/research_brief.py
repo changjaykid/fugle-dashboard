@@ -2,7 +2,7 @@
 import argparse,csv,io,json,math
 from datetime import datetime,date
 from pathlib import Path
-from .domain import TW,positive
+from .domain import TW,positive,stamp
 from .store import Store,atomic_json
 URL='https://www.twse.com.tw/exchangeReport/STOCK_DAY_ALL?response=open_data'
 SITE='https://changjaykid.github.io/fugle-dashboard/'
@@ -35,11 +35,17 @@ def fit(lines,limit=1900):
     if len(text)>limit:lines=[l for l in lines if not l.strip().startswith('另有 ')];text='\n'.join(lines)
     return text[:limit]
 
-def scan_morning(s,now,quotes=None):
+def todays_quote(s,symbol,now):
+    """This morning's quote for symbol, or None: yesterday's price must not read as today's trial."""
+    q=s.quote(symbol) or {}
+    at=stamp(q.get('as_of'))
+    return q if at and at.astimezone(TW).date()==now.date() else None
+
+def scan_morning(s,now):
     """The pre-open message: tonight's orders from swing.py. Answer first, the levels under it, nothing else.
 
-    The levels come from last night's close. 08:55's trial price says whether the limit is still below the
-    market, which is what `quotes` carries when the pre-open check has run."""
+    The levels come from last night's close. 08:55's trial price, synced by the 08:50 run, says whether the
+    limit is still below the market."""
     from .daily_scan import annotate
     payload=annotate(s,s.meta('daily_scan')) or {}
     head=f"台股盤前 {now.month}/{now.day}（{WEEKDAYS[now.weekday()]}）{now:%H:%M}"
@@ -66,7 +72,7 @@ def scan_morning(s,now,quotes=None):
             if c.get('revenue_yoy_pct') is not None:facts.append(f"營收年增 {c['revenue_yoy_pct']:+.0f}%")
             if c.get('pe'):facts.append(f"本益比 {c['pe']:g}")
             if facts:lines.append('   '+'｜'.join(facts))
-            q=(quotes or {}).get(c['symbol'])
+            q=todays_quote(s,c['symbol'],now)
             trial=positive((q or {}).get('trial_price') if (q or {}).get('is_trial') else (q or {}).get('price'))
             if trial and trial<=c['stop']:
                 lines.append(f"   ⚠️ 試撮 {trial:g} 已在停損之下，今天不買")
@@ -85,13 +91,12 @@ def scan_morning(s,now,quotes=None):
     return fit(lines)
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--db',type=Path,required=True);p.add_argument('--sync-close',action='store_true');p.add_argument('--send',action='store_true');p.add_argument('--scan-morning',action='store_true');p.add_argument('--quotes',type=Path);p.add_argument('--out',type=Path);p.add_argument('--alert');p.add_argument('--edit-id');a=p.parse_args();now=datetime.now(TW);s=Store(a.db)
+    p=argparse.ArgumentParser();p.add_argument('--db',type=Path,required=True);p.add_argument('--sync-close',action='store_true');p.add_argument('--send',action='store_true');p.add_argument('--scan-morning',action='store_true');p.add_argument('--out',type=Path);p.add_argument('--alert');p.add_argument('--edit-id');a=p.parse_args();now=datetime.now(TW);s=Store(a.db)
     try:
         if a.sync_close:sync_close(s,now)
         if a.alert:text=a.alert
         elif a.scan_morning:
-            quotes={i['symbol']:i.get('quote') for i in json.loads(a.quotes.read_text())['items']} if a.quotes else None
-            text=scan_morning(s,now,quotes)
+            text=scan_morning(s,now)
         else:return
         if a.out:atomic_json(a.out,{'generated_at':now.isoformat(),'text':text})
         if a.send:

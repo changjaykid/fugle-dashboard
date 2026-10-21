@@ -20,8 +20,8 @@ regular-session price at the API level (only wall-clock time would tell us,
 and STOCK_RADAR_SPEC.md explicitly forbids inferring is_trial from the
 clock). Until a reliable signal is found and verified, `is_trial` is always
 reported as None (unknown) and `trial_price` is always None from this
-fetcher, which correctly causes domain.decide() to treat any pre-9am quote
-as stale rather than fabricate a trial-price signal. This is a known
+fetcher, so the pre-open message never reads a pre-9am quote from here as
+a trial price. This is a known
 limitation, not a silent guess.
 
 See stock_radar/fugle.py for a real data-driven trial-match source
@@ -125,58 +125,4 @@ def fetch_quotes(instruments: Iterable[dict], *, session=None, timeout=15, batch
                 'source': 'mis.twse.com.tw getStockInfo.jsp',
                 'source_url': MIS_URL,
             }
-    return out
-
-
-def fetch_daily_close_all(*, session=None, timeout=30) -> dict[str, dict]:
-    """Fallback / EOD confirmation source: TWSE STOCK_DAY_ALL (all-TSE daily
-    OHLC in one CSV/JSON call). Does not cover OTC. Useful for backfilling
-    previous_close when the live feed is unavailable, and for the 09:05
-    "confirm with real settled quote" step in the spec's daily schedule."""
-    import requests
-    import csv
-    import io
-    http = session or requests
-    resp = http.get('https://www.twse.com.tw/exchangeReport/STOCK_DAY_ALL',
-                     params={'response': 'json'}, headers=HEADERS, timeout=timeout)
-    resp.raise_for_status()
-    ct = resp.headers.get('content-type', '')
-    out = {}
-    if 'csv' in ct or resp.text.strip().startswith('\ufeff') or resp.text.strip().split('\n', 1)[0].count(',') > 3:
-        reader = csv.reader(io.StringIO(resp.text))
-        header = next(reader, None)
-        for row in reader:
-            if len(row) < 9:
-                continue
-            symbol = row[1].strip('"')
-            out[symbol] = {
-                'symbol': symbol, 'name': row[2].strip('"'),
-                'close': _num(row[8].strip('"')),
-                'trade_date': row[0].strip('"'),
-            }
-    else:
-        data = resp.json()
-        rows = data.get('data', []) if isinstance(data, dict) else data
-        for row in rows:
-            symbol = row[0]
-            out[symbol] = {'symbol': symbol, 'name': row[1], 'close': _num(row[7])}
-    return out
-
-
-ETF_NAV_URL = 'https://mis.twse.com.tw/stock/data/all_etf.txt'
-
-
-def fetch_etf_navs(*, session=None, timeout=15) -> dict[str, float]:
-    """{symbol: net asset value per unit} from TWSE's all-ETF feed (issuer-published estimate,
-    falling back to the previous day's NAV). Used only to refuse buying above NAV."""
-    import requests
-    http = session or requests
-    resp = http.get(ETF_NAV_URL, headers=HEADERS, timeout=timeout)
-    resp.raise_for_status()
-    out = {}
-    for group in resp.json().get('a1', []):
-        for row in group.get('msgArray', []) or []:
-            nav = _num(row.get('f')) or _num(row.get('h'))
-            if row.get('a') and nav and nav > 0:
-                out[str(row['a']).strip()] = nav
     return out

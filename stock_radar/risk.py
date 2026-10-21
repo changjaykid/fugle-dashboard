@@ -1,9 +1,5 @@
-"""Daily risk/liquidity gate feeding the `risk` fact that domain.decide()
-requires before it will ever compute an actionable price (per
-STOCK_RADAR_SPEC.md: 資料不足、停牌、處置、全額交割、流動性不足、財務異常
-或投資論述失效 -> 待研究／暫停). Without this fact populated, decide()
-correctly stays 'blocked' rather than fabricating a signal -- this module
-exists to fill that gap with real TWSE data, not to relax the gate.
+"""Daily risk gate: the `risk` fact the scan reads (daily_scan -> swing) so a halted or disposition-listed
+symbol is never ordered. It only reports what TWSE publishes; it never relaxes the gate.
 
 Sources (all TWSE OpenAPI, TSE only -- OTC halted/disposition lists are a
 documented open gap, same limitation as financials.py):
@@ -94,9 +90,8 @@ def build_risk_facts(instruments: Iterable[dict], *, session=None, now=None) -> 
     """Returns {symbol: risk_fact} for every TSE instrument passed in.
 
     `cleared` means "today's automated check actually ran for this symbol",
-    NOT "no problems found" -- domain.decide() treats cleared=True + fresh
-    checked_at as the gate to even look at `events`; if `events` is
-    non-empty decide() blocks separately with the event detail. So a
+    NOT "no problems found" -- swing.judge() refuses a symbol unless
+    cleared is True and `events` is empty. So a
     halted/disposed symbol still gets cleared=True (the check ran) with its
     problem listed in `events`, which is what actually blocks it downstream.
 

@@ -1,4 +1,4 @@
-"""Local SQLite state with auditable proposals and atomic public snapshots."""
+"""Local SQLite state: instruments, quotes, facts, the simulated account, and atomic JSON writes."""
 from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
@@ -7,7 +7,7 @@ import os
 import sqlite3
 import tempfile
 import uuid
-from .domain import TW, validate_valuation
+from .domain import TW
 
 
 def normalize_iso(value):
@@ -27,16 +27,9 @@ PRAGMA foreign_keys=ON;
 CREATE TABLE IF NOT EXISTS instruments(symbol TEXT PRIMARY KEY, payload TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS observations(symbol TEXT, as_of TEXT, payload TEXT NOT NULL,
  PRIMARY KEY(symbol,as_of));
-CREATE TABLE IF NOT EXISTS valuations(id TEXT PRIMARY KEY, symbol TEXT NOT NULL,
- parent_id TEXT, status TEXT NOT NULL, payload TEXT NOT NULL, created_at TEXT NOT NULL,
- applied_at TEXT, applied_by TEXT);
-CREATE UNIQUE INDEX IF NOT EXISTS one_active ON valuations(symbol) WHERE status='active';
 CREATE TABLE IF NOT EXISTS facts(symbol TEXT, category TEXT, payload TEXT NOT NULL,
  PRIMARY KEY(symbol,category));
-CREATE TABLE IF NOT EXISTS audit(id INTEGER PRIMARY KEY, at TEXT, action TEXT, payload TEXT);
-CREATE TABLE IF NOT EXISTS runs(id TEXT PRIMARY KEY, at TEXT, task TEXT, status TEXT, payload TEXT);
 CREATE TABLE IF NOT EXISTS deliveries(id TEXT PRIMARY KEY, at TEXT, state TEXT, payload TEXT);
-CREATE TABLE IF NOT EXISTS reviews(id TEXT PRIMARY KEY, symbol TEXT, at TEXT, reason TEXT, status TEXT);
 CREATE TABLE IF NOT EXISTS metadata(key TEXT PRIMARY KEY, payload TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS market_days(day TEXT NOT NULL, kind TEXT NOT NULL, payload TEXT NOT NULL, PRIMARY KEY(day,kind));
 -- Simulated trading. Every buy, every sell and every completed round trip, each with the day it
@@ -95,10 +88,6 @@ class Store:
             self.db.rollback()
             raise
 
-    def audit(self, action, payload):
-        self.db.execute('INSERT INTO audit(at,action,payload) VALUES(?,?,?)',
-                        (datetime.now(TW).isoformat(), action, dumps(payload)))
-
     def instruments(self):
         return [json.loads(r[0]) for r in self.db.execute('SELECT payload FROM instruments ORDER BY symbol')]
 
@@ -133,10 +122,6 @@ class Store:
             self.db.execute('INSERT INTO facts VALUES (?,?,?) ON CONFLICT(symbol,category) DO UPDATE SET payload=excluded.payload',
                             (quote['symbol'], 'quote_health', dumps({'status':'valid'})))
 
-    def history(self, symbol, limit=60):
-        rows = self.db.execute('SELECT payload FROM observations WHERE symbol=? ORDER BY as_of DESC LIMIT ?', (symbol, limit)).fetchall()
-        return [json.loads(r[0]) for r in reversed(rows)]
-
     def fact(self, symbol, category):
         r = self.db.execute('SELECT payload FROM facts WHERE symbol=? AND category=?', (symbol, category)).fetchone()
         return json.loads(r[0]) if r else {}
@@ -144,131 +129,6 @@ class Store:
     def set_fact(self, symbol, category, payload):
         with self.transaction():
             self.db.execute('INSERT OR REPLACE INTO facts VALUES(?,?,?)', (symbol, category, dumps(payload)))
-            self.audit('fact', {'symbol': symbol, 'category': category})
-
-    def active(self, symbol):
-        r = self.db.execute("SELECT id,payload FROM valuations WHERE symbol=? AND status='active'", (symbol,)).fetchone()
-        return dict(json.loads(r['payload']), id=r['id']) if r else None
-
-    def versions(self, symbol):
-        return [{**dict(r), 'payload': json.loads(r['payload'])} for r in self.db.execute(
-            'SELECT id,parent_id,status,payload,created_at,applied_at FROM valuations WHERE symbol=? ORDER BY created_at DESC', (symbol,))]
-
-    def propose(self, symbol, valuation, now=None):
-        now = now or datetime.now(TW)
-        row = self.db.execute('SELECT payload FROM instruments WHERE symbol=?', (symbol,)).fetchone()
-        if not row:
-            raise ValueError('請先建立標的母表')
-        kind = json.loads(row[0]).get('kind')
-        validate_valuation(valuation, now, kind=kind)
-        proposal_id = uuid.uuid4().hex
-        with self.transaction():
-            old = self.active(symbol)
-            self.db.execute('INSERT INTO valuations VALUES(?,?,?,?,?,?,NULL,NULL)',
-                            (proposal_id, symbol, old['id'] if old else None, 'proposed', dumps(valuation), now.isoformat()))
-            self.audit('propose', {'id': proposal_id, 'symbol': symbol})
-        return proposal_id
-
-    def apply(self, proposal_id, actor, allowed_actors, channel, now=None):
-        if str(actor) not in {str(a) for a in allowed_actors} or str(channel) != '1493898877970153532':
-            raise PermissionError('只有指定股票頻道的授權使用者能套用估值')
-        now = now or datetime.now(TW)
-        with self.transaction():
-            r = self.db.execute('SELECT * FROM valuations WHERE id=?', (proposal_id,)).fetchone()
-            if not r or r['status'] != 'proposed':
-                raise ValueError('提案不存在或已處理')
-            inst_row = self.db.execute('SELECT payload FROM instruments WHERE symbol=?', (r['symbol'],)).fetchone()
-            inst_kind = json.loads(inst_row[0]).get('kind') if inst_row else None
-            validate_valuation(json.loads(r['payload']), now, kind=inst_kind)
-            old = self.active(r['symbol'])
-            if (old['id'] if old else None) != r['parent_id']:
-                raise ValueError('基準版本已改變，需重新產生提案')
-            self.db.execute("UPDATE valuations SET status='superseded' WHERE symbol=? AND status='active'", (r['symbol'],))
-            self.db.execute("UPDATE valuations SET status='active',applied_at=?,applied_by=? WHERE id=?", (now.isoformat(), str(actor), proposal_id))
-            self.audit('apply', {'id': proposal_id, 'actor': str(actor), 'channel': str(channel)})
-
-    def publish_reviewed_analysis(self, proposal_id, *, now=None):
-        """Publish researched prices under the user's explicit delegated authority.
-
-        This is an internal research operation, never a Discord sender identity.
-        It does not authorize an order and does not weaken validate_valuation.
-        """
-        now = now or datetime.now(TW)
-        authority = self.meta('analysis_authority')
-        if authority.get('decision') != 'user-confirmed-2026-09-14' or authority.get('autonomous_research') is not True:
-            raise PermissionError('尚未取得自主更新分析價位的授權')
-        with self.transaction():
-            r = self.db.execute('SELECT * FROM valuations WHERE id=?', (proposal_id,)).fetchone()
-            if not r or r['status'] != 'proposed':
-                raise ValueError('分析版本不存在或已處理')
-            payload = json.loads(r['payload'])
-            if payload.get('id', '').startswith('V20260914-'):
-                raise ValueError('使用者拒絕的簡化估值不得自動發布')
-            review = payload.get('analysis_review') or {}
-            required = ('financials', 'outlook', 'valuation_basis', 'price_structure', 'risks')
-            if any(review.get(k) is not True for k in required):
-                raise ValueError('分析複核尚未完成')
-            inst = json.loads(self.db.execute('SELECT payload FROM instruments WHERE symbol=?', (r['symbol'],)).fetchone()[0])
-            validate_valuation(payload, now, kind=inst.get('kind'))
-            old = self.active(r['symbol'])
-            if (old['id'] if old else None) != r['parent_id']:
-                raise ValueError('基準版本已改變，需重新分析')
-            self.db.execute("UPDATE valuations SET status='superseded' WHERE symbol=? AND status='active'", (r['symbol'],))
-            self.db.execute("UPDATE valuations SET status='active',applied_at=?,applied_by=? WHERE id=?", (now.isoformat(), 'codex-research', proposal_id))
-            self.audit('publish_reviewed_analysis', {'id': proposal_id, 'actor': 'codex-research', 'authority': authority['decision'], 'review': review})
-
-    def publish_rule_valuation(self, proposal_id, *, now=None):
-        """Publish a deterministic rule-engine valuation under the same delegated authority.
-
-        Unlike publish_reviewed_analysis it does not claim company research: the payload carries
-        review_mode='rule-engine-v1' and no analysis_review, so nothing downstream can mistake a
-        screen for researched analysis. Sources must still be dated official data (validate_valuation).
-        """
-        now = now or datetime.now(TW)
-        authority = self.meta('analysis_authority')
-        if authority.get('decision') != 'user-confirmed-2026-09-14' or authority.get('autonomous_research') is not True:
-            raise PermissionError('尚未取得自主更新分析價位的授權')
-        with self.transaction():
-            r = self.db.execute('SELECT * FROM valuations WHERE id=?', (proposal_id,)).fetchone()
-            if not r or r['status'] != 'proposed':
-                raise ValueError('估值版本不存在或已處理')
-            payload = json.loads(r['payload'])
-            if payload.get('review_mode') != 'rule-engine-v1' or payload.get('analysis_review'):
-                raise ValueError('只有規則引擎估值可用此方式發布，且不得宣稱已完成研究複核')
-            inst = json.loads(self.db.execute('SELECT payload FROM instruments WHERE symbol=?', (r['symbol'],)).fetchone()[0])
-            validate_valuation(payload, now, kind=inst.get('kind'))
-            old = self.active(r['symbol'])
-            from .valuation_quality import researched_anchor, anchor_protected
-            if anchor_protected(old, now):
-                raise ValueError('規則掃描不得覆蓋個股研究價位')
-            if researched_anchor(old):
-                # The protection has lapsed: this is a recorded handover from research to the screen,
-                # not a screen quietly outranking research. See valuation_quality.anchor_protected.
-                self.audit('valuation_anchor_handover',
-                           {'symbol': r['symbol'], 'from': old.get('id'), 'to': proposal_id,
-                            'anchor_valid_until': old.get('valid_until')})
-            if (old['id'] if old else None) != r['parent_id']:
-                raise ValueError('基準版本已改變，需重新計算')
-            self.db.execute("UPDATE valuations SET status='superseded' WHERE symbol=? AND status='active'", (r['symbol'],))
-            self.db.execute("UPDATE valuations SET status='active',applied_at=?,applied_by=? WHERE id=?", (now.isoformat(), 'rule-engine', proposal_id))
-            self.audit('publish_rule_valuation', {'id': proposal_id, 'authority': authority['decision']})
-
-    def retire_valuation(self, symbol, reason, *, now=None):
-        """Take a published valuation out of service because its method no longer fits the stock.
-
-        Not a correction and not a replacement: afterwards the symbol has no active valuation at all and
-        is simply not priced, which is the honest state when the engine cannot value it. Recorded, like
-        every other change to a published price."""
-        now = now or datetime.now(TW)
-        with self.transaction():
-            row = self.db.execute(
-                "SELECT id,payload FROM valuations WHERE symbol=? AND status='active'", (symbol,)).fetchone()
-            if not row:
-                return None
-            self.db.execute("UPDATE valuations SET status='retired' WHERE id=?", (row['id'],))
-            self.audit('retire_valuation', {'symbol': symbol, 'id': row['id'], 'reason': reason,
-                                            'at': now.isoformat()})
-            return row['id']
 
     def meta(self, key):
         r = self.db.execute('SELECT payload FROM metadata WHERE key=?', (key,)).fetchone()

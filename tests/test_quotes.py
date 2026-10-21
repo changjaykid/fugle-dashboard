@@ -76,9 +76,7 @@ class TestFetchQuotes(unittest.TestCase):
 
     def test_is_trial_always_none_not_guessed(self):
         """Regression: this feed has no reliable trial-vs-regular flag, so
-        we must never infer is_trial from wall-clock time here (that
-        decision belongs in domain.decide(), and only if a real signal is
-        found)."""
+        we must never infer is_trial from wall-clock time here."""
         quotes = fetch_quotes(self.instruments, session=self.session)
         for q in quotes.values():
             self.assertIsNone(q['is_trial'])

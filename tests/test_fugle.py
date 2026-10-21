@@ -3,7 +3,7 @@ from copy import deepcopy
 from datetime import datetime, timedelta
 import unittest
 from stock_radar.fugle import FugleClient, FugleError, normalize_quote, microtime
-from stock_radar.domain import TW, decide
+from stock_radar.domain import TW
 
 NOW=datetime(2026,9,10,8,50,tzinfo=TW)
 def micros(t): return int(t.timestamp()*1_000_000)
