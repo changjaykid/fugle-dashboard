@@ -285,6 +285,34 @@ class TestSyncCalendar(CliTestBase):
             store.close()
 
 
+    def test_a_new_year_does_not_drop_the_one_still_being_traded(self):
+        this_year = {'closed_dates': {'2026-10-26': '補假', '2026-12-25': '行憲紀念日'}, 'roc_years': [115]}
+        next_year = {'closed_dates': {'2027-01-01': '中華民國開國紀念日'}, 'roc_years': [116]}
+        with mock.patch('stock_radar.cli.fetch_holiday_schedule', return_value=this_year):
+            self.run_cli('sync-calendar')
+        with mock.patch('stock_radar.cli.fetch_holiday_schedule', return_value=next_year):
+            self.run_cli('sync-calendar')
+        store = Store(self.db_path)
+        try:
+            cached = store.meta('trading_calendar')
+        finally:
+            store.close()
+        self.assertEqual(cached['roc_years'], [115, 116])
+        self.assertEqual(set(cached['closed_dates']), {'2026-10-26', '2026-12-25', '2027-01-01'})
+
+    def test_a_refetched_year_replaces_its_own_dates(self):
+        first = {'closed_dates': {'2026-10-09': '補假', '2026-10-26': '補假'}, 'roc_years': [115]}
+        revised = {'closed_dates': {'2026-10-26': '補假'}, 'roc_years': [115]}
+        for schedule in (first, revised):
+            with mock.patch('stock_radar.cli.fetch_holiday_schedule', return_value=schedule):
+                self.run_cli('sync-calendar')
+        store = Store(self.db_path)
+        try:
+            self.assertEqual(store.meta('trading_calendar'), revised)
+        finally:
+            store.close()
+
+
 class TestBackup(CliTestBase):
     def test_backup_creates_file(self):
         fake_items = [{'symbol': '2330', 'kind': 'stock', 'name': '台積電'}]

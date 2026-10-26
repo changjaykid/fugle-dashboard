@@ -227,7 +227,16 @@ def cmd_sync_quotes(args):
 def cmd_sync_calendar(args):
     store = Store(args.db)
     try:
-        schedule = fetch_holiday_schedule()
+        # TWSE's API answers for one year only. Replacing the cache with it dropped the year still being
+        # traded the day the API moved on, and every remaining day of that year then failed closed as
+        # 'no data for this ROC year'. The fetched years replace their own dates; the others are kept.
+        fetched = fetch_holiday_schedule()
+        kept = store.meta('trading_calendar') or {'closed_dates': {}, 'roc_years': []}
+        years = set(fetched['roc_years'])
+        closed = {day: name for day, name in kept['closed_dates'].items() if int(day[:4]) - 1911 not in years}
+        closed.update(fetched['closed_dates'])
+        schedule = {'closed_dates': dict(sorted(closed.items())),
+                    'roc_years': sorted(years | set(kept['roc_years']))}
         store.set_meta('trading_calendar', schedule)
         print(f"calendar synced: ROC years {schedule['roc_years']}, "
               f"{len(schedule['closed_dates'])} holiday dates cached")
