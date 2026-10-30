@@ -13,7 +13,9 @@ def run(args,cwd=R):
         operations={'sync-quotes','export','sync-universe','sync-calendar','sync-financials','sync-risk','backup'}
         step=next((a for a in args if a in operations),'other')
         # Preserve diagnostic categories, never stderr bodies, args, tokens or URLs.
-        matches=re.findall(r'^([A-Za-z][A-Za-z0-9_]*(?:Error|Exception)):',p.stderr or '',re.M)
+        # Dotted too: requests.exceptions.ConnectionError was read as nothing, so the morning of
+        # 2026-10-30 left NonzeroExit three times and no way to say what had failed.
+        matches=re.findall(r'^(?:[A-Za-z_][A-Za-z0-9_]*\.)*([A-Za-z][A-Za-z0-9_]*(?:Error|Exception|Timeout)):',p.stderr or '',re.M)
         category=matches[-1] if matches else 'NonzeroExit'
         print(json.dumps({'at':datetime.datetime.now(ZoneInfo('Asia/Taipei')).isoformat(),
             'status':'command_failed','step':step,'exit_code':p.returncode,'error_type':category}),file=sys.stderr,flush=True)
@@ -39,11 +41,11 @@ def resilient(args,step,attempts=3,pause=20):
                 file=sys.stderr,flush=True)
             time.sleep(pause)
 
-def secondary(args,step):
+def secondary(args,step,attempts=1):
     # Secondary steps never block the report or the site, but a failure is carried into the task's own
     # status line: for twelve days close.log printed a bare {"status":"ok"} that proved only the main
     # line had run.
-    try:run(args)
+    try:resilient(args,step,attempts)
     except (RuntimeError,subprocess.TimeoutExpired) as e:
         FAILED.append(step)
         print(json.dumps({'status':'secondary_failed','step':step,'error_type':type(e).__name__}),file=sys.stderr,flush=True)
@@ -136,7 +138,12 @@ def main():
             try:trading_today=bool(_s.meta('trading_calendar')) and _trading(now.date(),_s.meta('trading_calendar'))
             except Exception:trading_today=False
             finally:_s.close()
-            for cmd in ['sync-universe','sync-calendar','sync-financials','sync-risk']:resilient(cli+[cmd],cmd)
+            for cmd in ['sync-universe','sync-calendar']:resilient(cli+[cmd],cmd)
+            # Quarterly income, monthly revenue and yesterday's ratios: one failed fetch at 06:30 on
+            # 2026-10-30 stopped the risk list, the scan and the publish behind it, for data that was
+            # twelve hours old and still right. The morning's own 30-hour check catches a lasting failure.
+            secondary(cli+['sync-financials'],'sync-financials',attempts=3)
+            resilient(cli+['sync-risk'],'sync-risk')
             run([PY,'-m','stock_radar.research_brief','--db',str(D/'prod.db'),'--sync-close'])
             # Full market: add the latest session (a few requests) for the scan.
             run([PY,'-m','stock_radar.market','--db',str(D/'prod.db')])
