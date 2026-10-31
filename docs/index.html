@@ -2,9 +2,9 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="color-scheme" content="light"><meta name="description" content="台股：今天掛單買什麼、模擬帳戶與資料狀態。">
-<title>台股 Stock Radar｜今天買什麼</title>
-<link rel="stylesheet" href="radar.css?v=4649fb45df9f"><script src="radar.js?v=330b016d0a9d" defer></script>
+<meta name="color-scheme" content="light"><meta name="description" content="台股：下個交易日的掛單、模擬帳戶與資料狀態。">
+<title>台股 Stock Radar｜下個交易日掛單</title>
+<link rel="stylesheet" href="radar.css?v=4649fb45df9f"><script src="radar.js?v=20261031" defer></script>
 </head>
 <body>
 <header class="masthead"><a class="brand" href="./"><span class="brand-mark" aria-hidden="true">R</span><span>STOCK RADAR<small>台股・開盤前決策</small></span></a><div class="header-end"><a class="quiet" href="https://discord.com/channels/1492215198549807134/1493898877970153532" target="_blank" rel="noopener">開啟股票通知 ↗</a><span id="market-date">台北時間</span><button id="refresh" class="quiet">重新整理 <span aria-hidden="true">↻</span></button></div></header>
@@ -23,7 +23,7 @@
 <main hidden>
 <section class="intro"><div class="scan-stamp"><span class="dot" aria-hidden="true"></span><span id="last-scan">正在讀取掃描結果</span></div></section>
 <div id="notice" class="notice" role="status" aria-live="polite">正在讀取資料…</div>
-<section id="scan-section" class="system-section" aria-labelledby="scan-title" hidden><div class="section-top"><div><h2 id="scan-title">今天買什麼</h2></div><span id="scan-stamp" class="muted"></span></div><div id="scan-picks"></div><div id="scan-near"></div><p id="scan-tally" class="muted"></p></section>
+<section id="scan-section" class="system-section" aria-labelledby="scan-title" hidden><div class="section-top"><div><h2 id="scan-title">下個交易日掛單</h2></div><span id="scan-stamp" class="muted"></span></div><div id="scan-picks"></div><div id="scan-near"></div><p id="scan-tally" class="muted"></p></section>
 <section id="paper-section" class="system-section" aria-labelledby="paper-title" hidden><div class="section-top"><div><h2 id="paper-title">模擬帳戶</h2></div><span id="paper-stamp" class="muted"></span></div><div id="paper-head" class="paper-head"></div><div id="paper-stats" class="stats"></div><div id="paper-open"></div><div id="paper-orders"></div><div id="paper-closed"></div><p id="paper-note" class="muted"></p></section>
 <section class="system-section" aria-labelledby="system-title"><div class="section-top"><div><h2 id="system-title">資料狀態</h2></div><span id="coverage" class="muted"></span></div><div id="health" class="health-grid"></div></section>
 </main>

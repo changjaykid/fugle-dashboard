@@ -129,7 +129,7 @@
         `限價掛在相對低點，跌到才買、最多掛 5 個交易日；碰到目標後續抱，自最高點回落 3% 賣；停損為買進價下 10%。</p>`:'')+
         `<div class="picks">${d.candidates.map(card).join('')}</div>`;
     } else {
-      $('scan-picks').innerHTML='<p class="muted">今天沒有符合條件的標的，不掛新單。</p>';
+      $('scan-picks').innerHTML='<p class="muted">沒有符合條件的標的，下個交易日不掛新單。</p>';
     }
     const near=(d.near||[]).slice(0,8);
     $('scan-near').innerHTML=near.length
