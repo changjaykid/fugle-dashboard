@@ -32,6 +32,11 @@ class WeekendTests(unittest.TestCase):
         self.assertIn('選定時的回測',text)
         self.assertIn('0050 在 120 日均線之上',text)
 
+    def test_an_early_win_rate_says_what_is_still_held(self):
+        text=weekend.build('weekly',NOW,self.s)
+        self.assertIn('持有中 1 檔：0 檔賺、1 檔賠',text)
+        self.assertIn('還不是最終成績',text)
+
     def test_the_outlook_lists_every_order_with_its_stop_and_target(self):
         text=weekend.build('outlook',NOW,self.s)
         self.assertIn('台航 2617｜掛 31.05｜停損 27.9｜目標先看 33.8｜剩 3 個交易日',text)

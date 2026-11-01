@@ -81,6 +81,13 @@ def weekly(store, now):
         lines[-1] += (f"，勝率 {perf['win_rate_pct']:.0f}%"
                       + (f"，平均獲利 {perf['average_win_pct']:+.2f}%" if 'average_win_pct' in perf else '')
                       + (f"，平均虧損 {perf['average_loss_pct']:+.2f}%" if 'average_loss_pct' in perf else ''))
+    # A rule that takes 19 sessions on average closes its losers first: the stops arrive in days and the
+    # winners are still held, so an early win rate reads low for a reason that is not the rule failing.
+    held = list(book.positions.values())
+    if held and perf['closed_trades'] < 20:
+        up = sum(p['mark'] >= p['entry'] for p in held)
+        lines.append(f"持有中 {len(held)} 檔：{up} 檔賺、{len(held) - up} 檔賠。回測平均持有約 19 個交易日，"
+                     f"早期先結束的單多半是停損，上面的勝率還不是最終成績")
     lines.append(f"選定時的回測：{MEASURED['回測筆數']} 筆，勝率 {MEASURED['回測勝率百分比']}%，"
                  f"每筆平均 {MEASURED['回測每筆平均淨報酬百分比']:+.1f}%"
                  + ('（實績樣本還太少，尚不能比較）' if perf['closed_trades'] < 20 else ''))
