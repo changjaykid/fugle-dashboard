@@ -123,7 +123,7 @@
       cell('EPS（近一季）',num(c.eps))+
       `</dl></article>`;
     if(!d.market_open){
-      $('scan-picks').innerHTML='<p class="muted">0050 在 120 日線之下：大盤走弱時這套規則不掛新單。</p>';
+      $('scan-picks').innerHTML=`<p class="muted">${esc(d.market_why||'大盤條件未過')}：大盤走弱時這套規則不掛新單。</p>`;
     } else if(d.candidates.length){
       $('scan-picks').innerHTML=(r?`<p class="pick-record">這套規則回測 ${esc(r.period)}，${num(r.trades)} 筆：勝率 ${r.win_pct}%、平均每筆 ${signed(r.mean_pct,'%')}、平均持有 ${Math.round(r.held_days)} 個交易日。`+
         `限價掛在相對低點，跌到才買、最多掛 5 個交易日；碰到目標後續抱，自最高點回落 3% 賣；停損為買進價下 10%。</p>`:'')+
