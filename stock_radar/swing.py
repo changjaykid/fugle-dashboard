@@ -11,7 +11,10 @@ The rule, in the order it is applied:
   Universe   listed ordinary shares, NT$20m a day over twenty days, price at least NT$10, 120 sessions of
              history, nothing under a disposition or abnormal-trading notice.
   Market     no new orders while 0050 closes under its own 120-day average. Every method measured did
-             worse in those stretches, this one included.
+             worse in those stretches, this one included. Nor while the equal-weight market -- every
+             ordinary share at or above the minimum price, each counting the same -- is under its own
+             20-day average (swing-v2, 2026-11-11). In 2026-10 the large names held 0050 up while the
+             rest fell 13.5%; the rule bought into it and had the worst month of its four years.
   Trend      above the 60-day average, the 20-day above the 60-day, and a 60-day return better than the
              equal-weight liquid market's.
   Pullback   3-10% under its 20-day high, within 3% of the 20-day average, on volume no heavier than its
@@ -46,6 +49,12 @@ measured between them on win rate and above both on money (same entries and stop
 This file, replayed over the same days by tools/swing_replay.py with prices on the tick grid: +2.00% a
 trade, 62.3% won, 18.7 sessions, 1,283 trades; 2023 +2.29, 2024 +0.24, 2025 +2.45, 2026 +7.05.
 
+swing-v2, the same replay to 2026-11-09 with the equal-weight condition: +2.28% a trade, 62.4% won, 18.2
+sessions, 865 trades; 2023 +2.44, 2024 +0.17, 2025 +3.79, 2026 +3.57. Without it, to the same day:
++1.48%, 60%, 1,418 trades, 2026 +1.14. As an account of NT$100,000 from 2022-08 (finite cash, T+2, twenty
+positions): 149,000 against 133,005, worst drawdown 13.1% against 17.4%. It was picked from ten conditions
+after 2026-10 had happened, and it did not avoid that month: 19 of its 41 trades remain, still losing.
+
 Every function here takes plain lists so the nightly scan, the account and the replay share one
 arithmetic.
 """
@@ -53,7 +62,7 @@ import statistics
 
 from . import costs
 
-VERSION = 'swing-v1'
+VERSION = 'swing-v2'
 
 SETTINGS = {
     'min_dollar_volume': 20_000_000,
@@ -61,6 +70,7 @@ SETTINGS = {
     'min_history': 120,
     'market_symbol': '0050',
     'market_average': 120,
+    'breadth_average': 20,    # sessions of the equal-weight market's own average it must stand above
     'pullback_min': 0.03,
     'pullback_max': 0.10,
     'near_average': 0.03,
@@ -104,6 +114,39 @@ def market_open_for_entries(index_closes, settings=None):
     if len(closes) < s['market_average']:
         return False
     return closes[-1] > statistics.fmean(closes[-s['market_average']:])
+
+
+def breadth(prices, instruments, settings=None):
+    """The equal-weight market over `prices`, one level per session after the first: each session the
+    mean close-to-close move of every instrument at or above the minimum price, compounded."""
+    s = {**SETTINGS, **(settings or {})}
+    level, last, out = 1.0, {}, []
+    for k, (_, table) in enumerate(prices):
+        moves = []
+        for symbol in instruments:
+            bar = table.get(symbol)
+            close = bar[3] if bar else None
+            if close and close >= s['min_price']:
+                if symbol in last:
+                    moves.append(close / last[symbol] - 1)
+                last[symbol] = close
+        if k:
+            level *= 1 + (statistics.fmean(moves) if moves else 0)
+            out.append(level)
+    return out
+
+
+def market_state(prices, instruments, settings=None):
+    """(open, why not): new orders are placed only while 0050 is above its 120-day average and the
+    equal-weight market is above its own 20-day average."""
+    s = {**SETTINGS, **(settings or {})}
+    index_closes = [(t.get(s['market_symbol']) or [None] * 4)[3] for _, t in prices[-s['market_average']:]]
+    if not market_open_for_entries(index_closes, s):
+        return False, f"0050 在 {s['market_average']} 日線之下"
+    levels = breadth(prices[-(s['breadth_average'] + 1):], instruments, s)
+    if len(levels) < s['breadth_average'] or levels[-1] <= statistics.fmean(levels):
+        return False, f"全市場平均（等權重）在 {s['breadth_average']} 日線之下"
+    return True, None
 
 
 def features(bars, flows):
@@ -257,8 +300,7 @@ def scan(prices, flows, instruments, risk=lambda symbol: None, settings=None):
     days = [d for d, _ in prices]
     flow_by_day = dict(flows)
     window = prices[-(s['min_history'] + 1):]
-    index_closes = [(t.get(s['market_symbol']) or [None] * 4)[3] for _, t in prices[-s['market_average']:]]
-    gate = market_open_for_entries(index_closes, s)
+    gate, why_shut = market_state(prices, instruments, s)
     rows = {}
     for sym in instruments:
         bars = [t.get(sym) for _, t in window]
@@ -290,7 +332,7 @@ def scan(prices, flows, instruments, risk=lambda symbol: None, settings=None):
     buys.sort(key=lambda r: -(r['flow_share'] or 0))
     waits.sort(key=lambda r: (-r['reached'], -(r['flow_share'] or 0)))
     tally['buy'] = len(buys)
-    return {'version': VERSION, 'day': days[-1], 'market_open': gate,
+    return {'version': VERSION, 'day': days[-1], 'market_open': gate, 'market_why': why_shut,
             'market_return_60': market_60, 'tally': tally,
             'candidates': buys[:s['picks']] if gate else [],
             'held_back': [] if gate else buys[:s['picks']],

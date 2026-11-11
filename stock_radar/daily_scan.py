@@ -79,7 +79,7 @@ def text(store):
         return '尚未產生任何掃描結果。'
     lines = [f"台股掃描｜{payload['day']} 收盤（{swing.VERSION}）"]
     if not payload['market_open']:
-        lines.append('0050 在 120 日線之下：大盤走弱，今天不掛新單。')
+        lines.append(f"{payload.get('market_why') or '大盤條件未過'}：大盤走弱，今天不掛新單。")
     for c in payload['candidates']:
         lines.append(f"{c['name']} {c['symbol']}：掛 {c['limit']:g}（收盤 {c['close']:g}），"
                      f"上緣 {c['target']:g}，停損 {c['stop']:g}｜{c['why']}")

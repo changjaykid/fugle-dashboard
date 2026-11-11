@@ -14,7 +14,7 @@ geometry of its entries. It is told not to introduce numbers, and a reply that s
 evidence does not contain is rejected before it is stored -- the same guard research_llm uses, for the
 same reason.
 
-The review is told what the rule was chosen on -- its replay over 2022-08 .. 2026-07 and what random
+The review is told what the rule was chosen on -- its replay over 2022-08 .. 2026-11 and what random
 entries did under the same exits -- next to what the journal has seen since, so it can say whether the
 measured edge is holding rather than tuning parameters against a few weeks of fills.
 """
@@ -36,9 +36,11 @@ ATTEMPTS = 2
 TUNABLE = ('pullback_min', 'pullback_max', 'near_average', 'max_relative_volume', 'order_days',
            'stop_fraction', 'give_back', 'max_holding_days', 'picks', 'max_positions')
 # What the rule was chosen on (STOCK_FLOW_REVIEW.md section 12, tools/swing_replay.py).
-MEASURED = {'回測期間': '2022-08 ~ 2026-07', '回測每筆平均淨報酬百分比': 2.0, '回測勝率百分比': 62.3,
-            '回測平均持有交易日': 18.7, '回測筆數': 1283, '隨機進場同樣出場每筆平均百分比': 0.11,
-            '回測各年每筆平均百分比': {'2023': 2.29, '2024': 0.24, '2025': 2.45, '2026': 7.05}}
+# swing-v2 (2026-11-11): replayed to 2026-11-09, so the fall of 2026-10 is inside the figures. The random
+# entries were measured under swing-v1's market condition and are kept as the yardstick they were.
+MEASURED = {'回測期間': '2022-08 ~ 2026-11', '回測每筆平均淨報酬百分比': 2.28, '回測勝率百分比': 62.4,
+            '回測平均持有交易日': 18.2, '回測筆數': 865, '隨機進場同樣出場每筆平均百分比': 0.11,
+            '回測各年每筆平均百分比': {'2023': 2.44, '2024': 0.17, '2025': 3.79, '2026': 3.57}}
 
 SCHEMA = {'type': 'object', 'additionalProperties': False,
           'required': ['summary', 'proposals', 'evidence_gaps'],

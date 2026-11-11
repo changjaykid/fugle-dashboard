@@ -55,7 +55,7 @@ def scan_morning(s,now):
     t=payload.get('tally') or {}
     lines=[head,'']
     if not payload.get('market_open'):
-        lines.append('⛔ 今天不掛新單：0050 在 120 日線之下，大盤走弱時這套規則不進場。')
+        lines.append(f"⛔ 今天不掛新單：{payload.get('market_why') or '大盤條件未過'}，大盤走弱時這套規則不進場。")
     elif picks:
         lines.append(f"✅ 今天掛單 {len(picks)} 檔（限價掛在相對低點，跌到才買，最多掛 5 個交易日）")
         for n,c in enumerate(picks[:MAX_STOCKS],1):

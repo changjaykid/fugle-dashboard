@@ -1,4 +1,4 @@
-"""The 18:00 message: the simulated account's day under the one rule set it trades (swing-v1).
+"""The 18:00 message: the simulated account's day under the one rule set it trades (swing.VERSION).
 
 It used to lead with "今天建議 N 檔／今天沒有發出可掛價建議", graded from the valuation system's
 recommendation ledger -- the method the swing rule replaced on 2026-10-13. On days the swing rule had

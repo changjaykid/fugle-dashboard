@@ -5,7 +5,8 @@ with `swing.follow` -- the journal's arithmetic. One trade per (day, symbol), th
 the two can be compared: if this does not reproduce the study's figure, the production code is not the
 rule that was measured. On 2026-10-13, before prices were put on the tick grid, it gave +1.85% a trade,
 61.6% won, 18.6 sessions against the study's +1.88%, 61.6%, 18.6; with ticks, +2.00%, 62.3%, 18.7
-(2022-08-04 .. 2026-07-07, 1,283 trades, about six minutes).
+(2022-08-04 .. 2026-07-07, 1,283 trades, about six minutes). swing-v2, --end 2026-11-09: +2.28%, 62.4%,
+18.2, 865 trades.
 """
 import argparse, json, statistics, sys, time
 from pathlib import Path

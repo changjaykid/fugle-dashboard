@@ -1,4 +1,4 @@
-"""Weekend reports for the one rule set the agent trades (swing-v1): what the account did, what is next.
+"""Weekend reports for the one rule set the agent trades (swing.VERSION): what the account did, what is next.
 
 Saturday: the simulated account's week -- its value against the market, what was bought and sold and
 why, what is held and how each holding will leave, and the rule's record so far beside the backtest it
@@ -22,7 +22,7 @@ from . import paper, swing
 from .strategy_review import MEASURED
 
 SITE = 'https://changjaykid.github.io/fugle-dashboard/'
-# 'trail' is how the rule before swing-v1 named its trailing exit; its trades are still in the book.
+# 'trail' is how the rule before the swing rules named its trailing exit; its trades are still in the book.
 EXITS = {'stop': '停損', 'target': '移動停利', 'trail': '移動停利', 'time': '時間到'}
 
 
@@ -31,8 +31,8 @@ def _market(store):
     state = scan.get('market_open')
     if state is None:
         return '大盤濾網：未取得'
-    return ('大盤濾網：0050 在 120 日均線之上，可開新單' if state else
-            '大盤濾網：0050 在 120 日均線之下，暫停開新單（既有持倉照常管理）')
+    return ('大盤濾網：0050 在 120 日線之上、全市場平均在 20 日線之上，可開新單' if state else
+            f"大盤濾網：{scan.get('market_why') or '大盤條件未過'}，暫停開新單（既有持倉照常管理）")
 
 
 def _holding(p):
@@ -86,7 +86,7 @@ def weekly(store, now):
     held = list(book.positions.values())
     if held and perf['closed_trades'] < 20:
         up = sum(p['mark'] >= p['entry'] for p in held)
-        lines.append(f"持有中 {len(held)} 檔：{up} 檔賺、{len(held) - up} 檔賠。回測平均持有約 19 個交易日，"
+        lines.append(f"持有中 {len(held)} 檔：{up} 檔賺、{len(held) - up} 檔賠。回測平均持有約 {MEASURED['回測平均持有交易日']:.0f} 個交易日，"
                      f"早期先結束的單多半是停損，上面的勝率還不是最終成績")
     lines.append(f"選定時的回測：{MEASURED['回測筆數']} 筆，勝率 {MEASURED['回測勝率百分比']}%，"
                  f"每筆平均 {MEASURED['回測每筆平均淨報酬百分比']:+.1f}%"

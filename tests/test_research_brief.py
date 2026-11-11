@@ -46,8 +46,8 @@ class ScanMorningTests(unittest.TestCase):
   self.assertIn('外資 +1,200 張｜投信 -35 張',text)
   self.assertIn('這套規則回測',text)
  def test_a_weak_market_places_nothing_and_says_why(self):
-  text=self.run_with(self.scan(market_open=False,candidates=[]))
-  self.assertIn('0050 在 120 日線之下',text);self.assertNotIn('✅',text)
+  text=self.run_with(self.scan(market_open=False,market_why='全市場平均（等權重）在 20 日線之下',candidates=[]))
+  self.assertIn('今天不掛新單：全市場平均（等權重）在 20 日線之下',text);self.assertNotIn('✅',text)
  def test_no_candidate_names_the_nearest_miss(self):
   text=self.run_with(self.scan(candidates=[],near=[{'symbol':'2317','name':'鴻海','why':'回檔量能 1.4 倍，賣壓未縮'}]))
   self.assertIn('今天沒有符合條件的標的',text);self.assertIn('鴻海 2317－回檔量能 1.4 倍',text)

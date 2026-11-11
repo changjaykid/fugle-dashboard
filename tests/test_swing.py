@@ -82,18 +82,41 @@ class RuleTests(unittest.TestCase):
         self.assertFalse(ok)
         self.assertIn('處置', why)
 
+    def test_the_index_held_up_by_a_few_does_not_open_a_market_most_of_which_is_falling(self):
+        # 2026-10: 0050 stayed above its 120-day average while the equal-weight market fell 13.5%.
+        days = sessions(130)
+        falling = {str(3000 + n): trend(pullback=12) for n in range(6)}
+        names = {'2330': {'name': '台積電'}, **{s: {'name': s} for s in falling}}
+        out = swing.scan(market(days, {'2330': trend(pullback=4), **falling}),
+                         [(d, {'2330': [50, 10]}) for d in days], names)
+        self.assertFalse(out['market_open'])
+        self.assertEqual(out['market_why'], '全市場平均（等權重）在 20 日線之下')
+        self.assertEqual(out['candidates'], [])
+        self.assertIn('2330', [c['symbol'] for c in out['held_back']])
+
+    def test_the_equal_weight_market_counts_every_share_the_same(self):
+        days = sessions(3)
+        table = lambda a, b: {'A': [a, a, a, a, 1], 'B': [b, b, b, b, 1], 'cheap': [5, 5, 5, 5, 1]}
+        levels = swing.breadth([(days[0], table(100, 20)), (days[1], table(110, 20)), (days[2], table(110, 18))],
+                               {'A': {}, 'B': {}, 'cheap': {}})
+        self.assertAlmostEqual(levels[0], 1.05); self.assertAlmostEqual(levels[1], 1.05 * 0.95)
+
     def test_a_falling_market_places_no_orders(self):
         days = sessions(130)
         flat = [[100, 100.5, 99.5, 100, 1000]] * 130
-        names = {'2330': {'name': '台積電'}, '1101': {'name': '台泥'}}
-        weak = swing.scan(market(days, {'2330': trend(pullback=4), '1101': flat}, index_up=False),
+        # Six names still rising beside the one resting: the market as a whole is above its average.
+        rising = {str(2000 + n): trend(step=0.1) for n in range(6)}
+        names = {'2330': {'name': '台積電'}, '1101': {'name': '台泥'}, **{s: {'name': s} for s in rising}}
+        weak = swing.scan(market(days, {'2330': trend(pullback=4), '1101': flat, **rising}, index_up=False),
                           [(d, {'2330': [50, 10]}) for d in days], names)
         self.assertFalse(weak['market_open'])
+        self.assertEqual(weak['market_why'], '0050 在 120 日線之下')
         self.assertEqual(weak['candidates'], [])
         self.assertEqual([c['symbol'] for c in weak['held_back']], ['2330'])
-        strong = swing.scan(market(days, {'2330': trend(pullback=4), '1101': flat}),
+        strong = swing.scan(market(days, {'2330': trend(pullback=4), '1101': flat, **rising}),
                             [(d, {'2330': [50, 10]}) for d in days], names)
         self.assertTrue(strong['market_open'])
+        self.assertIsNone(strong['market_why'])
         self.assertEqual([c['symbol'] for c in strong['candidates']], ['2330'])
         row = strong['candidates'][0]
         self.assertEqual((row['foreign_lots'], row['trust_lots']), (50 * 5, 10 * 5))

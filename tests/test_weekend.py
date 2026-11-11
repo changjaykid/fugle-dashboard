@@ -30,7 +30,11 @@ class WeekendTests(unittest.TestCase):
         self.assertIn('買 緯創 3231 27 股 @ 179.5',text)
         self.assertIn('緯創 3231｜27 股 成本 179.5 → 176',text)
         self.assertIn('選定時的回測',text)
-        self.assertIn('0050 在 120 日均線之上',text)
+        self.assertIn('0050 在 120 日線之上、全市場平均在 20 日線之上，可開新單',text)
+
+    def test_a_shut_market_says_which_condition_shut_it(self):
+        self.s.set_meta('daily_scan',{'market_open':False,'market_why':'全市場平均（等權重）在 20 日線之下'})
+        self.assertIn('大盤濾網：全市場平均（等權重）在 20 日線之下，暫停開新單',weekend.build('weekly',NOW,self.s))
 
     def test_an_early_win_rate_says_what_is_still_held(self):
         text=weekend.build('weekly',NOW,self.s)
