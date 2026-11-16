@@ -33,6 +33,11 @@ VERSION = 'stock-review-v2'
 RUNTIME = Path('/Users/kid/kid-ai-agent-os')
 PYTHON = '/usr/local/bin/python3'
 ATTEMPTS = 2
+# Enough to review on: the rule's own journal, or failing that the account's closed trades. The journal
+# starts again with each rule version, and swing-v2 began on 2026-11-11 with the market shut to new
+# orders: on the journal alone the review would have said nothing for months while twenty-two closed
+# trades, twenty of them stops, sat in the account (user's decision 2026-11-16).
+ENOUGH_JOURNAL, ENOUGH_ACCOUNT = 30, 20
 TUNABLE = ('pullback_min', 'pullback_max', 'near_average', 'max_relative_volume', 'order_days',
            'stop_fraction', 'give_back', 'max_holding_days', 'picks', 'max_positions')
 # What the rule was chosen on (STOCK_FLOW_REVIEW.md section 12, tools/swing_replay.py).
@@ -82,6 +87,7 @@ def evidence(store, now, weeks=1):
         '同期全市場等權百分比': bench and bench['equal_weight_pct'],
         '超額百分點': excess,
         '已結交易數': performance['closed_trades'],
+        '已結交易中上一版規則進場的筆數': sum(1 for c in book.closed if (c.get('plan') or {}).get('version') != swing.VERSION),
         '勝數': performance['wins'], '敗數': performance['losses'],
         '勝率百分比': performance['win_rate_pct'],
         '平均獲利百分比': performance.get('average_win_pct'),
@@ -115,7 +121,9 @@ def prompt(data):
     return ('你是這個台股交易規則的每週檢討者。只能使用下列已量測的數字，不得引入任何其他數字、'
             '事件或新聞；沒有證據就寫在 evidence_gaps。全部使用繁體中文，只輸出 JSON。\n'
             'summary：這 10 個交易日規則做了什麼、哪裡有效哪裡無效，100～300 字，'
-            '必須比較決策日誌的每筆平均與勝率和選定規則時的回測數字，說明優勢是否還在。\n'
+            '必須拿帳戶已結交易的勝率、平均獲利與平均虧損，和選定規則時的回測數字比較，說明優勢是否還在；'
+            '決策日誌有已結筆數時也一併比較。已結交易若多數是上一版規則進場的，要說明這一點，'
+            '不要把上一版的結果當成現行規則的成績。\n'
             f"proposals：對設定的具體修改建議，0～4 項，setting 只能是 {'、'.join(TUNABLE)} 其中之一；"
             'from_value 與 to_value 都寫成字串；why 要指向下列的某個數字；'
             'what_would_disprove_it 寫清楚什麼結果會證明這個建議是錯的。\n'
@@ -199,9 +207,9 @@ def review(store, now, caller=call, weeks=1):
     data = evidence(store, now, weeks)
     if not data:
         return {'status': 'no_account', 'reason': '模擬帳戶尚未開立'}
-    if data['決策日誌已結筆數'] < 30:
+    if data['決策日誌已結筆數'] < ENOUGH_JOURNAL and data['已結交易數'] < ENOUGH_ACCOUNT:
         return {'status': 'too_early',
-                'reason': f"新規則的決策日誌只有 {data['決策日誌已結筆數']} 筆已結，不足以檢討"}
+                'reason': f"新規則的決策日誌只有 {data['決策日誌已結筆數']} 筆已結、帳戶只有 {data['已結交易數']} 筆已結，不足以檢討"}
     log = store.meta('stock_review_attempts') or {}
     key = f'{now:%Y%W}'
     used = log.get(key, 0)
