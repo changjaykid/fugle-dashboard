@@ -148,6 +148,15 @@ class ReviewTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'unverified_numbers'):
             strategy_review.validate(payload, self.data())
 
+    def test_a_figure_written_with_thousands_separators_or_without_its_sign_is_the_same_figure(self):
+        data = dict(self.data(), 目前淨值=88300.63, 起始資金=100000.0, 超額百分點=-1.13)
+        payload = {'summary': '帳戶淨值 88,300.63 元，起始 100,000 元，落後全市場等權 1.13 個百分點，樣本仍少，不提出修改。',
+                   'proposals': [], 'evidence_gaps': []}
+        self.assertEqual(strategy_review.validate(payload, data)['proposals'], [])
+        invented = dict(payload, summary=payload['summary'] + '夏普值 9,370.5。')
+        with self.assertRaisesRegex(ValueError, 'unverified_numbers'):
+            strategy_review.validate(invented, data)
+
     def test_a_proposal_without_reasoning_is_rejected(self):
         payload = {'summary': '這一段摘要刻意寫得足夠長以通過最小長度檢查，重點是本期超額 -3.37 個百分點，勝率 72.7%，而已結交易只有 22 筆。',
                    'proposals': [{'setting': 'give_back', 'from_value': '0.03',

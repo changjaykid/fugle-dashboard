@@ -157,12 +157,15 @@ def validate(payload, data):
     payload['proposals'] = proposals[:4]
     payload['evidence_gaps'] = [str(x)[:200] for x in (payload.get('evidence_gaps') or [])][:4]
     allowed = allowed_values(data)
-    stated = re.findall(r'-?\d+(?:\.\d+)?',
-                        ' '.join([payload['summary']] + payload['evidence_gaps']
-                                 + [p['why'] + ' ' + p['what_would_disprove_it'] + ' '
-                                    + p['from_value'] + ' ' + p['to_value'] for p in proposals]))
+    said = ' '.join([payload['summary']] + payload['evidence_gaps']
+                    + [p['why'] + ' ' + p['what_would_disprove_it'] + ' '
+                       + p['from_value'] + ' ' + p['to_value'] for p in proposals])
+    # A figure as a person writes it is still the figure: 88,300.63 is one number, not 88 and 300.63,
+    # and "behind by 1.13 points" states the -1.13 in the evidence. Read otherwise, the first review the
+    # model ever completed (2026-11-16) was thrown away for quoting the account's own net value.
+    stated = re.findall(r'-?\d+(?:\.\d+)?', re.sub(r'(?<=\d),(?=\d{3}(?!\d))', '', said))
     unseen = sorted({n for n in stated
-                     if not any(abs(c - float(n)) <= 0.05 for c in allowed)})
+                     if not any(abs(abs(c) - abs(float(n))) <= 0.05 for c in allowed)})
     if unseen:
         raise ValueError('unverified_numbers:' + ','.join(unseen[:3]))
     return payload
